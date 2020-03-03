@@ -15,6 +15,7 @@ import android.widget.Toast;
  * TODO: refactor if possible
  */
 
+
 public class SignUpActivity extends AppCompatActivity {
 
     @Override
@@ -44,6 +45,7 @@ public class SignUpActivity extends AppCompatActivity {
     private void makeWhite(EditText editText) {
         editText.setBackgroundColor(getResources().getColor(R.color.white));
     }
+
 
     /**p
      * Makes appear a toast in the bottom of the screen
@@ -113,6 +115,7 @@ public class SignUpActivity extends AppCompatActivity {
             toastPopup("Confirm your password");
             makeRed(secondPassword);
         } else if(!passwordsMatch(firstPassword.getText().toString(), secondPassword.getText().toString())) {
+
             toastPopup("Different passwords");
             makeRed(firstPassword);
             makeRed(secondPassword);
