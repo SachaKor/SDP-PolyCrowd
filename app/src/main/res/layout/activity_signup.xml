@@ -34,6 +34,7 @@
             android:hint="@string/email_hint"
             android:onClick="emailTextFieldClicked"/>
 
+
         <EditText
             android:id="@+id/sign_up_username"
             android:layout_width="match_parent"
@@ -43,6 +44,7 @@
             android:hint="@string/username"
             android:onClick="usernameTextFieldClicked" />
 
+
         <EditText
             android:id="@+id/sign_up_pswd"
             android:layout_width="match_parent"
@@ -51,6 +53,7 @@
             android:inputType="textPassword"
             android:hint="@string/password"
             android:onClick="passwordTextFieldClicked"/>
+
 
         <EditText
             android:id="@+id/repeat_pswd"

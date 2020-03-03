@@ -5,13 +5,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.Gravity;
+
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+
 /**
  * TODO: refactor if possible
  */
+
 public class SignUpActivity extends AppCompatActivity {
 
     @Override
@@ -46,10 +49,12 @@ public class SignUpActivity extends AppCompatActivity {
      * Makes appear a toast in the bottom of the screen
      * @param text the text in the toast
      */
+
     private void toastPopup(String text) {
         Context context = getApplicationContext();
         int duration = Toast.LENGTH_SHORT;
         Toast toast = Toast.makeText(context, text, duration);
+
         toast.setGravity(Gravity.BOTTOM, 0, 16);
         toast.show();
     }
@@ -85,6 +90,7 @@ public class SignUpActivity extends AppCompatActivity {
         makeWhite(pass);
     }
 
+
     /**
      * Checks all the Sign Up fields
      */
@@ -93,6 +99,7 @@ public class SignUpActivity extends AppCompatActivity {
                 secondPassword = findViewById(R.id.repeat_pswd),
                 username = findViewById(R.id.sign_up_username),
                 email = findViewById(R.id.sign_up_email);
+
         if(!emailAddressCheck(email.getText().toString())) {
             toastPopup("Incorrect email");
             makeRed(email);
