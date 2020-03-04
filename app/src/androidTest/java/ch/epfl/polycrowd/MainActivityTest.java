@@ -8,7 +8,9 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.core.StringContains.containsString;
@@ -21,5 +23,16 @@ public class MainActivityTest {
     @Test
     public void testDisplaysHelloWorld() {
         onView(withId(R.id.helloText)).check(matches(withText(containsString("Hello World!"))));
+    }
+
+    @Test
+    public void testDisplaysSignIn() {
+        onView(withId(R.id.sign_in_button_main)).check(matches(withText(containsString("Sign in"))));
+    }
+
+    @Test
+    public void testClickSignInButton() {
+        onView(withId(R.id.sign_in_button_main)).perform(click());
+        onView(withId(R.id.sign_in_button)).check(matches(isDisplayed()));
     }
 }
