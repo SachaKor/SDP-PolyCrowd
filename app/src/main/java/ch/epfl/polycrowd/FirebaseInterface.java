@@ -75,7 +75,7 @@ public class FirebaseInterface {
     public  AuthResult emailSignIn(String email, String password){
         checkArgs(email,password);
         try {
-            return await( getAuthInstance(false).signInWithEmailAndPassword(email, password) );
+            return await( getAuthInstance(true).signInWithEmailAndPassword(email, password) );
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
