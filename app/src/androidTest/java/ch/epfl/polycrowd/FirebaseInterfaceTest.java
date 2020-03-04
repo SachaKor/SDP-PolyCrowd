@@ -5,6 +5,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -32,9 +33,11 @@ public class FirebaseInterfaceTest {
 
     @Test
     public void simpleEmailSignUp(){
+
         String email = "test@email.com";
         String password ="seCure";
         AuthResult res = firebaseInterface.emailSignUp(email,password);
+        assert(res != null);
         assertEquals(res.getUser().getEmail(), email);
     }
 
