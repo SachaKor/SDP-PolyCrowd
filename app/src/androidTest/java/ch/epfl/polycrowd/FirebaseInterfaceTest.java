@@ -37,8 +37,12 @@ public class FirebaseInterfaceTest {
         String email = "test@email.com";
         String password ="seCure";
         AuthResult res = firebaseInterface.emailSignUp(email,password);
-        assert(res != null);
-        assertEquals(res.getUser().getEmail(), email);
+        if (res != null){
+            if (res.getUser() != null){
+                assertEquals(res.getUser().getEmail(), email);
+            }
+        }
+
     }
 
     @Test(expected = IllegalArgumentException.class)
