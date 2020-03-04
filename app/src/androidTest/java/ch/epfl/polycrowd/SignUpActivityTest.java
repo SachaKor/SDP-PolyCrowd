@@ -2,6 +2,7 @@ package ch.epfl.polycrowd;
 
 import org.junit.Rule;
 import org.junit.Test;
+
 import org.junit.runner.RunWith;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -27,6 +28,7 @@ public class SignUpActivityTest {
     @Rule
     public final ActivityTestRule<SignUpActivity> mActivityRule =
             new ActivityTestRule<>(SignUpActivity.class);
+
 
     private void typeTextAndCloseKeyboard(int viewId, String text) {
         onView(withId(viewId))
