@@ -42,7 +42,7 @@ public class SignUpActivity extends AppCompatActivity {
         editText.setBackgroundColor(getResources().getColor(R.color.white));
     }
 
-    /**
+    /**p
      * Makes appear a toast in the bottom of the screen
      * @param text the text in the toast
      */
@@ -50,7 +50,7 @@ public class SignUpActivity extends AppCompatActivity {
         Context context = getApplicationContext();
         int duration = Toast.LENGTH_SHORT;
         Toast toast = Toast.makeText(context, text, duration);
-        toast.setGravity(Gravity.BOTTOM, 0, 0);
+        toast.setGravity(Gravity.BOTTOM, 0, 16);
         toast.show();
     }
 

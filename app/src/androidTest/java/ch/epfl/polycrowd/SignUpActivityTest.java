@@ -30,8 +30,7 @@ public class SignUpActivityTest {
 
     private void typeTextAndCloseKeyboard(int viewId, String text) {
         onView(withId(viewId))
-                .perform(typeText(text))
-                .perform(closeSoftKeyboard());
+                .perform(typeText(text), closeSoftKeyboard());
     }
 
     @Test
