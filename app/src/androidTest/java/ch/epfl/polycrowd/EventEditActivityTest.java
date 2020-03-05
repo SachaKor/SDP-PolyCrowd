@@ -40,7 +40,7 @@ public class EventEditActivityTest {
     public void testInteractFields() {
 
         onView(withId(R.id.EditEventName)).perform(typeText("PolySushi"));
-        onView(withId(R.id.EditEventPublic)).perform(click());
+        //onView(withId(R.id.EditEventPublic)).perform(); //What action ?
         //onView(withId(R.id.EditEventType)).perform(); //What action ?
         onView(withId(R.id.EditEventStart)).perform(typeText("31-12-1970"));
         onView(withId(R.id.EditEventEnd)).perform(typeText("31-12-1970"));

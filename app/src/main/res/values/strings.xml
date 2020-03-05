@@ -17,6 +17,6 @@
         <item>Other</item>
     </string-array>
     <string name="event_date_start">Start Date</string>
-    <string name="event_date_end">Start End</string>
+    <string name="event_date_end">End Date</string>
     <string name="event_add">Add Event</string>
 </resources>
