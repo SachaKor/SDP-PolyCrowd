@@ -6,7 +6,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import org.json.JSONObject;
 
 import java.util.concurrent.ExecutionException;
 
@@ -23,11 +22,12 @@ public class FirebaseInterface {
      * @param refresh option to force the refresh of the cached instance, true to force
      * @return FirebaseAuth authentication instance
      */
-    private FirebaseAuth getAuthInstance(boolean refresh){
-        if (this.cachedAuth == null || refresh){
-            this.cachedAuth = FirebaseAuth.getInstance();
-        }
-        return this.cachedAuth;
+    public static FirebaseAuth getAuthInstance(boolean refresh){
+//        if (this.cachedAuth == null || refresh){
+//            this.cachedAuth = FirebaseAuth.getInstance();
+//        }
+//        return this.cachedAuth;
+        return FirebaseAuth.getInstance();
     }
 
     private DatabaseReference getDbRef(boolean refresh){
@@ -58,9 +58,7 @@ public class FirebaseInterface {
         checkArgs(email,password);
         try {
             return await(getAuthInstance(false).createUserWithEmailAndPassword(email,password));
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+        } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
         return null;
@@ -76,9 +74,7 @@ public class FirebaseInterface {
         checkArgs(email,password);
         try {
             return await( getAuthInstance(false).signInWithEmailAndPassword(email, password) );
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+        } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
         return null;
@@ -95,14 +91,10 @@ public class FirebaseInterface {
         try {
             await(getDbRef(false).child(table).setValue(jsonData));
             return true;
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+        } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
         return false;
     }
-    
-
 
 }
