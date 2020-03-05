@@ -22,7 +22,6 @@
         android:layout_height="wrap_content"
         android:onClick="clickSignUpButton"
         android:text="@string/sign_up"
-
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent" />
 
