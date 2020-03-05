@@ -1,24 +1,15 @@
 package ch.epfl.polycrowd;
 
-import android.util.Log;
-
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.EmailAuthProvider;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
-import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
-import androidx.annotation.NonNull;
+import java.util.Objects;
+
 import androidx.test.rule.ActivityTestRule;
 
 import static androidx.test.espresso.action.ViewActions.click;
@@ -55,7 +46,7 @@ public class LoginActivityTest {
                         new OnSuccessListener<AuthResult>() {
                             @Override
                             public void onSuccess(AuthResult authResult) {
-                                authResult.getUser().delete();
+                                Objects.requireNonNull(authResult.getUser()).delete();
                             }
                         }
                 );
