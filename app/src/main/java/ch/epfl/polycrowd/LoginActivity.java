@@ -24,7 +24,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void toastPopup(String text) {
         Context context = getApplicationContext();
-        int duration = Toast.LENGTH_SHORT;
+        int duration = Toast.LENGTH_LONG;
         Toast toast = Toast.makeText(context, text, duration);
         toast.setGravity(Gravity.BOTTOM, 0, 16);
         toast.show();

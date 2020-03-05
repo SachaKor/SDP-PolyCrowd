@@ -14,6 +14,7 @@ import androidx.test.rule.ActivityTestRule;
 
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 
@@ -95,7 +96,7 @@ public class LoginActivityTest {
     @Test
     public void testPasswordFieldEmpty() {
         onView(withId(R.id.sign_in_email)).perform(typeText("sasha@ha.com"), closeSoftKeyboard());
-        onView(withId(R.id.sign_in_button)).perform(click(), closeSoftKeyboard());
+        onView(withId(R.id.sign_in_button)).perform(click());
         onView(withText("Enter your password"))
                 .inRoot(withDecorView(not(loginActivityRule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));
