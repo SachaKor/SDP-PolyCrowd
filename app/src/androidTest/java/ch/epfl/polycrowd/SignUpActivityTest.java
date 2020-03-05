@@ -30,18 +30,13 @@ public class SignUpActivityTest {
 
     private void typeTextAndCloseKeyboard(int viewId, String text) {
         onView(withId(viewId))
-<<<<<<< HEAD
                 .perform(typeText(text), closeSoftKeyboard());
-=======
-                .perform(typeText(text))
-                .perform(closeSoftKeyboard());
->>>>>>> d9ef6a1de14f70fd3645529c838de1ac5c64bfa6
     }
 
     @Test
     public void testToastIsDisplayedWhenNoFieldIsFill() {
         onView(withId(R.id.sign_up_button)).perform(click());
-        onView(withText("Confirm your password"))
+        onView(withText("Incorrect email"))
                 .inRoot(withDecorView(not(mActivityRule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));
     }
@@ -50,8 +45,8 @@ public class SignUpActivityTest {
     public void testToastIsDisplayedWhenPasswordsDoNotMatch() {
         typeTextAndCloseKeyboard(R.id.sign_up_email, "sasha@bla.com");
         typeTextAndCloseKeyboard(R.id.sign_up_username, "sasha");
-        typeTextAndCloseKeyboard(R.id.sign_up_pswd, "123");
-        typeTextAndCloseKeyboard(R.id.repeat_pswd, "456");
+        typeTextAndCloseKeyboard(R.id.sign_up_pswd, "123888");
+        typeTextAndCloseKeyboard(R.id.repeat_pswd, "4560000");
         onView(withId(R.id.sign_up_button)).perform(click());
         onView(withText("Different passwords"))
                 .inRoot(withDecorView(not(mActivityRule.getActivity().getWindow().getDecorView())))
