@@ -96,23 +96,25 @@ public class SignUpActivity extends AppCompatActivity {
         if(!emailAddressCheck(email.getText().toString())) {
             toastPopup("Incorrect email");
             makeRed(email);
-        }
-        if(username.getText().toString().isEmpty()) {
+        }else if(username.getText().toString().isEmpty()) {
             toastPopup("Enter your username");
             makeRed(username);
-        }
-        if(firstPassword.getText().toString().isEmpty()) {
-            toastPopup("Enter your password");
-            makeRed(firstPassword);
-        }
-        if(secondPassword.getText().toString().isEmpty()) {
+        } else if(firstPassword.getText().toString().isEmpty() || firstPassword.getText().toString().length() < 6) {
+            toastPopup("Password must contain at least 6 characters");
+            makeRed(firstPassword);;
+        } else if(secondPassword.getText().toString().isEmpty()) {
             toastPopup("Confirm your password");
             makeRed(secondPassword);
-        }
-        if(!passwordsMatch(firstPassword.getText().toString(), secondPassword.getText().toString())) {
+        } else if(!passwordsMatch(firstPassword.getText().toString(), secondPassword.getText().toString())) {
             toastPopup("Different passwords");
             makeRed(firstPassword);
             makeRed(secondPassword);
+        } else {
+            toastPopup("Email: " + email.getText().toString() + " Pwd: " + firstPassword.getText().toString());
+
+            FirebaseInterface firebaseInterface = new FirebaseInterface();
+            firebaseInterface.emailSignUp(email.getText().toString(), firstPassword.getText().toString());
         }
+
     }
 }
