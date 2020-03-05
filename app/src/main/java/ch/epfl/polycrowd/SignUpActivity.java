@@ -1,7 +1,6 @@
 package ch.epfl.polycrowd;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
 import android.content.Context;
 import android.os.Bundle;
