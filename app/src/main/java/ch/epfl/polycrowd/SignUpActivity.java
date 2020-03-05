@@ -157,67 +157,61 @@ public class SignUpActivity extends AppCompatActivity {
         } else {
 
             final FirebaseFirestore firestore = FirebaseInterface.getFirestoreInstance();
-            CollectionReference usersRef = firestore.collection("Users");
+            CollectionReference usersRef = firestore.collection("users");
             Query query = usersRef.whereEqualTo("username", username.getText().toString());
+//            query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//                @Override
+//                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                    if(task.isSuccessful()) {
+//                        toastPopup("nb entries: " + task.getResult().size());
+//                    } else {
+//                        toastPopup("error");
+//                    }
+//                }
+//            });
             query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                     if(task.isSuccessful()){
-                        for(DocumentSnapshot documentSnapshot : task.getResult()){
-                            String user = documentSnapshot.getString("username");
+                        if(task.getResult().size() > 0) {
+                            toastPopup("User already exists");
 
-                            if(user.equals(username.getText().toString())){
-                                Log.d("SIGN_UP", "User Exists");
-                                toastPopup("User already exists");
-                                //Toast.makeText(SignUpActivity.this, "Username exists", Toast.LENGTH_SHORT).show();
-                            }
+                        } else {
+                            FirebaseInterface.getAuthInstance(false)
+                                    .createUserWithEmailAndPassword(email.getText().toString(), firstPassword.getText().toString())
+                                    .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                                        @Override
+                                        public void onSuccess(AuthResult authResult) {
+                                            String uid = authResult.getUser().getUid();
+
+                                        }
+                                    })
+                            ;
+
+                            Map<String, Object> user = new HashMap<>();
+                            user.put("username", username.getText().toString());
+                            user.put("age", 100);
+                            firestore.collection("users")
+                                    .add(user)
+                                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                        @Override
+                                        public void onSuccess(DocumentReference documentReference) {
+                                            Log.d("SIGN_UP", "DocumentSnapshot added with ID: " + documentReference.getId());
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.w("SIGN_UP", "Error adding document", e);
+                                        }
+                                    });
+                            toastPopup("Sign up successful");
+
                         }
-                    }
-
-                    if(task.getResult().size() == 0 ){
-                        Log.d("SIGN_UP", "User not Exists");
-                        //You can store new user information here
-
-                        FirebaseInterface.getAuthInstance(false)
-                                .createUserWithEmailAndPassword(email.getText().toString(), firstPassword.getText().toString())
-                                .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-                                    @Override
-                                    public void onSuccess(AuthResult authResult) {
-                                        String uid = authResult.getUser().getUid();
-
-                                    }
-                                })
-                        ;
-
-                        Map<String, Object> user = new HashMap<>();
-                        user.put("username", username.getText().toString());
-                        user.put("age", 100);
-                        firestore.collection("users")
-                                .add(user)
-                                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                    @Override
-                                    public void onSuccess(DocumentReference documentReference) {
-                                        Log.d("SIGN_UP", "DocumentSnapshot added with ID: " + documentReference.getId());
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.w("SIGN_UP", "Error adding document", e);
-                                    }
-                                });
                     }
                 }
             });
-
-
-
-
-            //https://stackoverflow.com/questions/52861391/firestore-checking-if-username-already-exists
-
-
-
         }
-        
+
     }
 }
