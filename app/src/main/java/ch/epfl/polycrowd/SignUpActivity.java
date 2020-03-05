@@ -156,7 +156,9 @@ public class SignUpActivity extends AppCompatActivity {
             makeRed(secondPassword);
         } else {
 
-            final FirebaseFirestore firestore = FirebaseInterface.getFirestoreInstance();
+            FirebaseInterface fbi = new FirebaseInterface();
+
+            final FirebaseFirestore firestore = fbi.getFirestoreInstance(false);
             CollectionReference usersRef = firestore.collection("users");
             Query query = usersRef.whereEqualTo("username", username.getText().toString());
             query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -167,7 +169,7 @@ public class SignUpActivity extends AppCompatActivity {
                             toastPopup("User already exists");
 
                         } else {
-                            FirebaseInterface.getAuthInstance(false)
+                            new FirebaseInterface().getAuthInstance(false)
                                     .createUserWithEmailAndPassword(email.getText().toString(), firstPassword.getText().toString())
                                     .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                                         @Override
