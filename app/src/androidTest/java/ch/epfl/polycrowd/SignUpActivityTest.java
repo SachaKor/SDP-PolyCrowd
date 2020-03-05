@@ -4,11 +4,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-<<<<<<< HEAD
 import org.junit.runner.RunWith;
 
-=======
->>>>>>> ui unit tests added
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
 
@@ -41,7 +38,6 @@ public class SignUpActivityTest {
 
     @Test
     public void testToastIsDisplayedWhenNoFieldIsFill() {
-
         onView(withId(R.id.sign_up_button)).perform(click());
         onView(withText("Confirm your password"))
                 .inRoot(withDecorView(not(mActivityRule.getActivity().getWindow().getDecorView())))
