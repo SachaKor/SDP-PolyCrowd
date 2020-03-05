@@ -27,47 +27,16 @@ public class FirebaseInterfaceTest {
 
     @Before
     public void setupTest(){
-        if (this.firebaseInterface == null)
-            this.firebaseInterface = new FirebaseInterface();
-    }
-
-    @Test
-    public void simpleEmailSignUp(){
-
-        String email = "test@email.com";
-        String password ="seCure";
-        AuthResult res = firebaseInterface.emailSignUp(email,password);
-        if (res != null){
-            if (res.getUser() != null){
-                assertEquals(res.getUser().getEmail(), email);
-            }
-        }
-
+        this.firebaseInterface = new FirebaseInterface();
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void SignUpFailsOnNullValues(){
-        firebaseInterface.emailSignUp(null,null);
+    public void checkArgsTestNull(){
+        this.firebaseInterface.checkArgs(null,null);
     }
-
     @Test(expected = IllegalArgumentException.class)
-    public void SignUpFailsOnEmptyValues(){
-        firebaseInterface.emailSignUp("","");
-    }
-
-    @Test
-    public void simpleEmailSignIn(){
-        String email = "test@email.com";
-        String password ="seCure";
-        AuthResult res = firebaseInterface.emailSignIn(email,password);
-        assert(res != null);
-    }
-
-    @Test
-    public void simpleDatabaseWrite(){
-        String table = "testTable";
-        String value = "{\"Test Field\" : { \"key1\":\"value1\", \"key2\":\"value2\" } }";
-        firebaseInterface.databaseAddEntry(table, value);
+    public void checkArgsTestEmpty(){
+        this.firebaseInterface.checkArgs("","");
     }
 
 }
