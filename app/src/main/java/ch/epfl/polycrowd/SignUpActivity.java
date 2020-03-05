@@ -30,7 +30,6 @@ import java.util.Map;
  * TODO: refactor if possible
  */
 
-
 public class SignUpActivity extends AppCompatActivity {
 
     @Override
@@ -60,7 +59,6 @@ public class SignUpActivity extends AppCompatActivity {
     private void makeWhite(EditText editText) {
         editText.setBackgroundColor(getResources().getColor(R.color.white));
     }
-
 
     /**p
      * Makes appear a toast in the bottom of the screen
@@ -137,10 +135,12 @@ public class SignUpActivity extends AppCompatActivity {
                 username = findViewById(R.id.sign_up_username),
                 email = findViewById(R.id.sign_up_email);
 
+
         if(!emailAddressCheck(email.getText().toString())) {
             toastPopup("Incorrect email");
             makeRed(email);
         }else if(username.getText().toString().isEmpty()) {
+
             toastPopup("Enter your username");
             makeRed(username);
         } else if(firstPassword.getText().toString().isEmpty() || firstPassword.getText().toString().length() < 6) {
@@ -150,7 +150,6 @@ public class SignUpActivity extends AppCompatActivity {
             toastPopup("Confirm your password");
             makeRed(secondPassword);
         } else if(!passwordsMatch(firstPassword.getText().toString(), secondPassword.getText().toString())) {
-
             toastPopup("Different passwords");
             makeRed(firstPassword);
             makeRed(secondPassword);
@@ -159,6 +158,7 @@ public class SignUpActivity extends AppCompatActivity {
             FirebaseInterface fbi = new FirebaseInterface();
 
             final FirebaseFirestore firestore = fbi.getFirestoreInstance(false);
+
             CollectionReference usersRef = firestore.collection("users");
             Query query = usersRef.whereEqualTo("username", username.getText().toString());
             query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
