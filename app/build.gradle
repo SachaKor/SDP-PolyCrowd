@@ -20,13 +20,13 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         // orchestrator
-        testInstrumentationRunnerArguments clearPackageData: 'true'
+//        testInstrumentationRunnerArguments clearPackageData: 'true'
     }
 
-    // orcherstrator
-    testOptions {
-        execution 'ANDROIDX_TEST_ORCHESTRATOR'
-    }
+    // orchestrator
+//    testOptions {
+//        execution 'ANDROIDX_TEST_ORCHESTRATOR'
+//    }
 
     buildTypes {
         debug {
@@ -50,8 +50,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     androidTestImplementation 'androidx.test:rules:1.2.0'
     // orchestrator
-    androidTestImplementation 'androidx.test:runner:1.2.0'
-    androidTestUtil 'androidx.test:orchestrator:1.2.0'
+//    androidTestUtil 'androidx.test:orchestrator:1.2.0'
 
     androidTestImplementation 'androidx.test:runner:1.2.0'
 
