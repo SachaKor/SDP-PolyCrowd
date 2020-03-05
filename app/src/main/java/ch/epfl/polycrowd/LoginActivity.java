@@ -44,7 +44,7 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        FirebaseInterface.getAuthInstance(false)
+        new FirebaseInterface().getAuthInstance(false)
                 .signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override

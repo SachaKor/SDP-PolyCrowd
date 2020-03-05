@@ -45,12 +45,12 @@ public class LoginActivityTest {
 
     @BeforeClass
     public static void signUpUser() {
-        FirebaseInterface.getAuthInstance(false).createUserWithEmailAndPassword(email, password);
+        new FirebaseInterface().getAuthInstance(false).createUserWithEmailAndPassword(email, password);
     }
 
     @AfterClass
     public static void deleteUser() {
-        FirebaseInterface.getAuthInstance(false).signInWithEmailAndPassword(email,password)
+        new FirebaseInterface().getAuthInstance(false).signInWithEmailAndPassword(email,password)
                 .addOnSuccessListener(
                         new OnSuccessListener<AuthResult>() {
                             @Override
