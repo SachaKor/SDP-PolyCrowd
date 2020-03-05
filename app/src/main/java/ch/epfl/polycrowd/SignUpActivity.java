@@ -1,14 +1,23 @@
 package ch.epfl.polycrowd;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * TODO: refactor if possible
@@ -55,12 +64,7 @@ public class SignUpActivity extends AppCompatActivity {
         Context context = getApplicationContext();
         int duration = Toast.LENGTH_SHORT;
         Toast toast = Toast.makeText(context, text, duration);
-<<<<<<< HEAD
-
         toast.setGravity(Gravity.BOTTOM, 0, 16);
-=======
-        toast.setGravity(Gravity.BOTTOM, 0, 0);
->>>>>>> gravity for the toasts is set
         toast.show();
     }
 
@@ -123,10 +127,27 @@ public class SignUpActivity extends AppCompatActivity {
             makeRed(firstPassword);
             makeRed(secondPassword);
         } else {
-            toastPopup("Email: " + email.getText().toString() + " Pwd: " + firstPassword.getText().toString());
+            FirebaseInterface.getAuthInstance(false)
+                    .createUserWithEmailAndPassword(email.getText().toString(), firstPassword.getText().toString());
+            FirebaseFirestore firestore = FirebaseInterface.getFirestoreInstance();
+            Map<String, Object> user = new HashMap<>();
+            user.put("username", username.getText().toString());
+            user.put("age", 100);
 
-            FirebaseInterface firebaseInterface = new FirebaseInterface();
-            firebaseInterface.emailSignUp(email.getText().toString(), firstPassword.getText().toString());
+            firestore.collection("users")
+                    .add(user)
+                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                        @Override
+                        public void onSuccess(DocumentReference documentReference) {
+                            Log.d("SIGN_UP", "DocumentSnapshot added with ID: " + documentReference.getId());
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w("SIGN_UP", "Error adding document", e);
+                        }
+                    });
         }
 
     }

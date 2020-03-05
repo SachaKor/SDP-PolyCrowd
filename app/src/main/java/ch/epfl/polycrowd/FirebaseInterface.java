@@ -57,7 +57,4 @@ public class FirebaseInterface {
             if (arg.length() == 0) throw new IllegalArgumentException("Firebase query cannot be empty");
         }
     }
-
-
-
 }
