@@ -42,7 +42,7 @@ public class SignUpActivity extends AppCompatActivity {
         editText.setBackgroundColor(getResources().getColor(R.color.white));
     }
 
-    /**p
+    /**
      * Makes appear a toast in the bottom of the screen
      * @param text the text in the toast
      */
@@ -96,7 +96,7 @@ public class SignUpActivity extends AppCompatActivity {
         if(!emailAddressCheck(email.getText().toString())) {
             toastPopup("Incorrect email");
             makeRed(email);
-        }else if(username.getText().toString().isEmpty()) {
+        } else if(username.getText().toString().isEmpty()) {
             toastPopup("Enter your username");
             makeRed(username);
         } else if(firstPassword.getText().toString().isEmpty() || firstPassword.getText().toString().length() < 6) {
@@ -115,6 +115,5 @@ public class SignUpActivity extends AppCompatActivity {
             FirebaseInterface firebaseInterface = new FirebaseInterface();
             firebaseInterface.emailSignUp(email.getText().toString(), firstPassword.getText().toString());
         }
-
     }
 }
