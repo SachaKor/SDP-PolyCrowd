@@ -22,4 +22,6 @@ public class MainActivityTest {
     public void testDisplaysHelloWorld() {
         onView(withId(R.id.helloText)).check(matches(withText(containsString("Hello World!"))));
     }
+
+
 }

@@ -12,18 +12,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
     }
 
     public void setViewEventEdit(View button) {
         setContentView(R.layout.activity_event_edit);
     }
 
-    public void sendEventSubmit(View button) {
-        final EditText evName = findViewById(R.id.EditEventName);
-        final String evnText = evName.getText().toString();
-
-
-        setContentView(R.layout.activity_main);
-    }
 }

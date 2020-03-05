@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:scrollbars="vertical"
-    tools:context=".MainActivity">
+    tools:context=".EventEditActivity">
 
 
     <TextView
@@ -65,13 +65,13 @@
                     android:layout_height="match_parent">
 
                     <TextView
-                        android:id="@+id/textView2"
+                        android:id="@+id/EditEventPublicHint"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/event_is_public" />
 
                     <Switch
-                        android:id="@+id/is_public"
+                        android:id="@+id/EditEventPublic"
                         android:layout_width="100dp"
                         android:layout_height="wrap_content"
                         android:hint="@string/event_public_hint"
@@ -83,13 +83,13 @@
                     android:layout_height="match_parent">
 
                     <TextView
-                        android:id="@+id/textView3"
+                        android:id="@+id/EditEventTypeHint"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/event_type_hint" />
 
                     <Spinner
-                        android:id="@+id/SpinnerFeedbackType"
+                        android:id="@+id/EditEventType"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:entries="@array/event_type_list"
@@ -101,13 +101,13 @@
                     android:layout_height="match_parent">
 
                     <TextView
-                        android:id="@+id/textView4"
+                        android:id="@+id/EditEventStartHint"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/event_date_start" />
 
                     <EditText
-                        android:id="@+id/eventdatestart"
+                        android:id="@+id/EditEventStart"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:autofillHints=""
@@ -122,13 +122,13 @@
                     android:layout_height="match_parent">
 
                     <TextView
-                        android:id="@+id/textView5"
+                        android:id="@+id/EditEventEndHint"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/event_date_end" />
 
                     <EditText
-                        android:id="@+id/eventdateend"
+                        android:id="@+id/EditEventEnd"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:autofillHints=""
@@ -140,7 +140,7 @@
             </TableLayout>
 
             <Button
-                android:id="@+id/ButtonSubmitEvent"
+                android:id="@+id/EditEventSubmit"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:onClick="sendEventSubmit"
