@@ -35,7 +35,7 @@ public class SignUpActivityTest {
     }
 
     @Test
-    public void testToastIsDisplayedWhenAnyFieldIsFill() {
+    public void testToastIsDisplayedWhenNoFieldIsFill() {
         onView(withId(R.id.sign_up_button)).perform(click());
         onView(withText("Confirm your password"))
                 .inRoot(withDecorView(not(mActivityRule.getActivity().getWindow().getDecorView())))
