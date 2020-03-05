@@ -21,15 +21,20 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
-    private GoogleMap mMap;
-
     enum level {
         NOLOGIN,
         VISITOR,
         ORGANISER
     }
-
+    // status of the current Activity
     private level status;
+
+    // map displayed
+    private GoogleMap mMap;
+
+    // DEBUG
+    private static final String TAG = "MainActivity";
+
 
 
     @Override
@@ -37,9 +42,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // DEBUG
+        final TextView debugTextView = (TextView)findViewById(R.id.debugTextView);
+
+
+        // Buttons
         Button buttonRight = (Button) findViewById(R.id.butRight);
         Button buttonLeft = (Button) findViewById(R.id.butLeft);
 
+
+        // TODO : switch status depending on LOGIN
         status = level.NOLOGIN;
 
         switch(status)  {
@@ -52,15 +64,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 buttonRight.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        TextView debugTextView = (TextView)findViewById(R.id.myAwesomeTextView);
                         debugTextView.setText("nologin - EVENT");
                     }
                 });
-
                 buttonLeft.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        TextView debugTextView = (TextView)findViewById(R.id.myAwesomeTextView);
                         debugTextView.setText("nologin - LOGIN");
                     }
                 });
@@ -74,15 +83,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 buttonRight.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        TextView debugTextView = (TextView)findViewById(R.id.myAwesomeTextView);
                         debugTextView.setText("visitor - EVENT");
                     }
                 });
-
                 buttonLeft.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        TextView debugTextView = (TextView)findViewById(R.id.myAwesomeTextView);
                         debugTextView.setText("visitor - GROUP");
                     }
                 });
@@ -97,15 +103,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 buttonRight.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        TextView debugTextView = (TextView)findViewById(R.id.myAwesomeTextView);
                         debugTextView.setText("nologin - MANAGE");
                     }
                 });
-
                 buttonLeft.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        TextView debugTextView = (TextView)findViewById(R.id.myAwesomeTextView);
                         debugTextView.setText("nologin - STAFF");
                     }
                 });
@@ -125,15 +128,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
+     * This is where we can add markers or lines, add listeners or move the camera.
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
+        // to remove buildings 3D effect put false
+        mMap.setBuildingsEnabled(true);
 
         try {
             // Customise the styling of the base map using a JSON object defined
@@ -143,15 +145,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             this, R.raw.style_map));
 
             if (!success) {
-                Log.e("mapStyle", "Style parsing failed.");
+                Log.e(TAG, "Style parsing failed.");
             }
         } catch (Resources.NotFoundException e) {
-            Log.e("mapStyle", "Can't find style. Error: ", e);
+            Log.e(TAG, "Can't find style. Error: ", e);
         }
 
-        // Add a marker in Sydney and move the camera
-        LatLng epfl = new LatLng(46.51, 6.56);
-        placePoint(epfl , R.drawable.point );
+
+        LatLng myPosition = new LatLng(46.518633, 6.566419);
+        placePoint(myPosition , R.drawable.point );
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myPosition , 17.0f));
 
     }
 
