@@ -159,16 +159,6 @@ public class SignUpActivity extends AppCompatActivity {
             final FirebaseFirestore firestore = FirebaseInterface.getFirestoreInstance();
             CollectionReference usersRef = firestore.collection("users");
             Query query = usersRef.whereEqualTo("username", username.getText().toString());
-//            query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//                @Override
-//                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                    if(task.isSuccessful()) {
-//                        toastPopup("nb entries: " + task.getResult().size());
-//                    } else {
-//                        toastPopup("error");
-//                    }
-//                }
-//            });
             query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -185,8 +175,7 @@ public class SignUpActivity extends AppCompatActivity {
                                             String uid = authResult.getUser().getUid();
 
                                         }
-                                    })
-                            ;
+                                    });
 
                             Map<String, Object> user = new HashMap<>();
                             user.put("username", username.getText().toString());
