@@ -20,8 +20,8 @@
         android:id="@+id/sign_up"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="clickSugnUpButton"
-        android:text="Sign up"
+        android:onClick="clickSignUpButton"
+        android:text="@string/sign_up"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent" />
 
