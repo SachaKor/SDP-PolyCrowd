@@ -31,7 +31,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void signInButtonClicked(View view) {
-        EditText emailEditText = findViewById(R.id.sign_in_username),
+        EditText emailEditText = findViewById(R.id.sign_in_email),
                 passwordEditText = findViewById(R.id.sign_in_pswd);
         String email = emailEditText.getText().toString(),
                 password = passwordEditText.getText().toString();
