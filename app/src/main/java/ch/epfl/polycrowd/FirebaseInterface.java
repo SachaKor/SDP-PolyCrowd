@@ -58,9 +58,7 @@ public class FirebaseInterface {
         checkArgs(email,password);
         try {
             return await(getAuthInstance(false).createUserWithEmailAndPassword(email,password));
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+        } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
         return null;
