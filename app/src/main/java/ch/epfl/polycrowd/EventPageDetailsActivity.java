@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import java.io.ByteArrayOutputStream;
 
-public class AnotherActivity extends AppCompatActivity {
+public class EventPageDetailsActivity extends AppCompatActivity {
 
     TextView mTitleTv, mDesctV ;
     ImageView mImageIv ;

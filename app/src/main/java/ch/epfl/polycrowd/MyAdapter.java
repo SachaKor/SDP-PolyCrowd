@@ -1,6 +1,5 @@
 package ch.epfl.polycrowd;
 
-import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -57,7 +56,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyHolder> {
 
                 byte[] bytes =  stream.toByteArray() ;
 
-                Intent intent = new Intent(c, AnotherActivity.class) ;
+                Intent intent = new Intent(c, EventPageDetailsActivity.class) ;
                 intent.putExtra("iTitle", gTitle) ;
                 intent.putExtra("iDesc", gDesc) ;
                 intent.putExtra("iImage", bytes) ;

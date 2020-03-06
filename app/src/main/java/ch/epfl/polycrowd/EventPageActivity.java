@@ -9,7 +9,7 @@ import android.view.Display;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class EventPageActivity extends AppCompatActivity {
 
     RecyclerView mRecyclerView ;
     MyAdapter myAdapter ;

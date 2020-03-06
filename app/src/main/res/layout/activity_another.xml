@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:padding="16dp"
     android:background="#fff"
-    tools:context=".AnotherActivity">
+    tools:context=".EventPageDetailsActivity">
 
     <ImageView
         android:layout_width="100dp"
