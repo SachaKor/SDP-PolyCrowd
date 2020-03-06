@@ -51,7 +51,12 @@ dependencies {
     androidTestImplementation 'androidx.test:rules:1.2.0'
 
 
+
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
+
+    implementation 'androidx.recyclerview:recyclerview:1.0.0'
+    implementation 'androidx.cardview:cardview:1.0.0'
+
 
     // orchestrator
 //    androidTestUtil 'androidx.test:orchestrator:1.2.0'
