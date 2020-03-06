@@ -2,6 +2,7 @@ package ch.epfl.polycrowd;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -17,5 +18,9 @@ public class MainActivity extends AppCompatActivity {
     public void setViewEventEdit(View button) {
         setContentView(R.layout.activity_event_edit);
     }
-
+  
+    public void clickSignIn(View view) {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+    }
 }
