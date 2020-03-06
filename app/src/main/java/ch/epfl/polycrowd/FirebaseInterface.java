@@ -17,8 +17,6 @@ public class FirebaseInterface {
      * @param refresh option to force the refresh of the cached instance, true to force
      * @return FirebaseAuth authentication instance
      */
-
-
     FirebaseAuth getAuthInstance(boolean refresh){
         if (this.cachedAuth == null || refresh){
             this.cachedAuth = FirebaseAuth.getInstance();
