@@ -48,18 +48,6 @@ public class SignUpActivity extends AppCompatActivity {
         return first.equals(second);
     }
 
-    /**
-     * Colors the text field red to signal the illegal input
-     * @param editText the edit text to color
-     */
-    private void makeRed(EditText editText) {
-        editText.setBackgroundColor(getResources().getColor(R.color.redIllegalField));
-    }
-
-    private void makeWhite(EditText editText) {
-        editText.setBackgroundColor(getResources().getColor(R.color.white));
-    }
-
     /**p
      * Makes appear a toast in the bottom of the screen
      * @param text the text in the toast
@@ -83,49 +71,6 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
 
-
-    public void usernameTextFieldClicked(View view) {
-        EditText username = findViewById(R.id.sign_up_username);
-        makeWhite(username);
-    }
-
-    public void emailTextFieldClicked(View view) {
-        EditText email = findViewById(R.id.sign_up_email);
-        makeWhite(email);
-    }
-
-    public void passwordTextFieldClicked(View view) {
-        EditText pass = findViewById(R.id.sign_up_pswd);
-        makeWhite(pass);
-    }
-
-    public void repeatPasswordEditTextClicked(View view) {
-        EditText pass = findViewById(R.id.repeat_pswd);
-        makeWhite(pass);
-    }
-//    void insertUserDb(String uid){
-//        EditText username = findViewById(R.id.sign_up_username),
-//        FirebaseFirestore firestore = FirebaseInterface.getFirestoreInstance();
-//        Map<String, Object> user = new HashMap<>();
-//        user.put("username", username.getText().toString());
-//        user.put("age", 100);
-//        firestore.collection("users")
-//                .document(uid).set(user)
-//                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-//                    @Override
-//                    public void onSuccess(DocumentReference documentReference) {
-//                        Log.d("SIGN_UP", "DocumentSnapshot added with ID: " + documentReference.getId());
-//                    }
-//                })
-//                .addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        Log.w("SIGN_UP", "Error adding document", e);
-//                    }
-//                });
-//    }
-
-
     /**
      * Checks all the Sign Up fields
      */
@@ -138,21 +83,15 @@ public class SignUpActivity extends AppCompatActivity {
 
         if(!emailAddressCheck(email.getText().toString())) {
             toastPopup("Incorrect email");
-            makeRed(email);
         }else if(username.getText().toString().isEmpty()) {
 
             toastPopup("Enter your username");
-            makeRed(username);
         } else if(firstPassword.getText().toString().isEmpty() || firstPassword.getText().toString().length() < 6) {
             toastPopup("Password must contain at least 6 characters");
-            makeRed(firstPassword);;
         } else if(secondPassword.getText().toString().isEmpty()) {
             toastPopup("Confirm your password");
-            makeRed(secondPassword);
         } else if(!passwordsMatch(firstPassword.getText().toString(), secondPassword.getText().toString())) {
             toastPopup("Different passwords");
-            makeRed(firstPassword);
-            makeRed(secondPassword);
         } else {
 
             FirebaseInterface fbi = new FirebaseInterface();
