@@ -1,9 +1,15 @@
 <resources>
     <string name="app_name">PolyCrowd</string>
+<<<<<<< HEAD
     <string name="sign_up">Sign up</string>
     <string name="password">password</string>>
     <string name="username">username</string>
     <string name="register">Register</string>>
     <string name="email_hint">your email address</string>>
     <string name="repeat_password_hint">confirm the password</string>>
+=======
+    <string name="sign_in">Sign in</string>
+    <string name="email">email</string>
+    <string name="password">password</string>
+>>>>>>> origin/master
 </resources>
