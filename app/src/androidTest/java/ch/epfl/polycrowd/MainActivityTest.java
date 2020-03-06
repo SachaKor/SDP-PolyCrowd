@@ -29,10 +29,4 @@ public class MainActivityTest {
     public void testDisplaysSignIn() {
         onView(withId(R.id.sign_in_button_main)).check(matches(withText(containsString("Sign in"))));
     }
-
-    @Test
-    public void testClickSignInButton() {
-        onView(withId(R.id.sign_in_button_main)).perform(click());
-        onView(withId(R.id.sign_in_button)).check(matches(isDisplayed()));
-    }
 }
