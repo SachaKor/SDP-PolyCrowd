@@ -13,20 +13,22 @@
         android:id="@+id/butRight"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="left|top"
+        android:layout_gravity="start|top"
         android:text="Event"
         android:padding="10dp"
         android:layout_marginTop="20dp"
+        android:layout_marginStart="25dp"
         android:paddingRight="10dp"/>
 
     <Button
         android:id="@+id/butLeft"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="right|top"
+        android:layout_gravity="end|top"
         android:text="SignIn"
         android:padding="10dp"
         android:layout_marginTop="20dp"
+        android:layout_marginEnd="25dp"
         android:paddingRight="10dp"/>
 
 
