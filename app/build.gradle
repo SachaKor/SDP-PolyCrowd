@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'jacoco'
+apply plugin: 'com.google.gms.google-services'
 
 jacoco {
     toolVersion = "0.8.4"
@@ -40,7 +41,17 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     androidTestImplementation 'androidx.test:rules:1.2.0'
+
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
+
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+
+    implementation 'com.google.firebase:firebase-analytics:17.2.3'
+    implementation 'com.google.firebase:firebase-auth:19.2.0'
+    implementation 'com.google.firebase:firebase-database:19.2.1'
+
+    implementation 'com.google.firebase:firebase-firestore:21.4.1'
+
 }
 
 tasks.withType(Test) {
@@ -59,9 +70,9 @@ task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest', 'crea
     def debugTree = fileTree(dir: "$project.buildDir/intermediates/classes/debug", excludes: fileFilter)
     def mainSrc = "$project.projectDir/src/main/java"
 
-    sourceDirectories = files([mainSrc])
-    classDirectories = files([debugTree])
-    executionData = fileTree(dir: project.buildDir, includes: [
+    sourceDirectories.from = [mainSrc]
+    classDirectories.from = [debugTree]
+    executionData.setFrom(project.fileTree(dir: project.buildDir, includes: [
             'jacoco/testDebugUnitTest.exec', 'outputs/code-coverage/connected/*coverage.ec'
-    ])
+    ]))
 }
