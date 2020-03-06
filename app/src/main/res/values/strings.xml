@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">PolyCrowd</string>
     <string name="title_activity_main">Map</string>
+    <string name="sign_in">Sign in</string>
+    <string name="email">email</string>
+    <string name="password">password</string>
 </resources>

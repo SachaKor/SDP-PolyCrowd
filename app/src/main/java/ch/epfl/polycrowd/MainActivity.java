@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentActivity;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
+import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -34,7 +35,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     // DEBUG
     private static final String TAG = "MainActivity";
-
 
 
     @Override
@@ -161,10 +161,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void placePoint( LatLng position , int markerImage ){
         mMap.addMarker(  new MarkerOptions().position(position).icon(BitmapDescriptorFactory.fromResource(markerImage))  );
+
+    public void clickSignIn(View view) {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
     }
-
-
-
-
-
 }
