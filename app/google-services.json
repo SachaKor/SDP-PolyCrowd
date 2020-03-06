@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "641906924493",
+    "firebase_url": "https://polycrowd-e8d9e.firebaseio.com",
+    "project_id": "polycrowd-e8d9e",
+    "storage_bucket": "polycrowd-e8d9e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:641906924493:android:86debee559ac52e0d1c284",
+        "android_client_info": {
+          "package_name": "ch.epfl.polycrowd"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "641906924493-pqgs779uj353f5o44sqsg636r7svpvqb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB2sJdDUM6vc8h4r0T9gBNkJ5Amc6qwJhM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "641906924493-pqgs779uj353f5o44sqsg636r7svpvqb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
