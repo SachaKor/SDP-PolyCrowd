@@ -10,8 +10,6 @@ import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.io.ByteArrayOutputStream;
-
 public class EventPageDetailsActivity extends AppCompatActivity {
 
     TextView mTitleTv, mDesctV ;
@@ -20,7 +18,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_another);
+        setContentView(R.layout.activity_event_details_page);
 
         ActionBar actionBar = getSupportActionBar();
 
