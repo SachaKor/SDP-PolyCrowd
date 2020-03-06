@@ -45,7 +45,7 @@ public class EventEditActivityTest {
         onView(withId(R.id.EditEventStart)).perform(typeText("31-12-1970"));
         onView(withId(R.id.EditEventEnd)).perform(typeText("31-12-1970"));
 
-        onView(withId(R.id.EditEventSubmit)).perform(click());
+        onView(withId(R.id.EditEventSubmit)).perform(scrollTo()).perform(click());
     }
 
 }
