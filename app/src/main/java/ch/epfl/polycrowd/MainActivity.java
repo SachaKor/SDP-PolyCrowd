@@ -159,8 +159,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
-    private void placePoint( LatLng position , int markerImage ){
-        mMap.addMarker(  new MarkerOptions().position(position).icon(BitmapDescriptorFactory.fromResource(markerImage))  );
+    private void placePoint( LatLng position , int markerImage ) {
+        mMap.addMarker(new MarkerOptions().position(position).icon(BitmapDescriptorFactory.fromResource(markerImage)));
+    }
 
     public void clickSignIn(View view) {
         Intent intent = new Intent(this, LoginActivity.class);
