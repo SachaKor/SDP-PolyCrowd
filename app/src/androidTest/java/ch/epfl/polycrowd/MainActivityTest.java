@@ -23,5 +23,4 @@ public class MainActivityTest {
     public void emptyTest() {
 
     }
-
 }
