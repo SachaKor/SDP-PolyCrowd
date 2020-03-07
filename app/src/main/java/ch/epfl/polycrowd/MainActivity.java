@@ -20,6 +20,12 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+
+
+
+import java.util.LinkedList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     enum level {
@@ -154,17 +160,56 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             Log.e(TAG, "Can't find style. Error: ", e);
         }
 
-
+        // draw on map
         LatLng myPosition = new LatLng(46.518633, 6.566419);
         placePoint(myPosition , R.drawable.point );
+
+        placeHeatMap(getEventGoersPositions());
+        
         googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myPosition , 17.0f));
 
     }
 
 
+
+
+
+
+
+
+    // --- GET USER DATA --------------------------------
+
+    private List<LatLng> getEventGoersPositions(){
+        List<LatLng> l = new LinkedList();
+        l.add(new LatLng(46.513633, 6.565419));
+        l.add(new LatLng(46.516635, 6.56422));
+        l.add(new LatLng(46.518633, 6.562422));
+        l.add(new LatLng(46.519634, 6.563415));
+        return l;
+    }
+
+
+
+
+    // --- MAP INTERACTION ------------------------------
+
     private void placePoint( LatLng position , int markerImage ) {
         mMap.addMarker(new MarkerOptions().position(position).icon(BitmapDescriptorFactory.fromResource(markerImage)));
     }
+
+
+    private void placeHeatMap( List<LatLng> positions ){
+
+        for (LatLng pos : positions) {
+            placePoint(pos , R.drawable.point);
+        }
+
+    }
+
+
+
+
+    // --- BUTTONS CLICKS -------------------------------
 
     public void clickSignIn(View view) {
         Intent intent = new Intent(this, LoginActivity.class);

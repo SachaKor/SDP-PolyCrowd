@@ -19,9 +19,7 @@ public class MainActivityTest {
     public final ActivityTestRule<MainActivity> mActivityRule =
             new ActivityTestRule<>(MainActivity.class);
 
-    @Test
-    public void emptyTest() {
-
-    }
+    @Test // the class must contain at least one Test
+    public void emptyTest() { }
 
 }
