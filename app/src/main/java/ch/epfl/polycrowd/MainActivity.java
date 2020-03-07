@@ -29,7 +29,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     enum level {
-        NOLOGIN,
+        GUEST,
         VISITOR,
         ORGANISER
     }
@@ -58,11 +58,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
         // TODO : switch status depending on LOGIN
-        status = level.NOLOGIN;
+        status = level.GUEST;
 
         switch(status)  {
 
-            case NOLOGIN:
+            case GUEST:
 
                 buttonRight.setText("EVENTS");
                 buttonLeft.setText("LOGIN");
