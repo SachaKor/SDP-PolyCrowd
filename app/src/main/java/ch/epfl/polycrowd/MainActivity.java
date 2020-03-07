@@ -19,8 +19,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-
+import com.google.android.gms.maps.model.TileOverlayOptions;
+import com.google.maps.android.heatmaps.HeatmapTileProvider;
 
 
 import java.util.LinkedList;
@@ -181,10 +181,36 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private List<LatLng> getEventGoersPositions(){
         List<LatLng> l = new LinkedList();
-        l.add(new LatLng(46.513633, 6.565419));
-        l.add(new LatLng(46.516635, 6.56422));
-        l.add(new LatLng(46.518633, 6.562422));
-        l.add(new LatLng(46.519634, 6.563415));
+        l.add(new LatLng(46.518033, 6.566919));
+        l.add(new LatLng(46.518933, 6.566819));
+        l.add(new LatLng(46.518533, 6.566719));
+        l.add(new LatLng(46.518333, 6.566119));
+        l.add(new LatLng(46.518033, 6.566319));
+        l.add(new LatLng(46.518933, 6.566419));
+        l.add(new LatLng(46.518733, 6.566519));
+        l.add(new LatLng(46.518033, 6.566619));
+        l.add(new LatLng(46.518633, 6.566719));
+        l.add(new LatLng(46.518533, 6.566819));
+        l.add(new LatLng(46.518333, 6.566319));
+        l.add(new LatLng(46.518233, 6.566419));
+        l.add(new LatLng(46.518333, 6.566919));
+        l.add(new LatLng(46.518433, 6.566419));
+        l.add(new LatLng(46.518533, 6.566519));
+        l.add(new LatLng(46.518633, 6.566919));
+        l.add(new LatLng(46.518733, 6.566219));
+        l.add(new LatLng(46.518733, 6.566819));
+        l.add(new LatLng(46.518233, 6.566619));
+        l.add(new LatLng(46.518033, 6.566419));
+        l.add(new LatLng(46.518433, 6.566219));
+        l.add(new LatLng(46.518533, 6.566319));
+        l.add(new LatLng(46.518553, 6.566319));
+        l.add(new LatLng(46.518533, 6.566319));
+        l.add(new LatLng(46.518333, 6.566399));
+        l.add(new LatLng(46.518503, 6.566389));
+        l.add(new LatLng(46.518493, 6.566389));
+        l.add(new LatLng(46.518533, 6.566379));
+        l.add(new LatLng(46.518363, 6.566359));
+        l.add(new LatLng(46.518233, 6.566359));
         return l;
     }
 
@@ -199,11 +225,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
     private void placeHeatMap( List<LatLng> positions ){
+        HeatmapTileProvider HmTP = new HeatmapTileProvider.Builder().data(positions).build();
 
-        for (LatLng pos : positions) {
-            placePoint(pos , R.drawable.point);
-        }
-
+        mMap.addTileOverlay(new TileOverlayOptions().tileProvider(HmTP));
     }
 
 
