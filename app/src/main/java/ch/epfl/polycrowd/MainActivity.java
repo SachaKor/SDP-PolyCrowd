@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         // Buttons
         Button buttonRight = (Button) findViewById(R.id.butRight);
-        Button buttonLeft = (Button) findViewById(R.id.butLeft);
+        final Button buttonLeft = (Button) findViewById(R.id.butLeft);
 
 
         // TODO : switch status depending on LOGIN
@@ -65,12 +65,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     @Override
                     public void onClick(View v) {
                         debugTextView.setText("nologin - EVENT");
+                        clickEvent(v);
                     }
                 });
                 buttonLeft.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         debugTextView.setText("nologin - LOGIN");
+                        clickSignIn(v);
+
                     }
                 });
 
@@ -167,4 +170,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
     }
+
+    public void clickEvent(View view) {
+        Intent intent = new Intent(this, EventPageActivity.class);
+        startActivity(intent);
+    }
+
 }

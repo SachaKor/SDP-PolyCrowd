@@ -11,22 +11,27 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+
         <activity android:name=".SignUpActivity"></activity>
+
+
+        <activity android:name=".EventPageActivity"></activity>
+
         <activity android:name=".EventPageDetailsActivity"
             android:parentActivityName=".EventPageActivity"></activity>
-
 
         <activity
             android:name="com.google.firebase.auth.internal.FederatedSignInActivity"
             tools:replace="android:launchMode"
             android:launchMode="standard" />
+
+
         <activity android:name=".LoginActivity"></activity>
         
          <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main">
-
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
