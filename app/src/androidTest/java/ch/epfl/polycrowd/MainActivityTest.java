@@ -31,5 +31,4 @@ public class MainActivityTest {
         onView(withId(R.id.butLeft)).perform(click());
         onView(withId(R.id.sign_in_logo)).check(matches(isDisplayed()));
     }
-
 }
