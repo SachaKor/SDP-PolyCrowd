@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">PolyCrowd</string>
-
     <!-- CNF_EVENT -->
     <string name="event_title">*event_title*</string>
     <string name="event_is_public">Public</string>
@@ -18,7 +17,7 @@
     <string name="event_date_start">Start Date</string>
     <string name="event_date_end">End Date</string>
     <string name="event_add">Add Event</string>
-
+    <string name="title_activity_main">Map</string>
     <string name="sign_up">Sign up</string>
     <string name="password">password</string>>
     <string name="username">username</string>
