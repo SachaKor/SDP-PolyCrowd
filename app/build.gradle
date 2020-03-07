@@ -50,11 +50,17 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     androidTestImplementation 'androidx.test:rules:1.2.0'
 
+
+
+    implementation 'com.google.android.gms:play-services-maps:17.0.0'
+
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
     implementation 'androidx.cardview:cardview:1.0.0'
 
+
     // orchestrator
 //    androidTestUtil 'androidx.test:orchestrator:1.2.0'
+
 
     androidTestImplementation 'androidx.test:runner:1.2.0'
 
@@ -63,7 +69,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-database:19.2.1'
 
     implementation 'com.google.firebase:firebase-firestore:21.4.1'
+
     implementation 'com.google.android.material:material:1.1.0'
+
 
 }
 
