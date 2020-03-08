@@ -20,9 +20,13 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.TileOverlayOptions;
+import com.google.maps.android.data.kml.KmlLayer;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
 
 
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -165,6 +169,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         placePoint(myPosition , R.drawable.point );
 
         placeHeatMap(getEventGoersPositions());
+
+        KmlLayer layer = null;
+        try {
+            layer = new KmlLayer(mMap, R.raw.example, getApplicationContext());
+        } catch (XmlPullParserException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        layer.addLayerToMap();
         
         googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myPosition , 17.0f));
 
