@@ -25,6 +25,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ch.epfl.polycrowd.logic.Event;
+import ch.epfl.polycrowd.logic.User;
+
 public class FirebaseInterface {
 
 
@@ -107,7 +110,7 @@ public class FirebaseInterface {
         }
     }
 
-    void createUserWithEmailOrPassword(final String email,final String username , final String password){
+    void createUserWithEmailOrPassword(final String email,final String username , final String password, final int age){
 
         if (is_mocked){
             if (email.equals("already@exists.com") || username.equals("already exists")) {Utils.toastPopup(c,"User already exists"); }
@@ -139,23 +142,7 @@ public class FirebaseInterface {
                                         }
                                     }));
 
-                            Map<String, Object> user = new HashMap<>();
-                            user.put("username", username);
-                            user.put("age", 100);
-                            firestore.collection("users")
-                                    .add(user)
-                                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                        @Override
-                                        public void onSuccess(DocumentReference documentReference) {
-                                            Log.d("SIGN_UP", "DocumentSnapshot added with ID: " + documentReference.getId());
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            Log.w("SIGN_UP", "Error adding document", e);
-                                        }
-                                    });
+                            addUser(new User(username, age));
                             Utils.toastPopup(c,"Sign up successful");
 
                         }
@@ -165,6 +152,15 @@ public class FirebaseInterface {
         }
     }
 
+    void createEvent(Event e){
+        if (!is_mocked)
+            getFirestoreInstance(true).collection("events").add(e.getRawData());
 
+    }
+
+    void addUser(User u){
+        if (!is_mocked)
+            getFirestoreInstance(true).collection("users").add(u.getRawData());
+    }
 
 }

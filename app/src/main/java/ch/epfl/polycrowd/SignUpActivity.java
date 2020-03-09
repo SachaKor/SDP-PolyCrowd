@@ -78,6 +78,9 @@ public class SignUpActivity extends AppCompatActivity {
                 username = findViewById(R.id.sign_up_username),
                 email = findViewById(R.id.sign_up_email);
 
+        //TODO: add age field
+        int age =0;
+
         Context c = getApplicationContext();
 
         if(!emailAddressCheck(email.getText().toString())) {
@@ -92,7 +95,7 @@ public class SignUpActivity extends AppCompatActivity {
             Utils.toastPopup(c,"Different passwords");
         } else {
             fbInterface.createUserWithEmailOrPassword(
-                    email.getText().toString(),username.getText().toString(),firstPassword.getText().toString());
+                    email.getText().toString(),username.getText().toString(),firstPassword.getText().toString(), age);
 
         }
 
