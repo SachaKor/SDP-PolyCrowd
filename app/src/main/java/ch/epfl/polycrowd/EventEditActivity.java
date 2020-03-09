@@ -17,8 +17,6 @@ public class EventEditActivity extends AppCompatActivity {
     public void sendEventSubmit(View button) {
         final EditText evName = findViewById(R.id.EditEventName);
         final String evnText = evName.getText().toString();
-
-
         setContentView(R.layout.activity_main);
     }
 }

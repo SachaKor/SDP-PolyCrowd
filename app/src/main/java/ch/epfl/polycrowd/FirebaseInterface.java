@@ -1,15 +1,48 @@
 package ch.epfl.polycrowd;
 
+import android.content.Context;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class FirebaseInterface {
+
+
 
     private FirebaseAuth cachedAuth;
     private DatabaseReference cachedDbRef;
     private FirebaseFirestore cachedFirestore;
+    private boolean is_mocked;
+    private Context c;
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public void setMocking(){
+        this.is_mocked = true;
+    }
+
+    public FirebaseInterface(Context context){
+        this.c = context;
+    }
 
     /***
      * Returns the firebase authentication instance
@@ -49,5 +82,89 @@ public class FirebaseInterface {
             if (arg.length() == 0) throw new IllegalArgumentException("Firebase query cannot be empty");
         }
     }
+
+    void signInWithEmailAndPassword(@NonNull final String email,@NonNull final String password){
+
+        if (this.is_mocked){
+
+            if (email.equals("nani@haha.com") && password.equals("123456") ) Utils.toastPopup(c, "Sign in success");
+            else Utils.toastPopup(c,"Incorrect email or password");
+        }
+        else{
+
+            Task<AuthResult> task = this.getAuthInstance(true).signInWithEmailAndPassword(email,password)
+                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if(task.isSuccessful()) {
+                                Utils.toastPopup(c,"Sign in success");
+                            } else {
+                                Utils.toastPopup(c,"Incorrect email or password");
+                            }
+                        }
+                    });
+
+        }
+    }
+
+    void createUserWithEmailOrPassword(final String email,final String username , final String password){
+
+        if (is_mocked){
+            if (email.equals("already@exists.com") || username.equals("already exists")) {Utils.toastPopup(c,"User already exists"); }
+            else {Utils.toastPopup(c,"Sign up successful");}
+        }
+        else {
+            final StringBuffer message = new StringBuffer();
+            final List<Task<AuthResult>> authres = new ArrayList<Task<AuthResult>>();
+
+            final FirebaseFirestore firestore = getFirestoreInstance(true);
+
+            CollectionReference usersRef = firestore.collection("users");
+            Query query = usersRef.whereEqualTo("username", username);
+            query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if (task.isSuccessful()) {
+                        if (task.getResult().size() > 0) {
+                            Utils.toastPopup(c,"User already exists");
+
+                        } else {
+                            authres.set(0, getAuthInstance(false)
+                                    .createUserWithEmailAndPassword(email, password)
+                                    .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                                        @Override
+                                        public void onSuccess(AuthResult authResult) {
+                                            String uid = authResult.getUser().getUid();
+
+                                        }
+                                    }));
+
+                            Map<String, Object> user = new HashMap<>();
+                            user.put("username", username);
+                            user.put("age", 100);
+                            firestore.collection("users")
+                                    .add(user)
+                                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                        @Override
+                                        public void onSuccess(DocumentReference documentReference) {
+                                            Log.d("SIGN_UP", "DocumentSnapshot added with ID: " + documentReference.getId());
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.w("SIGN_UP", "Error adding document", e);
+                                        }
+                                    });
+                            Utils.toastPopup(c,"Sign up successful");
+
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+
 
 }

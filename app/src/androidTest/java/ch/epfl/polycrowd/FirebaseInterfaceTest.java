@@ -27,7 +27,7 @@ public class FirebaseInterfaceTest {
 
     @Before
     public void setupTest(){
-        this.firebaseInterface = new FirebaseInterface();
+        this.firebaseInterface = new FirebaseInterface(null);
     }
 
     @Test(expected = IllegalArgumentException.class)

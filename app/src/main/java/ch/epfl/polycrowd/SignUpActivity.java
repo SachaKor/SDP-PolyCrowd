@@ -1,6 +1,7 @@
 package ch.epfl.polycrowd;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
@@ -32,10 +33,18 @@ import java.util.Map;
 
 public class SignUpActivity extends AppCompatActivity {
 
+    private FirebaseInterface fbInterface;
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public void setMocking(){
+        fbInterface.setMocking();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
+        this.fbInterface = new FirebaseInterface(getApplicationContext());
     }
 
     /**
@@ -48,18 +57,7 @@ public class SignUpActivity extends AppCompatActivity {
         return first.equals(second);
     }
 
-    /**p
-     * Makes appear a toast in the bottom of the screen
-     * @param text the text in the toast
-     */
 
-    private void toastPopup(String text) {
-        Context context = getApplicationContext();
-        int duration = Toast.LENGTH_SHORT;
-        Toast toast = Toast.makeText(context, text, duration);
-        toast.setGravity(Gravity.BOTTOM, 0, 16);
-        toast.show();
-    }
 
     private boolean emailAddressCheck(String email) {
         if(email == null || email.isEmpty()) {
@@ -80,67 +78,22 @@ public class SignUpActivity extends AppCompatActivity {
                 username = findViewById(R.id.sign_up_username),
                 email = findViewById(R.id.sign_up_email);
 
+        Context c = getApplicationContext();
 
         if(!emailAddressCheck(email.getText().toString())) {
-            toastPopup("Incorrect email");
+            Utils.toastPopup(c, "Incorrect email");
         }else if(username.getText().toString().isEmpty()) {
-
-            toastPopup("Enter your username");
+            Utils.toastPopup(c,"Enter your username");
         } else if(firstPassword.getText().toString().isEmpty() || firstPassword.getText().toString().length() < 6) {
-            toastPopup("Password must contain at least 6 characters");
+            Utils.toastPopup(c,"Password must contain at least 6 characters");
         } else if(secondPassword.getText().toString().isEmpty()) {
-            toastPopup("Confirm your password");
+            Utils.toastPopup(c,"Confirm your password");
         } else if(!passwordsMatch(firstPassword.getText().toString(), secondPassword.getText().toString())) {
-            toastPopup("Different passwords");
+            Utils.toastPopup(c,"Different passwords");
         } else {
+            fbInterface.createUserWithEmailOrPassword(
+                    email.getText().toString(),username.getText().toString(),firstPassword.getText().toString());
 
-            FirebaseInterface fbi = new FirebaseInterface();
-
-            final FirebaseFirestore firestore = fbi.getFirestoreInstance(false);
-
-            CollectionReference usersRef = firestore.collection("users");
-            Query query = usersRef.whereEqualTo("username", username.getText().toString());
-            query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                    if(task.isSuccessful()){
-                        if(task.getResult().size() > 0) {
-                            toastPopup("User already exists");
-
-                        } else {
-                            new FirebaseInterface().getAuthInstance(false)
-                                    .createUserWithEmailAndPassword(email.getText().toString(), firstPassword.getText().toString())
-                                    .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-                                        @Override
-                                        public void onSuccess(AuthResult authResult) {
-                                            String uid = authResult.getUser().getUid();
-
-                                        }
-                                    });
-
-                            Map<String, Object> user = new HashMap<>();
-                            user.put("username", username.getText().toString());
-                            user.put("age", 100);
-                            firestore.collection("users")
-                                    .add(user)
-                                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                        @Override
-                                        public void onSuccess(DocumentReference documentReference) {
-                                            Log.d("SIGN_UP", "DocumentSnapshot added with ID: " + documentReference.getId());
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            Log.w("SIGN_UP", "Error adding document", e);
-                                        }
-                                    });
-                            toastPopup("Sign up successful");
-
-                        }
-                    }
-                }
-            });
         }
 
     }
