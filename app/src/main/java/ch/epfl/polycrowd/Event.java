@@ -8,7 +8,7 @@ public class Event {
 
 
     public enum EventType {
-        FESTIVAL, CONCERT, CONVENTION, OTHER;
+        FESTIVAL, CONCERT, CONVENTION, OTHER
     }
 
     private final Integer owner;
@@ -24,6 +24,8 @@ public class Event {
     public Event(Integer owner, String name, Boolean isPublic, EventType type,
                  Date starDate, Date endDate, TimeOfDay startTime, TimeOfDay endTime,
                  String calendar){
+        if(owner == null || name == null || type == null || starDate == null || endDate == null || startTime == null || endTime == null || calendar == null)
+            throw new IllegalArgumentException("Invalid Argument for Event Constructor");
         this.owner = owner;
         this.name = name;
         this.isPublic = isPublic;
@@ -44,6 +46,8 @@ public class Event {
     }
 
     public void setName(String name) {
+        if(name == null)
+            throw new IllegalArgumentException("Name cannot be Null");
         this.name = name;
     }
 
@@ -60,6 +64,8 @@ public class Event {
     }
 
     public void setType(EventType type) {
+        if(type == null)
+            throw new IllegalArgumentException("Type cannot be Null");
         this.type = type;
     }
 
@@ -68,6 +74,8 @@ public class Event {
     }
 
     public void setStartD(Date startD) {
+        if(startD == null)
+            throw new IllegalArgumentException("StartDate cannot be Null");
         this.startD = startD;
     }
 
@@ -76,6 +84,8 @@ public class Event {
     }
 
     public void setEndD(Date endD) {
+        if(endD == null)
+            throw new IllegalArgumentException("EndDate cannot be Null");
         this.endD = endD;
     }
 
@@ -84,6 +94,8 @@ public class Event {
     }
 
     public void setStartT(TimeOfDay startT) {
+        if(startT == null)
+            throw new IllegalArgumentException("StartTime cannot be Null");
         this.startT = startT;
     }
 
@@ -92,6 +104,8 @@ public class Event {
     }
 
     public void setEndT(TimeOfDay endT) {
+        if(endT == null)
+            throw new IllegalArgumentException("EndTime cannot be Null");
         this.endT = endT;
     }
 
@@ -100,6 +114,8 @@ public class Event {
     }
 
     public void setCalendar(String calendar) {
+        if(calendar == null)
+            throw new IllegalArgumentException("Calendar cannot be null");
         this.calendar = calendar;
     }
 
