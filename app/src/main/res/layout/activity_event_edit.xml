@@ -143,7 +143,6 @@
                 android:id="@+id/EditEventSubmit"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:onClick="sendEventSubmit"
                 android:text="@string/event_submit" />
         </LinearLayout>
     </ScrollView>
