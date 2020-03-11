@@ -44,7 +44,10 @@
         android:id="@+id/O_ADD_EVENT"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_gravity="start|top"
+        android:layout_marginTop="60dp"
+        android:layout_marginStart="25dp"
+        android:padding="10dp"
         android:text="@string/event_add"
         android:onClick="setViewEventEdit" />
 

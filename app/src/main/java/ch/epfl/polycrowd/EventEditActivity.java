@@ -1,9 +1,24 @@
 package ch.epfl.polycrowd;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.Switch;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class EventEditActivity extends AppCompatActivity {
@@ -14,11 +29,50 @@ public class EventEditActivity extends AppCompatActivity {
         setContentView(R.layout.activity_event_edit);
     }
 
-    public void sendEventSubmit(View button) {
+    public void sendEventSubmit(View view) {
         final EditText evName = findViewById(R.id.EditEventName);
-        final String evnText = evName.getText().toString();
+        Log.i("ADD_EVENT", "Send Event Button Clicked");
 
+        // Add an Event to the firestore
+        FirebaseInterface firebaseInterface = new FirebaseInterface();
+        final FirebaseFirestore firestore = firebaseInterface.getFirestoreInstance(false);
+        // Retrieve the field values from the Edit Event layout
+        Switch isPublicSwitch = findViewById(R.id.EditEventPublic);
+        Spinner eventTypeSpinner = findViewById(R.id.EditEventType);
+        EditText sDateEditText = findViewById(R.id.EditEventStart),
+                eDateEditText = findViewById(R.id.EditEventEnd);
+        Boolean isPublic = isPublicSwitch.isChecked();
+        String sDate = sDateEditText.getText().toString(),
+                eDate = eDateEditText.getText().toString(),
+                type = eventTypeSpinner.getSelectedItem().toString();
 
-        setContentView(R.layout.activity_main);
+        // Create the map containing the event info
+        Map<String, Object> event = new HashMap<>();
+        event.put("name", evName.getText().toString());
+        event.put("isPublic", isPublic);
+        event.put("type", type);
+        event.put("starts", sDate);
+        event.put("ends", eDate);
+
+        // Add the event to the firestore
+        firestore.collection("events")
+                .add(event)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.d("ADD_EVENT", "DocumentSnapshot added with ID: " + documentReference.getId());
+                        Toast.makeText(getApplicationContext(), "Event added", Toast.LENGTH_LONG).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e("ADD_EVENT", "Error adding document", e);
+                        Toast.makeText(getApplicationContext(), "Error occurred while adding the event", Toast.LENGTH_LONG).show();
+                    }
+                });
+
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 }
