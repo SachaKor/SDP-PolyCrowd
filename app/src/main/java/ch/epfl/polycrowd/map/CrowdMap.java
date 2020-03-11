@@ -112,7 +112,7 @@ public class CrowdMap implements OnMapReadyCallback {
         // --- KML layer ---------------------------------------------------------------
         KmlLayer layer = null;
         try {
-            layer = new KmlLayer(mMap, R.raw.example, act.getApplicationContext());
+            layer = new KmlLayer(mMap, R.raw.examplegrey, act.getApplicationContext());
         } catch (XmlPullParserException | IOException e) {
             e.printStackTrace();
         }
@@ -122,7 +122,7 @@ public class CrowdMap implements OnMapReadyCallback {
 
         // --- Place MyLocation -------------------------------------------------------
         LatLng myPosition = new LatLng(46.518633, 6.566419);
-        placePoint(myPosition , R.drawable.point );
+        placePoint(myPosition , R.drawable.pointred );
 
 
         // --- Camera Zoom ------------------------------------------------------------
