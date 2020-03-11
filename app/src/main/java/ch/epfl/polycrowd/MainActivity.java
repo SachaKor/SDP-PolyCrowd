@@ -166,8 +166,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.addMarker(new MarkerOptions().position(position).icon(BitmapDescriptorFactory.fromResource(markerImage)));
     }
 
-    public void setViewEventEdit(View button) {
-        setContentView(R.layout.activity_event_edit);
+    public void setViewEventEdit(View view) {
+        Intent intent = new Intent(this, EventEditActivity.class);
+        startActivity(intent);
     }
   
     public void clickSignIn(View view) {

@@ -18,7 +18,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -72,7 +71,8 @@ public class SignUpActivity extends AppCompatActivity {
 
 
     /**
-     * Checks all the Sign Up fields
+     * - Checks all the Sign Up fields
+     * - Adds a user to the database if the checks pass
      */
     public void registerClicked(View view) {
         final EditText firstPassword = findViewById(R.id.sign_up_pswd),
@@ -98,16 +98,17 @@ public class SignUpActivity extends AppCompatActivity {
 
             final FirebaseFirestore firestore = fbi.getFirestoreInstance(false);
 
+            // check if the user with a given username exists already
             CollectionReference usersRef = firestore.collection("users");
             Query query = usersRef.whereEqualTo("username", username.getText().toString());
             query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                    if(task.isSuccessful()){
+                    if(task.isSuccessful()) { // user with this username already exists
                         if(task.getResult().size() > 0) {
                             toastPopup("User already exists");
 
-                        } else {
+                        } else { // otherwise, add a user to the firestore
                             new FirebaseInterface().getAuthInstance(false)
                                     .createUserWithEmailAndPassword(email.getText().toString(), firstPassword.getText().toString())
                                     .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
