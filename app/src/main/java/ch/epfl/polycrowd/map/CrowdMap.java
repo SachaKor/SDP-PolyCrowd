@@ -88,7 +88,6 @@ public class CrowdMap implements OnMapReadyCallback {
             Log.e(TAG, "Can't find style. Error: ", e);
         }
 
-
         // --- HeatMap -------------------------------------------------------------
         switch(act.status) {
             case GUEST:
@@ -112,7 +111,7 @@ public class CrowdMap implements OnMapReadyCallback {
         // --- KML layer ---------------------------------------------------------------
         KmlLayer layer = null;
         try {
-            layer = new KmlLayer(mMap, R.raw.examplegrey, act.getApplicationContext());
+            layer = new KmlLayer(mMap, R.raw.example, act.getApplicationContext());
         } catch (XmlPullParserException | IOException e) {
             e.printStackTrace();
         }
@@ -130,6 +129,12 @@ public class CrowdMap implements OnMapReadyCallback {
     }
 
 
+    //Updates HeatMap
+    public void update(){
+        //TODO get new eventGoersPositions
+        //TODO remove this Log.d message
+        Log.d("UPDATE", "goes into the update function");
+    }
 
 
 
