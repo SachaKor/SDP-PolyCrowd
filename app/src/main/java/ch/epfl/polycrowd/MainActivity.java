@@ -169,7 +169,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void setViewEventEdit(View view) {
         Intent intent = new Intent(this, EventEditActivity.class);
         startActivity(intent);
-//        setContentView(R.layout.activity_event_edit);
     }
   
     public void clickSignIn(View view) {
