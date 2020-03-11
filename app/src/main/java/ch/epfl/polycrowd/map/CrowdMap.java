@@ -92,11 +92,6 @@ public class CrowdMap implements OnMapReadyCallback {
         // --- HeatMap -------------------------------------------------------------
         switch(act.status) {
             case GUEST:
-                HmTP = new HeatmapTileProvider.Builder()
-                        .data(getEventGoersPositions())
-                        .gradient(gradientGrey)
-                        .build();
-                break;
             case VISITOR:
                 HmTP = new HeatmapTileProvider.Builder()
                         .data(getEventGoersPositions())

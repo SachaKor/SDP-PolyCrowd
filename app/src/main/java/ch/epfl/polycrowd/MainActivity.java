@@ -129,12 +129,6 @@ public class MainActivity extends AppCompatActivity {
 
     // --- BUTTONS CLICKS -------------------------------
 
-
-    public void setViewEventEdit(View button) {
-        setContentView(R.layout.activity_event_edit);
-    }
-  
-
     public void clickSignIn(View view) {
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
