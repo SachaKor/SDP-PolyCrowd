@@ -1,5 +1,22 @@
 <resources>
     <string name="app_name">PolyCrowd</string>
+    <!-- CNF_EVENT -->
+    <string name="event_title">*event_title*</string>
+    <string name="event_is_public">Public</string>
+    <string name="event_public_hint">If the event should be displayed to other users</string>
+    <string name="event_name">Event Name</string>
+    <string name="event_name_hint">Event Name</string>
+    <string name="event_submit">Save Changes</string>
+    <string name="event_type_hint">Event Type</string>
+    <string-array name="event_type_list">
+        <item>Festival</item>
+        <item>Concert</item>
+        <item>Convention</item>
+        <item>Other</item>
+    </string-array>
+    <string name="event_date_start">Start Date</string>
+    <string name="event_date_end">End Date</string>
+    <string name="event_add">Add Event</string>
     <string name="title_activity_main">Map</string>
     <string name="sign_up">Sign up</string>
     <string name="password">password</string>>

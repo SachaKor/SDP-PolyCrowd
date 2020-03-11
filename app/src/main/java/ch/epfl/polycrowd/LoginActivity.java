@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
@@ -28,6 +29,11 @@ public class LoginActivity extends AppCompatActivity {
         Toast toast = Toast.makeText(context, text, duration);
         toast.setGravity(Gravity.BOTTOM, 0, 16);
         toast.show();
+    }
+
+    public void signUpButtonClicked(View view) {
+        Intent intent = new Intent(this, SignUpActivity.class);
+        startActivity(intent);
     }
 
     public void signInButtonClicked(View view) {

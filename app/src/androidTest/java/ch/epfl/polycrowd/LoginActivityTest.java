@@ -101,4 +101,10 @@ public class LoginActivityTest {
                 .inRoot(withDecorView(not(loginActivityRule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));
     }
+
+    @Test
+    public void testNavigateToSignUpPage() {
+        onView(withId(R.id.sign_in_sign_up_button)).perform(click());
+        onView(withId(R.id.sign_up_logo)).check(matches(isDisplayed()));
+    }
 }

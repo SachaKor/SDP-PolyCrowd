@@ -61,6 +61,13 @@
                 android:onClick="signInButtonClicked"
                 android:text="@string/sign_in" />
 
+            <Button
+                android:id="@+id/sign_in_sign_up_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="signUpButtonClicked"
+                android:text="@string/sign_up" />
+
         </LinearLayout>
     </ScrollView>
 

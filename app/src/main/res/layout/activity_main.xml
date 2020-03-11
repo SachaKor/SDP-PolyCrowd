@@ -25,7 +25,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|top"
-        android:text="SignIn"
+        android:text="@string/sign_in"
         android:padding="10dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="25dp"
@@ -40,6 +40,18 @@
         android:text="DEBUG MESSAGE"
         android:textSize="20sp" />
 
+    <Button
+        android:id="@+id/O_ADD_EVENT"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="@string/event_add"
+        android:onClick="setViewEventEdit" />
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" />
 
 </fragment>

@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.content.Intent;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -45,7 +46,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     // DEBUG
     private static final String TAG = "MainActivity";
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -238,6 +238,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
+
     private void placeHeatMap( List<LatLng> positions ){
         HeatmapTileProvider HmTP = new HeatmapTileProvider.Builder().data(positions).build();
 
@@ -248,6 +249,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
     // --- BUTTONS CLICKS -------------------------------
+
+
+    public void setViewEventEdit(View button) {
+        setContentView(R.layout.activity_event_edit);
+    }
+  
 
     public void clickSignIn(View view) {
         Intent intent = new Intent(this, LoginActivity.class);
