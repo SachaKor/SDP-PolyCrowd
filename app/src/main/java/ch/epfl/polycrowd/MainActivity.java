@@ -119,7 +119,6 @@ public class MainActivity extends AppCompatActivity {
         // display map  WARNING: TO DO AT THE END OF ONCREATE
         mMap = new CrowdMap(this);
 
-        Log.d("onCreate", "logcat successfully posts things");
         //use as timer to refresh heatmap
         mHandler = new Handler();
         startRepeatingTask();
@@ -141,7 +140,6 @@ public class MainActivity extends AppCompatActivity {
     Runnable updateHeatMap = new Runnable() {
         @Override
         public void run() {
-            Log.d("UpdateHeatMap", "atleast goes in here");
             mMap.update();
             mHandler.postDelayed(updateHeatMap, mInterval);
         }
