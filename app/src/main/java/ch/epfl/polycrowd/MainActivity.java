@@ -39,8 +39,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // DEBUG
-        final TextView debugTextView = (TextView)findViewById(R.id.debugTextView);
+
 
 
         // Buttons
@@ -61,14 +60,14 @@ public class MainActivity extends AppCompatActivity {
                 buttonRight.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        debugTextView.setText("nologin - EVENT");
+
                         clickEvent(v);
                     }
                 });
                 buttonLeft.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        debugTextView.setText("nologin - LOGIN");
+
                         clickSignIn(v);
 
                     }
@@ -83,13 +82,13 @@ public class MainActivity extends AppCompatActivity {
                 buttonRight.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        debugTextView.setText("visitor - EVENT");
+
                     }
                 });
                 buttonLeft.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        debugTextView.setText("visitor - GROUP");
+
                     }
                 });
 
@@ -103,13 +102,13 @@ public class MainActivity extends AppCompatActivity {
                 buttonRight.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        debugTextView.setText("nologin - MANAGE");
+
                     }
                 });
                 buttonLeft.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        debugTextView.setText("nologin - STAFF");
+
                     }
                 });
 
@@ -153,7 +152,11 @@ public class MainActivity extends AppCompatActivity {
         mHandler.removeCallbacks(updateHeatMap);
     }
 
+
     // --- BUTTONS CLICKS -------------------------------
+
+
+
 
     public void clickSignIn(View view) {
         Intent intent = new Intent(this, LoginActivity.class);

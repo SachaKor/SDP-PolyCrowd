@@ -29,4 +29,10 @@ public class MainActivityTest {
         onView(withId(R.id.butLeft)).perform(click());
         onView(withId(R.id.sign_in_logo)).check(matches(isDisplayed()));
     }
+
+    @Test
+    public void testAddEventButtonClicked() {
+        onView(withId(R.id.O_ADD_EVENT)).perform(click());
+        onView(withId(R.id.EditEventSubmit)).check(matches(isDisplayed()));
+    }
 }
