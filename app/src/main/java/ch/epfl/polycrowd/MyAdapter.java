@@ -7,22 +7,27 @@ import android.graphics.drawable.BitmapDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.List;
 
-public class MyAdapter extends RecyclerView.Adapter<MyHolder> {
+public class MyAdapter extends RecyclerView.Adapter<MyHolder> implements Filterable {
 
 
-    Context c;
-    ArrayList<Model> models;
+    private Context c;
+    private ArrayList<Model> models;
+    private List<Model> modelsForSearch;
 
     public MyAdapter(Context c, ArrayList<Model> models){
         this.c = c ;
         this.models = models ;
+        modelsForSearch = new ArrayList<>(models);
     }
 
     @NonNull
@@ -38,7 +43,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyHolder> {
     public void onBindViewHolder(@NonNull final MyHolder myHolder, int i) {
 
         myHolder.mTitle.setText(models.get(i).getTitle()) ;
-        myHolder.mDes.setText(models.get(i).getDescripiton());
+        myHolder.mDes.setText(models.get(i).getDescription());
         myHolder.mImaeView.setImageResource(models.get(i).getImg());
 
         myHolder.setItemClickListener(new ItemClickListener() {
@@ -46,7 +51,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyHolder> {
             public void onItemClickListener(View v, int position) {
 
                 String gTitle  = models.get(position).getTitle();
-                String gDesc = models.get(position).getDescripiton();
+                String gDesc = models.get(position).getDescription();
                 BitmapDrawable bitmapDrawable = (BitmapDrawable)myHolder.mImaeView.getDrawable();
 
                 Bitmap bitmap = bitmapDrawable.getBitmap() ;
@@ -101,4 +106,39 @@ public class MyAdapter extends RecyclerView.Adapter<MyHolder> {
     public int getItemCount() {
         return models.size() ;
     }
+
+    @Override
+    public Filter getFilter() {
+        return eventSearchFilter;
+    }
+
+    private Filter eventSearchFilter = new Filter() {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            List<Model> filteredList = new ArrayList<>();
+
+            // user did not enter anything in the search bar => display all the options
+            if(constraint == null || constraint.length() == 0) {
+                filteredList.addAll(modelsForSearch);
+            } else {
+                String filterPattern = constraint.toString().toLowerCase().trim();
+                for (Model item : models) {
+                    if(item.getTitle().toLowerCase().contains(filterPattern)) {
+                        filteredList.add(item);
+                    }
+                }
+            }
+
+            FilterResults results = new FilterResults();
+            results.values = filteredList;
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            modelsForSearch.clear();
+            modelsForSearch.addAll((List)results.values);
+            notifyDataSetChanged();
+        }
+    };
 }
