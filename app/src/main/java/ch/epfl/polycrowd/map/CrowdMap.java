@@ -111,7 +111,7 @@ public class CrowdMap implements OnMapReadyCallback {
         // --- KML layer ---------------------------------------------------------------
         KmlLayer layer = null;
         try {
-            layer = new KmlLayer(mMap, R.raw.example, act.getApplicationContext());
+            layer = new KmlLayer(mMap, R.raw.examplegrey, act.getApplicationContext());
         } catch (XmlPullParserException | IOException e) {
             e.printStackTrace();
         }
