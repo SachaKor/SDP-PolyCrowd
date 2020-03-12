@@ -22,12 +22,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyHolder> implements Filtera
 
     private Context c;
     private ArrayList<Model> models;
-    private List<Model> modelsForSearch;
+    private List<Model> modelsFull;
 
     public MyAdapter(Context c, ArrayList<Model> models){
         this.c = c ;
         this.models = models ;
-        modelsForSearch = new ArrayList<>(models);
+        modelsFull = new ArrayList<>(models);
     }
 
     @NonNull
@@ -119,10 +119,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyHolder> implements Filtera
 
             // user did not enter anything in the search bar => display all the options
             if(constraint == null || constraint.length() == 0) {
-                filteredList.addAll(modelsForSearch);
+                filteredList.addAll(modelsFull);
             } else {
                 String filterPattern = constraint.toString().toLowerCase().trim();
-                for (Model item : models) {
+                for (Model item : modelsFull) {
                     if(item.getTitle().toLowerCase().contains(filterPattern)) {
                         filteredList.add(item);
                     }
@@ -136,8 +136,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyHolder> implements Filtera
 
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
-            modelsForSearch.clear();
-            modelsForSearch.addAll((List)results.values);
+            models.clear();
+            models.addAll((List)results.values);
             notifyDataSetChanged();
         }
     };
