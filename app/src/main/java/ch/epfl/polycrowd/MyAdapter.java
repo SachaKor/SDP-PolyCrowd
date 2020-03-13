@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -34,24 +35,23 @@ public class MyAdapter extends RecyclerView.Adapter<MyHolder> implements Filtera
     @Override
     public MyHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
 
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.row, null);
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.row, viewGroup, false);
         return new MyHolder(view) ;
 
     }
 
     @Override
     public void onBindViewHolder(@NonNull final MyHolder myHolder, int i) {
-
         myHolder.mTitle.setText(models.get(i).getTitle()) ;
         myHolder.mDes.setText(models.get(i).getDescription());
         myHolder.mImaeView.setImageResource(models.get(i).getImg());
 
-        myHolder.setItemClickListener(new ItemClickListener() {
-            @Override
-            public void onItemClickListener(View v, int position) {
+        myHolder.getParentLayout().setOnClickListener(new View.OnClickListener() {
 
-                String gTitle  = models.get(position).getTitle();
-                String gDesc = models.get(position).getDescription();
+            @Override
+            public void onClick(View v) {
+                String gTitle  = models.get(i).getTitle();
+                String gDesc = models.get(i).getDescription();
                 BitmapDrawable bitmapDrawable = (BitmapDrawable)myHolder.mImaeView.getDrawable();
 
                 Bitmap bitmap = bitmapDrawable.getBitmap() ;
@@ -66,6 +66,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyHolder> implements Filtera
                 intent.putExtra("iDesc", gDesc) ;
                 intent.putExtra("iImage", bytes) ;
                 c.startActivity(intent);
+                Toast.makeText(c, "Clicked on: " + models.get(i).getTitle(), Toast.LENGTH_SHORT).show();
+
             }
         });
 

@@ -19,27 +19,27 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_details_page);
+        getIncomingIntent();
+    }
 
-        ActionBar actionBar = getSupportActionBar();
+    private void getIncomingIntent() {
+        if(getIntent().hasExtra("iTitle")
+                && getIntent().hasExtra("iDesc")
+                && getIntent().hasExtra("iImage")) {
+            String mTitle = getIntent().getStringExtra("iTitle") ;
+            String mDescription = getIntent().getStringExtra("iDesc") ;
+            byte[] mBytes = getIntent().getByteArrayExtra("iImage") ;
+            Bitmap bitmap = BitmapFactory.decodeByteArray(mBytes, 0, mBytes.length) ;
+            setUpViews(mTitle, mDescription, bitmap);
+        }
+    }
 
-        mTitleTv = findViewById(R.id.title) ;
-        mDesctV = findViewById(R.id.description) ;
-        mImageIv = findViewById(R.id.imageView) ;
-
-        Intent intent = getIntent() ;
-
-        String mTitle = intent.getStringExtra("iTitle") ;
-        String mDescription = intent.getStringExtra("iDesc") ;
-
-        byte[] mBytes = getIntent().getByteArrayExtra("iImage") ;
-        Bitmap bitmap = BitmapFactory.decodeByteArray(mBytes, 0, mBytes.length) ;
-
-        actionBar.setTitle(mTitle);
-
-        mTitleTv.setText(mTitle);
-        mDesctV.setText(mDescription);
-        mImageIv.setImageBitmap(bitmap);
-
-
+    private void setUpViews(String title, String description, Bitmap image) {
+        TextView eventTitle = findViewById(R.id.title),
+                eventDescription = findViewById(R.id.description);
+        ImageView eventImg = findViewById(R.id.imageView);
+        eventTitle.setText(title);
+        eventDescription.setText(description);
+        eventImg.setImageBitmap(image);
     }
 }
