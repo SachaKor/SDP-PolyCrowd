@@ -12,7 +12,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:id="@+id/event_item">
 
         <ImageView
             android:layout_width="75dp"
@@ -29,9 +30,7 @@
             android:textSize="22sp"
             android:textColor="#000"
             android:textStyle="bold"
-            android:layout_toRightOf="@id/imageIv"
             android:layout_toEndOf="@id/imageIv"
-            android:layout_marginLeft="10dp"
             android:layout_marginStart="10dp"
             />
 
@@ -43,9 +42,7 @@
             android:textSize="18sp"
             android:textColor="#A9A9A9"
             android:textStyle="bold"
-            android:layout_toRightOf="@id/imageIv"
             android:layout_toEndOf="@id/imageIv"
-            android:layout_marginLeft="10dp"
             android:layout_marginStart="10dp"
             android:layout_marginTop="5dp"
             android:layout_below="@id/titleTv"

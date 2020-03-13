@@ -23,17 +23,24 @@ public class EventPageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_event_page);
 
         mRecyclerView = findViewById(R.id.recyclerView);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         myAdapter = new MyAdapter(this, getMyList());
 
         mRecyclerView.setAdapter(myAdapter);
+
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
     }
 
     private ArrayList<Model> getMyList(){
 
         ArrayList<Model> models = new ArrayList<>() ;
+
+        Model m7 = new Model();
+        m7.setTitle("First Event");
+        m7.setDescription("Coming soon");
+        m7.setImg(R.drawable.p1);
+        models.add(m7);
 
         Model m1 = new Model() ;
         m1.setTitle("Bar");
