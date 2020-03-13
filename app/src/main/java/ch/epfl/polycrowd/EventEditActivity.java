@@ -44,18 +44,22 @@ public class EventEditActivity extends AppCompatActivity {
         Boolean isPublic = isPublicSwitch.isChecked();
         String sDate = sDateEditText.getText().toString(),
                 eDate = eDateEditText.getText().toString(),
-                type = eventTypeSpinner.getSelectedItem().toString();
+                type = eventTypeSpinner.getSelectedItem().toString() ;
 
         // Create the map containing the event info
         Map<String, Object> event = new HashMap<>();
-        event.put("name", evName.getText().toString());
+        event.put("calendar", "url") ;
+        event.put("endD", new Integer(123456)) ;
+        event.put("endT", new Integer(12)) ;
         event.put("isPublic", isPublic);
-        event.put("type", type);
-        event.put("starts", sDate);
-        event.put("ends", eDate);
+        event.put("name",evName.getText().toString() ) ;
+        event.put("owner", new Integer(1)) ;
+        event.put("startD", new Integer(23112012)) ;
+        event.put("startT", new Integer(2)) ;
+        event.put("type", type) ;
 
         // Add the event to the firestore
-        firestore.collection("events")
+        firestore.collection("polyevents")
                 .add(event)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override

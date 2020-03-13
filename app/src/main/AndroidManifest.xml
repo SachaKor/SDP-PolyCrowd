@@ -16,7 +16,9 @@
         <activity android:name=".SignUpActivity"></activity>
 
 
-        <activity android:name=".EventPageActivity"></activity>
+        <activity android:name=".EventPageActivity"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+        </activity>
 
         <activity android:name=".EventPageDetailsActivity"
             android:parentActivityName=".EventPageActivity"></activity>

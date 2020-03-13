@@ -2,7 +2,7 @@ package ch.epfl.polycrowd;
 
 public class Model {
 
-    private String title, descripiton ;
+    private String title, description;
     private int img ;
 
     public String getTitle() {
@@ -13,12 +13,12 @@ public class Model {
         this.title = title;
     }
 
-    public String getDescripiton() {
-        return descripiton;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDescripiton(String descripiton) {
-        this.descripiton = descripiton;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public int getImg() {
