@@ -21,10 +21,8 @@ public class MainActivityTest {
     public final ActivityTestRule<MainActivity> mActivityRule =
             new ActivityTestRule<>(MainActivity.class);
 
-    @Test
-    public void emptyTest() {
-
-    }
+    @Test // the class must contain at least one Test
+    public void emptyTest() { }
 
     @Test
     public void testLoginClicked() {
@@ -32,9 +30,4 @@ public class MainActivityTest {
         onView(withId(R.id.sign_in_logo)).check(matches(isDisplayed()));
     }
 
-    @Test
-    public void testAddEventButtonClicked() {
-        onView(withId(R.id.O_ADD_EVENT)).perform(click());
-        onView(withId(R.id.EditEventSubmit)).check(matches(isDisplayed()));
-    }
 }

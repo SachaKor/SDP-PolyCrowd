@@ -1,49 +1,45 @@
 package ch.epfl.polycrowd;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentActivity;
 
-import android.content.res.Resources;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.Handler;
 import android.content.Intent;
+import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.Button;
 import android.widget.TextView;
-
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MapStyleOptions;
-import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
+import ch.epfl.polycrowd.map.CrowdMap;
 
-    enum level {
-        NOLOGIN,
+public class MainActivity extends AppCompatActivity {
+
+    public enum level {
+        GUEST,
         VISITOR,
         ORGANISER
     }
     // status of the current Activity
-    private level status;
+    public level status;
 
     // map displayed
-    private GoogleMap mMap;
+    private CrowdMap mMap;
 
     // DEBUG
     private static final String TAG = "MainActivity";
+
+
+    //set timer for updating the heatMap
+    private int mInterval = 5000; // 5 seconds by default, can be changed later
+    private Handler mHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // DEBUG
-        final TextView debugTextView = (TextView)findViewById(R.id.debugTextView);
+
 
 
         // Buttons
@@ -52,11 +48,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
         // TODO : switch status depending on LOGIN
-        status = level.NOLOGIN;
+        status = level.GUEST;
 
         switch(status)  {
 
-            case NOLOGIN:
+            case GUEST:
 
                 buttonRight.setText("EVENTS");
                 buttonLeft.setText("LOGIN");
@@ -64,14 +60,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 buttonRight.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        debugTextView.setText("nologin - EVENT");
+
                         clickEvent(v);
                     }
                 });
                 buttonLeft.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        debugTextView.setText("nologin - LOGIN");
+
                         clickSignIn(v);
 
                     }
@@ -86,13 +82,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 buttonRight.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        debugTextView.setText("visitor - EVENT");
+
                     }
                 });
                 buttonLeft.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        debugTextView.setText("visitor - GROUP");
+
                     }
                 });
 
@@ -106,71 +102,62 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 buttonRight.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        debugTextView.setText("nologin - MANAGE");
+
                     }
                 });
                 buttonLeft.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        debugTextView.setText("nologin - STAFF");
+
                     }
                 });
 
                 break;
 
         }
+        // display map  WARNING: TO DO AT THE END OF ONCREATE
+        mMap = new CrowdMap(this);
+
+        //use as timer to refresh heatmap
+        mHandler = new Handler();
+        startRepeatingTask();
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
-         mapFragment.getMapAsync(this);
+        mapFragment.getMapAsync(mMap);
     }
 
 
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera.
-     */
     @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-
-        // to remove buildings 3D effect put false
-        mMap.setBuildingsEnabled(true);
-
-        try {
-            // Customise the styling of the base map using a JSON object defined
-            // in a raw resource file.
-            boolean success = googleMap.setMapStyle(
-                    MapStyleOptions.loadRawResourceStyle(
-                            this, R.raw.style_map));
-
-            if (!success) {
-                Log.e(TAG, "Style parsing failed.");
-            }
-        } catch (Resources.NotFoundException e) {
-            Log.e(TAG, "Can't find style. Error: ", e);
+    public void onDestroy() {
+        super.onDestroy();
+        stopRepeatingTask();
+    }
+    //------------------TIMER SETUP----------------------------
+    Runnable updateHeatMap = new Runnable() {
+        @Override
+        public void run() {
+            mMap.update();
+            mHandler.postDelayed(updateHeatMap, mInterval);
         }
+    };
 
+    void startRepeatingTask() {
+        updateHeatMap.run();
+    }
 
-        LatLng myPosition = new LatLng(46.518633, 6.566419);
-        placePoint(myPosition , R.drawable.point );
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myPosition , 17.0f));
-
+    void stopRepeatingTask() {
+        mHandler.removeCallbacks(updateHeatMap);
     }
 
 
-    private void placePoint( LatLng position , int markerImage ) {
-        mMap.addMarker(new MarkerOptions().position(position).icon(BitmapDescriptorFactory.fromResource(markerImage)));
-    }
+    // --- BUTTONS CLICKS -------------------------------
 
-    public void setViewEventEdit(View view) {
-        Intent intent = new Intent(this, EventEditActivity.class);
-        startActivity(intent);
-    }
-  
+
+
+
     public void clickSignIn(View view) {
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);

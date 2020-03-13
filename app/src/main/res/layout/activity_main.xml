@@ -32,25 +32,6 @@
         android:paddingRight="10dp"/>
 
 
-    <TextView
-        android:id="@+id/debugTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:text="DEBUG MESSAGE"
-        android:textSize="20sp" />
-
-    <Button
-        android:id="@+id/O_ADD_EVENT"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="start|top"
-        android:layout_marginTop="60dp"
-        android:layout_marginStart="25dp"
-        android:padding="10dp"
-        android:text="@string/event_add"
-        android:onClick="setViewEventEdit" />
-
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
         android:layout_width="wrap_content"
