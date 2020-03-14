@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-import ch.epfl.polycrowd.MainActivity;
+
 import ch.epfl.polycrowd.R;
 
 
@@ -33,10 +33,10 @@ public class CrowdMap implements OnMapReadyCallback {
 
     // map displayed
     private GoogleMap mMap;
-    private MainActivity act;
+    private MapActivity act;
 
 
-    public CrowdMap(MainActivity act_){
+    public CrowdMap(MapActivity act_){
         act = act_;
     }
 

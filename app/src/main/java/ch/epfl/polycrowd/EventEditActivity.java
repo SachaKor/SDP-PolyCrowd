@@ -21,6 +21,8 @@ import java.util.Map;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import ch.epfl.polycrowd.map.MapActivity;
+
 public class EventEditActivity extends AppCompatActivity {
 
     @Override
@@ -76,7 +78,7 @@ public class EventEditActivity extends AppCompatActivity {
                     }
                 });
 
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, MapActivity.class);
         startActivity(intent);
     }
 }

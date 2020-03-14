@@ -1,4 +1,4 @@
-package ch.epfl.polycrowd;
+package ch.epfl.polycrowd.map;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -11,9 +11,12 @@ import android.widget.Button;
 import android.widget.TextView;
 import com.google.android.gms.maps.SupportMapFragment;
 
+import ch.epfl.polycrowd.EventPageActivity;
+import ch.epfl.polycrowd.LoginActivity;
+import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.map.CrowdMap;
 
-public class MainActivity extends AppCompatActivity {
+public class MapActivity extends AppCompatActivity {
 
     public enum level {
         GUEST,
