@@ -24,7 +24,7 @@ public class ActivityTest {
         this.mockActivity.put("UID", "id1");
         this.mockActivity.put("SUMMARY", "activity summary");
         this.mockActivity.put("DESCRIPTION","activity description");
-        this.mockActivity.put("DTSRAT", "20200725T163058");
+        this.mockActivity.put("DTSTART", "20200725T163058");
         this.mockActivity.put("DTEND","20221026T180228");
         this.mockActivity.put("ORGANIZER","MAILTO:email@email.com");
     }
