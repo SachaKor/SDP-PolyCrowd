@@ -1,8 +1,10 @@
 package ch.epfl.polycrowd;
 
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -30,6 +32,7 @@ public class EventPageActivity extends AppCompatActivity {
     MyAdapter myAdapter ;
 
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,36 +44,34 @@ public class EventPageActivity extends AppCompatActivity {
         Context context = this ;
         FirebaseInterface firebaseInterface = new FirebaseInterface();
         final FirebaseFirestore firestore = firebaseInterface.getFirestoreInstance(false) ;
-        firestore.collection("polyevents").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+        firestore.collection("polyevents").get().addOnSuccessListener(queryDocumentSnapshots -> {
 
-                List<FirebaseEventAdaptor> events = queryDocumentSnapshots.toObjects(FirebaseEventAdaptor.class) ;
-                myAdapter = new MyAdapter(context, getModels(events));
-                mRecyclerView.setAdapter(myAdapter);
+            List<Event> events = new ArrayList<>();
 
-                Log.v("\nEventPageActivity\n", "\nVALUE OF EVENT1 NAME IS  " + events.get(0).getName() +" \n") ;
+            queryDocumentSnapshots.forEach(queryDocumentSnapshot -> events.add(Event.getFromDocument(queryDocumentSnapshot.getData())));
 
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
+            myAdapter = new MyAdapter(context, getModels(events));
+            mRecyclerView.setAdapter(myAdapter);
 
-            }
-        }) ;
+            Log.v("\nEventPageActivity\n", "\nVALUE OF EVENT1 NAME IS  " + events.get(0).getName() + " \n");
+
+        }).addOnFailureListener(e -> {
+
+        });
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
     }
 
-    private ArrayList<Model> getModels(List<FirebaseEventAdaptor> events){
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private ArrayList<Model> getModels(List<Event> events){
 
         ArrayList<Model> models = new ArrayList<>() ;
 
-        for(FirebaseEventAdaptor e: events)
+        for(Event e: events)
         {
             Model m = new Model() ;
-            m.setTitle(e.getEvent().getName());
+            m.setTitle(e.getName());
             m.setDescription("Upcoming events");
             m.setImg(R.drawable.p1);
             models.add(m) ;

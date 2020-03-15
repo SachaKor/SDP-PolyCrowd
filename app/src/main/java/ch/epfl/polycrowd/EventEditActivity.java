@@ -2,6 +2,7 @@ package ch.epfl.polycrowd;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -10,15 +11,17 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.protobuf.ByteString;
+import com.google.protobuf.InvalidProtocolBufferException;
 
-import java.util.HashMap;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Map;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class EventEditActivity extends AppCompatActivity {
@@ -29,6 +32,7 @@ public class EventEditActivity extends AppCompatActivity {
         setContentView(R.layout.activity_event_edit);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void sendEventSubmit(View view) {
         final EditText evName = findViewById(R.id.EditEventName);
         Log.i("ADD_EVENT", "Send Event Button Clicked");
@@ -47,33 +51,24 @@ public class EventEditActivity extends AppCompatActivity {
                 type = eventTypeSpinner.getSelectedItem().toString() ;
 
         // Create the map containing the event info
-        Map<String, Object> event = new HashMap<>();
-        event.put("calendar", "url") ;
-        event.put("endD", new Integer(123456)) ;
-        event.put("endT", new Integer(12)) ;
-        event.put("isPublic", isPublic);
-        event.put("name",evName.getText().toString() ) ;
-        event.put("owner", new Integer(1)) ;
-        event.put("startD", new Integer(23112012)) ;
-        event.put("startT", new Integer(2)) ;
-        event.put("type", type) ;
+        Event ev = new Event(1, evName.getText().toString(), isPublic,
+                             Event.EventType.valueOf(type.toUpperCase()),
+                             LocalDateTime.of(LocalDate.parse(sDate), LocalTime.parse("00:00")),
+                             LocalDateTime.of(LocalDate.parse(eDate), LocalTime.parse("00:00")),
+                    "url");
+
+        Map<String, Object> event = ev.toHashMap();
 
         // Add the event to the firestore
         firestore.collection("polyevents")
                 .add(event)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Log.d("ADD_EVENT", "DocumentSnapshot added with ID: " + documentReference.getId());
-                        Toast.makeText(getApplicationContext(), "Event added", Toast.LENGTH_LONG).show();
-                    }
+                .addOnSuccessListener(documentReference -> {
+                    Log.d("ADD_EVENT", "DocumentSnapshot added with ID: " + documentReference.getId());
+                    Toast.makeText(getApplicationContext(), "Event added", Toast.LENGTH_LONG).show();
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e("ADD_EVENT", "Error adding document", e);
-                        Toast.makeText(getApplicationContext(), "Error occurred while adding the event", Toast.LENGTH_LONG).show();
-                    }
+                .addOnFailureListener(e -> {
+                    Log.e("ADD_EVENT", "Error adding document", e);
+                    Toast.makeText(getApplicationContext(), "Error occurred while adding the event", Toast.LENGTH_LONG).show();
                 });
 
         Intent intent = new Intent(this, MainActivity.class);

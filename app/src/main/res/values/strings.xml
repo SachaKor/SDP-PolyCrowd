@@ -9,10 +9,10 @@
     <string name="event_submit">Save Changes</string>
     <string name="event_type_hint">Event Type</string>
     <string-array name="event_type_list">
-        <item>Festival</item>
-        <item>Concert</item>
-        <item>Convention</item>
-        <item>Other</item>
+        <item value="FESTIVAL">Festival</item>
+        <item value="CONCERT">Concert</item>
+        <item value="CONVENTION">Convention</item>
+        <item value="OTHER">Other</item>
     </string-array>
     <string name="event_date_start">Start Date</string>
     <string name="event_date_end">End Date</string>
