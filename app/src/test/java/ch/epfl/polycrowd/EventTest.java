@@ -5,7 +5,12 @@ import com.google.type.TimeOfDay;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.Objects;
 
 
 class EventTest {
@@ -14,44 +19,30 @@ class EventTest {
     private static final Integer default_owner = 1;
     private static final String default_name = "TestEvent";
     private static final Event.EventType default_type = Event.EventType.OTHER;
-    private static final Date default_sd = Date.newBuilder().setYear(1999).setMonth(8).setDay(8).build();
-    private static final Date default_ed = Date.newBuilder().setYear(1999).setMonth(8).setDay(9).build();
-    private static final TimeOfDay default_st = TimeOfDay.newBuilder().setHours(10).setMinutes(10).setSeconds(0).build();
-    private static final TimeOfDay default_et = TimeOfDay.newBuilder().setHours(18).setMinutes(15).setSeconds(0).build();
+    private static final LocalDateTime default_s = LocalDateTime.parse("11-12-2019 08:15",Event.dtFormat);
+    private static final LocalDateTime default_e = LocalDateTime.parse("12-12-2019 12:45", Event.dtFormat);
 
-    @BeforeAll
-    static void initTest(){
+    @BeforeEach
+    void initTest(){
         e = new Event(default_owner,default_name, false,
-                default_type, default_sd, default_ed, default_st, default_et,"None");
+                default_type, default_s, default_e, "None");
 
     }
 
     @Test
     void constructor(){
         assertThrows(IllegalArgumentException.class, () -> new Event(null,default_name, false,
-                default_type, default_sd, default_ed, default_st, default_et,
-                "None"));
+                default_type, default_s, default_e,"None"));
         assertThrows(IllegalArgumentException.class, () -> new Event(default_owner,null, false,
-                default_type, default_sd, default_ed, default_st, default_et,
-                "None"));
+                default_type, default_s, default_e,"None"));
         assertThrows(IllegalArgumentException.class, () -> new Event(default_owner,default_name, false,
-                null, default_sd, default_ed, default_st, default_et,
-                "None"));
+                null, default_s, default_e,"None"));
         assertThrows(IllegalArgumentException.class, () -> new Event(default_owner,default_name, false,
-                default_type, null, default_ed, default_st, default_et,
-                "None"));
+                default_type, null, default_e, "None"));
         assertThrows(IllegalArgumentException.class, () -> new Event(default_owner,default_name, false,
-                default_type, default_sd, null, default_st, default_et,
-                "None"));
+                default_type, default_s, null, "None"));
         assertThrows(IllegalArgumentException.class, () -> new Event(default_owner,default_name, false,
-                default_type, default_sd, default_ed, null, default_et,
-                "None"));
-        assertThrows(IllegalArgumentException.class, () -> new Event(default_owner,default_name, false,
-                default_type, default_sd, default_ed, default_st, null,
-                "None"));
-        assertThrows(IllegalArgumentException.class, () -> new Event(default_owner,default_name, false,
-                default_type, default_sd, default_ed, default_st, default_et,
-                null));
+                default_type, default_s, default_e,null));
     }
 
     @Test
@@ -87,39 +78,21 @@ class EventTest {
     }
 
     @Test
-    void getSetStartD() {
-        assertEquals(default_sd, e.getStartD());
-        final Date new_date = Date.newBuilder().setYear(2020).setMonth(9).setDay(9).build();
-        e.setStartD(new_date);
-        assertEquals(new_date, e.getStartD());
-        assertThrows(IllegalArgumentException.class, () -> e.setStartD(null));
+    void getSetStart() {
+        assertEquals(default_s.format(Event.dtFormat), e.getStart().format(Event.dtFormat));
+        final LocalDateTime new_date = LocalDateTime.parse("20-02-2020 10:00",Event.dtFormat);
+        e.setStart(new_date);
+        assertEquals(new_date.format(Event.dtFormat), e.getStart().format(Event.dtFormat));
+        assertThrows(IllegalArgumentException.class, () -> e.setStart(null));
     }
 
     @Test
-    void getSetEndD() {
-        assertEquals(default_ed, e.getEndD());
-        final Date new_date = Date.newBuilder().setYear(2020).setMonth(9).setDay(9).build();
-        e.setEndD(new_date);
-        assertEquals(new_date, e.getEndD());
-        assertThrows(IllegalArgumentException.class, () -> e.setEndD(null));
-    }
-
-    @Test
-    void getSetStartT() {
-        assertEquals(default_st, e.getStartT());
-        final TimeOfDay new_time = TimeOfDay.newBuilder().setHours(12).setMinutes(15).setSeconds(0).build();
-        e.setStartT(new_time);
-        assertEquals(new_time, e.getStartT());
-        assertThrows(IllegalArgumentException.class, () -> e.setStartT(null));
-    }
-
-    @Test
-    void getSetEndT() {
-        assertEquals(default_et, e.getEndT());
-        final TimeOfDay new_time = TimeOfDay.newBuilder().setHours(13).setMinutes(15).setSeconds(0).build();
-        e.setEndT(new_time);
-        assertEquals(new_time, e.getEndT());
-        assertThrows(IllegalArgumentException.class, () -> e.setEndT(null));
+    void getSetEnd() {
+        assertEquals(default_e.format(Event.dtFormat), e.getEnd().format(Event.dtFormat));
+        final LocalDateTime new_date = LocalDateTime.parse("20-02-2020 10:00",Event.dtFormat);
+        e.setEnd(new_date);
+        assertEquals(new_date.format(Event.dtFormat), e.getEnd().format(Event.dtFormat));
+        assertThrows(IllegalArgumentException.class, () -> e.setEnd(null));
     }
 
     @Test
@@ -132,4 +105,26 @@ class EventTest {
         assertThrows(IllegalArgumentException.class, () -> e.setCalendar(null));
     }
 
+    @Test
+    void getSetHashMap(){
+        Map<String,Object> hm = e.toHashMap();
+
+        assertEquals(Objects.requireNonNull(hm.get("owner")).toString(), default_owner.toString());
+        assertEquals(Event.EventType.valueOf(Objects.requireNonNull(hm.get("type")).toString()), default_type);
+        assertEquals(Objects.requireNonNull(hm.get("name")).toString(), default_name);
+        assertEquals(Objects.requireNonNull(hm.get("start")).toString(), default_s.format(Event.dtFormat));
+        assertEquals(Objects.requireNonNull(hm.get("end")).toString(), default_e.format(Event.dtFormat));
+        assertEquals(Objects.requireNonNull(hm.get("calendar")).toString(), "None");
+
+        Event ne = Event.getFromDocument(hm);
+
+        assert(default_owner.equals(ne.getOwner()));
+        assertEquals(default_name, ne.getName());
+        assertEquals(false, ne.getPublic());
+        assertEquals(default_type, ne.getType());
+        assertEquals(default_s.format(Event.dtFormat), ne.getStart().format(Event.dtFormat));
+        assertEquals(default_e.format(Event.dtFormat), ne.getEnd().format(Event.dtFormat));
+        assertEquals("None", ne.getCalendar());
+
+    }
 }
