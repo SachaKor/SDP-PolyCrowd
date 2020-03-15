@@ -7,6 +7,10 @@ jacoco {
 }
 
 android {
+    lintOptions {
+        abortOnError true
+        lintConfig file("lint.xml")
+    }
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
 
@@ -58,9 +62,9 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     androidTestImplementation 'androidx.test:rules:1.2.0'
 
-    testImplementation "org.junit.jupiter:junit-jupiter-api:5.3.2"
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.3.2"
-    testImplementation "org.junit.jupiter:junit-jupiter-params:5.3.2"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.6.0"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.6.0"
+    testImplementation "org.junit.jupiter:junit-jupiter-params:5.6.0"
 
 
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
@@ -83,13 +87,27 @@ dependencies {
 
     implementation 'com.google.android.material:material:1.1.0'
 
+
     implementation 'com.google.maps.android:android-maps-utils:1.0.0'
+
 
     implementation 'com.google.firebase:firebase-dynamic-links:19.1.0'
     implementation 'com.google.firebase:firebase-invites:17.0.0'
 
+    // https://mvnrepository.com/artifact/org.mnode.ical4j/ical4j
+
+    implementation 'org.mnode.ical4j:ical4j:3.0.15'
+    implementation 'backport-util-concurrent:backport-util-concurrent:3.1'
+    implementation 'commons-codec:commons-codec:1.11'
+    implementation 'commons-lang:commons-lang:2.6'
+    implementation 'org.slf4j:slf4j-nop:1.7.25'
+    implementation group: 'org.ehcache', name: 'jcache', version: '1.0.0'
+
+
 
 }
+
+
 
 tasks.withType(Test) {
     jacoco.includeNoLocationClasses = true
