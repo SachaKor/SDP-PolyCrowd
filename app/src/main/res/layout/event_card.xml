@@ -18,7 +18,7 @@
 
             <ImageView
                 android:id="@id/image"
-                android:src="@drawable/brochure"
+                android:src="@drawable/demo1"
                 android:scaleType="centerCrop"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"/>
