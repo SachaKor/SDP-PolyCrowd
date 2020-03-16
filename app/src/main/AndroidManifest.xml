@@ -31,7 +31,7 @@
 
 
         <activity
-            android:name=".FontPageActivity"
+            android:name=".FrontPageActivity"
             android:label="@string/title_activity_main">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

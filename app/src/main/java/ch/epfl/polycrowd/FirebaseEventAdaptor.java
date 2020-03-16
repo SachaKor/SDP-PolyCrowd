@@ -1,12 +1,18 @@
 package ch.epfl.polycrowd;
 
-import android.util.Log;
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.viewpager.widget.PagerAdapter;
+
 import com.google.type.Date;
 import com.google.type.TimeOfDay;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-
+import java.util.List;
 
 
 public class FirebaseEventAdaptor {
@@ -136,5 +142,40 @@ public class FirebaseEventAdaptor {
                 calendar) ;
          return event ;
 
+    }
+
+    public static class FrontPageAdapter extends PagerAdapter {
+
+        private List<FrontPageModel> models;
+        private LayoutInflater layoutInflater;
+        private Context context;
+
+        public FrontPageAdapter(List<FrontPageModel> models,  Context context) {
+            this.models = models;
+            this.context = context;
+        }
+
+        @Override
+        public int getCount() {
+            return models.size();
+        }
+
+        @Override
+        public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
+            return view.equals(object);
+        }
+
+        @NonNull
+        @Override
+        public Object instantiateItem(@NonNull ViewGroup container, int position) {
+            layoutInflater= (LayoutInflater)LayoutInflater.from(context);
+            //View view= layoutInflater.inflate(R.layout.item, container, false);
+            return super.instantiateItem(container, position);
+        }
+
+        @Override
+        public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
+            container.removeView((View)object);
+        }
     }
 }
