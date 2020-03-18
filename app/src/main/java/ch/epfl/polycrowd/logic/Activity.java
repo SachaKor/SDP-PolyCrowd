@@ -7,12 +7,15 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
+
+import ch.epfl.polycrowd.Model;
 
 public class Activity {
     private String location, uid, summary, description, organizer;
@@ -54,6 +57,14 @@ public class Activity {
     }
     public LocalDateTime getEnd(){
         return this.end;
+    }
+
+
+    public Model getModel(){
+        Model m = new Model() ;
+        m.setTitle(getSummary());
+        m.setDescription(getStart()+"-"+getEnd()+'\n'+getLocation()+'\n'+getDescription());
+        return m;
     }
 
     @Override

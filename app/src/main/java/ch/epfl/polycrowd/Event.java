@@ -1,7 +1,9 @@
 package ch.epfl.polycrowd;
 
 
+import android.content.Context;
 import android.os.Build;
+
 import android.util.Log;
 
 
@@ -10,6 +12,7 @@ import com.google.firebase.Timestamp;
 
 import androidx.annotation.RequiresApi;
 
+import java.io.File;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -17,6 +20,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+
+import ch.epfl.polycrowd.logic.Schedule;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class Event {
@@ -39,7 +44,10 @@ public class Event {
     private String id;
     private int image;
 
-    public Event(String owner, String name, Boolean isPublic, EventType type,
+    private Schedule schedule;
+    private Context mContext;
+
+    public Event(Context mContext, String owner, String name, Boolean isPublic, EventType type,
                  LocalDateTime start, LocalDateTime end,
                  String calendar, String description){
         if(owner == null || name == null || type == null || start == null || end == null || calendar == null)
@@ -52,6 +60,8 @@ public class Event {
         this.end = end;
         this.calendar = calendar;
         setDescription(description);
+        this.mContext =mContext;
+        this.loadCalendar();
     }
 
     public void setId(String id) {
@@ -184,7 +194,7 @@ public class Event {
         return event;
     }
 
-    public static Event getFromDocument(Map<String, Object> data){
+    public static Event getFromDocument(Map<String, Object> data, Context c){
         Log.d(LOG_TAG,"converting Firebase data to Event");
         String owner = Objects.requireNonNull(data.get("owner")).toString();
         String name = Objects.requireNonNull(data.get("name")).toString();
@@ -197,7 +207,16 @@ public class Event {
         LocalDateTime end = (eStamp.toDate()).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
         EventType type = EventType.valueOf(Objects.requireNonNull(data.get("type")).toString().toUpperCase());
         String desc = data.get("description").toString();
-        return new Event(owner, name, isPublic, type, start, end, calendar, desc);
+        return new Event(c, owner, name, isPublic, type, start, end, calendar, desc);
     }
 
+    public void loadCalendar(){
+        //File f= Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
+        File f = new File(mContext.getFilesDir(),"cal");
+        //System.out.println(f.toPath(),);
+        this.schedule = new Schedule(calendar, f);
+    }
+    public Schedule getSchedule(){
+        return this.schedule;
+    }
 }
