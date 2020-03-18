@@ -44,7 +44,7 @@ public class EventEditActivityTest {
         //onView(withId(R.id.EditEventType)).perform(); //What action ?
         onView(withId(R.id.EditEventStart)).perform(typeText("30-12-1971"),closeSoftKeyboard());
         onView(withId(R.id.EditEventEnd)).perform(typeText("31-12-1971"),closeSoftKeyboard());
-
+        onView(withId(R.id.EditEventCalendar)).perform(typeText("https://satellite.bar/agenda/ical.php"), closeSoftKeyboard());
         //onView(withId(R.id.EditEventSubmit)).perform(scrollTo(),click());
     }
 

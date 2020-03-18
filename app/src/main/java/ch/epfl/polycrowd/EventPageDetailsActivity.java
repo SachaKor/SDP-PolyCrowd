@@ -10,12 +10,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
-<<<<<<< HEAD
 import android.util.Log;
-=======
 import android.view.View;
 import android.widget.Button;
->>>>>>> Modified activities for visual testing
 import android.widget.ImageView;
 import android.widget.TextView;
 
