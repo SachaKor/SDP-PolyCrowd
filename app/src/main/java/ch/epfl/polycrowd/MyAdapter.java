@@ -24,10 +24,17 @@ public class MyAdapter extends RecyclerView.Adapter<MyHolder> implements Filtera
 
 
     private Context c;
+<<<<<<< HEAD
     private List<Event> events;
     private List<Event> eventsFull;
 
     public MyAdapter(Context c, List<Event> events){
+=======
+    private List<Model> models;
+    private List<Model> modelsFull;
+
+    public MyAdapter(Context c, List<Model> models){
+>>>>>>> Modified activities for visual testing
         this.c = c ;
         this.events = events ;
         eventsFull = new ArrayList<>(events);

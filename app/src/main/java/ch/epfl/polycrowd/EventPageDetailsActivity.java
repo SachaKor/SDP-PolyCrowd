@@ -10,7 +10,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
+<<<<<<< HEAD
 import android.util.Log;
+=======
+import android.view.View;
+import android.widget.Button;
+>>>>>>> Modified activities for visual testing
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -31,6 +36,15 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_event_details_page);
 //        getIncomingIntent();
         initEvent();
+
+        getIncomingIntent();
+        final Button scheduleButton = (Button) findViewById(R.id.schedule);
+        scheduleButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                clickSchedule(v);
+            }
+        });
     }
 
     private void getIncomingIntent() {
@@ -84,5 +98,9 @@ public class EventPageDetailsActivity extends AppCompatActivity {
                     Log.d(LOG_TAG, "Event loaded from the database");
                 }).addOnFailureListener(e -> Log.e(LOG_TAG, "Error getting Event with id " + eventId));
 
+    }
+    public void clickSchedule(View view){
+        Intent intent = new Intent(this, ScheduleActivity.class);
+        startActivity(intent);
     }
 }

@@ -30,11 +30,13 @@ public class EventEditActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = EventEditActivity.class.toString();
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_edit);
     }
+
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private LocalDateTime parseDate(String dateStr) {
@@ -111,14 +113,21 @@ public class EventEditActivity extends AppCompatActivity {
         }
 
         // Create the map containing the event info
-        Event ev = new Event(user.getUid(), evName.getText().toString(), isPublic,
+        String calendarUrl = findViewById(R.id.EditEventCalendar).toString();
+        // Create the map containing the event info
+        Event ev = new Event(getApplicationContext(),user.getUid(), evName.getText().toString(), isPublic,
                 Event.EventType.valueOf(type.toUpperCase()),
                 startDate, endDate,
-                "url", "");
+                calendarUrl, "");
+
         Map<String, Object> event = ev.toHashMap();
+
         // TODO: add the organizers via the Event class
         // the first organizer is the creator of the event
         event.put("organizers", Arrays.asList(user.getEmail()));
+        ch.epfl.polycrowd.logic.Context.getInstance().setCurrentEvent(ev);
+
+
         // Add the event to the firestore
         firestore.collection("polyevents")
                 .add(event)

@@ -48,12 +48,14 @@ public class EventPageActivity extends AppCompatActivity {
 
             List<Event> events = new ArrayList<>();
 
+
             queryDocumentSnapshots.forEach(queryDocumentSnapshot -> {
                 Event e = Event.getFromDocument(queryDocumentSnapshot.getData());
                 e.setId(queryDocumentSnapshot.getId());
                 events.add(e);
             });
             myAdapter = new MyAdapter(context, events);
+
             mRecyclerView.setAdapter(myAdapter);
 
         }).addOnFailureListener(e -> {
