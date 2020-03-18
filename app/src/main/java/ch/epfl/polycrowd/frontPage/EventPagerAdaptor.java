@@ -3,6 +3,7 @@ package ch.epfl.polycrowd.frontPage;
 import android.content.Context;
 import android.content.Intent;
 
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.viewpager.widget.PagerAdapter;
 
 import java.util.List;
@@ -20,13 +22,13 @@ import ch.epfl.polycrowd.EventPageDetailsActivity;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.map.MapActivity;
 
-public class EventAdaptor extends PagerAdapter {
+public class EventPagerAdaptor extends PagerAdapter {
 
     private List<Event> events;
     private LayoutInflater layoutInflater;
     private Context context;
 
-    public EventAdaptor(List<Event> models, Context context) {
+    public EventPagerAdaptor(List<Event> models, Context context) {
         this.events = models;
         this.context = context;
     }
@@ -41,6 +43,7 @@ public class EventAdaptor extends PagerAdapter {
         return view.equals(object);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @NonNull
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, final int position) {
@@ -55,7 +58,7 @@ public class EventAdaptor extends PagerAdapter {
 
         // first button is the Create event one
         if(position == 0){
-            imageView.setImageResource(events.get(position).getImage());
+            imageView.setImageResource(R.drawable.newevent);
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override

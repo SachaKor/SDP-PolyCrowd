@@ -55,7 +55,7 @@ public class Event {
         this.end = null;
         this.calendar = null;
         this.description = "default description";
-        this.image = R.drawable.demo1;
+        this.image = R.drawable.balelec;
     }
 
     public int getImage(){

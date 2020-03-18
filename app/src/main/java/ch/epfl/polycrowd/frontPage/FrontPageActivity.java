@@ -21,7 +21,7 @@ import ch.epfl.polycrowd.R;
 public class FrontPageActivity extends AppCompatActivity {
 
     ViewPager viewPager;
-    EventAdaptor adapter;
+    EventPagerAdaptor adapter;
     List<Event> events;
     Integer[]colors = null;
     ArgbEvaluator argbEvaluator = new ArgbEvaluator();
@@ -45,7 +45,7 @@ public class FrontPageActivity extends AppCompatActivity {
 
         setEventModels();
 
-        adapter = new EventAdaptor(events, this);
+        adapter = new EventPagerAdaptor(events, this);
 
         viewPager = findViewById(R.id.viewPager);
         viewPager.setAdapter(adapter);
@@ -59,15 +59,14 @@ public class FrontPageActivity extends AppCompatActivity {
         viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
                 if(position != 0)
                     description.setText( events.get(position - 1 ).getDescription() );
                 else
                     description.setText("create a new event")   ;
+            }
+
+            @Override
+            public void onPageSelected(int position) {
 
             }
 
@@ -76,11 +75,6 @@ public class FrontPageActivity extends AppCompatActivity {
 
             }
         });
-
-
-
-
-
 
 
 
