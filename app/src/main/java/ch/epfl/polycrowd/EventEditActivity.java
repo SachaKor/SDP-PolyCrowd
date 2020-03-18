@@ -26,11 +26,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class EventEditActivity extends AppCompatActivity {
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_edit);
     }
+
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void sendEventSubmit(View view) {
@@ -49,16 +52,16 @@ public class EventEditActivity extends AppCompatActivity {
         String sDate = sDateEditText.getText().toString(),
                 eDate = eDateEditText.getText().toString(),
                 type = eventTypeSpinner.getSelectedItem().toString() ;
-
+        String calendarUrl = findViewById(R.id.EditEventCalendar).toString();
         // Create the map containing the event info
-        Event ev = new Event(1, evName.getText().toString(), isPublic,
+        Event ev = new Event(getApplicationContext(),1, evName.getText().toString(), isPublic,
                              Event.EventType.valueOf(type.toUpperCase()),
                              LocalDateTime.of(LocalDate.parse(sDate), LocalTime.parse("00:00")),
                              LocalDateTime.of(LocalDate.parse(eDate), LocalTime.parse("00:00")),
-                    "url");
+                    calendarUrl);
 
         Map<String, Object> event = ev.toHashMap();
-
+        ch.epfl.polycrowd.logic.Context.getInstance().setCurrentEvent(ev);
         // Add the event to the firestore
         firestore.collection("polyevents")
                 .add(event)

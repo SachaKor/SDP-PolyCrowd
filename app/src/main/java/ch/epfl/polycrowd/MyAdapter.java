@@ -22,10 +22,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyHolder> implements Filtera
 
 
     private Context c;
-    private ArrayList<Model> models;
+    private List<Model> models;
     private List<Model> modelsFull;
 
-    public MyAdapter(Context c, ArrayList<Model> models){
+    public MyAdapter(Context c, List<Model> models){
         this.c = c ;
         this.models = models ;
         modelsFull = new ArrayList<>(models);

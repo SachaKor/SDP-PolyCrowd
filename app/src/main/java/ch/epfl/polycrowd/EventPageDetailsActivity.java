@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,6 +22,13 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_details_page);
         getIncomingIntent();
+        final Button scheduleButton = (Button) findViewById(R.id.schedule);
+        scheduleButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                clickSchedule(v);
+            }
+        });
     }
 
     private void getIncomingIntent() {
@@ -41,5 +50,9 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         eventTitle.setText(title);
         eventDescription.setText(description);
         eventImg.setImageBitmap(image);
+    }
+    public void clickSchedule(View view){
+        Intent intent = new Intent(this, ScheduleActivity.class);
+        startActivity(intent);
     }
 }
