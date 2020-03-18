@@ -8,6 +8,7 @@
     <string name="event_name_hint">Event Name</string>
     <string name="event_submit">Save Changes</string>
     <string name="event_type_hint">Event Type</string>
+    <string name="event_calendar_hint">Schedule calendar url</string>
     <string-array name="event_type_list">
         <item value="FESTIVAL">Festival</item>
         <item value="CONCERT">Concert</item>
