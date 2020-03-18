@@ -46,13 +46,13 @@
 
                     <TextView
                         android:id="@+id/EditEventNameHint"
-                        android:layout_width="100dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/event_name_hint" />
 
                     <EditText
                         android:id="@+id/EditEventName"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:autofillHints="..."
                         android:hint="@string/event_name_hint"
@@ -66,13 +66,13 @@
 
                     <TextView
                         android:id="@+id/EditEventPublicHint"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/event_is_public" />
 
                     <Switch
                         android:id="@+id/EditEventPublic"
-                        android:layout_width="100dp"
+                        android:layout_width="1dp"
                         android:layout_height="wrap_content"
                         android:hint="@string/event_public_hint"
                         android:text="@string/event_is_public" />
@@ -84,13 +84,13 @@
 
                     <TextView
                         android:id="@+id/EditEventTypeHint"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/event_type_hint" />
 
                     <Spinner
                         android:id="@+id/EditEventType"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:entries="@array/event_type_list"
                         android:prompt="@string/event_type_hint" />
@@ -108,7 +108,7 @@
 
                     <EditText
                         android:id="@+id/EditEventStart"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:autofillHints=""
                         android:ems="10"
@@ -129,7 +129,7 @@
 
                     <EditText
                         android:id="@+id/EditEventEnd"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:autofillHints=""
                         android:ems="10"

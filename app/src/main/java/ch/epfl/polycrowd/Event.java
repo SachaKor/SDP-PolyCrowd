@@ -1,39 +1,43 @@
 package ch.epfl.polycrowd;
 
 
-import com.google.type.Date;
-import com.google.type.TimeOfDay;
+import android.os.Build;
 
+import androidx.annotation.RequiresApi;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class Event {
-
 
     public enum EventType {
         FESTIVAL, CONCERT, CONVENTION, OTHER
     }
 
+    public static final DateTimeFormatter dtFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
     private final Integer owner;
     private String name;
     private Boolean isPublic;
     private EventType type;
-    private Date startD;
-    private Date endD;
-    private TimeOfDay startT;
-    private TimeOfDay endT;
-    private String calendar; // create class/interface to allow ICAL-file, ICAL-url or CSV to be provided ?
+    private LocalDateTime start;
+    private LocalDateTime end;
+    private String calendar;
 
     public Event(Integer owner, String name, Boolean isPublic, EventType type,
-                 Date starDate, Date endDate, TimeOfDay startTime, TimeOfDay endTime,
+                 LocalDateTime start, LocalDateTime end,
                  String calendar){
-        if(owner == null || name == null || type == null || starDate == null || endDate == null || startTime == null || endTime == null || calendar == null)
+        if(owner == null || name == null || type == null || start == null || end == null || calendar == null)
             throw new IllegalArgumentException("Invalid Argument for Event Constructor");
         this.owner = owner;
         this.name = name;
         this.isPublic = isPublic;
         this.type = type;
-        this.startD = starDate;
-        this.endD = endDate;
-        this.startT = startTime;
-        this.endT = endTime;
+        this.start = start;
+        this.end = end;
         this.calendar = calendar;
     }
 
@@ -69,44 +73,24 @@ public class Event {
         this.type = type;
     }
 
-    public Date getStartD() {
-        return startD;
+    public LocalDateTime getStart() {
+        return start;
     }
 
-    public void setStartD(Date startD) {
-        if(startD == null)
+    public void setStart(LocalDateTime start) {
+        if(start == null)
             throw new IllegalArgumentException("StartDate cannot be Null");
-        this.startD = startD;
+        this.start = start;
     }
 
-    public Date getEndD() {
-        return endD;
+    public LocalDateTime getEnd() {
+        return end;
     }
 
-    public void setEndD(Date endD) {
-        if(endD == null)
+    public void setEnd(LocalDateTime end) {
+        if(end == null)
             throw new IllegalArgumentException("EndDate cannot be Null");
-        this.endD = endD;
-    }
-
-    public TimeOfDay getStartT() {
-        return startT;
-    }
-
-    public void setStartT(TimeOfDay startT) {
-        if(startT == null)
-            throw new IllegalArgumentException("StartTime cannot be Null");
-        this.startT = startT;
-    }
-
-    public TimeOfDay getEndT() {
-        return endT;
-    }
-
-    public void setEndT(TimeOfDay endT) {
-        if(endT == null)
-            throw new IllegalArgumentException("EndTime cannot be Null");
-        this.endT = endT;
+        this.end = end;
     }
 
     public String getCalendar() {
@@ -117,6 +101,32 @@ public class Event {
         if(calendar == null)
             throw new IllegalArgumentException("Calendar cannot be null");
         this.calendar = calendar;
+    }
+
+    public Map<String, Object> toHashMap(){
+        Map<String, Object> event = new HashMap<>();
+
+        event.put("owner", this.owner.toString());
+        event.put("name", this.name);
+        event.put("isPublic", this.isPublic.toString());
+        event.put("start", this.start.format(dtFormat));
+        event.put("end", this.end.format(dtFormat));
+        event.put("type", this.type.toString());
+        event.put("calendar", this.calendar);
+
+        return event;
+    }
+
+    public static Event getFromDocument(Map<String, Object> data){
+            Integer owner = Integer.parseInt(Objects.requireNonNull(data.get("owner")).toString());
+            String name = Objects.requireNonNull(data.get("name")).toString();
+            Boolean isPublic = Boolean.valueOf((Objects.requireNonNull(data.get("isPublic"))).toString());
+            String calendar = Objects.requireNonNull(data.get("calendar")).toString();
+            LocalDateTime start = LocalDateTime.parse(Objects.requireNonNull(data.get("start")).toString(), dtFormat);
+            LocalDateTime end = LocalDateTime.parse(Objects.requireNonNull(data.get("end")).toString(), dtFormat);
+            EventType type = EventType.valueOf(Objects.requireNonNull(data.get("type")).toString().toUpperCase());
+
+            return new Event(owner, name, isPublic, type, start, end, calendar);
     }
 
 }

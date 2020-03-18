@@ -27,6 +27,9 @@ android {
 //    testOptions {
 //        execution 'ANDROIDX_TEST_ORCHESTRATOR'
 //    }
+    testOptions {
+        animationsDisabled = true
+    }
 
     buildTypes {
         debug {
