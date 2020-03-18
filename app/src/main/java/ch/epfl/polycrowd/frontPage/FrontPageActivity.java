@@ -1,35 +1,43 @@
 package ch.epfl.polycrowd.frontPage;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
 import android.animation.ArgbEvaluator;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.epfl.polycrowd.Event;
+import ch.epfl.polycrowd.LoginActivity;
 import ch.epfl.polycrowd.R;
 
 public class FrontPageActivity extends AppCompatActivity {
 
     ViewPager viewPager;
     EventAdaptor adapter;
-    List<EventModel> models;
+    List<Event> events;
     Integer[]colors = null;
     ArgbEvaluator argbEvaluator = new ArgbEvaluator();
 
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     void setEventModels(){
-        models = new ArrayList<>();
-        models.add(new EventModel(R.drawable.demo1, "Event1", "Description: blablablablablablablablablablablablablablablablablablablablablablablablablablablablablabla"));
-        models.add(new EventModel(R.drawable.demo2, "Event2", "Description: blablablablablablablablablablablablablablablablablablablablablablablablablablablablablabla"));
-        models.add(new EventModel(R.drawable.demo3, "Event3", "Description: blablablablablablablablablablablablablablablablablablablablablablablablablablablablablabla"));
-        models.add(new EventModel(R.drawable.demo4, "Event4", "Description: blablablablablablablablablablablablablablablablablablablablablablablablablablablablablabla"));
+        events = new ArrayList<>();
+        events.add(new Event());
+        events.add(new Event());
+        events.add(new Event());
 
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,44 +45,29 @@ public class FrontPageActivity extends AppCompatActivity {
 
         setEventModels();
 
-        adapter = new EventAdaptor(models, this);
+        adapter = new EventAdaptor(events, this);
 
         viewPager = findViewById(R.id.viewPager);
         viewPager.setAdapter(adapter);
         viewPager.setPadding(130, 0, 130, 0);
 
 
-        /*
-        Integer[] colors_temp = {
-                getResources().getColor(R.color.color1),
-                getResources().getColor(R.color.color2),
-        };
+        TextView description = findViewById(R.id.description);
 
-        colors = colors_temp;
 
-        //change background color depending on the position of the card we are scrolling through
+
         viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
-                if (position < (adapter.getCount() -1)) {
-                    viewPager.setBackgroundColor(
-
-                            (Integer) argbEvaluator.evaluate(
-                                    positionOffset,
-                                    colors[position%2],
-                                    colors[(position + 1)%2]
-                            )
-                    );
-                }
-
-                else {
-                    viewPager.setBackgroundColor(colors[colors.length - 1]);
-                }
             }
 
             @Override
             public void onPageSelected(int position) {
+                if(position != 0)
+                    description.setText( events.get(position - 1 ).getDescription() );
+                else
+                    description.setText("create a new event")   ;
 
             }
 
@@ -84,7 +77,22 @@ public class FrontPageActivity extends AppCompatActivity {
             }
         });
 
-         */
+
+
+
+
+
+
 
     }
+
+
+
+    public void clickSignIn(View view) {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+    }
+
+
+
 }

@@ -28,7 +28,7 @@
         android:overScrollMode="never"></androidx.viewpager.widget.ViewPager>
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/description"
         android:layout_width="296dp"
         android:layout_height="145dp"
         android:layout_below="@+id/viewPager"
@@ -45,6 +45,7 @@
         android:layout_alignParentBottom="true"
         android:layout_marginEnd="23dp"
         android:layout_marginBottom="18dp"
-        android:text="Button" />
+        android:text="LOGIN"
+        android:onClick="clickSignIn"/>
 
 </RelativeLayout>
