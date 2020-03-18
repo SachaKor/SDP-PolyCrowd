@@ -21,6 +21,18 @@
         android:paddingRight="10dp"/>
 
     <Button
+        android:id="@+id/butAddEvent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start|top"
+        android:text="@string/event_add"
+        android:padding="10dp"
+        android:layout_marginTop="70dp"
+        android:layout_marginStart="25dp"
+        android:paddingRight="10dp"
+        android:onClick="clickAddEvent"/>
+
+    <Button
         android:id="@+id/butLeft"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

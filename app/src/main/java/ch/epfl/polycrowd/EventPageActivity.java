@@ -53,8 +53,6 @@ public class EventPageActivity extends AppCompatActivity {
             myAdapter = new MyAdapter(context, getModels(events));
             mRecyclerView.setAdapter(myAdapter);
 
-            Log.v("\nEventPageActivity\n", "\nVALUE OF EVENT1 NAME IS  " + events.get(0).getName() + " \n");
-
         }).addOnFailureListener(e -> {
 
         });

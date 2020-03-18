@@ -2,11 +2,18 @@ package ch.epfl.polycrowd;
 
 
 import android.os.Build;
+import android.util.Log;
+
+
+import com.google.firebase.Timestamp;
+
 
 import androidx.annotation.RequiresApi;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -14,12 +21,14 @@ import java.util.Objects;
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class Event {
 
+    private static final String LOG_TAG = Event.class.toString();
+
     public enum EventType {
         FESTIVAL, CONCERT, CONVENTION, OTHER
     }
 
     public static final DateTimeFormatter dtFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
-    private final Integer owner;
+    private final String owner; // user uid is a string
     private String name;
     private Boolean isPublic;
     private EventType type;
@@ -27,7 +36,7 @@ public class Event {
     private LocalDateTime end;
     private String calendar;
 
-    public Event(Integer owner, String name, Boolean isPublic, EventType type,
+    public Event(String owner, String name, Boolean isPublic, EventType type,
                  LocalDateTime start, LocalDateTime end,
                  String calendar){
         if(owner == null || name == null || type == null || start == null || end == null || calendar == null)
@@ -41,7 +50,7 @@ public class Event {
         this.calendar = calendar;
     }
 
-    public Integer getOwner() {
+    public String getOwner() {
         return owner;
     }
 
@@ -106,11 +115,13 @@ public class Event {
     public Map<String, Object> toHashMap(){
         Map<String, Object> event = new HashMap<>();
 
-        event.put("owner", this.owner.toString());
+        event.put("owner", this.owner);
         event.put("name", this.name);
         event.put("isPublic", this.isPublic.toString());
-        event.put("start", this.start.format(dtFormat));
-        event.put("end", this.end.format(dtFormat));
+        Timestamp sDate = new Timestamp(Date.from(this.start.atZone(ZoneId.systemDefault()).toInstant())),
+                eDate = new Timestamp(Date.from(this.end.atZone(ZoneId.systemDefault()).toInstant()));
+        event.put("start", sDate);
+        event.put("end", eDate);
         event.put("type", this.type.toString());
         event.put("calendar", this.calendar);
 
@@ -118,15 +129,18 @@ public class Event {
     }
 
     public static Event getFromDocument(Map<String, Object> data){
-            Integer owner = Integer.parseInt(Objects.requireNonNull(data.get("owner")).toString());
-            String name = Objects.requireNonNull(data.get("name")).toString();
-            Boolean isPublic = Boolean.valueOf((Objects.requireNonNull(data.get("isPublic"))).toString());
-            String calendar = Objects.requireNonNull(data.get("calendar")).toString();
-            LocalDateTime start = LocalDateTime.parse(Objects.requireNonNull(data.get("start")).toString(), dtFormat);
-            LocalDateTime end = LocalDateTime.parse(Objects.requireNonNull(data.get("end")).toString(), dtFormat);
-            EventType type = EventType.valueOf(Objects.requireNonNull(data.get("type")).toString().toUpperCase());
-
-            return new Event(owner, name, isPublic, type, start, end, calendar);
+        Log.d(LOG_TAG,"converting Firebase data to Event");
+        String owner = Objects.requireNonNull(data.get("owner")).toString();
+        String name = Objects.requireNonNull(data.get("name")).toString();
+        Boolean isPublic = Boolean.valueOf((Objects.requireNonNull(data.get("isPublic"))).toString());
+        String calendar = Objects.requireNonNull(data.get("calendar")).toString();
+        // convert firebase timestamps to LocalDateTime
+        Timestamp sStamp = Objects.requireNonNull((Timestamp) data.get("start")),
+                eStamp = Objects.requireNonNull((Timestamp) data.get("end"));
+        LocalDateTime start = (sStamp.toDate()).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        LocalDateTime end = (eStamp.toDate()).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        EventType type = EventType.valueOf(Objects.requireNonNull(data.get("type")).toString().toUpperCase());
+        return new Event(owner, name, isPublic, type, start, end, calendar);
     }
 
 }

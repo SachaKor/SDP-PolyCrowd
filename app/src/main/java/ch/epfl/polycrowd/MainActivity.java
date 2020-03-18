@@ -168,4 +168,9 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void clickAddEvent(View view) {
+        Intent intent = new Intent(this, EventEditActivity.class);
+        startActivity(intent);
+    }
+
 }

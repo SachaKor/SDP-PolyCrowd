@@ -11,20 +11,30 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 
+import java.net.Inet4Address;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.util.Map;
+import java.util.Objects;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import io.opencensus.internal.StringUtils;
+
+import static ch.epfl.polycrowd.Event.dtFormat;
 
 public class EventEditActivity extends AppCompatActivity {
+
+    private static final String LOG_TAG = EventEditActivity.class.toString();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,10 +42,58 @@ public class EventEditActivity extends AppCompatActivity {
         setContentView(R.layout.activity_event_edit);
     }
 
+    // https://stackoverflow.com/questions/1102891/how-to-check-if-a-string-is-numeric-in-java
+    private static boolean isNumeric(String str)
+    {
+        for (char c : str.toCharArray())
+        {
+            if (!Character.isDigit(c)) return false;
+        }
+        return true;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private LocalDateTime parseDate(String dateStr) {
+        String dateWithTime = dateStr + " 00:00";
+        LocalDateTime date;
+        try {
+            date = LocalDateTime.parse(dateWithTime, dtFormat);
+        } catch (DateTimeParseException e) {
+            Toast.makeText(getApplicationContext(), "Date " + dateStr + " is incorrect", Toast.LENGTH_SHORT).show();
+            return null;
+        }
+
+        return date;
+
+    }
+
+    private boolean fieldsNotEmpty() {
+        final String eventName = findViewById(R.id.EditEventName).toString(),
+                sDate = findViewById(R.id.EditEventStart).toString(),
+                eDate = findViewById(R.id.EditEventEnd).toString();
+        if(eventName.isEmpty()) {
+            Toast.makeText(getApplicationContext(), "Enter the name of the event", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (sDate.isEmpty()) {
+            Toast.makeText(getApplicationContext(), "Enter the starting date", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (eDate.isEmpty()) {
+            Toast.makeText(getApplicationContext(), "Enter the ending date", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        return true;
+
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void sendEventSubmit(View view) {
         final EditText evName = findViewById(R.id.EditEventName);
-        Log.i("ADD_EVENT", "Send Event Button Clicked");
+        Log.d(LOG_TAG, "Send Event Button Clicked");
 
         // Add an Event to the firestore
         FirebaseInterface firebaseInterface = new FirebaseInterface();
@@ -50,13 +108,31 @@ public class EventEditActivity extends AppCompatActivity {
                 eDate = eDateEditText.getText().toString(),
                 type = eventTypeSpinner.getSelectedItem().toString() ;
 
-        // Create the map containing the event info
-        Event ev = new Event(1, evName.getText().toString(), isPublic,
-                             Event.EventType.valueOf(type.toUpperCase()),
-                             LocalDateTime.of(LocalDate.parse(sDate), LocalTime.parse("00:00")),
-                             LocalDateTime.of(LocalDate.parse(eDate), LocalTime.parse("00:00")),
-                    "url");
+        if(!fieldsNotEmpty()) {
+            return;
+        }
+        LocalDateTime startDate = parseDate(sDate),
+                endDate = parseDate(eDate);
 
+        if(startDate == null || endDate == null) {
+            return;
+        }
+
+
+
+
+        // check if the user is logged in
+        FirebaseUser user = firebaseInterface.getAuthInstance(false).getCurrentUser();
+        if(user == null) {
+            Toast.makeText(getApplicationContext(), "Log in to add an event", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Create the map containing the event info
+        Event ev = new Event(user.getUid(), evName.getText().toString(), isPublic,
+                Event.EventType.valueOf(type.toUpperCase()),
+                startDate, endDate,
+                "url");
         Map<String, Object> event = ev.toHashMap();
 
         // Add the event to the firestore

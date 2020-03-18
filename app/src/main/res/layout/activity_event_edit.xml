@@ -112,7 +112,7 @@
                         android:layout_height="wrap_content"
                         android:autofillHints=""
                         android:ems="10"
-                        android:hint="@string/event_date_start"
+                        android:hint="@string/date_format"
                         android:inputType="date" />
 
                 </TableRow>
@@ -133,7 +133,7 @@
                         android:layout_height="wrap_content"
                         android:autofillHints=""
                         android:ems="10"
-                        android:hint="@string/event_date_end"
+                        android:hint="@string/date_format"
                         android:inputType="date" />
 
                 </TableRow>
