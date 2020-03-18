@@ -1,4 +1,4 @@
-package ch.epfl.polycrowd;
+package ch.epfl.polycrowd.frontPage;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,13 +14,16 @@ import androidx.viewpager.widget.PagerAdapter;
 
 import java.util.List;
 
-public class FrontPageAdaptor extends PagerAdapter {
+import ch.epfl.polycrowd.EventPageDetailsActivity;
+import ch.epfl.polycrowd.R;
 
-    private List<FrontPageModel> models;
+public class EventAdaptor extends PagerAdapter {
+
+    private List<EventModel> models;
     private LayoutInflater layoutInflater;
     private Context context;
 
-    public FrontPageAdaptor(List<FrontPageModel> models, Context context) {
+    public EventAdaptor(List<EventModel> models, Context context) {
         this.models = models;
         this.context = context;
     }
@@ -42,15 +45,15 @@ public class FrontPageAdaptor extends PagerAdapter {
         View view = layoutInflater.inflate(R.layout.event_card, container, false);
 
         ImageView imageView;
-        TextView title, desc;
+        //TextView title, desc;
 
         imageView = view.findViewById(R.id.image);
-        title = view.findViewById(R.id.title);
-        desc = view.findViewById(R.id.desc);
+        //title = view.findViewById(R.id.title);
+        //desc = view.findViewById(R.id.desc);
 
         imageView.setImageResource(models.get(position).getImage());
-        title.setText(models.get(position).getTitle());
-        desc.setText(models.get(position).getDesc());
+        //title.setText(models.get(position).getTitle());
+        //desc.setText(models.get(position).getDesc());
 
         view.setOnClickListener(new View.OnClickListener() {
             @Override

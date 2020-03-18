@@ -1,12 +1,12 @@
-package ch.epfl.polycrowd;
+package ch.epfl.polycrowd.frontPage;
 
-public class FrontPageModel {
+public class EventModel {
 
     private int image;
     private String title;
     private String desc;
 
-    public FrontPageModel(int image, String title, String desc) {
+    public EventModel(int image, String title, String desc) {
         this.image = image;
         this.title = title;
         this.desc = desc;

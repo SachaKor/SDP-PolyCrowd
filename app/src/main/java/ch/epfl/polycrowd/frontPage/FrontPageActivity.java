@@ -1,22 +1,33 @@
-package ch.epfl.polycrowd;
+package ch.epfl.polycrowd.frontPage;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
 import android.animation.ArgbEvaluator;
 import android.os.Bundle;
-import android.widget.Adapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.epfl.polycrowd.R;
+
 public class FrontPageActivity extends AppCompatActivity {
 
     ViewPager viewPager;
-    FrontPageAdaptor adapter;
-    List<FrontPageModel> models;
+    EventAdaptor adapter;
+    List<EventModel> models;
     Integer[]colors = null;
     ArgbEvaluator argbEvaluator = new ArgbEvaluator();
+
+
+    void setEventModels(){
+        models = new ArrayList<>();
+        models.add(new EventModel(R.drawable.demo1, "Event1", "Description: blablablablablablablablablablablablablablablablablablablablablablablablablablablablablabla"));
+        models.add(new EventModel(R.drawable.demo2, "Event2", "Description: blablablablablablablablablablablablablablablablablablablablablablablablablablablablablabla"));
+        models.add(new EventModel(R.drawable.demo3, "Event3", "Description: blablablablablablablablablablablablablablablablablablablablablablablablablablablablablabla"));
+        models.add(new EventModel(R.drawable.demo4, "Event4", "Description: blablablablablablablablablablablablablablablablablablablablablablablablablablablablablabla"));
+
+    }
 
 
     @Override
@@ -24,18 +35,16 @@ public class FrontPageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_front_page);
 
-        models = new ArrayList<>();
-        models.add(new FrontPageModel(R.drawable.demo1, "Event1", "Description: blablablablablablablablablablablablablablablablablablablablablablablablablablablablablabla"));
-        models.add(new FrontPageModel(R.drawable.demo2, "Event2", "Description: blablablablablablablablablablablablablablablablablablablablablablablablablablablablablabla"));
-        models.add(new FrontPageModel(R.drawable.demo3, "Event3", "Description: blablablablablablablablablablablablablablablablablablablablablablablablablablablablablabla"));
-        models.add(new FrontPageModel(R.drawable.demo4, "Event4", "Description: blablablablablablablablablablablablablablablablablablablablablablablablablablablablablabla"));
+        setEventModels();
 
-        adapter = new FrontPageAdaptor(models, this);
+        adapter = new EventAdaptor(models, this);
 
         viewPager = findViewById(R.id.viewPager);
         viewPager.setAdapter(adapter);
         viewPager.setPadding(130, 0, 130, 0);
 
+
+        /*
         Integer[] colors_temp = {
                 getResources().getColor(R.color.color1),
                 getResources().getColor(R.color.color2),
@@ -74,6 +83,8 @@ public class FrontPageActivity extends AppCompatActivity {
 
             }
         });
+
+         */
 
     }
 }
