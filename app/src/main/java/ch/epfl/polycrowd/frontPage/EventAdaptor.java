@@ -16,6 +16,7 @@ import java.util.List;
 
 import ch.epfl.polycrowd.EventPageDetailsActivity;
 import ch.epfl.polycrowd.R;
+import ch.epfl.polycrowd.map.MapActivity;
 
 public class EventAdaptor extends PagerAdapter {
 
@@ -45,20 +46,15 @@ public class EventAdaptor extends PagerAdapter {
         View view = layoutInflater.inflate(R.layout.event_card, container, false);
 
         ImageView imageView;
-        //TextView title, desc;
 
         imageView = view.findViewById(R.id.image);
-        //title = view.findViewById(R.id.title);
-        //desc = view.findViewById(R.id.desc);
 
         imageView.setImageResource(models.get(position).getImage());
-        //title.setText(models.get(position).getTitle());
-        //desc.setText(models.get(position).getDesc());
 
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, EventPageDetailsActivity.class);
+                Intent intent = new Intent(context, MapActivity.class);
                 intent.putExtra("param", models.get(position).getTitle());
                 context.startActivity(intent);
                 // finish();
