@@ -23,6 +23,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -42,42 +43,49 @@ public class Schedule {
 
     private List<Activity> activities;
     private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyyMMdd");
+    public boolean isPrasable;
+    private String path;
 
-    public Schedule(){
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public Schedule(String url, File storage){
+
         this.activities = new ArrayList<Activity>();
+        //Malformed or inexistant calendar url
+        isPrasable = false;
+        if (url!=null && url.contains("://") && url.length() > 0){
+
+            path = this.downloadIcsFile(url,storage);
+            isPrasable = true;
+        }
+
     }
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public String downloadIcsFile(String url, boolean mocked){
+    public String downloadIcsFile(String url, File storage){
         URL downloadUrl = null;
         String downloadFileName ="";
-        File storage = null;
+        //File storage = null;
         try {
             downloadUrl = new URL(url.replace("webcal://","https://"));
             HttpURLConnection c = (HttpURLConnection) downloadUrl.openConnection();
             c.setRequestMethod("GET");
+            System.out.println(downloadUrl);
             c.connect();
-            storage = mocked? new File("calendars") :new File(String.valueOf(Environment.getDownloadCacheDirectory() + "/calendars"));
-            if (!storage.exists()){
+            //storage = mocked? new File("calendars") :new File(String.valueOf(Environment.getDownloadCacheDirectory() + "/calendars"));
+            /*if (!storage.exists()){
                 storage.mkdir();
-                if (mocked) {
-                    System.out.println("Download directory created");
-                } else {
-                    Log.e("LOG", "Download directory created");
-                }
-            }
+                Log.e("LOG", "Download directory created");
+            }*/
+            storage.mkdir();
+            Log.e("LOG", "Download directory created");
             downloadFileName = url.replace("https://","").replace("http://","")
                     .replace("www.","").replace("/","-")
                     +".ics";
             File outputFile = new File(storage, downloadFileName);
             if (!outputFile.exists()){
                 outputFile.createNewFile();
-                if (mocked) {
-                    System.out.println("New calendar file created");
-                } else {
-                    Log.e("LOG", "New calendar file created");
-                }
+                Log.e("LOG", "Download File created");
             }
             FileOutputStream fos = new FileOutputStream(outputFile);
             InputStream is = c.getInputStream();
@@ -92,15 +100,12 @@ public class Schedule {
             e.printStackTrace();
         }
         String finalPath = "";
-        if (mocked)
-            finalPath = Paths.get("").toAbsolutePath().toString() + System.getProperty("file.separator") + "calendars"+ System.getProperty("file.separator") + downloadFileName;
-        else
-            finalPath =  storage.getAbsolutePath()+System.getProperty("file.separator")+"calendars"+ System.getProperty("file.separator") +downloadFileName;
+        finalPath =  storage.getAbsolutePath()+ System.getProperty("file.separator") +downloadFileName;
         return finalPath;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public void loadIcs(String path) throws ParseException {
+    public List<Activity> loadIcs() throws ParseException {
 
         Map<String, String> calendarEntry = null;
         FileInputStream fin = null;
@@ -130,7 +135,7 @@ public class Schedule {
                 activities.add(new Activity(calendarEntry));
             }
         }
-
+        return this.activities;
     }
 
     public void debugActivity(){
