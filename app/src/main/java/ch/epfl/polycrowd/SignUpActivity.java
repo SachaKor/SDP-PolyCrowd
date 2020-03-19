@@ -70,29 +70,45 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
 
+    private Boolean registrationFieldsValid(EditText firstPassword, EditText secondPassword,
+                                            EditText username, EditText email){
+
+        Boolean emailInvalid = !emailAddressCheck(email.getText().toString()) ;
+        Boolean emptyUsername = username.getText().toString().isEmpty() ;
+        Boolean pwNotLongEnough = firstPassword.getText().toString().isEmpty() || firstPassword.getText().toString().length() < 6 ;
+        Boolean pwNotConfirmed = secondPassword.getText().toString().isEmpty() ;
+        Boolean pwsNotMatch = !passwordsMatch(firstPassword.getText().toString(), secondPassword.getText().toString()) ;
+
+        if(emailInvalid) {
+            toastPopup("Incorrect email");
+        }else if(emptyUsername) {
+            toastPopup("Enter your username");
+        } else if(pwNotLongEnough) {
+            toastPopup("Password must contain at least 6 characters");
+        } else if(pwNotConfirmed) {
+            toastPopup("Confirm your password");
+        } else if(pwsNotMatch) {
+            toastPopup("Different passwords");
+        }
+
+        return !(emailInvalid|emptyUsername|pwNotLongEnough|pwNotConfirmed|pwsNotMatch) ;
+
+    }
+
+
     /**
      * - Checks all the Sign Up fields
      * - Adds a user to the database if the checks pass
      */
     public void registerClicked(View view) {
+
         final EditText firstPassword = findViewById(R.id.sign_up_pswd),
                 secondPassword = findViewById(R.id.repeat_pswd),
                 username = findViewById(R.id.sign_up_username),
                 email = findViewById(R.id.sign_up_email);
 
 
-        if(!emailAddressCheck(email.getText().toString())) {
-            toastPopup("Incorrect email");
-        }else if(username.getText().toString().isEmpty()) {
-
-            toastPopup("Enter your username");
-        } else if(firstPassword.getText().toString().isEmpty() || firstPassword.getText().toString().length() < 6) {
-            toastPopup("Password must contain at least 6 characters");
-        } else if(secondPassword.getText().toString().isEmpty()) {
-            toastPopup("Confirm your password");
-        } else if(!passwordsMatch(firstPassword.getText().toString(), secondPassword.getText().toString())) {
-            toastPopup("Different passwords");
-        } else {
+        if(registrationFieldsValid(firstPassword, secondPassword, username, email)){
 
             FirebaseInterface fbi = new FirebaseInterface();
 
@@ -100,14 +116,14 @@ public class SignUpActivity extends AppCompatActivity {
 
             // check if the user with a given username exists already
             CollectionReference usersRef = firestore.collection("users");
-            Query query = usersRef.whereEqualTo("username", username.getText().toString());
-            query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            Query queryUsernames = usersRef.whereEqualTo("username", username.getText().toString());
+
+            queryUsernames.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                     if(task.isSuccessful()) { // user with this username already exists
                         if(task.getResult().size() > 0) {
                             toastPopup("User already exists");
-
                         } else { // otherwise, add a user to the firestore
                             new FirebaseInterface().getAuthInstance(false)
                                     .createUserWithEmailAndPassword(email.getText().toString(), firstPassword.getText().toString())
@@ -137,7 +153,6 @@ public class SignUpActivity extends AppCompatActivity {
                                         }
                                     });
                             toastPopup("Sign up successful");
-
                         }
                     }
                 }
