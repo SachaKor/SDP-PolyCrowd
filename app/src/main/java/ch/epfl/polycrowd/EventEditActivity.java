@@ -32,29 +32,10 @@ public class EventEditActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = EventEditActivity.class.toString();
 
-    // TODO: move organizers list to the Event class
-    private List<String> organizers = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_edit);
-        initOrganizers();
-        initRecyclerView();
-    }
-
-    // TODO: fetch organizers from database
-    private void initOrganizers() {
-        String[] emails = {"staff1@ha.ha", "staff2@ha.ha", "staff3@ha.ha"};
-        organizers.addAll(Arrays.asList(emails));
-
-
-    }
-
-    private void initRecyclerView() {
-        RecyclerView recyclerView = findViewById(R.id.organizers_recycler_view);
-        OrganizersAdapter adapter = new OrganizersAdapter(organizers, this);
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -122,8 +103,6 @@ public class EventEditActivity extends AppCompatActivity {
         if(startDate == null || endDate == null) {
             return;
         }
-
-
 
 
         // check if the user is logged in
