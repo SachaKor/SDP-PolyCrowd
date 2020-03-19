@@ -37,87 +37,79 @@ public class MapActivity extends AppCompatActivity {
     private int mInterval = 5000; // 5 seconds by default, can be changed later
     private Handler mHandler;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
 
 
 
-        // Buttons
+
+
+    void setGuestButtons( Button buttonLeft , Button  buttonRight){
+        buttonRight.setText("EVENTS");
+        buttonLeft.setText("LOGIN");
+
+        buttonRight.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) { clickEvent(v); }
+        });
+        buttonLeft.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) { clickSignIn(v); }
+        });
+    }
+
+
+    void setVisitorButtons( Button buttonLeft , Button  buttonRight){
+        buttonRight.setText("EVENTS");
+        buttonLeft.setText("GROUPS");
+
+        buttonRight.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) { }
+        });
+        buttonLeft.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) { }
+        });
+    }
+
+    void setOrganiserButtons(Button buttonLeft , Button  buttonRight){
+        buttonRight.setText("MANAGE");
+        buttonLeft.setText("STAFF");
+
+        buttonRight.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) { }
+        });
+        buttonLeft.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) { }
+        });
+    }
+
+
+
+    void createButtons(){
         Button buttonRight = (Button) findViewById(R.id.butRight);
-        final Button buttonLeft = (Button) findViewById(R.id.butLeft);
-
+        Button buttonLeft = (Button) findViewById(R.id.butLeft);
 
         // TODO : switch status depending on LOGIN
         status = level.GUEST;
 
         switch(status)  {
-
             case GUEST:
-
-                buttonRight.setText("EVENTS");
-                buttonLeft.setText("LOGIN");
-
-                buttonRight.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                        clickEvent(v);
-                    }
-                });
-                buttonLeft.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                        clickSignIn(v);
-
-                    }
-                });
-
+                setGuestButtons(buttonLeft , buttonRight);
                 break;
             case VISITOR:
-
-                buttonRight.setText("EVENTS");
-                buttonLeft.setText("GROUPS");
-
-                buttonRight.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                    }
-                });
-                buttonLeft.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                    }
-                });
-
+                setVisitorButtons(buttonLeft , buttonRight);
                 break;
-
             case ORGANISER:
-
-                buttonRight.setText("MANAGE");
-                buttonLeft.setText("STAFF");
-
-                buttonRight.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                    }
-                });
-                buttonLeft.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                    }
-                });
-
+                setOrganiserButtons(buttonLeft , buttonRight);
                 break;
 
         }
+    }
+
+    void createMap(){
         // display map  WARNING: TO DO AT THE END OF ONCREATE
         mMap = new CrowdMap(this);
 
@@ -129,6 +121,17 @@ public class MapActivity extends AppCompatActivity {
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(mMap);
+    }
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        createButtons();
+        createMap();
+
     }
 
 

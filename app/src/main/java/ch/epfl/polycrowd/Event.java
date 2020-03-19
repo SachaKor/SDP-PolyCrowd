@@ -48,13 +48,13 @@ public class Event {
     // default constructor for debugging
     public Event(){
         this.owner = null;
-        this.name = "Name Event";
+        this.name = "DEBUG EVENT";
         this.isPublic = true;
         this.type = EventType.OTHER;
         this.start = null;
         this.end = null;
         this.calendar = null;
-        this.description = "default description";
+        this.description = "this is only a debug event ... ";
         this.image = R.drawable.balelec;
     }
 

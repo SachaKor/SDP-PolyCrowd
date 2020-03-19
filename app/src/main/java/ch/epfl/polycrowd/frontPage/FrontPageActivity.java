@@ -23,27 +23,18 @@ public class FrontPageActivity extends AppCompatActivity {
     ViewPager viewPager;
     EventPagerAdaptor adapter;
     List<Event> events;
-    Integer[]colors = null;
-    ArgbEvaluator argbEvaluator = new ArgbEvaluator();
+
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     void setEventModels(){
         events = new ArrayList<>();
         events.add(new Event());
-        events.add(new Event());
-        events.add(new Event());
+        //TODO: add the events from firebase
 
     }
 
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_front_page);
-
-        setEventModels();
+    void setViewPager(){
 
         adapter = new EventPagerAdaptor(events, this);
 
@@ -55,27 +46,34 @@ public class FrontPageActivity extends AppCompatActivity {
         TextView description = findViewById(R.id.description);
 
 
-
         viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 if(position != 0)
-                    description.setText( events.get(position - 1 ).getDescription() );
+                    description.setText( "BRIEF DESCRIPTION : \n" + events.get(position - 1 ).getDescription() );
                 else
                     description.setText("create a new event")   ;
             }
 
             @Override
-            public void onPageSelected(int position) {
-
-            }
+            public void onPageSelected(int position) { }
 
             @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
+            public void onPageScrollStateChanged(int state) { }
         });
 
+    }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_front_page);
+
+        setEventModels();
+        setViewPager();
 
 
     }
