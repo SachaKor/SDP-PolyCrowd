@@ -24,6 +24,8 @@ import java.util.Map;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import ch.epfl.polycrowd.map.MapActivity;
+
 public class EventEditActivity extends AppCompatActivity {
 
     @Override
@@ -71,7 +73,7 @@ public class EventEditActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Error occurred while adding the event", Toast.LENGTH_LONG).show();
                 });
 
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, MapActivity.class);
         startActivity(intent);
     }
 }

@@ -26,6 +26,8 @@ public class Event {
     private LocalDateTime start;
     private LocalDateTime end;
     private String calendar;
+    private String description;
+    private int image;
 
     public Event(Integer owner, String name, Boolean isPublic, EventType type,
                  LocalDateTime start, LocalDateTime end,
@@ -39,6 +41,37 @@ public class Event {
         this.start = start;
         this.end = end;
         this.calendar = calendar;
+        this.description = "default descrption";
+        this.image = R.drawable.demo1;
+    }
+
+    // default constructor for debugging
+    public Event(){
+        this.owner = null;
+        this.name = "DEBUG EVENT";
+        this.isPublic = true;
+        this.type = EventType.OTHER;
+        this.start = null;
+        this.end = null;
+        this.calendar = null;
+        this.description = "this is only a debug event ... ";
+        this.image = R.drawable.balelec;
+    }
+
+    public int getImage(){
+        return image;
+    }
+
+    public  void setImage( int im ){
+        image = im;
+    }
+
+    public String getDescription(){
+        return description;
+    }
+
+    public void setDescription(String d){
+        description = d;
     }
 
     public Integer getOwner() {
