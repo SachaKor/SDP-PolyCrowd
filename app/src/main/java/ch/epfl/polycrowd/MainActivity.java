@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        PolyContext.setCurrentEvent( new Event(1,
+        /*PolyContext.setCurrentEvent( new Event(1,
                 "fakeEvent", true,
                 Event.EventType.CONVENTION,
                 LocalDateTime.of(LocalDate.parse("2018-12-27"), LocalTime.parse("00:00")),
@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
                 "https://satellite.bar/agenda/ical.php", getApplicationContext().getFilesDir()));
 
         Intent intent = new Intent(this, ScheduleActivity.class);
-        startActivity(intent);
+        startActivity(intent);*/
 
         // Buttons
         Button buttonRight = findViewById(R.id.butRight);
