@@ -44,7 +44,7 @@ public class SignUpActivityTest {
                 .check(matches(isDisplayed()));
     }
 
-    @Test
+   @Test
     public void testToastIsDisplayedWhenPasswordsDoNotMatch() {
         typeTextAndCloseKeyboard(R.id.sign_up_email, "sasha@bla.com");
         typeTextAndCloseKeyboard(R.id.sign_up_username, "sasha");
@@ -67,4 +67,29 @@ public class SignUpActivityTest {
                 .inRoot(withDecorView(not(mActivityRule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));
     }
+
+    /*@Test
+    public void testUsernameExistsToast(){
+        typeTextAndCloseKeyboard(R.id.sign_up_email, "123@mail.com");
+        typeTextAndCloseKeyboard(R.id.sign_up_username, "yabdro");
+        typeTextAndCloseKeyboard(R.id.sign_up_pswd, "123456");
+        typeTextAndCloseKeyboard(R.id.repeat_pswd, "123456");
+
+        onView(withId(R.id.sign_up_button)).perform(click()) ;
+        onView(withText("User already exists")).inRoot(withDecorView(not(mActivityRule.getActivity().getWindow().getDecorView()))).
+                check(matches(isDisplayed()));
+
+    }*/
+
+
+    /*@Test
+    public void testEmailAlreadyRegisteredToast(){
+        typeTextAndCloseKeyboard(R.id.sign_up_email, "123@mail.com");
+        typeTextAndCloseKeyboard(R.id.sign_up_username, "yabdro");
+        typeTextAndCloseKeyboard(R.id.sign_up_pswd, "123456");
+        typeTextAndCloseKeyboard(R.id.repeat_pswd, "123456");
+
+    }*/
+
+
 }
