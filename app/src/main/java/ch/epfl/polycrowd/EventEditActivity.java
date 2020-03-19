@@ -25,6 +25,7 @@ import static ch.epfl.polycrowd.Event.dtFormat;
 
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
 import ch.epfl.polycrowd.map.MapActivity;
+import ch.epfl.polycrowd.logic.PolyContext;
 
 public class EventEditActivity extends AppCompatActivity {
 
@@ -115,7 +116,8 @@ public class EventEditActivity extends AppCompatActivity {
         // Create the map containing the event info
         String calendarUrl = findViewById(R.id.EditEventCalendar).toString();
         // Create the map containing the event info
-        Event ev = new Event(getApplicationContext(),user.getUid(), evName.getText().toString(), isPublic,
+
+        Event ev = new Event(user.getUid(), evName.getText().toString(), isPublic,
                 Event.EventType.valueOf(type.toUpperCase()),
                 startDate, endDate,
                 calendarUrl, "");
@@ -125,9 +127,8 @@ public class EventEditActivity extends AppCompatActivity {
         // TODO: add the organizers via the Event class
         // the first organizer is the creator of the event
         event.put("organizers", Arrays.asList(user.getEmail()));
-        ch.epfl.polycrowd.logic.Context.getInstance().setCurrentEvent(ev);
 
-
+        PolyContext.setCurrentEvent(ev);
         // Add the event to the firestore
         firestore.collection("polyevents")
                 .add(event)

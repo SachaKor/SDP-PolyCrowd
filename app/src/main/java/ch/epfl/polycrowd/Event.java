@@ -1,8 +1,8 @@
 package ch.epfl.polycrowd;
 
-
 import android.content.Context;
 import android.os.Build;
+
 
 import android.util.Log;
 
@@ -43,11 +43,10 @@ public class Event {
     private String description;
     private String id;
     private int image;
-
     private Schedule schedule;
-    private Context mContext;
 
-    public Event(Context mContext, String owner, String name, Boolean isPublic, EventType type,
+
+    public Event(String owner, String name, Boolean isPublic, EventType type,
                  LocalDateTime start, LocalDateTime end,
                  String calendar, String description){
         if(owner == null || name == null || type == null || start == null || end == null || calendar == null)
@@ -60,8 +59,16 @@ public class Event {
         this.end = end;
         this.calendar = calendar;
         setDescription(description);
-        this.mContext =mContext;
-        this.loadCalendar();
+    }
+    private String getEventCalFilename(){
+        return String.join(".",this.name,"ics");
+    }
+
+    public Event(String owner, String name, Boolean isPublic, EventType type,
+                 LocalDateTime start, LocalDateTime end,
+                 String calendar, String description, File dir){
+        this(owner, name, isPublic, type, start, end, calendar, description);
+        this.loadCalendar(dir);
     }
 
     public void setId(String id) {
@@ -207,15 +214,14 @@ public class Event {
         LocalDateTime end = (eStamp.toDate()).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
         EventType type = EventType.valueOf(Objects.requireNonNull(data.get("type")).toString().toUpperCase());
         String desc = data.get("description").toString();
-        return new Event(c, owner, name, isPublic, type, start, end, calendar, desc);
+        return new Event(owner, name, isPublic, type, start, end, calendar, desc);
+
     }
 
-    public void loadCalendar(){
-        //File f= Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
-        File f = new File(mContext.getFilesDir(),"cal");
-        //System.out.println(f.toPath(),);
-        this.schedule = new Schedule(calendar, f);
+    public void loadCalendar(File dir){
+        this.schedule = new Schedule(calendar, new File(dir, getEventCalFilename()));
     }
+
     public Schedule getSchedule(){
         return this.schedule;
     }
