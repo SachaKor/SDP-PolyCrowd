@@ -122,6 +122,7 @@ public class SignUpActivity extends AppCompatActivity {
                             Map<String, Object> user = new HashMap<>();
                             user.put("username", username.getText().toString());
                             user.put("age", 100);
+                            user.put("email", email.getText().toString());
                             firestore.collection("users")
                                     .add(user)
                                     .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {

@@ -36,6 +36,7 @@ public class Event {
     private LocalDateTime end;
     private String calendar;
     private String description;
+    private String id;
 
     public Event(String owner, String name, Boolean isPublic, EventType type,
                  LocalDateTime start, LocalDateTime end,
@@ -50,6 +51,17 @@ public class Event {
         this.end = end;
         this.calendar = calendar;
         setDescription(description);
+    }
+
+    public void setId(String id) {
+        if(id == null) {
+            throw new IllegalArgumentException("Id cannot be null");
+        }
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getOwner() {

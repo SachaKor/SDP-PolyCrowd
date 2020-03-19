@@ -120,7 +120,7 @@ public class EventEditActivity extends AppCompatActivity {
         Map<String, Object> event = ev.toHashMap();
         // TODO: add the organizers via the Event class
         // the first organizer is the creator of the event
-        event.put("organizers", Arrays.asList(user.getUid()));
+        event.put("organizers", Arrays.asList(user.getEmail()));
         // Add the event to the firestore
         firestore.collection("polyevents")
                 .add(event)

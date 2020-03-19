@@ -43,12 +43,16 @@ public class EventPageActivity extends AppCompatActivity {
         //To use inside
         Context context = this ;
         FirebaseInterface firebaseInterface = new FirebaseInterface();
-        final FirebaseFirestore firestore = firebaseInterface.getFirestoreInstance(false) ;
+        final FirebaseFirestore firestore = firebaseInterface.getFirestoreInstance(false);
         firestore.collection("polyevents").get().addOnSuccessListener(queryDocumentSnapshots -> {
 
             List<Event> events = new ArrayList<>();
 
-            queryDocumentSnapshots.forEach(queryDocumentSnapshot -> events.add(Event.getFromDocument(queryDocumentSnapshot.getData())));
+            queryDocumentSnapshots.forEach(queryDocumentSnapshot -> {
+                Event e = Event.getFromDocument(queryDocumentSnapshot.getData());
+                e.setId(queryDocumentSnapshot.getId());
+                events.add(e);
+            });
 
             myAdapter = new MyAdapter(context, events);
             mRecyclerView.setAdapter(myAdapter);

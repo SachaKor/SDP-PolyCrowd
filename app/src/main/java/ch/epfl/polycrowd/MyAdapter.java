@@ -48,7 +48,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyHolder> implements Filtera
         myHolder.mTitle.setText(events.get(i).getName()) ;
         myHolder.mDes.setText(events.get(i).getDescription());
         myHolder.mImaeView.setImageResource(R.drawable.p1);
-
         myHolder.getParentLayout().setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -63,11 +62,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyHolder> implements Filtera
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream) ;
 
                 byte[] bytes =  stream.toByteArray() ;
+                String eventId = events.get(i).getId();
 
                 Intent intent = new Intent(c, EventPageDetailsActivity.class) ;
                 intent.putExtra("iTitle", gTitle) ;
                 intent.putExtra("iDesc", gDesc) ;
                 intent.putExtra("iImage", bytes) ;
+                intent.putExtra("eventId", eventId);
                 c.startActivity(intent);
                 Toast.makeText(c, "Clicked on: " + events.get(i).getName(), Toast.LENGTH_SHORT).show();
 
