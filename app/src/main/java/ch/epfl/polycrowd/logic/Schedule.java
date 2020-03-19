@@ -2,20 +2,16 @@ package ch.epfl.polycrowd.logic;
 
 
 import android.os.Build;
-import android.os.Environment;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
-import com.google.android.gms.common.util.JsonUtils;
-import com.google.type.Date;
-import com.google.type.TimeOfDay;
-//import com.google.ical.*;
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.data.ParserException;
+import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Component;
 import net.fortuna.ical4j.model.Property;
-import net.fortuna.ical4j.util.Configurator;
+import net.fortuna.ical4j.model.component.CalendarComponent;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,17 +19,16 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Paths;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 
@@ -41,56 +36,37 @@ public class Schedule {
 
 
 
-    private List<Activity> activities;
-    private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyyMMdd");
-    public boolean isPrasable;
-    private String path;
+    private final List<Activity> activities;
+    private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH);
+
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public Schedule(String url, File storage){
-
-        this.activities = new ArrayList<Activity>();
-        //Malformed or inexistant calendar url
-        isPrasable = false;
-        if (url!=null && url.contains("://") && url.length() > 0){
-
-            path = this.downloadIcsFile(url,storage);
-            isPrasable = true;
+    public Schedule(String url , File f){
+        if (url==null || !url.contains("://")) {
+            throw new IllegalArgumentException("Invalid URL for schedule");
         }
 
+        downloadIcsFile(url, f);
+        this.activities = loadIcs(f);
     }
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public String downloadIcsFile(String url, File storage){
-        URL downloadUrl = null;
-        String downloadFileName ="";
-        //File storage = null;
+    public static String downloadIcsFile(String url, File f){
+
         try {
-            downloadUrl = new URL(url.replace("webcal://","https://"));
+            URL downloadUrl = new URL(url.replace("webcal://","https://"));
             HttpURLConnection c = (HttpURLConnection) downloadUrl.openConnection();
             c.setRequestMethod("GET");
-            System.out.println(downloadUrl);
             c.connect();
-            //storage = mocked? new File("calendars") :new File(String.valueOf(Environment.getDownloadCacheDirectory() + "/calendars"));
-            /*if (!storage.exists()){
-                storage.mkdir();
-                Log.e("LOG", "Download directory created");
-            }*/
-            storage.mkdir();
-            Log.e("LOG", "Download directory created");
-            downloadFileName = url.replace("https://","").replace("http://","")
-                    .replace("www.","").replace("/","-")
-                    +".ics";
-            File outputFile = new File(storage, downloadFileName);
-            if (!outputFile.exists()){
-                outputFile.createNewFile();
-                Log.e("LOG", "Download File created");
+
+            if (!f.exists() && !f.createNewFile()){
+                throw new IOException("File does not exist and can't be created");
             }
-            FileOutputStream fos = new FileOutputStream(outputFile);
+            FileOutputStream fos = new FileOutputStream(f);
             InputStream is = c.getInputStream();
             byte[] buffer = new byte[1024];
-            int len1 = 0;
+            int len1;
             while((len1= is.read(buffer)) != -1){
                 fos.write(buffer,0,len1);
             }
@@ -99,50 +75,50 @@ public class Schedule {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        String finalPath = "";
-        finalPath =  storage.getAbsolutePath()+ System.getProperty("file.separator") +downloadFileName;
-        return finalPath;
+        return f.getAbsolutePath();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public List<Activity> loadIcs() throws ParseException {
+    public static List<Activity> loadIcs(File path) {
 
-        Map<String, String> calendarEntry = null;
-        FileInputStream fin = null;
-        try {
-            fin = new FileInputStream(path);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        List<Activity> activities = new ArrayList<>();
+
+        System.setProperty("net.fortuna.ical4j.timezone.cache.impl", "net.fortuna.ical4j.util.MapTimeZoneCache");
         CalendarBuilder builder = new CalendarBuilder();
-        net.fortuna.ical4j.model.Calendar calendar = null;
-        try {
-            calendar = builder.build(fin);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ParserException e) {
-            e.printStackTrace();
-        }
-        for (Iterator i = calendar.getComponents().iterator(); i.hasNext(); ) {
-            Component component = (Component) i.next();
-            if (component.getName().equalsIgnoreCase("VEVENT")) {
-                calendarEntry = new HashMap<>();
-                for (Iterator j = component.getProperties().iterator(); j.hasNext(); ) {
-                    net.fortuna.ical4j.model.Property property = (Property) j.next();
-                    calendarEntry.put(property.getName(), property.getValue());
-                }
 
-                activities.add(new Activity(calendarEntry));
+        try {
+            FileInputStream fin = new FileInputStream(path);
+            Calendar calendar = builder.build(fin);
+            if(calendar == null)
+                throw new IOException("Null Calendar");
+
+            for (CalendarComponent cc : calendar.getComponents()) {
+                if (cc.getName().equalsIgnoreCase("VEVENT")) {
+                    Map<String, String> calendarEntry = new HashMap<>();
+                    for (Property property : cc.getProperties()) {
+                        calendarEntry.put(property.getName(), property.getValue());
+                    }
+
+                    activities.add(new Activity(calendarEntry));
+                }
             }
+        } catch (IOException | ParserException e) {
+            e.printStackTrace();
+            return null;
         }
-        return this.activities;
+
+        return activities;
     }
 
     public void debugActivity(){
         for (Activity a : this.activities){
-            System.out.println(a);
-            System.out.println("################");
+            Log.e("Activity", a.toString());
+            Log.e("==", "########");
         }
+    }
+
+    public List<Activity> getActivities(){
+        return this.activities;
     }
 
 }
