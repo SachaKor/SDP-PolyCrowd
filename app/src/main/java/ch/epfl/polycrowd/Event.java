@@ -1,9 +1,6 @@
 package ch.epfl.polycrowd;
 
-
-import android.content.Context;
 import android.os.Build;
-import android.os.Environment;
 
 import androidx.annotation.RequiresApi;
 
@@ -32,9 +29,12 @@ public class Event {
     private LocalDateTime end;
     private String calendar;
     private Schedule schedule;
-    private Context mContext;
 
-    public Event(Context mContext, Integer owner, String name, Boolean isPublic, EventType type,
+    private String getEventCalFilename(){
+        return String.join(".",this.name,"ics");
+    }
+
+    public Event(Integer owner, String name, Boolean isPublic, EventType type,
                  LocalDateTime start, LocalDateTime end,
                  String calendar){
         if(owner == null || name == null || type == null || start == null || end == null || calendar == null)
@@ -46,8 +46,13 @@ public class Event {
         this.start = start;
         this.end = end;
         this.calendar = calendar;
-        this.mContext =mContext;
-        this.loadCalendar();
+    }
+
+    public Event(Integer owner, String name, Boolean isPublic, EventType type,
+                 LocalDateTime start, LocalDateTime end,
+                 String calendar, File dir){
+        this(owner, name, isPublic, type, start, end, calendar);
+        this.loadCalendar(dir);
     }
 
     public Integer getOwner() {
@@ -126,7 +131,7 @@ public class Event {
         return event;
     }
 
-    public static Event getFromDocument(Map<String, Object> data, Context c){
+    public static Event getFromDocument(Map<String, Object> data){
             Integer owner = Integer.parseInt(Objects.requireNonNull(data.get("owner")).toString());
             String name = Objects.requireNonNull(data.get("name")).toString();
             Boolean isPublic = Boolean.valueOf((Objects.requireNonNull(data.get("isPublic"))).toString());
@@ -135,15 +140,13 @@ public class Event {
             LocalDateTime end = LocalDateTime.parse(Objects.requireNonNull(data.get("end")).toString(), dtFormat);
             EventType type = EventType.valueOf(Objects.requireNonNull(data.get("type")).toString().toUpperCase());
 
-            return new Event(c,owner, name, isPublic, type, start, end, calendar);
+            return new Event(owner, name, isPublic, type, start, end, calendar);
     }
 
-    public void loadCalendar(){
-        //File f= Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
-        File f = new File(mContext.getFilesDir(),"cal");
-        //System.out.println(f.toPath(),);
-        this.schedule = new Schedule(calendar, f);
+    public void loadCalendar(File dir){
+        this.schedule = new Schedule(calendar, new File(dir, getEventCalFilename()));
     }
+
     public Schedule getSchedule(){
         return this.schedule;
     }

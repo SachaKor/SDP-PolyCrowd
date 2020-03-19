@@ -24,6 +24,8 @@ import java.util.Map;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import ch.epfl.polycrowd.logic.PolyContext;
+
 public class EventEditActivity extends AppCompatActivity {
 
 
@@ -54,14 +56,14 @@ public class EventEditActivity extends AppCompatActivity {
                 type = eventTypeSpinner.getSelectedItem().toString() ;
         String calendarUrl = findViewById(R.id.EditEventCalendar).toString();
         // Create the map containing the event info
-        Event ev = new Event(getApplicationContext(),1, evName.getText().toString(), isPublic,
+        Event ev = new Event(1, evName.getText().toString(), isPublic,
                              Event.EventType.valueOf(type.toUpperCase()),
                              LocalDateTime.of(LocalDate.parse(sDate), LocalTime.parse("00:00")),
                              LocalDateTime.of(LocalDate.parse(eDate), LocalTime.parse("00:00")),
                     calendarUrl);
 
         Map<String, Object> event = ev.toHashMap();
-        ch.epfl.polycrowd.logic.Context.getInstance().setCurrentEvent(ev);
+        PolyContext.setCurrentEvent(ev);
         // Add the event to the firestore
         firestore.collection("polyevents")
                 .add(event)
