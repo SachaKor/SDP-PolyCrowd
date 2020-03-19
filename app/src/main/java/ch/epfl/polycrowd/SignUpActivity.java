@@ -31,6 +31,12 @@ import java.util.Map;
 
 public class SignUpActivity extends AppCompatActivity {
 
+
+    private  EditText firstPassword, secondPassword , username , email  ;
+
+    FirebaseInterface fbi = new FirebaseInterface();
+    final FirebaseFirestore firestore = fbi.getFirestoreInstance(false);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,79 +76,120 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
 
+    private Boolean registrationFieldsValid(EditText firstPassword, EditText secondPassword,
+                                            EditText username, EditText email){
+
+        Boolean emailInvalid = !emailAddressCheck(email.getText().toString()) ;
+        Boolean emptyUsername = username.getText().toString().isEmpty() ;
+        Boolean pwNotLongEnough = firstPassword.getText().toString().isEmpty() || firstPassword.getText().toString().length() < 6 ;
+        Boolean pwNotConfirmed = secondPassword.getText().toString().isEmpty() ;
+        Boolean pwsNotMatch = !passwordsMatch(firstPassword.getText().toString(), secondPassword.getText().toString()) ;
+
+        if(emailInvalid) {
+            toastPopup("Incorrect email");
+        }else if(emptyUsername) {
+            toastPopup("Enter your username");
+        } else if(pwNotLongEnough) {
+            toastPopup("Password must contain at least 6 characters");
+        } else if(pwNotConfirmed) {
+            toastPopup("Confirm your password");
+        } else if(pwsNotMatch) {
+            toastPopup("Different passwords");
+        }
+
+        return !(emailInvalid|emptyUsername|pwNotLongEnough|pwNotConfirmed|pwsNotMatch) ;
+
+    }
+
+
     /**
      * - Checks all the Sign Up fields
      * - Adds a user to the database if the checks pass
      */
     public void registerClicked(View view) {
-        final EditText firstPassword = findViewById(R.id.sign_up_pswd),
-                secondPassword = findViewById(R.id.repeat_pswd),
-                username = findViewById(R.id.sign_up_username),
-                email = findViewById(R.id.sign_up_email);
+
+        firstPassword = findViewById(R.id.sign_up_pswd) ;
+        secondPassword = findViewById(R.id.repeat_pswd) ;
+        username = findViewById(R.id.sign_up_username)  ;
+        email = findViewById(R.id.sign_up_email) ;
 
 
-        if(!emailAddressCheck(email.getText().toString())) {
-            toastPopup("Incorrect email");
-        }else if(username.getText().toString().isEmpty()) {
-
-            toastPopup("Enter your username");
-        } else if(firstPassword.getText().toString().isEmpty() || firstPassword.getText().toString().length() < 6) {
-            toastPopup("Password must contain at least 6 characters");
-        } else if(secondPassword.getText().toString().isEmpty()) {
-            toastPopup("Confirm your password");
-        } else if(!passwordsMatch(firstPassword.getText().toString(), secondPassword.getText().toString())) {
-            toastPopup("Different passwords");
-        } else {
-
-            FirebaseInterface fbi = new FirebaseInterface();
-
-            final FirebaseFirestore firestore = fbi.getFirestoreInstance(false);
-
+        if(registrationFieldsValid(firstPassword, secondPassword, username, email)){
             // check if the user with a given username exists already
             CollectionReference usersRef = firestore.collection("users");
-            Query query = usersRef.whereEqualTo("username", username.getText().toString());
-            query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                    if(task.isSuccessful()) { // user with this username already exists
-                        if(task.getResult().size() > 0) {
-                            toastPopup("User already exists");
+            Query queryUsernames = usersRef.whereEqualTo("username", username.getText().toString());
+            Query queryEmails = usersRef.whereEqualTo("email", email.getText().toString()) ;
 
-                        } else { // otherwise, add a user to the firestore
-                            new FirebaseInterface().getAuthInstance(false)
-                                    .createUserWithEmailAndPassword(email.getText().toString(), firstPassword.getText().toString())
-                                    .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-                                        @Override
-                                        public void onSuccess(AuthResult authResult) {
-                                            String uid = authResult.getUser().getUid();
+            queryUsernames.get().addOnCompleteListener(usernamesQueryListener(queryEmails));
 
-                                        }
-                                    });
-
-                            Map<String, Object> user = new HashMap<>();
-                            user.put("username", username.getText().toString());
-                            user.put("age", 100);
-                            firestore.collection("users")
-                                    .add(user)
-                                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                        @Override
-                                        public void onSuccess(DocumentReference documentReference) {
-                                            Log.d("SIGN_UP", "DocumentSnapshot added with ID: " + documentReference.getId());
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            Log.w("SIGN_UP", "Error adding document", e);
-                                        }
-                                    });
-                            toastPopup("Sign up successful");
-
-                        }
-                    }
-                }
-            });
         }
 
+    }
+
+    private void addUserToDatabase(){
+        new FirebaseInterface().getAuthInstance(false)
+                .createUserWithEmailAndPassword(email.getText().toString(), firstPassword.getText().toString())
+                .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                    @Override
+                    public void onSuccess(AuthResult authResult) {
+                        String uid = authResult.getUser().getUid();
+                    }
+         });
+
+        Map<String, Object> user = new HashMap<>();
+        user.put("username", username.getText().toString());
+        user.put("age", 100);
+        user.put("email", email.getText().toString()) ;
+        firestore.collection("users")
+                .add(user)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.d("SIGN_UP", "DocumentSnapshot added with ID: " + documentReference.getId());
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w("SIGN_UP", "Error adding document", e);
+                    }
+                });
+    }
+
+    private OnCompleteListener<QuerySnapshot> usernamesQueryListener(Query queryEmails){
+        return new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if(task.isSuccessful()) {
+                    // user with this username already exists
+                    if(task.getResult().size() > 0) {
+                        toastPopup("User already exists");
+                    } else {
+                        queryEmails.get().addOnCompleteListener(emailsQueryListener()) ;
+                    }
+                }
+            }
+        } ;
+    }
+
+
+    private OnCompleteListener<QuerySnapshot> emailsQueryListener(){
+        return new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                if (task.isSuccessful()) {
+                    //user with this email already exists
+                    if (task.getResult().size() > 0) {
+                        toastPopup("Email already exists");
+                    } else {
+                        // otherwise, add a user to the firestore
+                        addUserToDatabase();
+                        toastPopup("Sign up successful");
+                    }
+                }
+
+            }
+        } ;
     }
 }
