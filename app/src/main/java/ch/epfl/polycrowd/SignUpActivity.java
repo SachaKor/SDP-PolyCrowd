@@ -31,6 +31,12 @@ import java.util.Map;
 
 public class SignUpActivity extends AppCompatActivity {
 
+
+    private  EditText firstPassword, secondPassword , username , email  ;
+
+    FirebaseInterface fbi = new FirebaseInterface();
+    final FirebaseFirestore firestore = fbi.getFirestoreInstance(false);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,85 +108,88 @@ public class SignUpActivity extends AppCompatActivity {
      */
     public void registerClicked(View view) {
 
-        final EditText firstPassword = findViewById(R.id.sign_up_pswd),
-                secondPassword = findViewById(R.id.repeat_pswd),
-                username = findViewById(R.id.sign_up_username),
-                email = findViewById(R.id.sign_up_email);
+        firstPassword = findViewById(R.id.sign_up_pswd) ;
+        secondPassword = findViewById(R.id.repeat_pswd) ;
+        username = findViewById(R.id.sign_up_username)  ;
+        email = findViewById(R.id.sign_up_email) ;
 
 
         if(registrationFieldsValid(firstPassword, secondPassword, username, email)){
-
-            FirebaseInterface fbi = new FirebaseInterface();
-
-            final FirebaseFirestore firestore = fbi.getFirestoreInstance(false);
-
             // check if the user with a given username exists already
             CollectionReference usersRef = firestore.collection("users");
             Query queryUsernames = usersRef.whereEqualTo("username", username.getText().toString());
             Query queryEmails = usersRef.whereEqualTo("email", email.getText().toString()) ;
 
+            queryUsernames.get().addOnCompleteListener(usernamesQueryListener(queryEmails));
 
-            queryUsernames.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                    if(task.isSuccessful()) {
-                        // user with this username already exists
-                        if(task.getResult().size() > 0) {
-                            toastPopup("User already exists");
-                        } else {
-
-                            queryEmails.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                @Override
-                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-
-                                    if (task.isSuccessful()) {
-                                        //user with this email already exists
-                                        if (task.getResult().size() > 0) {
-                                            toastPopup("Email already exists");
-                                        } else {
-
-                                        // otherwise, add a user to the firestore
-                                        new FirebaseInterface().getAuthInstance(false)
-                                                .createUserWithEmailAndPassword(email.getText().toString(), firstPassword.getText().toString())
-                                                .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-                                                    @Override
-                                                    public void onSuccess(AuthResult authResult) {
-                                                        String uid = authResult.getUser().getUid();
-
-                                                    }
-                                                });
-
-                                        Map<String, Object> user = new HashMap<>();
-                                        user.put("username", username.getText().toString());
-                                        user.put("age", 100);
-                                        user.put("email", email.getText().toString()) ;
-                                        firestore.collection("users")
-                                                .add(user)
-                                                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                                    @Override
-                                                    public void onSuccess(DocumentReference documentReference) {
-                                                        Log.d("SIGN_UP", "DocumentSnapshot added with ID: " + documentReference.getId());
-                                                    }
-                                                })
-                                                .addOnFailureListener(new OnFailureListener() {
-                                                    @Override
-                                                    public void onFailure(@NonNull Exception e) {
-                                                        Log.w("SIGN_UP", "Error adding document", e);
-                                                    }
-                                                });
-                                        toastPopup("Sign up successful");
-                                    }
-                                }
-
-                                }
-                            }) ;
-
-
-                        }
-                    }
-                }
-            });
         }
 
+    }
+
+    private void addUserToDatabase(){
+        new FirebaseInterface().getAuthInstance(false)
+                .createUserWithEmailAndPassword(email.getText().toString(), firstPassword.getText().toString())
+                .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                    @Override
+                    public void onSuccess(AuthResult authResult) {
+                        String uid = authResult.getUser().getUid();
+                    }
+         });
+
+        Map<String, Object> user = new HashMap<>();
+        user.put("username", username.getText().toString());
+        user.put("age", 100);
+        user.put("email", email.getText().toString()) ;
+        firestore.collection("users")
+                .add(user)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.d("SIGN_UP", "DocumentSnapshot added with ID: " + documentReference.getId());
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w("SIGN_UP", "Error adding document", e);
+                    }
+                });
+    }
+
+    private OnCompleteListener<QuerySnapshot> usernamesQueryListener(Query queryEmails){
+        return new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if(task.isSuccessful()) {
+                    // user with this username already exists
+                    if(task.getResult().size() > 0) {
+                        toastPopup("User already exists");
+                    } else {
+                        queryEmails.get().addOnCompleteListener(emailsQueryListener()) ;
+                    }
+                }
+            }
+        } ;
+    }
+
+
+    private OnCompleteListener<QuerySnapshot> emailsQueryListener(){
+        return new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                if (task.isSuccessful()) {
+                    //user with this email already exists
+                    if (task.getResult().size() > 0) {
+                        toastPopup("Email already exists");
+                    } else {
+                        // otherwise, add a user to the firestore
+                        addUserToDatabase();
+                        toastPopup("Sign up successful");
+                    }
+                }
+
+            }
+        } ;
     }
 }
