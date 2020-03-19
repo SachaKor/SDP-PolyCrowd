@@ -139,12 +139,27 @@
                 </TableRow>
             </TableLayout>
 
+            <TextView
+                android:id="@+id/EditEventOrganizers"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:textSize="20sp"
+                android:text="Organizers"
+                android:padding="10dp"
+                android:ems="10" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/organizers_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
             <Button
                 android:id="@+id/EditEventSubmit"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/event_submit"
-                android:onClick="sendEventSubmit"/>
+                android:onClick="sendEventSubmit" />
         </LinearLayout>
     </ScrollView>
 

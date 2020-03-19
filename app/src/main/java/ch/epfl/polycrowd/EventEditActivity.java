@@ -11,24 +11,20 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
 
-import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.protobuf.ByteString;
-import com.google.protobuf.InvalidProtocolBufferException;
 
-import java.net.Inet4Address;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import io.opencensus.internal.StringUtils;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import static ch.epfl.polycrowd.Event.dtFormat;
 
@@ -36,20 +32,27 @@ public class EventEditActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = EventEditActivity.class.toString();
 
+    // TODO: move organizers list to the Event class
+    private List<String> organizers = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_edit);
+        initOrganizers();
+        initRecyclerView();
     }
 
-    // https://stackoverflow.com/questions/1102891/how-to-check-if-a-string-is-numeric-in-java
-    private static boolean isNumeric(String str)
-    {
-        for (char c : str.toCharArray())
-        {
-            if (!Character.isDigit(c)) return false;
-        }
-        return true;
+    // TODO: fetch organizers from database
+    private void initOrganizers() {
+        String[] emails = {"staff1@ha.ha", "staff2@ha.ha", "staff3@ha.ha"};
+        organizers.addAll(Arrays.asList(emails));
+    }
+
+    private void initRecyclerView() {
+        RecyclerView recyclerView = findViewById(R.id.organizers_recycler_view);
+        OrganizersAdapter adapter = new OrganizersAdapter(organizers, this);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
