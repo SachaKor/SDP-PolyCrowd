@@ -86,6 +86,8 @@ dependencies {
 
     implementation 'com.google.maps.android:android-maps-utils:1.0.0'
 
+    implementation 'com.google.firebase:firebase-dynamic-links:19.1.0'
+
 
 }
 
