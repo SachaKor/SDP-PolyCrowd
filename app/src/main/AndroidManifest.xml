@@ -14,15 +14,16 @@
         android:theme="@style/AppTheme">
 
 
-        <activity android:name=".SignUpActivity"></activity>
+        <activity android:name=".SignUpActivity" />
 
 
         <activity android:name=".EventPageActivity"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
         </activity>
 
-        <activity android:name=".EventPageDetailsActivity"
-            android:parentActivityName=".EventPageActivity"></activity>
+        <activity
+            android:name=".EventPageDetailsActivity"
+            android:parentActivityName=".EventPageActivity" />
 
         <activity
             android:name="com.google.firebase.auth.internal.FederatedSignInActivity"
@@ -30,8 +31,9 @@
             android:launchMode="standard" />
 
 
-        <activity android:name=".LoginActivity"></activity>
-        <activity android:name=".EventEditActivity"></activity>
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".EventEditActivity" />
+        <activity android:name=".ScheduleActivity" />
         
          <activity
             android:name=".MainActivity"
@@ -41,7 +43,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
 
 
         <!--

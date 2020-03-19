@@ -48,7 +48,7 @@ public class EventPageActivity extends AppCompatActivity {
 
             List<Event> events = new ArrayList<>();
 
-            queryDocumentSnapshots.forEach(queryDocumentSnapshot -> events.add(Event.getFromDocument(queryDocumentSnapshot.getData(), getApplicationContext())));
+            queryDocumentSnapshots.forEach(queryDocumentSnapshot -> events.add(Event.getFromDocument(queryDocumentSnapshot.getData())));
 
             myAdapter = new MyAdapter(context, getModels(events));
             mRecyclerView.setAdapter(myAdapter);
