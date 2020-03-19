@@ -139,6 +139,7 @@
                 </TableRow>
             </TableLayout>
 
+
             <TextView
                 android:id="@+id/EditEventOrganizers"
                 android:layout_width="fill_parent"

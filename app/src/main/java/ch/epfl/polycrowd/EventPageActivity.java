@@ -50,7 +50,7 @@ public class EventPageActivity extends AppCompatActivity {
 
             queryDocumentSnapshots.forEach(queryDocumentSnapshot -> events.add(Event.getFromDocument(queryDocumentSnapshot.getData())));
 
-            myAdapter = new MyAdapter(context, getModels(events));
+            myAdapter = new MyAdapter(context, events);
             mRecyclerView.setAdapter(myAdapter);
 
         }).addOnFailureListener(e -> {
@@ -61,22 +61,22 @@ public class EventPageActivity extends AppCompatActivity {
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private ArrayList<Model> getModels(List<Event> events){
-
-        ArrayList<Model> models = new ArrayList<>() ;
-
-        for(Event e: events)
-        {
-            Model m = new Model() ;
-            m.setTitle(e.getName());
-            m.setDescription("Upcoming events");
-            m.setImg(R.drawable.p1);
-            models.add(m) ;
-        }
-
-        return models ;
-    }
+//    @RequiresApi(api = Build.VERSION_CODES.O)
+//    private ArrayList<Model> getModels(List<Event> events){
+//
+//        ArrayList<Model> models = new ArrayList<>() ;
+//
+//        for(Event e: events)
+//        {
+//            Model m = new Model() ;
+//            m.setTitle(e.getName());
+//            m.setDescription("Upcoming events");
+//            m.setImg(R.drawable.p1);
+//            models.add(m) ;
+//        }
+//
+//        return models ;
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

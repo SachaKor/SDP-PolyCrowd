@@ -46,6 +46,8 @@ public class EventEditActivity extends AppCompatActivity {
     private void initOrganizers() {
         String[] emails = {"staff1@ha.ha", "staff2@ha.ha", "staff3@ha.ha"};
         organizers.addAll(Arrays.asList(emails));
+
+
     }
 
     private void initRecyclerView() {
@@ -135,18 +137,20 @@ public class EventEditActivity extends AppCompatActivity {
         Event ev = new Event(user.getUid(), evName.getText().toString(), isPublic,
                 Event.EventType.valueOf(type.toUpperCase()),
                 startDate, endDate,
-                "url");
+                "url", "");
         Map<String, Object> event = ev.toHashMap();
-
+        // TODO: add the organizers via the Event class
+        // the first organizer is the creator of the event
+        event.put("organizers", Arrays.asList(user.getUid()));
         // Add the event to the firestore
         firestore.collection("polyevents")
                 .add(event)
                 .addOnSuccessListener(documentReference -> {
-                    Log.d("ADD_EVENT", "DocumentSnapshot added with ID: " + documentReference.getId());
+                    Log.d(LOG_TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
                     Toast.makeText(getApplicationContext(), "Event added", Toast.LENGTH_LONG).show();
                 })
                 .addOnFailureListener(e -> {
-                    Log.e("ADD_EVENT", "Error adding document", e);
+                    Log.e(LOG_TAG, "Error adding document", e);
                     Toast.makeText(getApplicationContext(), "Error occurred while adding the event", Toast.LENGTH_LONG).show();
                 });
 

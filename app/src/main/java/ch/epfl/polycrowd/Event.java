@@ -35,10 +35,11 @@ public class Event {
     private LocalDateTime start;
     private LocalDateTime end;
     private String calendar;
+    private String description;
 
     public Event(String owner, String name, Boolean isPublic, EventType type,
                  LocalDateTime start, LocalDateTime end,
-                 String calendar){
+                 String calendar, String description){
         if(owner == null || name == null || type == null || start == null || end == null || calendar == null)
             throw new IllegalArgumentException("Invalid Argument for Event Constructor");
         this.owner = owner;
@@ -48,11 +49,14 @@ public class Event {
         this.start = start;
         this.end = end;
         this.calendar = calendar;
+        setDescription(description);
     }
 
     public String getOwner() {
         return owner;
     }
+
+    public String getDescription() { return description; }
 
     public String getName() {
         return name;
@@ -62,6 +66,14 @@ public class Event {
         if(name == null)
             throw new IllegalArgumentException("Name cannot be Null");
         this.name = name;
+    }
+
+    public void setDescription(String description) {
+        if(description == null) {
+            this.description = "";
+        } else {
+            this.description = description;
+        }
     }
 
     public Boolean getPublic() {
@@ -124,6 +136,7 @@ public class Event {
         event.put("end", eDate);
         event.put("type", this.type.toString());
         event.put("calendar", this.calendar);
+        event.put("description", this.description);
 
         return event;
     }
@@ -140,7 +153,8 @@ public class Event {
         LocalDateTime start = (sStamp.toDate()).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
         LocalDateTime end = (eStamp.toDate()).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
         EventType type = EventType.valueOf(Objects.requireNonNull(data.get("type")).toString().toUpperCase());
-        return new Event(owner, name, isPublic, type, start, end, calendar);
+        String desc = data.get("description").toString();
+        return new Event(owner, name, isPublic, type, start, end, calendar, desc);
     }
 
 }
