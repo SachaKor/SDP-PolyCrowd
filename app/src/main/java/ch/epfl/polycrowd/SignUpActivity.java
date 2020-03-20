@@ -134,7 +134,7 @@ public class SignUpActivity extends AppCompatActivity {
                     public void onSuccess(AuthResult authResult) {
                         String uid = authResult.getUser().getUid();
                     }
-         });
+                });
 
         Map<String, Object> user = new HashMap<>();
         user.put("username", username.getText().toString());

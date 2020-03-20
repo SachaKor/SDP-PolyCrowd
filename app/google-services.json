@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "641906924493-7h8qietb5gjdp2gdatbditfmtacuske0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ch.epfl.polycrowd",
+            "certificate_hash": "edab770329999f267b5903238389119d98601787"
+          }
+        },
+        {
           "client_id": "641906924493-pqgs779uj353f5o44sqsg636r7svpvqb.apps.googleusercontent.com",
           "client_type": 3
         }

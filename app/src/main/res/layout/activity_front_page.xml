@@ -25,7 +25,8 @@
         android:layout_marginTop="26dp"
         android:clipToPadding="false"
         android:foregroundGravity="center"
-        android:overScrollMode="never"></androidx.viewpager.widget.ViewPager>
+        android:overScrollMode="never">
+    </androidx.viewpager.widget.ViewPager>
 
     <TextView
         android:id="@+id/description"

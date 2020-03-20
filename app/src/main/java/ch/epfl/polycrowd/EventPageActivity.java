@@ -43,17 +43,19 @@ public class EventPageActivity extends AppCompatActivity {
         //To use inside
         Context context = this ;
         FirebaseInterface firebaseInterface = new FirebaseInterface();
-        final FirebaseFirestore firestore = firebaseInterface.getFirestoreInstance(false) ;
+        final FirebaseFirestore firestore = firebaseInterface.getFirestoreInstance(false);
         firestore.collection("polyevents").get().addOnSuccessListener(queryDocumentSnapshots -> {
 
             List<Event> events = new ArrayList<>();
 
-            queryDocumentSnapshots.forEach(queryDocumentSnapshot -> events.add(Event.getFromDocument(queryDocumentSnapshot.getData())));
+            queryDocumentSnapshots.forEach(queryDocumentSnapshot -> {
+                Event e = Event.getFromDocument(queryDocumentSnapshot.getData());
+                e.setId(queryDocumentSnapshot.getId());
+                events.add(e);
+            });
 
-            myAdapter = new MyAdapter(context, getModels(events));
+            myAdapter = new MyAdapter(context, events);
             mRecyclerView.setAdapter(myAdapter);
-
-            Log.v("\nEventPageActivity\n", "\nVALUE OF EVENT1 NAME IS  " + events.get(0).getName() + " \n");
 
         }).addOnFailureListener(e -> {
 
@@ -63,22 +65,22 @@ public class EventPageActivity extends AppCompatActivity {
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private ArrayList<Model> getModels(List<Event> events){
-
-        ArrayList<Model> models = new ArrayList<>() ;
-
-        for(Event e: events)
-        {
-            Model m = new Model() ;
-            m.setTitle(e.getName());
-            m.setDescription("Upcoming events");
-            m.setImg(R.drawable.p1);
-            models.add(m) ;
-        }
-
-        return models ;
-    }
+//    @RequiresApi(api = Build.VERSION_CODES.O)
+//    private ArrayList<Model> getModels(List<Event> events){
+//
+//        ArrayList<Model> models = new ArrayList<>() ;
+//
+//        for(Event e: events)
+//        {
+//            Model m = new Model() ;
+//            m.setTitle(e.getName());
+//            m.setDescription("Upcoming events");
+//            m.setImg(R.drawable.p1);
+//            models.add(m) ;
+//        }
+//
+//        return models ;
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

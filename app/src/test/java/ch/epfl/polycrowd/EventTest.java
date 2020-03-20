@@ -16,33 +16,34 @@ import java.util.Objects;
 class EventTest {
 
     private static Event e = null;
-    private static final Integer default_owner = 1;
+    private static final String default_owner = "1";
     private static final String default_name = "TestEvent";
     private static final Event.EventType default_type = Event.EventType.OTHER;
     private static final LocalDateTime default_s = LocalDateTime.parse("11-12-2019 08:15",Event.dtFormat);
     private static final LocalDateTime default_e = LocalDateTime.parse("12-12-2019 12:45", Event.dtFormat);
+    private static final String default_desc = "Description";
 
     @BeforeEach
     void initTest(){
         e = new Event(default_owner,default_name, false,
-                default_type, default_s, default_e, "None");
+                default_type, default_s, default_e, "None", default_desc);
 
     }
 
     @Test
     void constructor(){
         assertThrows(IllegalArgumentException.class, () -> new Event(null,default_name, false,
-                default_type, default_s, default_e,"None"));
+                default_type, default_s, default_e,"None", default_desc));
         assertThrows(IllegalArgumentException.class, () -> new Event(default_owner,null, false,
-                default_type, default_s, default_e,"None"));
+                default_type, default_s, default_e,"None", default_desc));
         assertThrows(IllegalArgumentException.class, () -> new Event(default_owner,default_name, false,
-                null, default_s, default_e,"None"));
+                null, default_s, default_e,"None", default_desc));
         assertThrows(IllegalArgumentException.class, () -> new Event(default_owner,default_name, false,
-                default_type, null, default_e, "None"));
+                default_type, null, default_e, "None", default_desc));
         assertThrows(IllegalArgumentException.class, () -> new Event(default_owner,default_name, false,
-                default_type, default_s, null, "None"));
+                default_type, default_s, null, "None", default_desc));
         assertThrows(IllegalArgumentException.class, () -> new Event(default_owner,default_name, false,
-                default_type, default_s, default_e,null));
+                default_type, default_s, default_e,null, default_desc));
     }
 
     @Test

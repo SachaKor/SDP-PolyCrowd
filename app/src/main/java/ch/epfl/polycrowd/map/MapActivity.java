@@ -5,16 +5,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.content.Intent;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
+
 import com.google.android.gms.maps.SupportMapFragment;
 
+import ch.epfl.polycrowd.DlinkActivity;
+import ch.epfl.polycrowd.EventEditActivity;
 import ch.epfl.polycrowd.EventPageActivity;
 import ch.epfl.polycrowd.LoginActivity;
 import ch.epfl.polycrowd.R;
-import ch.epfl.polycrowd.map.CrowdMap;
 
 public class MapActivity extends AppCompatActivity {
 
@@ -36,9 +36,6 @@ public class MapActivity extends AppCompatActivity {
     //set timer for updating the heatMap
     private int mInterval = 5000; // 5 seconds by default, can be changed later
     private Handler mHandler;
-
-
-
 
 
 
@@ -171,6 +168,17 @@ public class MapActivity extends AppCompatActivity {
 
     public void clickEvent(View view) {
         Intent intent = new Intent(this, EventPageActivity.class);
+        startActivity(intent);
+    }
+
+    public void clickAddEvent(View view) {
+        Intent intent = new Intent(this, EventEditActivity.class);
+        startActivity(intent);
+    }
+
+    // link to the dynamic link dummy button
+    public void clickInviteOrg(View view) {
+        Intent intent = new Intent(this, DlinkActivity.class);
         startActivity(intent);
     }
 

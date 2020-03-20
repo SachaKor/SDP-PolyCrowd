@@ -12,7 +12,6 @@ public class MyHolder extends RecyclerView.ViewHolder {
 
     ImageView mImaeView ;
     TextView mTitle, mDes;
-//    ItemClickListener itemClickListener;
     RelativeLayout parentLayout;
 
     public MyHolder(@NonNull View itemView){
@@ -21,22 +20,9 @@ public class MyHolder extends RecyclerView.ViewHolder {
         this.mImaeView = itemView.findViewById(R.id.imageIv) ;
         this.mTitle = itemView.findViewById(R.id.titleTv) ;
         this.mDes = itemView.findViewById(R.id.descriptionTv) ;
-//        itemView.setOnClickListener(this);
         parentLayout = itemView.findViewById(R.id.event_item);
     }
 
-//    @Override
-//    public void onClick(View v) {
-//
-//        this.itemClickListener.onItemClickListener(v, getLayoutPosition());
-//
-//    }
-
-
-//    public void setItemClickListener(ItemClickListener ic){
-//        this.itemClickListener = ic ;
-//
-//    }
 
     public RelativeLayout getParentLayout() {
         return parentLayout;
