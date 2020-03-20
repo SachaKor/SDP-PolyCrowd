@@ -144,6 +144,7 @@ public class Event {
     }
 
     public void loadCalendar(File dir){
+        if (dir == null) throw new IllegalArgumentException();
         this.schedule = new Schedule(calendar, new File(dir, getEventCalFilename()));
     }
 
