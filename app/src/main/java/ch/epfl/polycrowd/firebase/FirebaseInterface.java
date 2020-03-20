@@ -1,4 +1,4 @@
-package ch.epfl.polycrowd;
+package ch.epfl.polycrowd.firebase;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -17,7 +17,7 @@ public class FirebaseInterface {
      * @param refresh option to force the refresh of the cached instance, true to force
      * @return FirebaseAuth authentication instance
      */
-    FirebaseAuth getAuthInstance(boolean refresh){
+    public FirebaseAuth getAuthInstance(boolean refresh){
         if (this.cachedAuth == null || refresh){
             this.cachedAuth = FirebaseAuth.getInstance();
         }
@@ -25,14 +25,14 @@ public class FirebaseInterface {
 
     }
 
-    DatabaseReference getDbRef(boolean refresh){
+    public DatabaseReference getDbRef(boolean refresh){
         if (this.cachedDbRef == null || refresh) {
             this.cachedDbRef = FirebaseDatabase.getInstance().getReference();
         }
         return this.cachedDbRef;
     }
 
-    FirebaseFirestore getFirestoreInstance(boolean refresh) {
+    public FirebaseFirestore getFirestoreInstance(boolean refresh) {
         if (this.cachedFirestore == null || refresh) {
             this.cachedFirestore = FirebaseFirestore.getInstance();
         }
@@ -43,7 +43,7 @@ public class FirebaseInterface {
     /***
      * Utility function to check arguments' integrity
      */
-    void checkArgs(String... args){
+    public void checkArgs(String... args){
         for (String arg : args){
             if (arg == null) throw new IllegalArgumentException("Firebase query cannot be null");
             if (arg.length() == 0) throw new IllegalArgumentException("Firebase query cannot be empty");

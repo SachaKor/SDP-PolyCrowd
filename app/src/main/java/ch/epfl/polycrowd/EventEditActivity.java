@@ -1,6 +1,5 @@
 package ch.epfl.polycrowd;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,18 +15,15 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import static ch.epfl.polycrowd.Event.dtFormat;
 
+import ch.epfl.polycrowd.firebase.FirebaseInterface;
 import ch.epfl.polycrowd.map.MapActivity;
 
 public class EventEditActivity extends AppCompatActivity {
