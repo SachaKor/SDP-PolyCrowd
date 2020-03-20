@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.epfl.polycrowd.Event;
+import ch.epfl.polycrowd.EventPageActivity;
 import ch.epfl.polycrowd.LoginActivity;
 import ch.epfl.polycrowd.OrganizerInviteActivity;
 import ch.epfl.polycrowd.R;
@@ -97,7 +98,6 @@ public class FrontPageActivity extends AppCompatActivity {
         // front page should dispatch the dynamic links
         receiveDynamicLink();
     }
-
 
 
     public void clickSignIn(View view) {

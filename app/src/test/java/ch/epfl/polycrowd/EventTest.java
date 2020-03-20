@@ -110,7 +110,7 @@ class EventTest {
     void getSetHashMap(){
         Map<String,Object> hm = e.toHashMap();
 
-        assertEquals(Objects.requireNonNull(hm.get("owner")).toString(), default_owner.toString());
+        assertEquals(Objects.requireNonNull(hm.get("owner")).toString(), default_owner);
         assertEquals(Event.EventType.valueOf(Objects.requireNonNull(hm.get("type")).toString()), default_type);
         assertEquals(Objects.requireNonNull(hm.get("name")).toString(), default_name);
         assertEquals(Objects.requireNonNull(hm.get("start")).toString(), default_s.format(Event.dtFormat));

@@ -13,8 +13,7 @@
         android:layout_height="100dp"
         android:id="@+id/event_details_img"
         android:src="@mipmap/ic_launcher"
-        android:layout_centerHorizontal="true"
-        />
+        android:layout_centerHorizontal="true" />
 
     <TextView
         android:layout_width="match_parent"

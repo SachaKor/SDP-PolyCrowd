@@ -89,8 +89,8 @@ public class MapActivity extends AppCompatActivity {
 
 
     void createButtons(){
-        Button buttonRight = (Button) findViewById(R.id.butRight);
-        Button buttonLeft = (Button) findViewById(R.id.butLeft);
+        Button buttonRight = findViewById(R.id.butRight);
+        Button buttonLeft = findViewById(R.id.butLeft);
 
         // TODO : switch status depending on LOGIN
         status = level.GUEST;
