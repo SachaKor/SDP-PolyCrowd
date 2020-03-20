@@ -1,6 +1,7 @@
 package ch.epfl.polycrowd.firebase;
 
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -9,9 +10,17 @@ public class FirebaseQueries {
 
     private static final String EVENTS = "polyevents";
 
-    public static Task<QuerySnapshot> getAllEvents() {
+    private static FirebaseFirestore getFirestore() {
         FirebaseInterface firebaseInterface = new FirebaseInterface();
-        final FirebaseFirestore firestore = firebaseInterface.getFirestoreInstance(false);
-        return firestore.collection(EVENTS).get();
+        return firebaseInterface.getFirestoreInstance(false);
+
+    }
+
+    public static Task<QuerySnapshot> getAllEvents() {
+        return getFirestore().collection(EVENTS).get();
+    }
+
+    public static Task<DocumentSnapshot> getEventById(String eventId) {
+        return getFirestore().collection(EVENTS).document(eventId).get();
     }
 }

@@ -60,27 +60,9 @@ public class EventPageActivity extends AppCompatActivity {
 
         });
 
-
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
     }
-
-//    @RequiresApi(api = Build.VERSION_CODES.O)
-//    private ArrayList<Model> getModels(List<Event> events){
-//
-//        ArrayList<Model> models = new ArrayList<>() ;
-//
-//        for(Event e: events)
-//        {
-//            Model m = new Model() ;
-//            m.setTitle(e.getName());
-//            m.setDescription("Upcoming events");
-//            m.setImg(R.drawable.p1);
-//            models.add(m) ;
-//        }
-//
-//        return models ;
-//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

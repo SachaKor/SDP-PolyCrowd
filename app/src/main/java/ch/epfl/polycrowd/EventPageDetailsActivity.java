@@ -1,18 +1,18 @@
 package ch.epfl.polycrowd;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import ch.epfl.polycrowd.firebase.FirebaseInterface;
+import ch.epfl.polycrowd.firebase.FirebaseQueries;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,12 +24,13 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     // TODO: find another way to pass the event id
     private String eventId;
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_details_page);
-        getIncomingIntent();
-        initOrganizers();
+//        getIncomingIntent();
+        initEvent();
     }
 
     private void getIncomingIntent() {
@@ -42,17 +43,17 @@ public class EventPageDetailsActivity extends AppCompatActivity {
             byte[] mBytes = getIntent().getByteArrayExtra("iImage") ;
             eventId = getIntent().getStringExtra("eventId");
             Bitmap bitmap = BitmapFactory.decodeByteArray(mBytes, 0, mBytes.length) ;
-            setUpViews(mTitle, mDescription, bitmap);
+            setUpViews(mTitle, mDescription);
         }
     }
 
-    private void setUpViews(String title, String description, Bitmap image) {
-        TextView eventTitle = findViewById(R.id.title),
-                eventDescription = findViewById(R.id.description);
-        ImageView eventImg = findViewById(R.id.imageView);
+    private void setUpViews(String title, String description) {
+        TextView eventTitle = findViewById(R.id.event_details_title),
+                eventDescription = findViewById(R.id.event_details_description);
+        ImageView eventImg = findViewById(R.id.event_details_img);
         eventTitle.setText(title);
         eventDescription.setText(description);
-        eventImg.setImageBitmap(image);
+        eventImg.setImageResource(R.drawable.balelec);
     }
 
     private void initRecyclerView(List<String> organizers) {
@@ -65,20 +66,22 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     /**
      * Fetches the organizers of the event from the database
      * Initializes the RecyclerView displaying the organizers
+     * TODO: pass the organizers list to this activity via Event class to avoid extra db queries
      */
-    private void initOrganizers() {
-//        String[] emails = {"staff1@ha.ha", "staff2@ha.ha", "staff3@ha.ha"};
-//        organizers.addAll(Arrays.asList(emails));
-
-        FirebaseInterface firebaseInterface = new FirebaseInterface();
-        final FirebaseFirestore firestore = firebaseInterface.getFirestoreInstance(false);
-        firestore.collection("polyevents").document(eventId).get()
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void initEvent() {
+        if (!getIntent().hasExtra("eventId")) {
+            return;
+        }
+        eventId = getIntent().getStringExtra("eventId");
+        FirebaseQueries.getEventById(eventId)
                 .addOnSuccessListener(documentSnapshot -> {
-                    // TODO: move organizers list to the Event class
+                    Event event = Event.getFromDocument(documentSnapshot.getData());
                     List<String> organizers = new ArrayList<>();
                     organizers.addAll((List<String>)documentSnapshot.get("organizers"));
                     initRecyclerView(organizers);
-                    Log.d(LOG_TAG, "Organizers retrieved from the database");
+                    setUpViews(event.getName(), event.getDescription());
+                    Log.d(LOG_TAG, "Event loaded from the database");
                 }).addOnFailureListener(e -> Log.e(LOG_TAG, "Error getting Event with id " + eventId));
 
     }

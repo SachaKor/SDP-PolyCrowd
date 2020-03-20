@@ -11,8 +11,8 @@ import android.widget.Button;
 import com.google.android.gms.maps.SupportMapFragment;
 
 import ch.epfl.polycrowd.DlinkActivity;
-import ch.epfl.polycrowd.EventEditActivity;
 import ch.epfl.polycrowd.EventPageActivity;
+import ch.epfl.polycrowd.EventPageDetailsActivity;
 import ch.epfl.polycrowd.LoginActivity;
 import ch.epfl.polycrowd.R;
 
@@ -37,16 +37,19 @@ public class MapActivity extends AppCompatActivity {
     private int mInterval = 5000; // 5 seconds by default, can be changed later
     private Handler mHandler;
 
+    // eventId is needed to open the correct EventDetails page
+    private String eventId;
+
 
 
 
     void setGuestButtons( Button buttonLeft , Button  buttonRight){
-        buttonRight.setText("EVENTS");
+        buttonRight.setText("EVENT DETAILS");
         buttonLeft.setText("LOGIN");
 
         buttonRight.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) { clickEvent(v); }
+            public void onClick(View v) { clickEventDetails(v); }
         });
         buttonLeft.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -126,9 +129,13 @@ public class MapActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // TODO: replace this with the Context
+        if(getIntent().hasExtra("eventId")) {
+            eventId = getIntent().getStringExtra("eventId");
+        }
+
         createButtons();
         createMap();
-
     }
 
 
@@ -166,13 +173,9 @@ public class MapActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void clickEvent(View view) {
-        Intent intent = new Intent(this, EventPageActivity.class);
-        startActivity(intent);
-    }
-
-    public void clickAddEvent(View view) {
-        Intent intent = new Intent(this, EventEditActivity.class);
+    public void clickEventDetails(View view) {
+        Intent intent = new Intent(this, EventPageDetailsActivity.class);
+        intent.putExtra("eventId", eventId);
         startActivity(intent);
     }
 

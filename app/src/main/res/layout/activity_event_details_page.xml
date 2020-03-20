@@ -11,7 +11,7 @@
     <ImageView
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:id="@+id/imageView"
+        android:id="@+id/event_details_img"
         android:src="@mipmap/ic_launcher"
         android:layout_centerHorizontal="true"
         />
@@ -19,23 +19,23 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/title"
+        android:id="@+id/event_details_title"
         android:text="Title"
         android:textSize="22sp"
         android:textColor="#000"
         android:textStyle="bold"
-        android:layout_below="@id/imageView"
+        android:layout_below="@id/event_details_img"
         />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Description"
-        android:id="@+id/description"
+        android:id="@+id/event_details_description"
         android:textSize="18sp"
         android:textColor="#A9A9A9"
         android:textStyle="bold"
-        android:layout_below="@id/title"
+        android:layout_below="@id/event_details_title"
         android:layout_marginTop="5dp"
         />
 
@@ -48,7 +48,7 @@
         android:text="Organizers"
         android:padding="10dp"
         android:ems="10"
-        android:layout_below="@id/description"/>
+        android:layout_below="@id/event_details_description"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/organizers_recycler_view"
