@@ -28,6 +28,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import static ch.epfl.polycrowd.Event.dtFormat;
 
+import ch.epfl.polycrowd.map.MapActivity;
+
 public class EventEditActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = EventEditActivity.class.toString();
@@ -133,7 +135,7 @@ public class EventEditActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Error occurred while adding the event", Toast.LENGTH_LONG).show();
                 });
 
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, MapActivity.class);
         startActivity(intent);
     }
 }

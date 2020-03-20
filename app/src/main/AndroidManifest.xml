@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="ch.epfl.polycrowd"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="ch.epfl.polycrowd">
 
     <application
         android:allowBackup="true"
@@ -12,31 +12,30 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+        <activity android:name=".SignUpActivity" />
 
-        <activity android:name=".SignUpActivity"></activity>
+        <activity
+            android:name=".EventPageActivity"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"></activity>
 
-
-        <activity android:name=".EventPageActivity"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
-        </activity>
-
-        <activity android:name=".EventPageDetailsActivity"
-            android:parentActivityName=".EventPageActivity"></activity>
+        <activity
+            android:name=".EventPageDetailsActivity"
+            android:parentActivityName=".EventPageActivity" />
 
         <activity
             android:name="com.google.firebase.auth.internal.FederatedSignInActivity"
-            tools:replace="android:launchMode"
-            android:launchMode="standard" />
+            android:launchMode="standard"
+            tools:replace="android:launchMode" />
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".EventEditActivity" />
 
 
-        <activity android:name=".LoginActivity"></activity>
-        <activity android:name=".EventEditActivity"></activity>
-        
-         <activity
-            android:name=".MainActivity"
+        <activity
+            android:name=".frontPage.FrontPageActivity"
             android:label="@string/title_activity_main">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
              <intent-filter>
@@ -50,8 +49,10 @@
         <activity android:name=".OrganizerInviteActivity"/>
         <activity android:name=".DlinkActivity"></activity>
 
-
-
+        <activity
+            android:name=".map.MapActivity"
+            android:label="@string/title_activity_main">
+        </activity>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
