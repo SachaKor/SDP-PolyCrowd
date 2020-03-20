@@ -49,20 +49,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //Connection permission
-
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-
-        /*PolyContext.setCurrentEvent( new Event(1,
-                "fakeEvent", true,
-                Event.EventType.CONVENTION,
-                LocalDateTime.of(LocalDate.parse("2018-12-27"), LocalTime.parse("00:00")),
-                LocalDateTime.of(LocalDate.parse("2018-12-28"), LocalTime.parse("00:00")),
-                "https://satellite.bar/agenda/ical.php", getApplicationContext().getFilesDir()));
-
-        Intent intent = new Intent(this, ScheduleActivity.class);
-        startActivity(intent);*/
 
         // Buttons
         Button buttonRight = findViewById(R.id.butRight);

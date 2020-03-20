@@ -2,6 +2,7 @@ package ch.epfl.polycrowd.logic;
 
 
 import android.os.Build;
+import android.os.Environment;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
@@ -42,7 +43,7 @@ public class Schedule {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Schedule(String url , File f){
-        if (url==null || !url.contains("://")) {
+        if (url==null || !url.contains("://") || f==null) {
             throw new IllegalArgumentException("Invalid URL for schedule");
         }
 
@@ -52,7 +53,7 @@ public class Schedule {
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public static String downloadIcsFile(String url, File f){
+    public static String    downloadIcsFile(String url, File f){
 
         try {
             URL downloadUrl = new URL(url.replace("webcal://","https://"));
@@ -112,8 +113,9 @@ public class Schedule {
 
     public void debugActivity(){
         for (Activity a : this.activities){
-            Log.e("Activity", a.toString());
-            Log.e("==", "########");
+
+            System.out.println( a.toString());
+            System.out.println( "########");
         }
     }
 
