@@ -6,7 +6,7 @@
     android:name="com.google.android.gms.maps.SupportMapFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
+    tools:context=".map.MapActivity"
     tools:layout="@layout/activity_main">
 
     <Button
@@ -14,11 +14,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="start|top"
-        android:text="Event"
+        android:text="@string/event_details"
         android:padding="10dp"
         android:layout_marginTop="20dp"
         android:layout_marginStart="25dp"
-        android:paddingRight="10dp"/>
+        android:paddingRight="10dp"
+        android:onClick="clickEventDetails"/>
 
     <Button
         android:id="@+id/butInviteOrganizer"

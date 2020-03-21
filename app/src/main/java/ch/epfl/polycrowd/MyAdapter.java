@@ -65,9 +65,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyHolder> implements Filtera
                 String eventId = events.get(i).getId();
 
                 Intent intent = new Intent(c, EventPageDetailsActivity.class) ;
-                intent.putExtra("iTitle", gTitle) ;
-                intent.putExtra("iDesc", gDesc) ;
-                intent.putExtra("iImage", bytes) ;
                 intent.putExtra("eventId", eventId);
                 c.startActivity(intent);
                 Toast.makeText(c, "Clicked on: " + events.get(i).getName(), Toast.LENGTH_SHORT).show();

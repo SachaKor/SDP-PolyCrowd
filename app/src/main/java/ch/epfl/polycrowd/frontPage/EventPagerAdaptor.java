@@ -76,6 +76,7 @@ public class EventPagerAdaptor extends PagerAdapter {
                 public void onClick(View v) {
                     Intent intent = new Intent(context, MapActivity.class);
                     // TODO : update currentEvent to the given one
+                    intent.putExtra("eventId", events.get(position-1).getId());
                     context.startActivity(intent);
                 }
             });

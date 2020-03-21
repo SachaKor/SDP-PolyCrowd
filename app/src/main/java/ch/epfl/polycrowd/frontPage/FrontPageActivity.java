@@ -5,7 +5,6 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
-import android.animation.ArgbEvaluator;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -25,29 +24,37 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.epfl.polycrowd.Event;
+import ch.epfl.polycrowd.EventPageActivity;
 import ch.epfl.polycrowd.LoginActivity;
 import ch.epfl.polycrowd.OrganizerInviteActivity;
 import ch.epfl.polycrowd.R;
+import ch.epfl.polycrowd.firebase.FirebaseQueries;
 
 public class FrontPageActivity extends AppCompatActivity {
 
+    private static final String TAG = "FrontPageActivity";
+
     ViewPager viewPager;
     EventPagerAdaptor adapter;
-    List<Event> events;
-
-    private static final String TAG = "FrontPageActivity";
 
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     void setEventModels(){
-        events = new ArrayList<>();
-        events.add(new Event());
-        //TODO: add the events from firebase
-
+        FirebaseQueries.getAllEvents()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<Event> events = new ArrayList<>();
+                    queryDocumentSnapshots.forEach(queryDocumentSnapshot -> {
+                        Event e = Event.getFromDocument(queryDocumentSnapshot.getData());
+                        e.setId(queryDocumentSnapshot.getId());
+                        events.add(e);
+                    });
+                    setViewPager(events);
+                })
+                .addOnFailureListener(e -> Log.w(TAG, "Error retrieving Events from the database"));
     }
 
-    void setViewPager(){
+    void setViewPager(List<Event> events){
 
         adapter = new EventPagerAdaptor(events, this);
 
@@ -86,12 +93,11 @@ public class FrontPageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_front_page);
 
         setEventModels();
-        setViewPager();
+//        setViewPager();
         
         // front page should dispatch the dynamic links
         receiveDynamicLink();
     }
-
 
 
     public void clickSignIn(View view) {

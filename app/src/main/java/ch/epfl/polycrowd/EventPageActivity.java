@@ -2,12 +2,13 @@ package ch.epfl.polycrowd;
 
 import android.content.Context;
 import android.os.Build;
-import android.util.Log;
-import androidx.annotation.NonNull;
+
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import ch.epfl.polycrowd.firebase.FirebaseInterface;
+import ch.epfl.polycrowd.firebase.FirebaseQueries;
 
 import android.os.Bundle;
 import android.view.Menu;
@@ -16,13 +17,12 @@ import android.view.MenuItem;
 import android.widget.SearchView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 public class EventPageActivity extends AppCompatActivity {
 
@@ -44,7 +44,7 @@ public class EventPageActivity extends AppCompatActivity {
         Context context = this ;
         FirebaseInterface firebaseInterface = new FirebaseInterface();
         final FirebaseFirestore firestore = firebaseInterface.getFirestoreInstance(false);
-        firestore.collection("polyevents").get().addOnSuccessListener(queryDocumentSnapshots -> {
+        FirebaseQueries.getAllEvents().addOnSuccessListener(queryDocumentSnapshots -> {
 
             List<Event> events = new ArrayList<>();
 
@@ -53,7 +53,6 @@ public class EventPageActivity extends AppCompatActivity {
                 e.setId(queryDocumentSnapshot.getId());
                 events.add(e);
             });
-
             myAdapter = new MyAdapter(context, events);
             mRecyclerView.setAdapter(myAdapter);
 
@@ -64,23 +63,6 @@ public class EventPageActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
     }
-
-//    @RequiresApi(api = Build.VERSION_CODES.O)
-//    private ArrayList<Model> getModels(List<Event> events){
-//
-//        ArrayList<Model> models = new ArrayList<>() ;
-//
-//        for(Event e: events)
-//        {
-//            Model m = new Model() ;
-//            m.setTitle(e.getName());
-//            m.setDescription("Upcoming events");
-//            m.setImg(R.drawable.p1);
-//            models.add(m) ;
-//        }
-//
-//        return models ;
-//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

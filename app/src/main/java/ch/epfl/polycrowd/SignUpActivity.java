@@ -2,6 +2,7 @@ package ch.epfl.polycrowd;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import ch.epfl.polycrowd.firebase.FirebaseInterface;
 
 import android.content.Context;
 import android.os.Bundle;
