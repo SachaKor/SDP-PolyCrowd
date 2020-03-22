@@ -52,7 +52,16 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/organizers_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_below="@id/EditEventOrganizers"/>
+
+    <Button
+        android:id="@+id/invite_organizer_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/organizers_recycler_view"
+        android:layout_marginTop="10dp"
+        android:text="Invite Organizer"
+        android:onClick="inviteLinkClicked"/>
 
 </RelativeLayout>

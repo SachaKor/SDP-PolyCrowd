@@ -6,18 +6,29 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import ch.epfl.polycrowd.firebase.FirebaseQueries;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.firebase.dynamiclinks.DynamicLink;
+import com.google.firebase.dynamiclinks.DynamicLink.SocialMetaTagParameters;
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class EventPageDetailsActivity extends AppCompatActivity {
+
+    private String eventName = "";
 
     private static final String LOG_TAG = "EventPageDetails";
 
@@ -81,8 +92,44 @@ public class EventPageDetailsActivity extends AppCompatActivity {
                     organizers.addAll((List<String>)documentSnapshot.get("organizers"));
                     initRecyclerView(organizers);
                     setUpViews(event.getName(), event.getDescription());
+                    eventName = event.getName();
                     Log.d(LOG_TAG, "Event loaded from the database");
                 }).addOnFailureListener(e -> Log.e(LOG_TAG, "Error getting Event with id " + eventId));
 
+    }
+
+    public void inviteLinkClicked(View view) {
+        // build the invite dynamic link
+        // TODO: replace by short dynamic link
+        DynamicLink inviteLink = FirebaseDynamicLinks.getInstance().createDynamicLink()
+                .setLink(Uri.parse("https://www.example.com/invite/?eventId=" + eventId
+                        + "&eventName=" + eventName))
+                .setDomainUriPrefix("https://polycrowd.page.link")
+                .setAndroidParameters(new DynamicLink.AndroidParameters.Builder().build())
+                .setSocialMetaTagParameters(
+                        new SocialMetaTagParameters.Builder()
+                                .setTitle("PolyCrowd Organizer Invite")
+                                .setDescription("You are invited to become an organizer of " + eventName)
+                                .build())
+                .buildDynamicLink();
+
+        // display the dialog widget containing the link
+        TextView showText = new TextView(this);
+        showText.setText(inviteLink.getUri().toString());
+        showText.setTextIsSelectable(true);
+        showText.setLinksClickable(true);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        // TODO: make the dialog look better
+        builder.setView(showText)
+                .setTitle("Here is the invite link:")
+                .setCancelable(true)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                })
+                .show();
     }
 }

@@ -112,7 +112,7 @@ public class FrontPageActivity extends AppCompatActivity {
                 .addOnSuccessListener(this, new OnSuccessListener<PendingDynamicLinkData>() {
                     @Override
                     public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
-                        Log.i(TAG, "Dynamic link received");
+                        Log.d(TAG, "Dynamic link received");
                         // Get deep link from result (may be null if no link is found)
                         Uri deepLink = null;
                         if (pendingDynamicLinkData != null) {
@@ -120,14 +120,17 @@ public class FrontPageActivity extends AppCompatActivity {
                         }
 
                         if (deepLink != null) {
-                            Log.i(TAG, "Deep link URL:\n" + deepLink.toString());
-                            String curPage = deepLink.getQueryParameter("curPage");
-//                            Toast.makeText(getApplicationContext(), "Cur page: " + curPage, Toast.LENGTH_SHORT).show();
-                            if(curPage.equalsIgnoreCase("invite")) {
-                                Toast.makeText(getApplicationContext(), "invite", Toast.LENGTH_SHORT).show();
-                                Log.i(TAG, "organizer invite deep link" + deepLink.toString());
-                                Intent intent = new Intent(c, OrganizerInviteActivity.class);
-                                startActivity(intent);
+                            Log.d(TAG, "Deep link URL:\n" + deepLink.toString());
+                            String lastPathSegment = deepLink.getLastPathSegment();
+                            if(lastPathSegment.equals("invite")) {
+                                String eventId = deepLink.getQueryParameter("eventId"),
+                                        eventName = deepLink.getQueryParameter("eventName");
+                                if (eventId != null && eventName != null) {
+                                    Intent intent = new Intent(c, OrganizerInviteActivity.class);
+                                    intent.putExtra("eventId", eventId);
+                                    intent.putExtra("eventName", eventName);
+                                    startActivity(intent);
+                                }
                             }
                         }
                     }
