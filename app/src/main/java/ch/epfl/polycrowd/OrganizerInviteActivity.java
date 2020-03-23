@@ -31,7 +31,7 @@ public class OrganizerInviteActivity extends AppCompatActivity {
         if(getIntent().hasExtra("eventName")) {
             TextView previewText = findViewById(R.id.organizer_invite_text);
             eventName = getIntent().getStringExtra("eventName");
-            previewText.setText("You are invited to become an organizer of the event \"" + eventName + "\"");
+            previewText.setText("You are invited to become an organizer of the event \"" + eventName + "\"\n Sign in to accept the invitation");
         }
     }
 
@@ -41,6 +41,10 @@ public class OrganizerInviteActivity extends AppCompatActivity {
             eventId = getIntent().getStringExtra("eventId");
         }
         Intent intent = new Intent(this, LoginActivity.class);
+        // these extras are passed to the log in page to add the organizer to the
+        // organizers list once the user has signed in
+        intent.putExtra("isOrganizerInvite", true);
+        intent.putExtra("eventId", eventId);
         startActivity(intent);
     }
 }
