@@ -30,23 +30,28 @@ public class ResetPasswordActivity extends AppCompatActivity {
 
     public void sendResetLinkClicked(View view) {
 
-        EditText email = findViewById(R.id.reset_email) ;
+        String email = ((EditText) findViewById(R.id.reset_email)).getText().toString();
+        if (email == null || email.isEmpty()) {
+            Toast.makeText(ResetPasswordActivity.this, "Please enter an email", Toast.LENGTH_SHORT).show();
+        } else{
 
-        FirebaseInterface fbi = new FirebaseInterface() ;
-        FirebaseAuth auth = fbi.getAuthInstance(false);
-        auth.sendPasswordResetEmail(email.getText().toString()).addOnCompleteListener(
+            FirebaseInterface fbi = new FirebaseInterface();
+            FirebaseAuth auth = fbi.getAuthInstance(false);
+            auth.sendPasswordResetEmail(email).addOnCompleteListener(
                 new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        if(task.isSuccessful()){
+                        if (task.isSuccessful()) {
                             Toast.makeText(ResetPasswordActivity.this, "A reset link has been sent to your email", Toast.LENGTH_SHORT).show();
-                        } else{
+                        } else {
                             //TODO check if the user exists or not, and if not, suggest signup
                             //Otherwise, network error?
                         }
                     }
                 }
-        ) ;
+            );
+
+        }
 
     }
 }
