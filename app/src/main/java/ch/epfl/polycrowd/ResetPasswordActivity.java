@@ -17,6 +17,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
 
@@ -35,6 +36,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
             Toast.makeText(ResetPasswordActivity.this, "Please enter an email", Toast.LENGTH_SHORT).show();
         } else{
 
+            //First need to query the database to exclude that this email is not registered
             FirebaseInterface fbi = new FirebaseInterface();
             FirebaseAuth auth = fbi.getAuthInstance(false);
             auth.sendPasswordResetEmail(email).addOnCompleteListener(
@@ -46,6 +48,21 @@ public class ResetPasswordActivity extends AppCompatActivity {
                         } else {
                             //TODO check if the user exists or not, and if not, suggest signup
                             //Otherwise, network error?
+                            FirebaseFirestore firestore = fbi.getFirestoreInstance(false) ;
+                            CollectionReference usersRef = firestore.collection("users");
+                            usersRef.whereEqualTo("email", email).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                    //Query was able to complete, but email was not found
+                                    if(task.isSuccessful()){
+                                        if(task.getResult().size() ==0)
+                                            Toast.makeText(ResetPasswordActivity.this, "Email not found, please sign up", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                      //in this case, there is probably a connection error
+                                        Toast.makeText(ResetPasswordActivity.this, "Connection error, please try again later", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            }) ;
                         }
                     }
                 }
