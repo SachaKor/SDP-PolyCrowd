@@ -101,8 +101,4 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         Intent intent = new Intent(this, ScheduleActivity.class);
         startActivity(intent);
     }
-    public void clickSchedule(View view){
-        Intent intent = new Intent(this, ScheduleActivity.class);
-        startActivity(intent);
-    }
 }
