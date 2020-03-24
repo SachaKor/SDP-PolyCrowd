@@ -201,7 +201,7 @@ public class Event {
         return event;
     }
 
-    public static Event getFromDocument(Map<String, Object> data, Context c){
+    public static Event getFromDocument(Map<String, Object> data){
         Log.d(LOG_TAG,"converting Firebase data to Event");
         String owner = Objects.requireNonNull(data.get("owner")).toString();
         String name = Objects.requireNonNull(data.get("name")).toString();

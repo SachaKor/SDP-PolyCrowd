@@ -29,15 +29,10 @@
             tools:replace="android:launchMode" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".EventEditActivity" />
-
+        <activity android:name=".ScheduleActivity" />
 
         <activity
             android:name=".frontPage.FrontPageActivity"
-
-        <activity android:name=".ScheduleActivity" />
-        
-         <activity
-            android:name=".MainActivity"
             android:label="@string/title_activity_main">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

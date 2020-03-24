@@ -64,12 +64,12 @@ public class ScheduleActivityTest {
     }*/
 
     private void setCurrentFakeEvent(String scheduleUrl, File f){
-        PolyContext.setCurrentEvent( new Event(1,
+        PolyContext.setCurrentEvent( new Event("1",
                 "fakeEvent", true,
                 Event.EventType.CONVENTION,
                 LocalDateTime.of(LocalDate.parse("2018-12-27"), LocalTime.parse("00:00")),
                 LocalDateTime.of(LocalDate.parse("2018-12-28"), LocalTime.parse("00:00")),
-                scheduleUrl, f));
+                scheduleUrl, "description", f));
     }
 
 }
