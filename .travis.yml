@@ -22,8 +22,6 @@ before_script:
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
 script:
-  - ./gradlew clean
-  - ./gradlew assemble
   - ./gradlew build connectedCheck jacocoTestReport
 after_script:
   # Report test coverage to Code Climate

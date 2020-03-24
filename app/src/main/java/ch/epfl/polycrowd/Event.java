@@ -13,7 +13,9 @@ import com.google.firebase.Timestamp;
 import androidx.annotation.RequiresApi;
 
 import java.io.File;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -27,6 +29,13 @@ import ch.epfl.polycrowd.logic.Schedule;
 public class Event {
 
     private static final String LOG_TAG = Event.class.toString();
+
+    public static Event fakeEvent(String url,File f){return new Event ("1",
+            "fakeEvent", true,
+            Event.EventType.CONVENTION,
+            LocalDateTime.of(LocalDate.parse("2018-12-27"), LocalTime.parse("00:00")),
+            LocalDateTime.of(LocalDate.parse("2018-12-28"), LocalTime.parse("00:00")),
+            url, "description", f);}
 
     public enum EventType {
         FESTIVAL, CONCERT, CONVENTION, OTHER

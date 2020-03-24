@@ -14,19 +14,12 @@ import java.time.LocalTime;
 
 
 import ch.epfl.polycrowd.logic.PolyContext;
-import ch.epfl.polycrowd.logic.Schedule;
-
-import static android.content.Intent.getIntent;
-import static android.content.Intent.getIntentOld;
-import static android.content.Intent.parseUri;
-import static androidx.core.content.ContextCompat.startActivity;
+import ch.epfl.polycrowd.Event;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static org.hamcrest.Matchers.not;
 
 public class ScheduleActivityTest {
     @Rule
@@ -64,12 +57,7 @@ public class ScheduleActivityTest {
     }*/
 
     private void setCurrentFakeEvent(String scheduleUrl, File f){
-        PolyContext.setCurrentEvent( new Event("1",
-                "fakeEvent", true,
-                Event.EventType.CONVENTION,
-                LocalDateTime.of(LocalDate.parse("2018-12-27"), LocalTime.parse("00:00")),
-                LocalDateTime.of(LocalDate.parse("2018-12-28"), LocalTime.parse("00:00")),
-                scheduleUrl, "description", f));
+        PolyContext.setCurrentEvent( Event.fakeEvent(scheduleUrl, f));
     }
 
 }
