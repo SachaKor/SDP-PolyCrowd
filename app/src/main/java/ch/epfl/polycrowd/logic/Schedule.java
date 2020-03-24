@@ -112,7 +112,7 @@ public class Schedule {
 
         return activities;
     }
-
+/*
     public void debugActivity(){
         for (Activity a : this.activities){
 
@@ -120,7 +120,7 @@ public class Schedule {
             System.out.println( "########");
         }
     }
-
+*/
     public List<Activity> getActivities(){
         return this.activities;
     }
