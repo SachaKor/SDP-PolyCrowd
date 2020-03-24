@@ -226,4 +226,12 @@ public class Event {
     public Schedule getSchedule(){
         return this.schedule;
     }
+
+    public Model getModel(){
+        Model m = new Model() ;
+        m.setTitle(getName());
+        m.setDescription(getDescription());
+        m.setId(this.getId());
+        return m;
+    }
 }

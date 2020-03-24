@@ -24,20 +24,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyHolder> implements Filtera
 
 
     private Context c;
-<<<<<<< HEAD
-    private List<Event> events;
-    private List<Event> eventsFull;
 
-    public MyAdapter(Context c, List<Event> events){
-=======
     private List<Model> models;
     private List<Model> modelsFull;
 
     public MyAdapter(Context c, List<Model> models){
->>>>>>> Modified activities for visual testing
         this.c = c ;
-        this.events = events ;
-        eventsFull = new ArrayList<>(events);
+        this.models= models ;
+        modelsFull = new ArrayList<>(models);
     }
 
     @NonNull
@@ -52,15 +46,15 @@ public class MyAdapter extends RecyclerView.Adapter<MyHolder> implements Filtera
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onBindViewHolder(@NonNull final MyHolder myHolder, int i) {
-        myHolder.mTitle.setText(events.get(i).getName()) ;
-        myHolder.mDes.setText(events.get(i).getDescription());
+        myHolder.mTitle.setText(models.get(i).getTitle()) ;
+        myHolder.mDes.setText(models.get(i).getDescription());
         myHolder.mImaeView.setImageResource(R.drawable.p1);
         myHolder.getParentLayout().setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                String gTitle  = events.get(i).getName();
-                String gDesc = events.get(i).getDescription();
+                String gTitle  = models.get(i).getTitle();
+                String gDesc = models.get(i).getDescription();
                 BitmapDrawable bitmapDrawable = (BitmapDrawable)myHolder.mImaeView.getDrawable();
 
                 Bitmap bitmap = bitmapDrawable.getBitmap() ;
@@ -69,12 +63,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyHolder> implements Filtera
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream) ;
 
                 byte[] bytes =  stream.toByteArray() ;
-                String eventId = events.get(i).getId();
+                String eventId = models.get(i).getId();
 
                 Intent intent = new Intent(c, EventPageDetailsActivity.class) ;
                 intent.putExtra("eventId", eventId);
                 c.startActivity(intent);
-                Toast.makeText(c, "Clicked on: " + events.get(i).getName(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(c, "Clicked on: " + models.get(i).getTitle(), Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -114,7 +108,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyHolder> implements Filtera
 
     @Override
     public int getItemCount() {
-        return events.size() ;
+        return models.size() ;
     }
 
     @Override
@@ -126,15 +120,15 @@ public class MyAdapter extends RecyclerView.Adapter<MyHolder> implements Filtera
         @RequiresApi(api = Build.VERSION_CODES.O)
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
-            List<Event> filteredList = new ArrayList<>();
+            List<Model> filteredList = new ArrayList<>();
 
             // user did not enter anything in the search bar => display all the options
             if(constraint == null || constraint.length() == 0) {
-                filteredList.addAll(eventsFull);
+                filteredList.addAll(modelsFull);
             } else {
                 String filterPattern = constraint.toString().toLowerCase().trim();
-                for (Event item : eventsFull) {
-                    if(item.getName().toLowerCase().contains(filterPattern)) {
+                for (Model item : modelsFull) {
+                    if(item.getTitle().toLowerCase().contains(filterPattern)) {
                         filteredList.add(item);
                     }
                 }
@@ -147,8 +141,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyHolder> implements Filtera
 
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
-            events.clear();
-            events.addAll((List)results.values);
+            models.clear();
+            models.addAll((List)results.values);
             notifyDataSetChanged();
         }
     };

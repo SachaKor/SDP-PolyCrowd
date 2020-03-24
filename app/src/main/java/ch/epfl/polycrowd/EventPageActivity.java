@@ -21,8 +21,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 public class EventPageActivity extends AppCompatActivity {
 
@@ -49,12 +48,9 @@ public class EventPageActivity extends AppCompatActivity {
             List<Event> events = new ArrayList<>();
 
 
-            queryDocumentSnapshots.forEach(queryDocumentSnapshot -> {
-                Event e = Event.getFromDocument(queryDocumentSnapshot.getData());
-                e.setId(queryDocumentSnapshot.getId());
-                events.add(e);
-            });
-            myAdapter = new MyAdapter(context, events);
+
+            myAdapter = new MyAdapter(context, events.stream().map(Event::getModel).collect(Collectors.toList()));
+            mRecyclerView.setAdapter(myAdapter);
 
             mRecyclerView.setAdapter(myAdapter);
 

@@ -64,6 +64,7 @@ public class Activity {
         Model m = new Model() ;
         m.setTitle(getSummary());
         m.setDescription(getStart()+"-"+getEnd()+'\n'+getLocation()+'\n'+getDescription());
+        m.setId("");
         return m;
     }
 
