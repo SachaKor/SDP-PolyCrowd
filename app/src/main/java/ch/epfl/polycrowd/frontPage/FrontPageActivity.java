@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -41,12 +42,17 @@ public class FrontPageActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     void setEventModels(){
+        //For Connection permissions
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
         FirebaseQueries.getAllEvents()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     List<Event> events = new ArrayList<>();
                     queryDocumentSnapshots.forEach(queryDocumentSnapshot -> {
                         Event e = Event.getFromDocument(queryDocumentSnapshot.getData());
                         e.setId(queryDocumentSnapshot.getId());
+                        e.loadCalendar(getApplicationContext().getFilesDir());
                         events.add(e);
                     });
                     setViewPager(events);

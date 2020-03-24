@@ -30,7 +30,6 @@ public class ScheduleTest {
     public void testGetAndParse(){
         Schedule s = new Schedule("https://satellite.bar/agenda/ical.php",new File("calendars/test.ics"));
 
-        s.debugActivity();
     }
     @Test
     public void testScheduleWithNullString(){
@@ -38,7 +37,7 @@ public class ScheduleTest {
     }
     @Test
     public void testScheduleWithEmptyUrl(){
-        assertThrows(IllegalArgumentException.class, () ->new Schedule("", new File("")));
+        new Schedule("", new File(""));
     }
     @Test
     public void testScheduleNullFile(){

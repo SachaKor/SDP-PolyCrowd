@@ -43,7 +43,7 @@ public class ScheduleActivity extends AppCompatActivity {
             mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
             Schedule currentSchedule = currentlySelectedEvent.getSchedule();
             if ( currentSchedule != null) {
-                currentSchedule.debugActivity();
+                //currentSchedule.debugActivity();
                 List<Activity> activities = currentSchedule.getActivities();
                 List<Model> models = activities.stream().map(Activity::getModel).collect(Collectors.toList());
                 myAdapter = new MyAdapter(this, models);

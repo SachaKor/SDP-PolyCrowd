@@ -49,7 +49,7 @@ public class ScheduleActivityTest {
     public void testScheduleWithNullString(){
         setCurrentFakeEvent(null,getApplicationContext().getFilesDir());
     }
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testScheduleWithEmptyString(){
         setCurrentFakeEvent("",getApplicationContext().getFilesDir());
     }

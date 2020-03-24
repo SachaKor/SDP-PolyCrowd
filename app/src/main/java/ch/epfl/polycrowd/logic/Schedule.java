@@ -43,7 +43,9 @@ public class Schedule {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Schedule(String url , File f){
-        if (url==null || !url.contains("://") || f==null) {
+        if (url.equals("url") || url.length() == 0){ //Fine
+            }
+        else if (url==null || !url.contains("://") || f==null) {
             throw new IllegalArgumentException("Invalid URL for schedule");
         }
 

@@ -115,13 +115,13 @@ public class EventEditActivity extends AppCompatActivity {
         }
 
         // Create the map containing the event info
-        String calendarUrl = findViewById(R.id.EditEventCalendar).toString();
+        EditText calendarUrl = findViewById(R.id.EditEventCalendar);
         // Create the map containing the event info
 
         Event ev = new Event(user.getUid(), evName.getText().toString(), isPublic,
                 Event.EventType.valueOf(type.toUpperCase()),
                 startDate, endDate,
-                calendarUrl, "");
+                calendarUrl.getText().toString(), "");
 
         Map<String, Object> event = ev.toHashMap();
 
