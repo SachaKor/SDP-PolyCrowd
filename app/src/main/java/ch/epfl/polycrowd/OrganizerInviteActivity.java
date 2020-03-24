@@ -31,7 +31,7 @@ public class OrganizerInviteActivity extends AppCompatActivity {
         if(getIntent().hasExtra("eventName")) {
             TextView previewText = findViewById(R.id.organizer_invite_text);
             eventName = getIntent().getStringExtra("eventName");
-            previewText.setText("You are invited to become an organizer of the event \"" + eventName + "\"\n Sign in to accept the invitation");
+            previewText.setText(R.string.organizer_invite_text_1 +"\"" + eventName + "\"\n"+R.string.organizer_invite_text_2);
         }
     }
 

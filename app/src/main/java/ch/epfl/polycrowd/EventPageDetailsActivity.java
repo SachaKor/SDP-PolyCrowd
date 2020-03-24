@@ -7,9 +7,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import ch.epfl.polycrowd.firebase.FirebaseQueries;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,7 +14,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.dynamiclinks.DynamicLink;
 import com.google.firebase.dynamiclinks.DynamicLink.SocialMetaTagParameters;
@@ -25,6 +21,7 @@ import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class EventPageDetailsActivity extends AppCompatActivity {
 
@@ -40,22 +37,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_details_page);
-//        getIncomingIntent();
         initEvent();
-    }
-
-    private void getIncomingIntent() {
-        if(getIntent().hasExtra("iTitle")
-                && getIntent().hasExtra("iDesc")
-                && getIntent().hasExtra("iImage")
-                && getIntent().hasExtra("eventId")) {
-            String mTitle = getIntent().getStringExtra("iTitle") ;
-            String mDescription = getIntent().getStringExtra("iDesc") ;
-            byte[] mBytes = getIntent().getByteArrayExtra("iImage") ;
-            eventId = getIntent().getStringExtra("eventId");
-            Bitmap bitmap = BitmapFactory.decodeByteArray(mBytes, 0, mBytes.length) ;
-            setUpViews(mTitle, mDescription);
-        }
     }
 
     private void setUpViews(String title, String description) {
@@ -87,9 +69,9 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         eventId = getIntent().getStringExtra("eventId");
         FirebaseQueries.getEventById(eventId)
                 .addOnSuccessListener(documentSnapshot -> {
-                    Event event = Event.getFromDocument(documentSnapshot.getData());
+                    Event event = Event.getFromDocument(Objects.requireNonNull(documentSnapshot.getData()));
                     List<String> organizers = new ArrayList<>();
-                    organizers.addAll((List<String>)documentSnapshot.get("organizers"));
+                    organizers.addAll((List<String>) Objects.requireNonNull(documentSnapshot.get("organizers")));
                     initRecyclerView(organizers);
                     setUpViews(event.getName(), event.getDescription());
                     eventName = event.getName();
@@ -98,6 +80,11 @@ public class EventPageDetailsActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * OnClick "INVITE ORGANIZER"
+     * - Generates the dynamic link for the organizer invite
+     * - Displays the link in the dialog
+     */
     public void inviteLinkClicked(View view) {
         // build the invite dynamic link
         // TODO: replace by short dynamic link
@@ -122,14 +109,9 @@ public class EventPageDetailsActivity extends AppCompatActivity {
 
         // TODO: make the dialog look better
         builder.setView(showText)
-                .setTitle("Here is the invite link:")
+                .setTitle(R.string.invite_link_dialog_title)
                 .setCancelable(true)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                })
+                .setPositiveButton("OK", (dialog, which) -> dialog.cancel())
                 .show();
     }
 }

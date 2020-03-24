@@ -16,12 +16,10 @@ import androidx.recyclerview.widget.RecyclerView;
 public class OrganizersAdapter extends RecyclerView.Adapter<OrganizersAdapter.ViewHolder>{
     private static final String LOG_TAG = "OrganizersAdapter";
 
-    private List<String> organizers;
-    private Context context;
+    private final List<String> organizers;
 
     public OrganizersAdapter(List<String> organizers, Context context) {
         this.organizers = organizers;
-        this.context = context;
     }
 
 
@@ -29,8 +27,7 @@ public class OrganizersAdapter extends RecyclerView.Adapter<OrganizersAdapter.Vi
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.organizers_listitem, parent, false);
-        ViewHolder viewHolder = new ViewHolder(view);
-        return viewHolder;
+        return new ViewHolder(view);
     }
 
     @Override
@@ -44,12 +41,12 @@ public class OrganizersAdapter extends RecyclerView.Adapter<OrganizersAdapter.Vi
         return organizers.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    static class ViewHolder extends RecyclerView.ViewHolder {
 
-        TextView organizer;
-        RelativeLayout parentLayout;
+        final TextView organizer;
+        final RelativeLayout parentLayout;
 
-        public ViewHolder(@NonNull View itemView) {
+        ViewHolder(@NonNull View itemView) {
             super(itemView);
             organizer = itemView.findViewById(R.id.organizer_name);
             parentLayout = itemView.findViewById(R.id.organizer_item_parent);

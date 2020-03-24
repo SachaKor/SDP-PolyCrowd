@@ -74,14 +74,11 @@ public class LoginActivity extends AppCompatActivity {
 
         new FirebaseInterface().getAuthInstance(false)
                 .signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if(task.isSuccessful()) {
-                            toastPopup("Sign in success");
-                        } else {
-                            toastPopup("Incorrect email or password");
-                        }
+                .addOnCompleteListener(task -> {
+                    if(task.isSuccessful()) {
+                        toastPopup("Sign in success");
+                    } else {
+                        toastPopup("Incorrect email or password");
                     }
                 });
 
@@ -93,13 +90,10 @@ public class LoginActivity extends AppCompatActivity {
                             .getAuthInstance(false)
                             .getCurrentUser()).getEmail();
             Context c = this;
-            FirebaseQueries.addOrganizerToEvent(eventId, organizerEmail, new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    Intent eventDetails = new Intent(c, EventPageDetailsActivity.class);
-                    eventDetails.putExtra(EVENT_ID, eventId);
-                    startActivity(eventDetails);
-                }
+            FirebaseQueries.addOrganizerToEvent(eventId, organizerEmail, aVoid -> {
+                Intent eventDetails = new Intent(c, EventPageDetailsActivity.class);
+                eventDetails.putExtra(EVENT_ID, eventId);
+                startActivity(eventDetails);
             });
         }
 

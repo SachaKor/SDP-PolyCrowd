@@ -43,32 +43,19 @@ public class FirebaseQueries {
             Log.w(TAG, "addOrganizerToEvent: event id is null or empty");
         }
         // check if the organizer is already in the list
-        getEventById(eventId).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                List<String> organizers = new ArrayList<>();
-                organizers.addAll((List<String>)documentSnapshot.get(ORGANIZERS));
-                // if organizer is not in the list, add
-                if(!organizers.contains(organizerEmail)) {
-                    organizers.add(organizerEmail);
-                    Map<String, Object> data = new HashMap<>();
-                    data.put(ORGANIZERS, organizers);
-                    getFirestore().collection(EVENTS).document(eventId)
-                            .set(data, SetOptions.merge())
-                            .addOnSuccessListener(onSuccessListener)
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Log.w(TAG, "Error updating " + ORGANIZERS + " list");
-                                }
-                            });
-                }
+        getEventById(eventId).addOnSuccessListener(documentSnapshot -> {
+            List<String> organizers = new ArrayList<>();
+            organizers.addAll((List<String>)documentSnapshot.get(ORGANIZERS));
+            // if organizer is not in the list, add
+            if(!organizers.contains(organizerEmail)) {
+                organizers.add(organizerEmail);
+                Map<String, Object> data = new HashMap<>();
+                data.put(ORGANIZERS, organizers);
+                getFirestore().collection(EVENTS).document(eventId)
+                        .set(data, SetOptions.merge())
+                        .addOnSuccessListener(onSuccessListener)
+                        .addOnFailureListener(e -> Log.w(TAG, "Error updating " + ORGANIZERS + " list"));
             }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.w(TAG, "Error retrieving event with id" + eventId);
-            }
-        });
+        }).addOnFailureListener(e -> Log.w(TAG, "Error retrieving event with id" + eventId));
     }
 }
