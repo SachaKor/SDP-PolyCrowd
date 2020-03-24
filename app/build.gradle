@@ -90,6 +90,15 @@ dependencies {
 
     implementation 'com.google.maps.android:android-maps-utils:1.0.0'
 
+    // https://mvnrepository.com/artifact/org.mnode.ical4j/ical4j
+
+    implementation 'org.mnode.ical4j:ical4j:3.0.15'
+    implementation 'backport-util-concurrent:backport-util-concurrent:3.1'
+    implementation 'commons-codec:commons-codec:1.11'
+    implementation 'commons-lang:commons-lang:2.6'
+    implementation 'org.slf4j:slf4j-nop:1.7.25'
+    implementation group: 'org.ehcache', name: 'jcache', version: '1.0.0'
+
 
     implementation 'com.google.firebase:firebase-dynamic-links:19.1.0'
     implementation 'com.google.firebase:firebase-invites:17.0.0'

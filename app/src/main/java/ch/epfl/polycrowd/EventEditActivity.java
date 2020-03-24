@@ -39,6 +39,7 @@ public class EventEditActivity extends AppCompatActivity {
     }
 
 
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     private LocalDateTime parseDate(String dateStr) {
         String dateWithTime = dateStr + " 00:00";
