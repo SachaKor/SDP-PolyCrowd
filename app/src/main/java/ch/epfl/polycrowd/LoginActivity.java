@@ -75,15 +75,7 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        fbInterface.getAuthInstance(false)
-                .signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(task -> {
-                    if(task.isSuccessful()) {
-                        toastPopup("Sign in success");
-                    } else {
-                        toastPopup("Incorrect email or password");
-                    }
-                });
+        fbInterface.signInWithEmailAndPassword(email, password);
 
         /* if the user logs in to accept the organizer invitation, add him/her to the
             organizers list, then open the event details page for the preview */

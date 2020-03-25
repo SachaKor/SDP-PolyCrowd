@@ -120,7 +120,6 @@ public class SignUpActivity extends AppCompatActivity {
             CollectionReference usersRef = firestore.collection("users");
             Query queryUsernames = usersRef.whereEqualTo("username", username.getText().toString());
             Query queryEmails = usersRef.whereEqualTo("email", email.getText().toString()) ;
-
             queryUsernames.get().addOnCompleteListener(usernamesQueryListener(queryEmails));
 
         }
