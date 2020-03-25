@@ -9,18 +9,19 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Objects;
 
 
 class EventTest {
-
+    private static final DateTimeFormatter dtFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
     private static Event e = null;
     private static final String default_owner = "1";
     private static final String default_name = "TestEvent";
     private static final Event.EventType default_type = Event.EventType.OTHER;
-    private static final LocalDateTime default_s = LocalDateTime.parse("11-12-2019 08:15",Event.dtFormat);
-    private static final LocalDateTime default_e = LocalDateTime.parse("12-12-2019 12:45", Event.dtFormat);
+    private static final LocalDateTime default_s = LocalDateTime.parse("11-12-2019 08:15",dtFormat);
+    private static final LocalDateTime default_e = LocalDateTime.parse("12-12-2019 12:45", dtFormat);
     private static final String default_desc = "Description";
 
     @BeforeEach
@@ -80,19 +81,19 @@ class EventTest {
 
     @Test
     void getSetStart() {
-        assertEquals(default_s.format(Event.dtFormat), e.getStart().format(Event.dtFormat));
-        final LocalDateTime new_date = LocalDateTime.parse("20-02-2020 10:00",Event.dtFormat);
+        assertEquals(default_s.format(dtFormat), e.getStart().format(dtFormat));
+        final LocalDateTime new_date = LocalDateTime.parse("20-02-2020 10:00",dtFormat);
         e.setStart(new_date);
-        assertEquals(new_date.format(Event.dtFormat), e.getStart().format(Event.dtFormat));
+        assertEquals(new_date.format(dtFormat), e.getStart().format(dtFormat));
         assertThrows(IllegalArgumentException.class, () -> e.setStart(null));
     }
 
     @Test
     void getSetEnd() {
-        assertEquals(default_e.format(Event.dtFormat), e.getEnd().format(Event.dtFormat));
-        final LocalDateTime new_date = LocalDateTime.parse("20-02-2020 10:00",Event.dtFormat);
+        assertEquals(default_e.format(dtFormat), e.getEnd().format(dtFormat));
+        final LocalDateTime new_date = LocalDateTime.parse("20-02-2020 10:00",dtFormat);
         e.setEnd(new_date);
-        assertEquals(new_date.format(Event.dtFormat), e.getEnd().format(Event.dtFormat));
+        assertEquals(new_date.format(dtFormat), e.getEnd().format(dtFormat));
         assertThrows(IllegalArgumentException.class, () -> e.setEnd(null));
     }
 
@@ -113,8 +114,8 @@ class EventTest {
         assertEquals(Objects.requireNonNull(hm.get("owner")).toString(), default_owner);
         assertEquals(Event.EventType.valueOf(Objects.requireNonNull(hm.get("type")).toString()), default_type);
         assertEquals(Objects.requireNonNull(hm.get("name")).toString(), default_name);
-        assertEquals(Objects.requireNonNull(hm.get("start")).toString(), default_s.format(Event.dtFormat));
-        assertEquals(Objects.requireNonNull(hm.get("end")).toString(), default_e.format(Event.dtFormat));
+        assertEquals(Objects.requireNonNull(hm.get("start")).toString(), default_s.format(dtFormat));
+        assertEquals(Objects.requireNonNull(hm.get("end")).toString(), default_e.format(dtFormat));
         assertEquals(Objects.requireNonNull(hm.get("calendar")).toString(), "None");
 
         Event ne = Event.getFromDocument(hm);
@@ -123,8 +124,8 @@ class EventTest {
         assertEquals(default_name, ne.getName());
         assertEquals(false, ne.getPublic());
         assertEquals(default_type, ne.getType());
-        assertEquals(default_s.format(Event.dtFormat), ne.getStart().format(Event.dtFormat));
-        assertEquals(default_e.format(Event.dtFormat), ne.getEnd().format(Event.dtFormat));
+        assertEquals(default_s.format(dtFormat), ne.getStart().format(dtFormat));
+        assertEquals(default_e.format(dtFormat), ne.getEnd().format(dtFormat));
         assertEquals("None", ne.getCalendar());
 
     }

@@ -53,6 +53,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyHolder> implements Filtera
 
             @Override
             public void onClick(View v) {
+                /*
                 String gTitle  = models.get(i).getTitle();
                 String gDesc = models.get(i).getDescription();
                 BitmapDrawable bitmapDrawable = (BitmapDrawable)myHolder.mImaeView.getDrawable();
@@ -69,7 +70,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyHolder> implements Filtera
                 intent.putExtra("eventId", eventId);
                 c.startActivity(intent);
                 Toast.makeText(c, "Clicked on: " + models.get(i).getTitle(), Toast.LENGTH_SHORT).show();
-
+                */
             }
         });
 

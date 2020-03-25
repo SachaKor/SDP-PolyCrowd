@@ -88,6 +88,11 @@ public class LoginActivityTest {
     @Test
     public void testEmailFieldEmpty() {
         onView(withId(R.id.sign_in_button)).perform(click());
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         onView(withText("Enter your email"))
                 .inRoot(withDecorView(not(loginActivityRule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));

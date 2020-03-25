@@ -13,7 +13,9 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.ParseException;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.Map;
@@ -45,8 +47,8 @@ public class EventEditActivity extends AppCompatActivity {
         String dateWithTime = dateStr + " 00:00";
         LocalDateTime date;
         try {
-            date = LocalDateTime.parse(dateWithTime, dtFormat);
-        } catch (DateTimeParseException e) {
+            date = dtFormat.parse(dateWithTime).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        } catch (DateTimeParseException | ParseException e) {
             Toast.makeText(getApplicationContext(), "Date " + dateStr + " is incorrect", Toast.LENGTH_SHORT).show();
             return null;
         }

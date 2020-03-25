@@ -1,6 +1,5 @@
 package ch.epfl.polycrowd;
 
-import android.content.Context;
 import android.os.Build;
 
 
@@ -13,6 +12,7 @@ import com.google.firebase.Timestamp;
 import androidx.annotation.RequiresApi;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -41,7 +41,7 @@ public class Event {
         FESTIVAL, CONCERT, CONVENTION, OTHER
     }
 
-    public static final DateTimeFormatter dtFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+    public static final SimpleDateFormat dtFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
     private final String owner; // user uid is a string
     private String name;
     private Boolean isPublic;
