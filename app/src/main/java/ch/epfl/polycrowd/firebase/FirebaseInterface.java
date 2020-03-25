@@ -199,19 +199,20 @@ public class FirebaseInterface {
             List<Event> events = new ArrayList<>();
             events.add(e);
             handler.getEvents(events);
+        } else {
+            getFirestoreInstance(false).collection(EVENTS).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                @Override
+                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                    List<Event> events = new ArrayList<>();
+                    queryDocumentSnapshots.forEach(queryDocumentSnapshot -> {
+                        ch.epfl.polycrowd.Event e = ch.epfl.polycrowd.Event.getFromDocument(queryDocumentSnapshot.getData());
+                        e.setId(queryDocumentSnapshot.getId());
+                        events.add(e);
+                    });
+                    handler.getEvents(events);
+                }
+            });
         }
-        getFirestoreInstance(false).collection(EVENTS).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                List<Event> events = new ArrayList<>();
-                queryDocumentSnapshots.forEach(queryDocumentSnapshot -> {
-                    ch.epfl.polycrowd.Event e = ch.epfl.polycrowd.Event.getFromDocument(queryDocumentSnapshot.getData());
-                    e.setId(queryDocumentSnapshot.getId());
-                    events.add(e);
-                });
-                handler.getEvents(events);
-            }
-        });
     }
 
     public Task<DocumentSnapshot> getEventById(String eventId) {
