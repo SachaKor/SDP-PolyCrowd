@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
-import ch.epfl.polycrowd.firebase.FirebaseQueries;
 
 import android.os.Bundle;
 import android.view.Menu;
@@ -18,11 +17,10 @@ import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 public class EventPageActivity extends AppCompatActivity {
 
@@ -31,6 +29,7 @@ public class EventPageActivity extends AppCompatActivity {
     RecyclerView mRecyclerView ;
     MyAdapter myAdapter ;
     FirebaseInterface fbi;
+    Context context;
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -43,27 +42,26 @@ public class EventPageActivity extends AppCompatActivity {
         fbi = new FirebaseInterface(this);
 
         //To use inside
-        Context context = this ;
+        context = this ;
         FirebaseInterface firebaseInterface = new FirebaseInterface(this);
         final FirebaseFirestore firestore = firebaseInterface.getFirestoreInstance(false);
-        fbi.getAllEvents().addOnSuccessListener(queryDocumentSnapshots -> {
-
-            List<Event> events = new ArrayList<>();
-
-            queryDocumentSnapshots.forEach(queryDocumentSnapshot -> {
-                Event e = Event.getFromDocument(queryDocumentSnapshot.getData());
-                e.setId(queryDocumentSnapshot.getId());
-                events.add(e);
-            });
-            myAdapter = new MyAdapter(context, events);
-            mRecyclerView.setAdapter(myAdapter);
-
-        }).addOnFailureListener(e -> {
-
-        });
+        fbi.getAllEvents(qs -> this.getEvents(qs));
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void getEvents(QuerySnapshot qs){
+        List<Event> events = new ArrayList<>();
+
+        qs.forEach(queryDocumentSnapshot -> {
+            Event e = Event.getFromDocument(queryDocumentSnapshot.getData());
+            e.setId(queryDocumentSnapshot.getId());
+            events.add(e);
+        });
+        myAdapter = new MyAdapter(context, events);
+        mRecyclerView.setAdapter(myAdapter);
     }
 
     @Override

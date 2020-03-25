@@ -1,11 +1,14 @@
 package ch.epfl.polycrowd.firebase;
 
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -24,6 +27,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.epfl.polycrowd.MyAdapter;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.User;
 
@@ -187,8 +191,9 @@ public class FirebaseInterface {
     }
 
 
-    public Task<QuerySnapshot> getAllEvents() {
-        return getFirestoreInstance(false).collection(EVENTS).get();
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public Task<QuerySnapshot> getAllEvents( OnSuccessListener<QuerySnapshot> qs) {
+        return getFirestoreInstance(false).collection(EVENTS).get().addOnSuccessListener(qs);
     }
 
     public Task<DocumentSnapshot> getEventById(String eventId) {
