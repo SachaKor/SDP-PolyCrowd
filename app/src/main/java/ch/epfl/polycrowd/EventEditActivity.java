@@ -15,7 +15,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import androidx.annotation.RequiresApi;
@@ -117,11 +119,13 @@ public class EventEditActivity extends AppCompatActivity {
             return;
         }
 
+        List<String> organizers = new ArrayList<>();
+        organizers.add(user.getEmail());
         // Create the map containing the event info
         Event ev = new Event(user.getUid(), evName.getText().toString(), isPublic,
                 Event.EventType.valueOf(type.toUpperCase()),
                 startDate, endDate,
-                "url", "");
+                "url", "", organizers);
         Map<String, Object> event = ev.toHashMap();
         // add event to the database
         firebaseInterface.addEvent(event);
