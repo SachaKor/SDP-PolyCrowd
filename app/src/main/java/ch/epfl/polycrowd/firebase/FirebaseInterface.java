@@ -10,6 +10,7 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -27,8 +28,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import ch.epfl.polycrowd.Event;
+import ch.epfl.polycrowd.EventHandler;
 import ch.epfl.polycrowd.EventsHandler;
 import ch.epfl.polycrowd.OrganizersHandler;
 import ch.epfl.polycrowd.logic.User;
@@ -103,11 +106,9 @@ public class FirebaseInterface {
 
             if (email.equals("nani@haha.com") && password.equals("123456") ) {
                 Toast.makeText(c, "Sign in success", Toast.LENGTH_SHORT).show();
-//                Utils.toastPopup(c, "Sign in success");
             }
             else {
                 Toast.makeText(c, "Incorrect email or password", Toast.LENGTH_SHORT).show();
-//                Utils.toastPopup(c,"Incorrect email or password");
             }
         }
         else{
@@ -118,10 +119,8 @@ public class FirebaseInterface {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if(task.isSuccessful()) {
                                 Toast.makeText(c, "Sign in success", Toast.LENGTH_SHORT).show();
-//                                Utils.toastPopup(c,"Sign in success");
                             } else {
                                 Toast.makeText(c, "Incorrect email or password", Toast.LENGTH_SHORT).show();
-//                                Utils.toastPopup(c,"Incorrect email or password");
                             }
                         }
                     });
@@ -129,22 +128,13 @@ public class FirebaseInterface {
         }
     }
 
-
-//    DatabaseInerface db = new DatabaseWrapper(true/false);
-//    class FirebaseInterface implements DatabaseInterface;
-//    class MockInterface implements DatabaseInterface;
-
-
-
     public void createUserWithEmailOrPassword(final String email,final String username , final String password, final int age){
 
         if (is_mocked){
             if (email.equals("already@exists.com") || username.equals("already exists")) {
                 Toast.makeText(c, "User already exists", Toast.LENGTH_SHORT).show();
-//                Utils.toastPopup(c,"User already exists");
             } else {
                 Toast.makeText(c, "Sign up successful", Toast.LENGTH_SHORT).show();
-//                Utils.toastPopup(c,"Sign up successful");
             }
         } else {
             final StringBuffer message = new StringBuffer();
@@ -210,7 +200,7 @@ public class FirebaseInterface {
                 public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                     List<Event> events = new ArrayList<>();
                     queryDocumentSnapshots.forEach(queryDocumentSnapshot -> {
-                        ch.epfl.polycrowd.Event e = ch.epfl.polycrowd.Event.getFromDocument(queryDocumentSnapshot.getData());
+                        Event e = ch.epfl.polycrowd.Event.getFromDocument(queryDocumentSnapshot.getData());
                         e.setId(queryDocumentSnapshot.getId());
                         events.add(e);
                     });
@@ -220,35 +210,71 @@ public class FirebaseInterface {
         }
     }
 
-    public Task<DocumentSnapshot> getEventById(String eventId) {
-        return getFirestoreInstance(false).collection(EVENTS).document(eventId).get();
+    public void getEventById(String eventId, EventHandler eventHandler) {
+        if(!is_mocked) {
+            getFirestoreInstance(false).collection(EVENTS)
+                    .document(eventId).get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @RequiresApi(api = Build.VERSION_CODES.O)
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            Event event = Event.getFromDocument(Objects.requireNonNull(documentSnapshot.getData()));
+                            eventHandler.handle(event);
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.e(TAG, "Error retrieving document with id " + eventId);
+                }
+            });
+        }
     }
 
     public void addOrganizerToEvent(String eventId, String organizerEmail,
                                     OrganizersHandler handler) {
         if(eventId == null || eventId.isEmpty()) {
             Log.w(TAG, "addOrganizerToEvent: event id is null or empty");
+            return;
         }
-        // check if the organizer is already in the list
-        getEventById(eventId).addOnSuccessListener(documentSnapshot -> {
-            List<String> organizers = new ArrayList<>();
-            organizers.addAll((List<String>)documentSnapshot.get(ORGANIZERS));
-            // if organizer is not in the list, add
-            if(!organizers.contains(organizerEmail)) {
-                organizers.add(organizerEmail);
-                Map<String, Object> data = new HashMap<>();
-                data.put(ORGANIZERS, organizers);
-                getFirestoreInstance(false).collection(EVENTS).document(eventId)
-                        .set(data, SetOptions.merge())
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                handler.handle();
-                            }
-                        })
-                        .addOnFailureListener(e -> Log.w(TAG, "Error updating " + ORGANIZERS + " list"));
-            }
-        }).addOnFailureListener(e -> Log.w(TAG, "Error retrieving event with id" + eventId));
+        if(!is_mocked) {
+            // check if the organizer is already in the list
+            getFirestoreInstance(false).collection(EVENTS)
+                    .document(eventId).get().addOnSuccessListener(documentSnapshot -> {
+                List<String> organizers = new ArrayList<>();
+                organizers.addAll((List<String>)documentSnapshot.get(ORGANIZERS));
+                // if organizer is not in the list, add
+                if(!organizers.contains(organizerEmail)) {
+                    organizers.add(organizerEmail);
+                    Map<String, Object> data = new HashMap<>();
+                    data.put(ORGANIZERS, organizers);
+                    getFirestoreInstance(false).collection(EVENTS).document(eventId)
+                            .set(data, SetOptions.merge())
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    handler.handle();
+                                }
+                            })
+                            .addOnFailureListener(e -> Log.w(TAG, "Error updating " + ORGANIZERS + " list"));
+                }
+            }).addOnFailureListener(e -> Log.w(TAG, "Error retrieving event with id" + eventId));
+
+        }
+    }
+
+    public void addEvent(Event event) {
+        if(!is_mocked) {
+            getFirestoreInstance(false).collection(EVENTS)
+                    .add(event)
+                    .addOnSuccessListener(documentReference -> {
+                        Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
+                        Toast.makeText(c, "Event added", Toast.LENGTH_LONG).show();
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e(TAG, "Error adding document", e);
+                        Toast.makeText(c, "Error occurred while adding the event", Toast.LENGTH_LONG).show();
+                    });
+        }
     }
 
 }

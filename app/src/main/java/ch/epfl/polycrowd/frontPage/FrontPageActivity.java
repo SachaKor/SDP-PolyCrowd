@@ -102,7 +102,6 @@ public class FrontPageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_front_page);
         this.fbInterface = new FirebaseInterface(this);
-        setMocking();
 
         setEventModels();
 //        setViewPager();

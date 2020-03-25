@@ -69,17 +69,14 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         FirebaseInterface fbi = new FirebaseInterface(this);
         eventId = getIntent().getStringExtra("eventId");
         //TODO: mock
-        fbi.getEventById(eventId)
-                .addOnSuccessListener(documentSnapshot -> {
-                    Event event = Event.getFromDocument(Objects.requireNonNull(documentSnapshot.getData()));
-                    List<String> organizers = new ArrayList<>();
-                    organizers.addAll((List<String>) Objects.requireNonNull(documentSnapshot.get("organizers")));
-                    initRecyclerView(organizers);
-                    setUpViews(event.getName(), event.getDescription());
-                    eventName = event.getName();
-                    Log.d(LOG_TAG, "Event loaded from the database");
-                }).addOnFailureListener(e -> Log.e(LOG_TAG, "Error getting Event with id " + eventId));
-
+        fbi.getEventById(eventId, new EventHandler() {
+            @Override
+            public void handle(Event event) {
+                initRecyclerView(event.getOrganizers());
+                setUpViews(event.getName(), event.getDescription());
+                eventName = event.getName();
+            }
+        });
     }
 
     /**
