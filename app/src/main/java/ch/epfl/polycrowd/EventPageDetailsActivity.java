@@ -76,6 +76,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         }
         FirebaseInterface fbi = new FirebaseInterface(this);
         eventId = getIntent().getStringExtra("eventId");
+        //TODO: mock
         fbi.getEventById(eventId)
                 .addOnSuccessListener(documentSnapshot -> {
                     Event event = Event.getFromDocument(documentSnapshot.getData());

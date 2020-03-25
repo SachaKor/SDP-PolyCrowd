@@ -17,9 +17,7 @@ import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class EventPageActivity extends AppCompatActivity {
@@ -45,7 +43,7 @@ public class EventPageActivity extends AppCompatActivity {
         context = this ;
         FirebaseInterface firebaseInterface = new FirebaseInterface(this);
         final FirebaseFirestore firestore = firebaseInterface.getFirestoreInstance(false);
-        fbi.getAllEvents(new EventHandler() {
+        fbi.getAllEvents(new EventsHandler() {
             @Override
             public void getEvents(List<Event> events) {
                 myAdapter = new MyAdapter(context, events);

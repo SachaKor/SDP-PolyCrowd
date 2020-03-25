@@ -121,6 +121,7 @@ public class EventEditActivity extends AppCompatActivity {
         // the first organizer is the creator of the event
         event.put("organizers", Arrays.asList(user.getEmail()));
         // Add the event to the firestore
+        //TODO: Mock
         firestore.collection("polyevents")
                 .add(event)
                 .addOnSuccessListener(documentReference -> {

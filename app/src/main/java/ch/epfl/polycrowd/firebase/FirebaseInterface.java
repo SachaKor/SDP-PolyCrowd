@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.epfl.polycrowd.Event;
-import ch.epfl.polycrowd.EventHandler;
+import ch.epfl.polycrowd.EventsHandler;
 import ch.epfl.polycrowd.logic.User;
 
 public class FirebaseInterface {
@@ -193,7 +193,7 @@ public class FirebaseInterface {
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public void getAllEvents(EventHandler handler) {
+    public void getAllEvents(EventsHandler handler) {
         if(is_mocked) {
             Event e = new Event();
             List<Event> events = new ArrayList<>();

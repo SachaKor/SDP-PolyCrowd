@@ -2,7 +2,6 @@ package ch.epfl.polycrowd.frontPage;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
@@ -21,17 +20,14 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import ch.epfl.polycrowd.Event;
-import ch.epfl.polycrowd.EventHandler;
-import ch.epfl.polycrowd.EventPageActivity;
+import ch.epfl.polycrowd.EventsHandler;
 import ch.epfl.polycrowd.LoginActivity;
 import ch.epfl.polycrowd.OrganizerInviteActivity;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
-import ch.epfl.polycrowd.firebase.FirebaseQueries;
 
 public class FrontPageActivity extends AppCompatActivity {
 
@@ -50,7 +46,7 @@ public class FrontPageActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     void setEventModels(){
-        fbInterface.getAllEvents(new EventHandler() {
+        fbInterface.getAllEvents(new EventsHandler() {
             @Override
             public void getEvents(List<Event> events) {
                 setViewPager(events);

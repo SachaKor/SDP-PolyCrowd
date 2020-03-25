@@ -137,6 +137,7 @@ public class SignUpActivity extends AppCompatActivity {
 
     // TODO: add this method to the FirebaseQueries class
     private void addUserToDatabase(){
+        //TODO: mock
         fbInterface.getAuthInstance(false)
                 .createUserWithEmailAndPassword(email.getText().toString(), firstPassword.getText().toString())
                 .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
@@ -150,6 +151,7 @@ public class SignUpActivity extends AppCompatActivity {
         user.put("username", username.getText().toString());
         user.put("age", 100);
         user.put("email", email.getText().toString()) ;
+        //TODO: mock
         firestore.collection("users")
                 .add(user)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
