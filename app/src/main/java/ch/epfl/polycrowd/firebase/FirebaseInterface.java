@@ -43,8 +43,6 @@ import ch.epfl.polycrowd.logic.User;
 
 public class FirebaseInterface {
 
-
-
     private FirebaseAuth cachedAuth;
     private DatabaseReference cachedDbRef;
     private FirebaseFirestore cachedFirestore;
@@ -105,19 +103,15 @@ public class FirebaseInterface {
         }
     }
 
-    public void signInWithEmailAndPassword(@NonNull final String email,@NonNull final String password){
+    public void signInWithEmailAndPassword(@NonNull final String email, @NonNull final String password){
 
-        if (this.is_mocked){
-
+        if (is_mocked) {
             if (email.equals("nani@haha.com") && password.equals("123456") ) {
                 Toast.makeText(c, "Sign in success", Toast.LENGTH_SHORT).show();
-            }
-            else {
+            } else {
                 Toast.makeText(c, "Incorrect email or password", Toast.LENGTH_SHORT).show();
             }
-        }
-        else{
-
+        } else {
             Task<AuthResult> task = this.getAuthInstance(true).signInWithEmailAndPassword(email,password)
                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
@@ -133,7 +127,7 @@ public class FirebaseInterface {
         }
     }
 
-    public void createUserWithEmailOrPassword(final String email,final String username , final String password, final int age){
+    public void createUserWithEmailOrPassword(final String email, final String username , final String password, final int age) {
 
         if (is_mocked){
             if (email.equals("already@exists.com") || username.equals("already exists")) {
@@ -155,8 +149,6 @@ public class FirebaseInterface {
                     if (task.isSuccessful()) {
                         if (task.getResult().size() > 0) {
                             Toast.makeText(c, "User already exists", Toast.LENGTH_SHORT).show();
-//                            Utils.toastPopup(c,"User already exists");
-
                         } else {
                             authres.set(0, getAuthInstance(false)
                                     .createUserWithEmailAndPassword(email, password)
@@ -186,7 +178,7 @@ public class FirebaseInterface {
 
     }
 
-    void addUser(User u){
+    void addUser(User u) {
         if (!is_mocked)
             getFirestoreInstance(true).collection("users").add(u.getRawData());
     }
@@ -198,7 +190,7 @@ public class FirebaseInterface {
             Event e = new Event();
             List<Event> events = new ArrayList<>();
             events.add(e);
-            handler.getEvents(events);
+            handler.handle(events);
         } else {
             getFirestoreInstance(false).collection(EVENTS).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                 @Override
@@ -209,28 +201,27 @@ public class FirebaseInterface {
                         e.setId(queryDocumentSnapshot.getId());
                         events.add(e);
                     });
-                    handler.getEvents(events);
+                    handler.handle(events);
                 }
             });
         }
     }
-    public void addEvent(Map<String, Object> event){
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void addEvent(Event event){
         if(is_mocked){
             //TODO: set s from test suit
             boolean s = true;
             if (s) {
                 Log.d(TAG, "DocumentSnapshot added with ID: " + "fakeDocumentId");
                 Toast.makeText(c, "Event added", Toast.LENGTH_LONG).show();
-            }
-            else{
+            } else {
                 Log.e(TAG, "Error adding document");
                 Toast.makeText(c, "Error occurred while adding the event", Toast.LENGTH_LONG).show();
             }
 
-        }
-        else{
+        } else {
             getFirestoreInstance(false).collection("polyevents")
-                    .add(event)
+                    .add(event.toHashMap())
                     .addOnSuccessListener(documentReference -> {
                         Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
                         Toast.makeText(c, "Event added", Toast.LENGTH_LONG).show();
@@ -243,8 +234,12 @@ public class FirebaseInterface {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void getEventById(String eventId, EventHandler eventHandler) {
-        if(!is_mocked) {
+        if(is_mocked) {
+            Event event = new Event();
+            eventHandler.handle(event);
+        } else {
             getFirestoreInstance(false).collection(EVENTS)
                     .document(eventId).get()
                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -269,7 +264,9 @@ public class FirebaseInterface {
             Log.w(TAG, "addOrganizerToEvent: event id is null or empty");
             return;
         }
-        if(!is_mocked) {
+        if(is_mocked){
+            handler.handle();
+        } else {
             // check if the organizer is already in the list
             getFirestoreInstance(false).collection(EVENTS)
                     .document(eventId).get().addOnSuccessListener(documentSnapshot -> {

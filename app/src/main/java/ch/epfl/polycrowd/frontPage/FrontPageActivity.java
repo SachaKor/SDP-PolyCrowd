@@ -47,7 +47,7 @@ public class FrontPageActivity extends AppCompatActivity {
     void setEventModels(){
         fbInterface.getAllEvents(new EventsHandler() {
             @Override
-            public void getEvents(List<Event> events) {
+            public void handle(List<Event> events) {
                 setViewPager(events);
             }
         });

@@ -68,7 +68,6 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         }
         FirebaseInterface fbi = new FirebaseInterface(this);
         eventId = getIntent().getStringExtra("eventId");
-        //TODO: mock
         fbi.getEventById(eventId, new EventHandler() {
             @Override
             public void handle(Event event) {

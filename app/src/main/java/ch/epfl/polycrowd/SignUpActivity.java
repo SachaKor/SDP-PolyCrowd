@@ -117,7 +117,9 @@ public class SignUpActivity extends AppCompatActivity {
 
         if(registrationFieldsValid(firstPassword, secondPassword, username, email)){
             // check if the user with a given username exists already
+
             fbi.signUp(username.getText().toString(), firstPassword.getText().toString(), email.getText().toString(), 100);
+
 
         }
 

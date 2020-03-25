@@ -126,9 +126,9 @@ public class EventEditActivity extends AppCompatActivity {
                 Event.EventType.valueOf(type.toUpperCase()),
                 startDate, endDate,
                 "url", "", organizers);
-        Map<String, Object> event = ev.toHashMap();
+//        Map<String, Object> event = ev.toHashMap();
         // add event to the database
-        firebaseInterface.addEvent(event);
+        firebaseInterface.addEvent(ev);
 
         Intent intent = new Intent(this, MapActivity.class);
         startActivity(intent);

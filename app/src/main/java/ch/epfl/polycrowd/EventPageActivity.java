@@ -45,7 +45,7 @@ public class EventPageActivity extends AppCompatActivity {
         final FirebaseFirestore firestore = firebaseInterface.getFirestoreInstance(false);
         fbi.getAllEvents(new EventsHandler() {
             @Override
-            public void getEvents(List<Event> events) {
+            public void handle(List<Event> events) {
                 myAdapter = new MyAdapter(context, events);
                 mRecyclerView.setAdapter(myAdapter);
             }
