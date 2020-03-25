@@ -30,18 +30,18 @@ import ch.epfl.polycrowd.map.MapActivity;
 public class EventEditActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = EventEditActivity.class.toString();
-    private FirebaseInterface fbInterface;
+    private FirebaseInterface firebaseInterface;
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public void setMocking(){
-        this.fbInterface.setMocking();
+        this.firebaseInterface.setMocking();
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_edit);
-        fbInterface = new FirebaseInterface(this);
+        this.firebaseInterface = new FirebaseInterface(this);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -87,8 +87,8 @@ public class EventEditActivity extends AppCompatActivity {
         final EditText evName = findViewById(R.id.EditEventName);
 
         Log.d(LOG_TAG, "Send Event Button Clicked");
-
         // Add the event
+        // Add an Event to the firestore
         // Retrieve the field values from the Edit Event layout
         Switch isPublicSwitch = findViewById(R.id.EditEventPublic);
         Spinner eventTypeSpinner = findViewById(R.id.EditEventType);
@@ -111,7 +111,7 @@ public class EventEditActivity extends AppCompatActivity {
 
 
         // check if the user is logged in
-        FirebaseUser user = fbInterface.getAuthInstance(false).getCurrentUser();
+        FirebaseUser user = firebaseInterface.getAuthInstance(false).getCurrentUser();
         if(user == null) {
             Toast.makeText(getApplicationContext(), "Log in to add an event", Toast.LENGTH_SHORT).show();
             return;
@@ -123,13 +123,8 @@ public class EventEditActivity extends AppCompatActivity {
                 startDate, endDate,
                 "url", "");
         Map<String, Object> event = ev.toHashMap();
-        // TODO: add the organizers via the Event class
-        // the first organizer is the creator of the event
-        event.put("organizers", Arrays.asList(user.getEmail()));
-        // Add the event to the firestore
-
-        fbInterface.addEvent(ev);
-
+        // add event to the database
+        firebaseInterface.addEvent(event);
 
         Intent intent = new Intent(this, MapActivity.class);
         startActivity(intent);

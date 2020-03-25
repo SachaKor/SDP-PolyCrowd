@@ -209,6 +209,34 @@ public class FirebaseInterface {
             });
         }
     }
+    public void addEvent(Map<String, Object> event){
+        if(is_mocked){
+            //TODO: set s from test suit
+            boolean s = true;
+            if (s) {
+                Log.d(TAG, "DocumentSnapshot added with ID: " + "fakeDocumentId");
+                Toast.makeText(c, "Event added", Toast.LENGTH_LONG).show();
+            }
+            else{
+                Log.e(TAG, "Error adding document");
+                Toast.makeText(c, "Error occurred while adding the event", Toast.LENGTH_LONG).show();
+            }
+
+        }
+        else{
+            getFirestoreInstance(false).collection("polyevents")
+                    .add(event)
+                    .addOnSuccessListener(documentReference -> {
+                        Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
+                        Toast.makeText(c, "Event added", Toast.LENGTH_LONG).show();
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e(TAG, "Error adding document", e);
+                        Toast.makeText(c, "Error occurred while adding the event", Toast.LENGTH_LONG).show();
+                    });
+
+        }
+    }
 
     public void getEventById(String eventId, EventHandler eventHandler) {
         if(!is_mocked) {

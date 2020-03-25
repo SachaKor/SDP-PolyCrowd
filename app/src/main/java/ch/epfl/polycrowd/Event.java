@@ -195,7 +195,7 @@ public class Event {
         event.put("type", this.type.toString());
         event.put("calendar", this.calendar);
         event.put("description", this.description);
-
+        event.put("organizers", organizers);
         return event;
     }
 
