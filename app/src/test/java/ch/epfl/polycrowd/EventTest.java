@@ -1,12 +1,10 @@
-package ch.epfl.polycrowd.test;
+package ch.epfl.polycrowd;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.time.LocalDateTime;
-
-import ch.epfl.polycrowd.Event;
 
 import static org.junit.Assert.assertEquals;
 
