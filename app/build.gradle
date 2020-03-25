@@ -105,7 +105,7 @@ dependencies {
 
     // https://mvnrepository.com/artifact/org.mnode.ical4j/ical4j
 
-    implementation 'org.mnode.ical4j:ical4j:3.0.15'
+    implementation 'org.mnode.ical4j:ical4j:2.2.4'
     implementation 'backport-util-concurrent:backport-util-concurrent:3.1'
     implementation 'commons-codec:commons-codec:1.11'
     implementation 'commons-lang:commons-lang:2.6'
