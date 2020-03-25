@@ -120,6 +120,13 @@ public class FirebaseInterface {
         }
     }
 
+
+//    DatabaseInerface db = new DatabaseWrapper(true/false);
+//    class FirebaseInterface implements DatabaseInterface;
+//    class MockInterface implements DatabaseInterface;
+
+
+
     public void createUserWithEmailOrPassword(final String email,final String username , final String password, final int age){
 
         if (is_mocked){
