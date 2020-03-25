@@ -10,13 +10,16 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.events.EventHandler;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -217,6 +220,34 @@ public class FirebaseInterface {
                     handler.getEvents(events);
                 }
             });
+        }
+    }
+    public void addEvent(Map<String, Object> event){
+        if(is_mocked){
+            //TODO: set s from test suit
+            boolean s = true;
+            if (s) {
+                Log.d(TAG, "DocumentSnapshot added with ID: " + "fakeDocumentId");
+                Toast.makeText(c, "Event added", Toast.LENGTH_LONG).show();
+            }
+            else{
+                Log.e(TAG, "Error adding document");
+                Toast.makeText(c, "Error occurred while adding the event", Toast.LENGTH_LONG).show();
+            }
+
+        }
+        else{
+            getFirestoreInstance(false).collection("polyevents")
+                    .add(event)
+                    .addOnSuccessListener(documentReference -> {
+                        Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
+                        Toast.makeText(c, "Event added", Toast.LENGTH_LONG).show();
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e(TAG, "Error adding document", e);
+                        Toast.makeText(c, "Error occurred while adding the event", Toast.LENGTH_LONG).show();
+                    });
+
         }
     }
 
