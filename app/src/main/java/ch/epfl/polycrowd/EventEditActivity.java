@@ -77,10 +77,11 @@ public class EventEditActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void sendEventSubmit(View view) {
         final EditText evName = findViewById(R.id.EditEventName);
+
         Log.d(LOG_TAG, "Send Event Button Clicked");
 
         // Add an Event to the firestore
-        FirebaseInterface firebaseInterface = new FirebaseInterface();
+        FirebaseInterface firebaseInterface = new FirebaseInterface(this);
         final FirebaseFirestore firestore = firebaseInterface.getFirestoreInstance(false);
         // Retrieve the field values from the Edit Event layout
         Switch isPublicSwitch = findViewById(R.id.EditEventPublic);

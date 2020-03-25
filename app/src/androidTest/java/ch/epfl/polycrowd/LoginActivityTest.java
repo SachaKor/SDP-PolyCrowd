@@ -5,6 +5,8 @@ package ch.epfl.polycrowd;
 
 //import org.junit.AfterClass;
 //import org.junit.BeforeClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -35,11 +37,11 @@ public class LoginActivityTest {
     public final ActivityTestRule<LoginActivity> loginActivityRule =
             new ActivityTestRule<>(LoginActivity.class);
 
-//    @BeforeClass
-//    public static void signUpUser() {
-//        new FirebaseInterface().getAuthInstance(false).createUserWithEmailAndPassword(email, password);
-//    }
-//
+    @Before
+    public void setMocking() {
+        this.loginActivityRule.getActivity().setMocking();
+    }
+
 //    @AfterClass
 //    public static void deleteUser() {
 //        new FirebaseInterface().getAuthInstance(false).signInWithEmailAndPassword(email,password)

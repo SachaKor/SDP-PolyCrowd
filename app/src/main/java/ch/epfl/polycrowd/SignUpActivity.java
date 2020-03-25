@@ -1,6 +1,7 @@
 package ch.epfl.polycrowd;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
 
@@ -32,16 +33,22 @@ import java.util.Map;
 
 public class SignUpActivity extends AppCompatActivity {
 
-
     private  EditText firstPassword, secondPassword , username , email  ;
 
-    FirebaseInterface fbi = new FirebaseInterface();
+    FirebaseInterface fbi = new FirebaseInterface(this);
     final FirebaseFirestore firestore = fbi.getFirestoreInstance(false);
+    private FirebaseInterface fbInterface;
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public void setMocking(){
+        fbInterface.setMocking();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
+        this.fbInterface = new FirebaseInterface(getApplicationContext());
     }
 
     /**
@@ -66,6 +73,7 @@ public class SignUpActivity extends AppCompatActivity {
         toast.setGravity(Gravity.BOTTOM, 0, 16);
         toast.show();
     }
+
 
     private boolean emailAddressCheck(String email) {
         if(email == null || email.isEmpty()) {
@@ -127,8 +135,9 @@ public class SignUpActivity extends AppCompatActivity {
 
     }
 
+    // TODO: add this method to the FirebaseQueries class
     private void addUserToDatabase(){
-        new FirebaseInterface().getAuthInstance(false)
+        fbInterface.getAuthInstance(false)
                 .createUserWithEmailAndPassword(email.getText().toString(), firstPassword.getText().toString())
                 .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                     @Override
@@ -148,8 +157,7 @@ public class SignUpActivity extends AppCompatActivity {
                     public void onSuccess(DocumentReference documentReference) {
                         Log.d("SIGN_UP", "DocumentSnapshot added with ID: " + documentReference.getId());
                     }
-                })
-                .addOnFailureListener(new OnFailureListener() {
+                }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.w("SIGN_UP", "Error adding document", e);
@@ -174,7 +182,7 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
 
-    private OnCompleteListener<QuerySnapshot> emailsQueryListener(){
+    private OnCompleteListener<QuerySnapshot> emailsQueryListener() {
         return new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {

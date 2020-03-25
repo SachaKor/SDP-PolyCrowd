@@ -28,6 +28,7 @@ import ch.epfl.polycrowd.EventPageActivity;
 import ch.epfl.polycrowd.LoginActivity;
 import ch.epfl.polycrowd.OrganizerInviteActivity;
 import ch.epfl.polycrowd.R;
+import ch.epfl.polycrowd.firebase.FirebaseInterface;
 import ch.epfl.polycrowd.firebase.FirebaseQueries;
 
 public class FrontPageActivity extends AppCompatActivity {
@@ -41,7 +42,8 @@ public class FrontPageActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     void setEventModels(){
-        FirebaseQueries.getAllEvents()
+        FirebaseInterface fbi = new FirebaseInterface(this);
+        fbi.getAllEvents()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     List<Event> events = new ArrayList<>();
                     queryDocumentSnapshots.forEach(queryDocumentSnapshot -> {

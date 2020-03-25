@@ -1,36 +1,34 @@
 package ch.epfl.polycrowd;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 
 public class LoginActivity extends AppCompatActivity {
+
+    private FirebaseInterface fbInterface;
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public void setMocking(){
+        this.fbInterface.setMocking();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        this.fbInterface = new FirebaseInterface(getApplicationContext());
+
     }
 
-    private void toastPopup(String text) {
-        Context context = getApplicationContext();
-        int duration = Toast.LENGTH_LONG;
-        Toast toast = Toast.makeText(context, text, duration);
-        toast.setGravity(Gravity.BOTTOM, 0, 16);
-        toast.show();
-    }
 
     public void signUpButtonClicked(View view) {
         Intent intent = new Intent(this, SignUpActivity.class);
@@ -42,26 +40,19 @@ public class LoginActivity extends AppCompatActivity {
                 passwordEditText = findViewById(R.id.sign_in_pswd);
         String email = emailEditText.getText().toString(),
                 password = passwordEditText.getText().toString();
+        Context c = getApplicationContext();
+
         if(email.isEmpty()) {
-            toastPopup("Enter your email");
+            Toast.makeText(this, "Enter your email", Toast.LENGTH_SHORT).show();
+//            Utils.toastPopup(c, "Enter your email");
             return;
         }
         if(password.isEmpty()) {
-            toastPopup("Enter your password");
+            Toast.makeText(this, "Enter your password", Toast.LENGTH_SHORT).show();
+//            Utils.toastPopup(c, "Enter your password");
             return;
         }
 
-        new FirebaseInterface().getAuthInstance(false)
-                .signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if(task.isSuccessful()) {
-                            toastPopup("Sign in success");
-                        } else {
-                            toastPopup("Incorrect email or password");
-                        }
-                    }
-                });
+       fbInterface.signInWithEmailAndPassword(email, password);
     }
 }

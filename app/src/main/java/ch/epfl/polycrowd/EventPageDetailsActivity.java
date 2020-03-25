@@ -4,6 +4,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import ch.epfl.polycrowd.firebase.FirebaseInterface;
 import ch.epfl.polycrowd.firebase.FirebaseQueries;
 
 import android.graphics.Bitmap;
@@ -73,8 +74,9 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         if (!getIntent().hasExtra("eventId")) {
             return;
         }
+        FirebaseInterface fbi = new FirebaseInterface(this);
         eventId = getIntent().getStringExtra("eventId");
-        FirebaseQueries.getEventById(eventId)
+        fbi.getEventById(eventId)
                 .addOnSuccessListener(documentSnapshot -> {
                     Event event = Event.getFromDocument(documentSnapshot.getData());
                     List<String> organizers = new ArrayList<>();

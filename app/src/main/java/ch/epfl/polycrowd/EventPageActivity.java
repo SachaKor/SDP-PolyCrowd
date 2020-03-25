@@ -30,6 +30,7 @@ public class EventPageActivity extends AppCompatActivity {
 
     RecyclerView mRecyclerView ;
     MyAdapter myAdapter ;
+    FirebaseInterface fbi;
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -39,12 +40,13 @@ public class EventPageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_event_page);
 
         mRecyclerView = findViewById(R.id.recyclerView);
+        fbi = new FirebaseInterface(this);
 
         //To use inside
         Context context = this ;
-        FirebaseInterface firebaseInterface = new FirebaseInterface();
+        FirebaseInterface firebaseInterface = new FirebaseInterface(this);
         final FirebaseFirestore firestore = firebaseInterface.getFirestoreInstance(false);
-        FirebaseQueries.getAllEvents().addOnSuccessListener(queryDocumentSnapshots -> {
+        fbi.getAllEvents().addOnSuccessListener(queryDocumentSnapshots -> {
 
             List<Event> events = new ArrayList<>();
 
