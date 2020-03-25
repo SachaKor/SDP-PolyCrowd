@@ -47,7 +47,6 @@
              </intent-filter>
         </activity>
         <activity android:name=".OrganizerInviteActivity"/>
-        <activity android:name=".DlinkActivity"></activity>
 
         <activity
             android:name=".map.MapActivity"

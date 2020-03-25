@@ -1,7 +1,6 @@
 package ch.epfl.polycrowd;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
 
@@ -33,22 +32,16 @@ import java.util.Map;
 
 public class SignUpActivity extends AppCompatActivity {
 
+
     private  EditText firstPassword, secondPassword , username , email  ;
 
-    FirebaseInterface fbi = new FirebaseInterface(this);
-    final FirebaseFirestore firestore = fbi.getFirestoreInstance(false);
-    private FirebaseInterface fbInterface;
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public void setMocking(){
-        fbInterface.setMocking();
-    }
+    private final FirebaseInterface fbi = new FirebaseInterface(this);
+    private final FirebaseFirestore firestore = fbi.getFirestoreInstance(false);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
-        this.fbInterface = new FirebaseInterface(getApplicationContext());
     }
 
     /**
@@ -74,7 +67,6 @@ public class SignUpActivity extends AppCompatActivity {
         toast.show();
     }
 
-
     private boolean emailAddressCheck(String email) {
         if(email == null || email.isEmpty()) {
             return false;
@@ -88,11 +80,11 @@ public class SignUpActivity extends AppCompatActivity {
     private Boolean registrationFieldsValid(EditText firstPassword, EditText secondPassword,
                                             EditText username, EditText email){
 
-        Boolean emailInvalid = !emailAddressCheck(email.getText().toString()) ;
-        Boolean emptyUsername = username.getText().toString().isEmpty() ;
-        Boolean pwNotLongEnough = firstPassword.getText().toString().isEmpty() || firstPassword.getText().toString().length() < 6 ;
-        Boolean pwNotConfirmed = secondPassword.getText().toString().isEmpty() ;
-        Boolean pwsNotMatch = !passwordsMatch(firstPassword.getText().toString(), secondPassword.getText().toString()) ;
+        boolean emailInvalid = !emailAddressCheck(email.getText().toString()) ;
+        boolean emptyUsername = username.getText().toString().isEmpty() ;
+        boolean pwNotLongEnough = firstPassword.getText().toString().isEmpty() || firstPassword.getText().toString().length() < 6 ;
+        boolean pwNotConfirmed = secondPassword.getText().toString().isEmpty() ;
+        boolean pwsNotMatch = !passwordsMatch(firstPassword.getText().toString(), secondPassword.getText().toString()) ;
 
         if(emailInvalid) {
             toastPopup("Incorrect email");
@@ -135,72 +127,51 @@ public class SignUpActivity extends AppCompatActivity {
 
     }
 
-    // TODO: add this method to the FirebaseQueries class
     private void addUserToDatabase(){
-        //TODO: mock
-        fbInterface.getAuthInstance(false)
+        new FirebaseInterface(this).getAuthInstance(false)
                 .createUserWithEmailAndPassword(email.getText().toString(), firstPassword.getText().toString())
-                .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-                    @Override
-                    public void onSuccess(AuthResult authResult) {
-                        String uid = authResult.getUser().getUid();
-                    }
+                .addOnSuccessListener(authResult -> {
+                    String uid = authResult.getUser().getUid();
                 });
 
         Map<String, Object> user = new HashMap<>();
         user.put("username", username.getText().toString());
         user.put("age", 100);
         user.put("email", email.getText().toString()) ;
-        //TODO: mock
         firestore.collection("users")
                 .add(user)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Log.d("SIGN_UP", "DocumentSnapshot added with ID: " + documentReference.getId());
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w("SIGN_UP", "Error adding document", e);
-                    }
-                });
+                .addOnSuccessListener(documentReference -> Log.d("SIGN_UP", "DocumentSnapshot added with ID: " + documentReference.getId()))
+                .addOnFailureListener(e -> Log.w("SIGN_UP", "Error adding document", e));
     }
 
     private OnCompleteListener<QuerySnapshot> usernamesQueryListener(Query queryEmails){
-        return new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if(task.isSuccessful()) {
-                    // user with this username already exists
-                    if(task.getResult().size() > 0) {
-                        toastPopup("User already exists");
-                    } else {
-                        queryEmails.get().addOnCompleteListener(emailsQueryListener()) ;
-                    }
+        return task -> {
+            if(task.isSuccessful()) {
+                // user with this username already exists
+                if(task.getResult().size() > 0) {
+                    toastPopup("User already exists");
+                } else {
+                    queryEmails.get().addOnCompleteListener(emailsQueryListener()) ;
                 }
             }
-        } ;
+        };
     }
 
 
-    private OnCompleteListener<QuerySnapshot> emailsQueryListener() {
-        return new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+    private OnCompleteListener<QuerySnapshot> emailsQueryListener(){
+        return task -> {
 
-                if (task.isSuccessful()) {
-                    //user with this email already exists
-                    if (task.getResult().size() > 0) {
-                        toastPopup("Email already exists");
-                    } else {
-                        // otherwise, add a user to the firestore
-                        addUserToDatabase();
-                        toastPopup("Sign up successful");
-                    }
+            if (task.isSuccessful()) {
+                //user with this email already exists
+                if (task.getResult().size() > 0) {
+                    toastPopup("Email already exists");
+                } else {
+                    // otherwise, add a user to the firestore
+                    addUserToDatabase();
+                    toastPopup("Sign up successful");
                 }
-
             }
-        } ;
+
+        };
     }
 }

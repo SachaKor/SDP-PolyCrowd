@@ -21,12 +21,16 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import ch.epfl.polycrowd.Event;
 import ch.epfl.polycrowd.EventsHandler;
+import ch.epfl.polycrowd.OrganizersHandler;
 import ch.epfl.polycrowd.logic.User;
 
 public class FirebaseInterface {
@@ -41,6 +45,7 @@ public class FirebaseInterface {
 
 
     private static final String EVENTS = "polyevents";
+    private static final String ORGANIZERS = "organizers";
     private static final String TAG = "FirebaseInterface";
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -217,6 +222,33 @@ public class FirebaseInterface {
 
     public Task<DocumentSnapshot> getEventById(String eventId) {
         return getFirestoreInstance(false).collection(EVENTS).document(eventId).get();
+    }
+
+    public void addOrganizerToEvent(String eventId, String organizerEmail,
+                                    OrganizersHandler handler) {
+        if(eventId == null || eventId.isEmpty()) {
+            Log.w(TAG, "addOrganizerToEvent: event id is null or empty");
+        }
+        // check if the organizer is already in the list
+        getEventById(eventId).addOnSuccessListener(documentSnapshot -> {
+            List<String> organizers = new ArrayList<>();
+            organizers.addAll((List<String>)documentSnapshot.get(ORGANIZERS));
+            // if organizer is not in the list, add
+            if(!organizers.contains(organizerEmail)) {
+                organizers.add(organizerEmail);
+                Map<String, Object> data = new HashMap<>();
+                data.put(ORGANIZERS, organizers);
+                getFirestoreInstance(false).collection(EVENTS).document(eventId)
+                        .set(data, SetOptions.merge())
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                handler.handle();
+                            }
+                        })
+                        .addOnFailureListener(e -> Log.w(TAG, "Error updating " + ORGANIZERS + " list"));
+            }
+        }).addOnFailureListener(e -> Log.w(TAG, "Error retrieving event with id" + eventId));
     }
 
 }
