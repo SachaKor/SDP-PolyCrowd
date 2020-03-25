@@ -22,9 +22,10 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Log in to view the invite"
+            android:text="@string/organizer_invite_text"
             android:textAlignment="center"
-            android:padding="10dp" />
+            android:padding="10dp"
+            android:id="@+id/organizer_invite_text"/>
 
         <Button
             android:id="@+id/invite_sign_in_button"

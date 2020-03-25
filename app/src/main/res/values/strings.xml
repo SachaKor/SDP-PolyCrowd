@@ -28,4 +28,12 @@
     <string name="email">email</string>
     <string name="date_format">dd-MM-yyyy</string>
     <string name="event_details">Event Details</string>
+    <string name="invite_link_dialog_title">Here is the invite link:</string>
+    <string name="invite_organizer">Invite Organizer</string>
+    <string name="organizers">Organizers</string>
+    <string name="description">Description</string>
+    <string name="title">Title</string>
+    <string name="organizer_invite_text">Log in to view the invite</string>
+    <string name="organizer_invite_text_1">"You are invited to become an organizer of the event</string>
+    <string name="organizer_invite_text_2">Sign in to accept the invitation</string>
 </resources>

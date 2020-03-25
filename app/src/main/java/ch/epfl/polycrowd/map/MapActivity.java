@@ -10,8 +10,6 @@ import android.widget.Button;
 
 import com.google.android.gms.maps.SupportMapFragment;
 
-import ch.epfl.polycrowd.DlinkActivity;
-import ch.epfl.polycrowd.EventPageActivity;
 import ch.epfl.polycrowd.EventPageDetailsActivity;
 import ch.epfl.polycrowd.LoginActivity;
 import ch.epfl.polycrowd.R;
@@ -176,12 +174,6 @@ public class MapActivity extends AppCompatActivity {
     public void clickEventDetails(View view) {
         Intent intent = new Intent(this, EventPageDetailsActivity.class);
         intent.putExtra("eventId", eventId);
-        startActivity(intent);
-    }
-
-    // link to the dynamic link dummy button
-    public void clickInviteOrg(View view) {
-        Intent intent = new Intent(this, DlinkActivity.class);
         startActivity(intent);
     }
 

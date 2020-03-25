@@ -19,7 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/event_details_title"
-        android:text="Title"
+        android:text="@string/title"
         android:textSize="22sp"
         android:textColor="#000"
         android:textStyle="bold"
@@ -29,7 +29,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Description"
+        android:text="@string/description"
         android:id="@+id/event_details_description"
         android:textSize="18sp"
         android:textColor="#A9A9A9"
@@ -44,7 +44,7 @@
         android:layout_height="wrap_content"
         android:textAlignment="center"
         android:textSize="20sp"
-        android:text="Organizers"
+        android:text="@string/organizers"
         android:padding="10dp"
         android:ems="10"
         android:layout_below="@id/event_details_description"/>
@@ -52,7 +52,16 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/organizers_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_below="@id/EditEventOrganizers"/>
+
+    <Button
+        android:id="@+id/invite_organizer_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/organizers_recycler_view"
+        android:layout_marginTop="10dp"
+        android:text="@string/invite_organizer"
+        android:onClick="inviteLinkClicked"/>
 
 </RelativeLayout>
