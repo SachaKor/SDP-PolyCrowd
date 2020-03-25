@@ -45,24 +45,30 @@ public class EventPageActivity extends AppCompatActivity {
         context = this ;
         FirebaseInterface firebaseInterface = new FirebaseInterface(this);
         final FirebaseFirestore firestore = firebaseInterface.getFirestoreInstance(false);
-        fbi.getAllEvents(qs -> this.getEvents(qs));
+        fbi.getAllEvents(new EventHandler() {
+            @Override
+            public void getEvents(List<Event> events) {
+                myAdapter = new MyAdapter(context, events);
+                mRecyclerView.setAdapter(myAdapter);
+            }
+        });
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public void getEvents(QuerySnapshot qs){
-        List<Event> events = new ArrayList<>();
-
-        qs.forEach(queryDocumentSnapshot -> {
-            Event e = Event.getFromDocument(queryDocumentSnapshot.getData());
-            e.setId(queryDocumentSnapshot.getId());
-            events.add(e);
-        });
-        myAdapter = new MyAdapter(context, events);
-        mRecyclerView.setAdapter(myAdapter);
-    }
+//    @RequiresApi(api = Build.VERSION_CODES.O)
+//    public void getEvents(EventHandler qs){
+//        List<Event> events = new ArrayList<>();
+//
+//        qs.forEach(queryDocumentSnapshot -> {
+//            Event e = Event.getFromDocument(queryDocumentSnapshot.getData());
+//            e.setId(queryDocumentSnapshot.getId());
+//            events.add(e);
+//        });
+//        myAdapter = new MyAdapter(context, events);
+//        mRecyclerView.setAdapter(myAdapter);
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

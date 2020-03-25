@@ -8,10 +8,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -27,8 +25,8 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.epfl.polycrowd.MyAdapter;
-import ch.epfl.polycrowd.logic.Event;
+import ch.epfl.polycrowd.Event;
+import ch.epfl.polycrowd.EventHandler;
 import ch.epfl.polycrowd.logic.User;
 
 public class FirebaseInterface {
@@ -43,10 +41,12 @@ public class FirebaseInterface {
 
 
     private static final String EVENTS = "polyevents";
+    private static final String TAG = "FirebaseInterface";
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public void setMocking(){
         this.is_mocked = true;
+        Log.d(TAG, "Database Mocking enabled");
     }
 
     public FirebaseInterface(Context context){
@@ -179,9 +179,10 @@ public class FirebaseInterface {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     void createEvent(Event e){
         if (!is_mocked)
-            getFirestoreInstance(true).collection("events").add(e.getRawData());
+            getFirestoreInstance(true).collection("events").add(e.toHashMap());
 
     }
 
@@ -192,8 +193,25 @@ public class FirebaseInterface {
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public Task<QuerySnapshot> getAllEvents( OnSuccessListener<QuerySnapshot> qs) {
-        return getFirestoreInstance(false).collection(EVENTS).get().addOnSuccessListener(qs);
+    public void getAllEvents(EventHandler handler) {
+        if(is_mocked) {
+            Event e = new Event();
+            List<Event> events = new ArrayList<>();
+            events.add(e);
+            handler.getEvents(events);
+        }
+        getFirestoreInstance(false).collection(EVENTS).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                List<Event> events = new ArrayList<>();
+                queryDocumentSnapshots.forEach(queryDocumentSnapshot -> {
+                    ch.epfl.polycrowd.Event e = ch.epfl.polycrowd.Event.getFromDocument(queryDocumentSnapshot.getData());
+                    e.setId(queryDocumentSnapshot.getId());
+                    events.add(e);
+                });
+                handler.getEvents(events);
+            }
+        });
     }
 
     public Task<DocumentSnapshot> getEventById(String eventId) {
