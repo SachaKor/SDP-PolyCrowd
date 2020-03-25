@@ -1,11 +1,14 @@
 package ch.epfl.polycrowd.firebase;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.util.Log;
+import android.view.Gravity;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
@@ -21,6 +24,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 
@@ -29,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.Executor;
 
 import ch.epfl.polycrowd.Event;
 import ch.epfl.polycrowd.EventHandler;
@@ -290,19 +295,71 @@ public class FirebaseInterface {
         }
     }
 
-    public void addEvent(Event event) {
-        if(!is_mocked) {
-            getFirestoreInstance(false).collection(EVENTS)
-                    .add(event)
-                    .addOnSuccessListener(documentReference -> {
-                        Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
-                        Toast.makeText(c, "Event added", Toast.LENGTH_LONG).show();
-                    })
-                    .addOnFailureListener(e -> {
-                        Log.e(TAG, "Error adding document", e);
-                        Toast.makeText(c, "Error occurred while adding the event", Toast.LENGTH_LONG).show();
-                    });
+    public void  signUp(String username, String firstPassword, String email, int age) {
+        if (!is_mocked) {
+            CollectionReference usersRef = getFirestoreInstance(false).collection("users");
+            Query queryUsernames = usersRef.whereEqualTo("username", username);
+            Query queryEmails = usersRef.whereEqualTo("email", email);
+            queryUsernames.get().addOnCompleteListener(usernamesQueryListener(queryEmails.get(), email, firstPassword, username, age));
+
         }
+
+    }
+
+    private void addUserToDatabase(String email, String firstPassword, String username, int age){
+        getAuthInstance(false)
+                .createUserWithEmailAndPassword(email, firstPassword)
+                .addOnSuccessListener(authResult -> {
+                    String uid = authResult.getUser().getUid();
+                });
+
+        Map<String, Object> user = new HashMap<>();
+        user.put("username", username);
+        user.put("age", age);
+        user.put("email", email) ;
+        getFirestoreInstance(false).collection("users")
+                .add(user)
+                .addOnSuccessListener(documentReference -> Log.d("SIGN_UP", "DocumentSnapshot added with ID: " + documentReference.getId()))
+                .addOnFailureListener(e -> Log.w("SIGN_UP", "Error adding document", e));
+    }
+
+    private OnCompleteListener<QuerySnapshot> usernamesQueryListener(Task<QuerySnapshot> queryEmails, String email, String firstPassword,String username, int age){
+        return task -> {
+            if(task.isSuccessful()) {
+                // user with this username already exists
+
+                if(task.getResult().size() > 0) {
+                    toastPopup("User already exists");
+                } else {
+                    queryEmails.addOnCompleteListener(emailsQueryListener(email,firstPassword,username, age)) ;
+                }
+            }
+        };
+    }
+
+
+    private OnCompleteListener<QuerySnapshot> emailsQueryListener(String email, String firstPassword, String username, int age){
+        return task -> {
+
+            if (task.isSuccessful()) {
+                //user with this email already exists
+                if (task.getResult().size() > 0) {
+                    toastPopup("Email already exists");
+                } else {
+                    // otherwise, add a user to the firestore
+                    addUserToDatabase(email,firstPassword,username, age);
+                    toastPopup("Sign up successful");
+                }
+            }
+
+        };
+    }
+
+    private void toastPopup(String text) {
+        int duration = Toast.LENGTH_SHORT;
+        Toast toast = Toast.makeText(c, text, duration);
+        toast.setGravity(Gravity.BOTTOM, 0, 16);
+        toast.show();
     }
 
 }

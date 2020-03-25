@@ -35,7 +35,10 @@ public class SignUpActivityTest {
 
     @Test
     public void testToastIsDisplayedWhenNoFieldIsFill() {
+        sleep();
+        sleep();
         onView(withId(R.id.sign_up_button)).perform(click());
+        sleep();
         onView(withText("Incorrect email"))
                 .inRoot(withDecorView(not(mActivityRule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));
@@ -43,11 +46,13 @@ public class SignUpActivityTest {
 
    @Test
     public void testToastIsDisplayedWhenPasswordsDoNotMatch() {
+        sleep();
         typeTextAndCloseKeyboard(R.id.sign_up_email, "sasha@bla.com");
         typeTextAndCloseKeyboard(R.id.sign_up_username, "sasha");
         typeTextAndCloseKeyboard(R.id.sign_up_pswd, "123888");
         typeTextAndCloseKeyboard(R.id.repeat_pswd, "4560000");
         onView(withId(R.id.sign_up_button)).perform(click());
+        sleep();
         onView(withText("Different passwords"))
                 .inRoot(withDecorView(not(mActivityRule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));
@@ -55,11 +60,13 @@ public class SignUpActivityTest {
 
     @Test
     public void testIncorrectEmailToast() {
+        sleep();
         typeTextAndCloseKeyboard(R.id.sign_up_username, "sasha");
         typeTextAndCloseKeyboard(R.id.sign_up_pswd, "123");
         typeTextAndCloseKeyboard(R.id.repeat_pswd, "123");
 
         onView(withId(R.id.sign_up_button)).perform(click());
+        sleep();
         onView(withText("Incorrect email"))
                 .inRoot(withDecorView(not(mActivityRule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));
@@ -87,6 +94,12 @@ public class SignUpActivityTest {
         typeTextAndCloseKeyboard(R.id.repeat_pswd, "123456");
 
     }*/
-
+    private void sleep(){
+        try{
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
 }

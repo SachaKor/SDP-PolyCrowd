@@ -77,11 +77,13 @@ public class LoginActivityTest {
 
     @Test
     public void testUnsuccessfulSignIn() {
+        sleep();
         onView(withId(R.id.sign_in_email))
                 .perform(typeText("hopefullyDoesNotExist"), closeSoftKeyboard());
         onView(withId(R.id.sign_in_pswd))
                 .perform(typeText("thisIsNotNaniForSure"), closeSoftKeyboard());
         onView(withId(R.id.sign_in_button)).perform(click());
+        sleep();
         onView(withText("Incorrect email or password"))
                 .inRoot(withDecorView(not(loginActivityRule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));
@@ -89,7 +91,9 @@ public class LoginActivityTest {
 
     @Test
     public void testEmailFieldEmpty() {
+        sleep();
         onView(withId(R.id.sign_in_button)).perform(click());
+        sleep();
         onView(withText("Enter your email"))
                 .inRoot(withDecorView(not(loginActivityRule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));
@@ -97,8 +101,10 @@ public class LoginActivityTest {
 
     @Test
     public void testPasswordFieldEmpty() {
+        sleep();
         onView(withId(R.id.sign_in_email)).perform(typeText("sasha@ha.com"), closeSoftKeyboard());
         onView(withId(R.id.sign_in_button)).perform(click());
+        sleep();
         onView(withText("Enter your password"))
                 .inRoot(withDecorView(not(loginActivityRule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));
@@ -108,5 +114,12 @@ public class LoginActivityTest {
     public void testNavigateToSignUpPage() {
         onView(withId(R.id.sign_in_sign_up_button)).perform(click());
         onView(withId(R.id.sign_up_logo)).check(matches(isDisplayed()));
+    }
+    private void sleep(){
+        try{
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
