@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Map;
 
 import androidx.annotation.RequiresApi;
@@ -28,6 +29,8 @@ import static ch.epfl.polycrowd.Event.dtFormat;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
 import ch.epfl.polycrowd.map.MapActivity;
 import ch.epfl.polycrowd.logic.PolyContext;
+import static ch.epfl.polycrowd.Event.stringToDate;
+import static ch.epfl.polycrowd.Event.dateToString;
 
 public class EventEditActivity extends AppCompatActivity {
 
@@ -41,7 +44,7 @@ public class EventEditActivity extends AppCompatActivity {
     }
 
 
-
+    /*
     @RequiresApi(api = Build.VERSION_CODES.O)
     private LocalDateTime parseDate(String dateStr) {
         String dateWithTime = dateStr + " 00:00";
@@ -55,7 +58,7 @@ public class EventEditActivity extends AppCompatActivity {
 
         return date;
 
-    }
+    }*/
 
     private boolean fieldsNotEmpty() {
         final String eventName = findViewById(R.id.EditEventName).toString(),
@@ -101,8 +104,8 @@ public class EventEditActivity extends AppCompatActivity {
         if(!fieldsNotEmpty()) {
             return;
         }
-        LocalDateTime startDate = parseDate(sDate),
-                endDate = parseDate(eDate);
+        Date startDate = stringToDate(sDate+" 00:00", dtFormat),
+                endDate = stringToDate(eDate+" 00:00", dtFormat);
 
         if(startDate == null || endDate == null) {
             return;

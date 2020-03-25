@@ -8,6 +8,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import java.io.File;
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -58,7 +59,11 @@ public class ScheduleActivityTest {
     }*/
 
     private void setCurrentFakeEvent(String scheduleUrl, File f){
-        PolyContext.setCurrentEvent( Event.fakeEvent(scheduleUrl, f));
+        try {
+            PolyContext.setCurrentEvent( Event.fakeEvent(scheduleUrl, f));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
 }
