@@ -82,7 +82,7 @@ public class Activity {
                 +"Description: "+ this.description+'\n'
                 +"Start: "+ this.start+'\n'
                 +"End: "+ this.end+'\n'
-                +"Organizer: "+this.organizer+'\n'
+                +"Organizer: "+this.organizer
         ;
     }
 

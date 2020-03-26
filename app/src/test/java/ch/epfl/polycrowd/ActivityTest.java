@@ -39,7 +39,7 @@ public class ActivityTest {
                 "Description: activity description\n" +
                 "Start: Sat Jul 25 16:30:58 GMT+01:00 2020\n" +
                 "End: Wed Oct 26 18:02:28 GMT+01:00 2022\n" +
-                "Organizer: MAILTO:email@email.com\n",a.toString());
+                "Organizer: MAILTO:email@email.com",a.toString());
     }
     @Test
     public void testUid(){
