@@ -4,6 +4,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
+import android.view.Display;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -37,12 +38,19 @@ public class ScheduleActivity extends AppCompatActivity {
             mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
             List<Activity> activities = PolyContext.getActivities();
             if (activities!=null) {
-                List<Model> models = activities.stream().map(Activity::getModel).collect(Collectors.toList());
+                List<Model> models = toModels(activities);
                 myAdapter = new MyAdapter(this, models);
                 mRecyclerView.setAdapter(myAdapter);
             }
 
 
+    }
+    private List<Model> toModels(List<Activity> activities){
+        List<Model> models = new ArrayList<>();
+        for (Activity a : activities){
+            models.add(a.getModel());
+        }
+        return models;
     }
 
     private void giveHttpRequestPermissions(){
