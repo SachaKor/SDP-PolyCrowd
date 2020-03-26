@@ -1,6 +1,5 @@
 package ch.epfl.polycrowd.firebase;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.util.Log;
@@ -8,7 +7,6 @@ import android.view.Gravity;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
@@ -25,7 +23,6 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 
@@ -34,12 +31,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.Executor;
 
 import ch.epfl.polycrowd.Event;
-import ch.epfl.polycrowd.EventHandler;
-import ch.epfl.polycrowd.EventsHandler;
-import ch.epfl.polycrowd.OrganizersHandler;
+import ch.epfl.polycrowd.firebase.handlers.EventHandler;
+import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
+import ch.epfl.polycrowd.firebase.handlers.OrganizersHandler;
 import ch.epfl.polycrowd.logic.User;
 
 public class FirebaseInterface {
@@ -128,16 +124,6 @@ public class FirebaseInterface {
         }
     }
 
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    void createEvent(Event e){
-        if (!is_mocked)
-            getFirestoreInstance(true).collection("events").add(e.toHashMap());
-
-    }
-
-
-
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void getAllEvents(EventsHandler handler) {
         if(is_mocked) {
@@ -160,6 +146,7 @@ public class FirebaseInterface {
             });
         }
     }
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void addEvent(Event event){
         if(is_mocked){

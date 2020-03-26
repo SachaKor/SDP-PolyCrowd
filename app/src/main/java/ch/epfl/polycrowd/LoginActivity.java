@@ -1,10 +1,10 @@
 
 package ch.epfl.polycrowd;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
+import ch.epfl.polycrowd.firebase.handlers.OrganizersHandler;
 
 import android.content.Context;
 import android.content.Intent;
