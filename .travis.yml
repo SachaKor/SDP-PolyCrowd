@@ -10,7 +10,7 @@ android:
     # The system image, to run an emulator during the tests
     - sys-img-armeabi-v7a-android-26
 before_install:
-  - yes | sdkmanager “platforms;android-26”
+  - yes | sdkmanager "platforms;android-26"
 before_script:
   # Emulator Management: Create, Start and Wait
   - echo no | android create avd --force -n test -t android-26 --abi armeabi-v7a
