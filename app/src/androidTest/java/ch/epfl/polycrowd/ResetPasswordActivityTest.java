@@ -6,19 +6,31 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.Matchers.not;
+
 public class ResetPasswordActivityTest {
 
     @Rule
-    public final ActivityTestRule<LoginActivity> loginActivityRule =
-            new ActivityTestRule<>(LoginActivity.class);
+    public final ActivityTestRule<ResetPasswordActivity> resetPasswordActivityActivityTestRule =
+            new ActivityTestRule<>(ResetPasswordActivity.class);
 
     @Before
     public void setMocking() {
-        this.loginActivityRule.getActivity().setMocking();
+        this.resetPasswordActivityActivityTestRule.getActivity().setMocking();
     }
 
     @Test
-    public void sampleTest(){
-        //TODO: implement
+    public void testToastWhenEmailIsEmpty(){
+        onView(withId(R.id.forgot_password_button)).perform(click());
+        onView(withText("Please enter an email"))
+                .inRoot(withDecorView(not(resetPasswordActivityActivityTestRule.getActivity().getWindow().getDecorView())))
+                .check(matches(isDisplayed()));
     }
 }
