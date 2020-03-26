@@ -125,6 +125,10 @@ public class FirebaseInterface {
         }
     }
 
+    public void signOut(){
+        this.getAuthInstance(false).signOut();
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void getAllEvents(EventsHandler handler) {
         if(is_mocked) {
