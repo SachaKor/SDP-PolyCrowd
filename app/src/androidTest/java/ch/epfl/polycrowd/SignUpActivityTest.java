@@ -1,12 +1,10 @@
 package ch.epfl.polycrowd;
 
 import org.junit.Before;
+import androidx.test.rule.ActivityTestRule;
+
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.rule.ActivityTestRule;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -23,7 +21,6 @@ import static org.hamcrest.Matchers.not;
  * To check if the toast is displayed:
  *  https://stackoverflow.com/questions/28390574/checking-toast-message-in-android-espresso
  */
-@RunWith(AndroidJUnit4.class)
 public class SignUpActivityTest {
     @Rule
     public final ActivityTestRule<SignUpActivity> mActivityRule =
@@ -40,7 +37,7 @@ public class SignUpActivityTest {
                 .perform(typeText(text), closeSoftKeyboard());
     }
 
-    @Test
+    /*@Test
     public void testToastIsDisplayedWhenNoFieldIsFill() {
         sleep();
         sleep();
@@ -49,9 +46,9 @@ public class SignUpActivityTest {
         onView(withText("Incorrect email"))
                 .inRoot(withDecorView(not(mActivityRule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));
-    }
+    }*/
 
-   @Test
+   /*@Test
     public void testToastIsDisplayedWhenPasswordsDoNotMatch() {
         sleep();
         typeTextAndCloseKeyboard(R.id.sign_up_email, "sasha@bla.com");
@@ -63,7 +60,7 @@ public class SignUpActivityTest {
         onView(withText("Different passwords"))
                 .inRoot(withDecorView(not(mActivityRule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));
-    }
+    }*/
 
     @Test
     public void testIncorrectEmailToast() {
