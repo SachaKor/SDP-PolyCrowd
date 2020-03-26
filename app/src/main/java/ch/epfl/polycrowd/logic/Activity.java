@@ -73,6 +73,7 @@ public class Activity {
         return m;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public String toString(){
         return
@@ -80,8 +81,8 @@ public class Activity {
                 +"Uid: "+ this.uid+'\n'
                 +"Summary: "+ this.summary+'\n'
                 +"Description: "+ this.description+'\n'
-                +"Start: "+ this.start+'\n'
-                +"End: "+ this.end+'\n'
+                +"Start: "+ this.start.toInstant().toString()+'\n'
+                +"End: "+ this.end.toInstant().toString()+'\n'
                 +"Organizer: "+this.organizer
         ;
     }

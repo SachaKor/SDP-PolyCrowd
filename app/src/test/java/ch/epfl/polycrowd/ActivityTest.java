@@ -33,8 +33,7 @@ public class ActivityTest {
     @Test
     public void testToString(){
         Activity a = new Activity(this.mockActivity);
-        //System.out.println(a.toString());
-        String s = "Location: Location 1\nUid: id1\nSummary: activity summary\nDescription: activity description\nStart: Sat Jul 25 16:30:58 GMT+01:00 2020\nEnd: Wed Oct 26 18:02:28 GMT+01:00 2022\nOrganizer: MAILTO:email@email.com";
+        String s = "Location: Location 1\nUid: id1\nSummary: activity summary\nDescription: activity description\nStart: 2020-07-25T15:30:58Z\nEnd: 2022-10-26T17:02:28Z\nOrganizer: MAILTO:email@email.com";
         assert(s.equals(a.toString()));
     }
     @Test
@@ -56,8 +55,8 @@ public class ActivityTest {
         assertEquals(a.getDescription(), "activity description");
         assertEquals(a.getUid(),"id1");
         assertEquals(a.getSummary(),"activity summary");
-        assertEquals(a.getStart().toString(),"Sat Jul 25 16:30:58 GMT+01:00 2020");
-        assertEquals(a.getEnd().toString(),"Wed Oct 26 18:02:28 GMT+01:00 2022");
+        assertEquals(a.getStart().toInstant().toString(),"2020-07-25T15:30:58Z");
+        assertEquals(a.getEnd().toInstant().toString(),"2022-10-26T17:02:28Z");
 
         assertEquals(a.getOrganizer(), "MAILTO:email@email.com");
     }
