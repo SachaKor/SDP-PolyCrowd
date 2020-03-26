@@ -125,6 +125,10 @@ public class FirebaseInterface {
         }
     }
 
+    public void signOut(){
+        this.getAuthInstance(false).signOut();
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void getAllEvents(EventsHandler handler) {
         if(is_mocked) {
@@ -314,7 +318,12 @@ public class FirebaseInterface {
             return new User("fake@fake.com", "1", "fake user", 100);
         } else {
             FirebaseUser u = getAuthInstance(false).getCurrentUser();
-            return new User(u.getEmail(), u.getUid(), u.getDisplayName(), 3);
+            if(u != null) {
+                return new User(u.getEmail(), u.getUid(), u.getDisplayName(), 3);
+            }else{
+                // Not logged in !
+                return null;
+            }
         }
     }
 

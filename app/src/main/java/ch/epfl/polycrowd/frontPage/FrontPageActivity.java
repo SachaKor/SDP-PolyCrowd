@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -112,12 +113,29 @@ public class FrontPageActivity extends AppCompatActivity {
         
         // front page should dispatch the dynamic links
         receiveDynamicLink();
+
+        // Toggle login/logout button
+        if(fbInterface.getCurrentUser() != null){
+            Button button = findViewById(R.id.button);
+            button.setText("LOGOUT");
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    clickSignOut(v);
+                }
+            });
+        }
     }
 
 
     public void clickSignIn(View view) {
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
+    }
+
+    public void clickSignOut(View view) {
+        fbInterface.signOut();
+        recreate();
     }
 
     private void receiveDynamicLink() {
