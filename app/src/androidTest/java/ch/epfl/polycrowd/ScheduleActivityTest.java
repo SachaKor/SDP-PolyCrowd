@@ -27,7 +27,7 @@ public class ScheduleActivityTest {
     @Rule
     public final ActivityTestRule<ScheduleActivity> mActivityRule =
             new ActivityTestRule<>(ScheduleActivity.class);
-
+/*
     @Before
     public void setupValidSchedule(){
         setCurrentFakeEvent("https://satellite.bar/agenda/ical.php",getApplicationContext().getFilesDir());
@@ -39,6 +39,7 @@ public class ScheduleActivityTest {
 
         onView(withText("Degustation:")).check(matches(isDisplayed()));
     }
+
 
     @Test(expected = IllegalArgumentException.class)
     public void testScheduleWithNullString(){
