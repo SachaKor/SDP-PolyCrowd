@@ -33,7 +33,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import ch.epfl.polycrowd.Event;
-import ch.epfl.polycrowd.ResetPasswordActivity;
 import ch.epfl.polycrowd.firebase.handlers.EventHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
 import ch.epfl.polycrowd.firebase.handlers.OrganizersHandler;
@@ -329,33 +328,22 @@ public class FirebaseInterface {
 
     public void resetPassword(String email){
         getAuthInstance(false).sendPasswordResetEmail(email).addOnCompleteListener(
-                new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(c, "A reset link has been sent to your email", Toast.LENGTH_SHORT).show();
-                        } else {
-                            //TODO check if the user exists or not, and if not, suggest signup
-                            //Otherwise, network error?
-                            FirebaseFirestore firestore = getFirestoreInstance(false) ;
-                            CollectionReference usersRef = firestore.collection("users");
-                            usersRef.whereEqualTo("email", email).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                @Override
-                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                    //Query was able to complete, but email was not found
-                                    if(task.isSuccessful()){
-                                        if(task.getResult().size() ==0)
-                                            Toast.makeText(c, "Email not found, please sign up", Toast.LENGTH_SHORT).show();
-                                    } else {
-                                        //in this case, there is probably a connection error
-                                        Toast.makeText(c, "Connection error, please try again later", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            }) ;
-                        }
+                task ->  {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(c, "A reset link has been sent to your email", Toast.LENGTH_SHORT).show();
+                    } else {
+                        //Check if the user exists or not, and if not, suggest signup ; otherwise network error
+                        FirebaseFirestore firestore = getFirestoreInstance(false) ;
+                        CollectionReference usersRef = firestore.collection("users");
+                        usersRef.whereEqualTo("email", email).get().addOnCompleteListener( task1 ->  {
+                            //Query was able to complete, but email was not found (size is either 1 or 0)
+                            if(task1.isSuccessful() && task1.getResult().size() == 0 ){
+                                Toast.makeText(c, "Email not found, please sign up", Toast.LENGTH_SHORT).show();
+                            } else {//in this case, there is probably a connection error
+                                Toast.makeText(c, "Connection error, please try again later", Toast.LENGTH_SHORT).show();
+                            } }) ;
                     }
-                }
-        );
+                });
     }
 
 }
