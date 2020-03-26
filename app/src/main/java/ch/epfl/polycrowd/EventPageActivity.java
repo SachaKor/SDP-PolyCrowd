@@ -39,10 +39,7 @@ public class EventPageActivity extends AppCompatActivity {
         mRecyclerView = findViewById(R.id.recyclerView);
         fbi = new FirebaseInterface(this);
 
-        //To use inside
-        context = this ;
-        FirebaseInterface firebaseInterface = new FirebaseInterface(this);
-        final FirebaseFirestore firestore = firebaseInterface.getFirestoreInstance(false);
+
         fbi.getAllEvents(new EventsHandler() {
             @Override
             public void handle(List<Event> events) {

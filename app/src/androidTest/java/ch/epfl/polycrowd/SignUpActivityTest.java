@@ -72,7 +72,7 @@ public class SignUpActivityTest {
                 .check(matches(isDisplayed()));
     }
 
-    /*@Test
+    @Test
     public void testUsernameExistsToast(){
         typeTextAndCloseKeyboard(R.id.sign_up_email, "123@mail.com");
         typeTextAndCloseKeyboard(R.id.sign_up_username, "yabdro");
@@ -83,7 +83,7 @@ public class SignUpActivityTest {
         onView(withText("User already exists")).inRoot(withDecorView(not(mActivityRule.getActivity().getWindow().getDecorView()))).
                 check(matches(isDisplayed()));
 
-    }*/
+    }
 
 
     /*@Test

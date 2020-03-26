@@ -27,6 +27,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import static ch.epfl.polycrowd.Event.dtFormat;
 
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
+import ch.epfl.polycrowd.logic.User;
 import ch.epfl.polycrowd.map.MapActivity;
 
 public class EventEditActivity extends AppCompatActivity {
@@ -112,12 +113,9 @@ public class EventEditActivity extends AppCompatActivity {
         }
 
 
+
         // check if the user is logged in
-        FirebaseUser user = firebaseInterface.getAuthInstance(false).getCurrentUser();
-        if(user == null) {
-            Toast.makeText(getApplicationContext(), "Log in to add an event", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        User user = firebaseInterface.getCurrentUser();
 
         List<String> organizers = new ArrayList<>();
         organizers.add(user.getEmail());

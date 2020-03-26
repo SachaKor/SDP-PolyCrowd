@@ -18,6 +18,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
@@ -70,7 +71,7 @@ public class FirebaseInterface {
      * @param refresh option to force the refresh of the cached instance, true to force
      * @return FirebaseAuth authentication instance
      */
-    public FirebaseAuth getAuthInstance(boolean refresh){
+    private FirebaseAuth getAuthInstance(boolean refresh){
         if (this.cachedAuth == null || refresh){
             this.cachedAuth = FirebaseAuth.getInstance();
         }
@@ -78,14 +79,14 @@ public class FirebaseInterface {
 
     }
 
-    public DatabaseReference getDbRef(boolean refresh){
+    private DatabaseReference getDbRef(boolean refresh){
         if (this.cachedDbRef == null || refresh) {
             this.cachedDbRef = FirebaseDatabase.getInstance().getReference();
         }
         return this.cachedDbRef;
     }
 
-    public FirebaseFirestore getFirestoreInstance(boolean refresh) {
+    private FirebaseFirestore getFirestoreInstance(boolean refresh) {
         if (this.cachedFirestore == null || refresh) {
             this.cachedFirestore = FirebaseFirestore.getInstance();
         }
@@ -127,49 +128,6 @@ public class FirebaseInterface {
         }
     }
 
-    public void createUserWithEmailOrPassword(final String email, final String username , final String password, final int age) {
-
-        if (is_mocked){
-            if (email.equals("already@exists.com") || username.equals("already exists")) {
-                Toast.makeText(c, "User already exists", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(c, "Sign up successful", Toast.LENGTH_SHORT).show();
-            }
-        } else {
-            final StringBuffer message = new StringBuffer();
-            final List<Task<AuthResult>> authres = new ArrayList<Task<AuthResult>>();
-
-            final FirebaseFirestore firestore = getFirestoreInstance(true);
-
-            CollectionReference usersRef = firestore.collection("users");
-            Query query = usersRef.whereEqualTo("username", username);
-            query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                    if (task.isSuccessful()) {
-                        if (task.getResult().size() > 0) {
-                            Toast.makeText(c, "User already exists", Toast.LENGTH_SHORT).show();
-                        } else {
-                            authres.set(0, getAuthInstance(false)
-                                    .createUserWithEmailAndPassword(email, password)
-                                    .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-                                        @Override
-                                        public void onSuccess(AuthResult authResult) {
-                                            String uid = authResult.getUser().getUid();
-
-                                        }
-                                    }));
-
-                            addUser(new User(username, age));
-                            Toast.makeText(c, "Sign up successful", Toast.LENGTH_SHORT).show();
-//                            Utils.toastPopup(c,"Sign up successful");
-
-                        }
-                    }
-                }
-            });
-        }
-    }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     void createEvent(Event e){
@@ -178,10 +136,6 @@ public class FirebaseInterface {
 
     }
 
-    void addUser(User u) {
-        if (!is_mocked)
-            getFirestoreInstance(true).collection("users").add(u.getRawData());
-    }
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -298,7 +252,15 @@ public class FirebaseInterface {
             Query queryUsernames = usersRef.whereEqualTo("username", username);
             Query queryEmails = usersRef.whereEqualTo("email", email);
             queryUsernames.get().addOnCompleteListener(usernamesQueryListener(queryEmails.get(), email, firstPassword, username, age));
+        } else {
+            if (email.equals("already@exists.com") || username.equals("already exists")) {
+                Toast.makeText(c, "User already exists", Toast.LENGTH_SHORT).show();
+            } else if (email.equals("123@mail.com") && username.equals("yabdro") ) {
 
+                Toast.makeText(c, "User already exists", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(c, "Sign up successful", Toast.LENGTH_SHORT).show();
+            }
         }
 
     }
@@ -357,6 +319,15 @@ public class FirebaseInterface {
         Toast toast = Toast.makeText(c, text, duration);
         toast.setGravity(Gravity.BOTTOM, 0, 16);
         toast.show();
+    }
+
+    public User getCurrentUser() {
+        if (is_mocked) {
+            return new User("fake@fake.com", "1", "fake user", 100);
+        } else {
+            FirebaseUser u = getAuthInstance(false).getCurrentUser();
+            return new User(u.getEmail(), u.getUid(), u.getDisplayName(), 3);
+        }
     }
 
 }

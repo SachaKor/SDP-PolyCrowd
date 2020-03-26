@@ -36,7 +36,6 @@ public class SignUpActivity extends AppCompatActivity {
     private  EditText firstPassword, secondPassword , username , email  ;
 
     private final FirebaseInterface fbi = new FirebaseInterface(this);
-    private final FirebaseFirestore firestore = fbi.getFirestoreInstance(false);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

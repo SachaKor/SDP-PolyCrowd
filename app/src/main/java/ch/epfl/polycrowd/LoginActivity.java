@@ -81,9 +81,7 @@ public class LoginActivity extends AppCompatActivity {
             organizers list, then open the event details page for the preview */
         if(isOrganizerInvite) {
             String organizerEmail =
-                    Objects.requireNonNull(fbInterface
-                            .getAuthInstance(false)
-                            .getCurrentUser()).getEmail();
+                    Objects.requireNonNull(fbInterface.getCurrentUser().getEmail());
             Context c = this;
             fbInterface.addOrganizerToEvent(eventId, organizerEmail, new OrganizersHandler() {
                 @Override
