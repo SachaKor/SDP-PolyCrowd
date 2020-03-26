@@ -8,10 +8,14 @@ import ch.epfl.polycrowd.firebase.FirebaseInterface;
 import ch.epfl.polycrowd.firebase.handlers.EventHandler;
 
 import android.app.AlertDialog;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -36,6 +40,28 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_details_page);
         initEvent();
+
+        getIncomingIntent();
+        final Button scheduleButton = (Button) findViewById(R.id.schedule);
+        scheduleButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                clickSchedule(v);
+            }
+        });
+    }
+    private void getIncomingIntent() {
+        if(getIntent().hasExtra("iTitle")
+                && getIntent().hasExtra("iDesc")
+                && getIntent().hasExtra("iImage")
+                && getIntent().hasExtra("eventId")) {
+            String mTitle = getIntent().getStringExtra("iTitle") ;
+            String mDescription = getIntent().getStringExtra("iDesc") ;
+            byte[] mBytes = getIntent().getByteArrayExtra("iImage") ;
+            eventId = getIntent().getStringExtra("eventId");
+            Bitmap bitmap = BitmapFactory.decodeByteArray(mBytes, 0, mBytes.length) ;
+            setUpViews(mTitle, mDescription);
+        }
     }
 
     private void setUpViews(String title, String description) {
@@ -109,5 +135,9 @@ public class EventPageDetailsActivity extends AppCompatActivity {
                 .setCancelable(true)
                 .setPositiveButton("OK", (dialog, which) -> dialog.cancel())
                 .show();
+    }
+    public void clickSchedule(View view){
+        Intent intent = new Intent(this, ScheduleActivity.class);
+        startActivity(intent);
     }
 }

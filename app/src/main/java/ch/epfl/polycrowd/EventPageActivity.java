@@ -42,7 +42,7 @@ public class EventPageActivity extends AppCompatActivity {
         fbi.getAllEvents(new EventsHandler() {
             @Override
             public void handle(List<Event> events) {
-                myAdapter = new MyAdapter(context, events);
+                myAdapter = new MyAdapter(context, Event.toModels( events));
                 mRecyclerView.setAdapter(myAdapter);
             }
         });
