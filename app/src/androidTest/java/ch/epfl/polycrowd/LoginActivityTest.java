@@ -93,14 +93,14 @@ public class LoginActivityTest {
                 .check(matches(isDisplayed()));
     }
 
-    @Test
+   /* @Test
     public void testPasswordFieldEmpty() {
         onView(withId(R.id.sign_in_email)).perform(typeText("sasha@ha.com"), closeSoftKeyboard());
         onView(withId(R.id.sign_in_button)).perform(click());
         onView(withText("Enter your password"))
                 .inRoot(withDecorView(not(loginActivityRule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));
-    }
+    }*/
 
     @Test
     public void testNavigateToSignUpPage() {

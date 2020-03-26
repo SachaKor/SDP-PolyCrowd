@@ -28,6 +28,9 @@
     <string name="email">email</string>
     <string name="date_format">dd-MM-yyyy</string>
     <string name="event_details">Event Details</string>
+    <string name="forgot_password">forgot password</string>
+    <string name="reset_password">Reset password</string>
+    <string name="send_reset_link">Send reset link</string>
     <string name="invite_link_dialog_title">Here is the invite link:</string>
     <string name="invite_organizer">Invite Organizer</string>
     <string name="organizers">Organizers</string>
