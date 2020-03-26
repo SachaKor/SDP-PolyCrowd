@@ -75,17 +75,19 @@ public class FrontPageActivity extends AppCompatActivity {
         viewPager = findViewById(R.id.viewPager);
         viewPager.setAdapter(adapter);
         viewPager.setPadding(130, 0, 130, 0);
-
+        viewPager.setCurrentItem(1);
 
         TextView description = findViewById(R.id.description);
-
 
         viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                if(position != 0)
-                    description.setText( "BRIEF DESCRIPTION : \n" + events.get(position - 1 ).getDescription() );
+                if(position != 0){
+                    Event pointedEvent = events.get(position - 1 );
+                    description.setText( pointedEvent.getName()+" : \n" + pointedEvent.getDescription() );
+                }
+
                 else
                     description.setText("create a new event")   ;
             }
@@ -108,11 +110,13 @@ public class FrontPageActivity extends AppCompatActivity {
         this.fbInterface = new FirebaseInterface(this);
 
         setEventModels();
-//        setViewPager();
-        
-        // front page should dispatch the dynamic links
+
+
+
         receiveDynamicLink();
     }
+
+
 
 
     public void clickSignIn(View view) {

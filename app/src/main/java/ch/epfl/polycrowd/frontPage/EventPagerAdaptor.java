@@ -71,7 +71,6 @@ public class EventPagerAdaptor extends PagerAdapter {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(context, MapActivity.class);
-                    // TODO : update currentEvent to the given one
                     Event e =events.get(position-1);
                     PolyContext.setCurrentEvent(e);
                     intent.putExtra("eventId", e.getId());

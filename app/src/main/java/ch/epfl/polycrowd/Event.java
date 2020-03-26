@@ -106,7 +106,7 @@ public class Event {
         }
         this.id = id;
         this.description = "default descrption";
-        this.image = R.drawable.demo1;
+        this.image = R.drawable.balelec;
     }
 
     // default constructor for debugging
