@@ -13,8 +13,10 @@ import androidx.annotation.RequiresApi;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -28,7 +30,7 @@ public class Event {
     }
 
     public static final DateTimeFormatter dtFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
-    private final String owner; // user uid is a string
+    private String owner; // user uid is a string
     private String name;
     private Boolean isPublic;
     private EventType type;
@@ -38,6 +40,7 @@ public class Event {
     private String description;
     private String id;
     private int image;
+    private List<String> organizers;
 
     public Event(String owner, String name, Boolean isPublic, EventType type,
                  LocalDateTime start, LocalDateTime end,
@@ -51,7 +54,19 @@ public class Event {
         this.start = start;
         this.end = end;
         this.calendar = calendar;
+        organizers = new ArrayList<>();
+        organizers.add(owner);
         setDescription(description);
+    }
+
+    public Event(String owner, String name, Boolean isPublic, EventType type,
+                 LocalDateTime start, LocalDateTime end,
+                 String calendar, String description, List<String> organizers){
+        this(owner, name, isPublic, type, start, end, calendar, description);
+        if(organizers == null) {
+            throw new IllegalArgumentException("Invalid Argument for Event Constructor");
+        }
+        this.organizers = organizers;
     }
 
     public void setId(String id) {
@@ -180,7 +195,7 @@ public class Event {
         event.put("type", this.type.toString());
         event.put("calendar", this.calendar);
         event.put("description", this.description);
-
+        event.put("organizers", organizers);
         return event;
     }
 
@@ -197,7 +212,18 @@ public class Event {
         LocalDateTime end = (eStamp.toDate()).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
         EventType type = EventType.valueOf(Objects.requireNonNull(data.get("type")).toString().toUpperCase());
         String desc = data.get("description").toString();
-        return new Event(owner, name, isPublic, type, start, end, calendar, desc);
+        List<String> organizers = new ArrayList<>();
+        organizers.addAll((List<String>) Objects.requireNonNull(data.get("organizers")));
+        return new Event(owner, name, isPublic, type, start, end, calendar, desc, organizers);
+    }
+
+    public void addOrganizer(String organizer) {
+        if(organizer != null)
+            organizers.add(organizer);
+    }
+
+    public List<String> getOrganizers() {
+        return organizers;
     }
 
 }

@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
-import ch.epfl.polycrowd.firebase.FirebaseQueries;
+import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
 
 import android.os.Bundle;
 import android.view.Menu;
@@ -17,9 +17,6 @@ import android.view.MenuItem;
 import android.widget.SearchView;
 import android.widget.Toast;
 
-import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class EventPageActivity extends AppCompatActivity {
@@ -28,6 +25,8 @@ public class EventPageActivity extends AppCompatActivity {
 
     RecyclerView mRecyclerView ;
     MyAdapter myAdapter ;
+    FirebaseInterface fbi;
+    Context context;
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -37,30 +36,33 @@ public class EventPageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_event_page);
 
         mRecyclerView = findViewById(R.id.recyclerView);
+        fbi = new FirebaseInterface(this);
 
-        //To use inside
-        Context context = this ;
-        FirebaseInterface firebaseInterface = new FirebaseInterface();
-        final FirebaseFirestore firestore = firebaseInterface.getFirestoreInstance(false);
-        FirebaseQueries.getAllEvents().addOnSuccessListener(queryDocumentSnapshots -> {
 
-            List<Event> events = new ArrayList<>();
-
-            queryDocumentSnapshots.forEach(queryDocumentSnapshot -> {
-                Event e = Event.getFromDocument(queryDocumentSnapshot.getData());
-                e.setId(queryDocumentSnapshot.getId());
-                events.add(e);
-            });
-            myAdapter = new MyAdapter(context, events);
-            mRecyclerView.setAdapter(myAdapter);
-
-        }).addOnFailureListener(e -> {
-
+        fbi.getAllEvents(new EventsHandler() {
+            @Override
+            public void handle(List<Event> events) {
+                myAdapter = new MyAdapter(context, events);
+                mRecyclerView.setAdapter(myAdapter);
+            }
         });
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
     }
+
+//    @RequiresApi(api = Build.VERSION_CODES.O)
+//    public void getEvents(EventHandler qs){
+//        List<Event> events = new ArrayList<>();
+//
+//        qs.forEach(queryDocumentSnapshot -> {
+//            Event e = Event.getFromDocument(queryDocumentSnapshot.getData());
+//            e.setId(queryDocumentSnapshot.getId());
+//            events.add(e);
+//        });
+//        myAdapter = new MyAdapter(context, events);
+//        mRecyclerView.setAdapter(myAdapter);
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

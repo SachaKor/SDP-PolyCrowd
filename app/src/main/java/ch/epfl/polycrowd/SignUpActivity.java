@@ -1,6 +1,7 @@
 package ch.epfl.polycrowd;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
 
@@ -35,8 +36,12 @@ public class SignUpActivity extends AppCompatActivity {
 
     private  EditText firstPassword, secondPassword , username , email  ;
 
-    private final FirebaseInterface fbi = new FirebaseInterface();
-    private final FirebaseFirestore firestore = fbi.getFirestoreInstance(false);
+    private final FirebaseInterface fbi = new FirebaseInterface(this);
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public void setMocking(){
+        this.fbi.setMocking();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,61 +122,12 @@ public class SignUpActivity extends AppCompatActivity {
 
         if(registrationFieldsValid(firstPassword, secondPassword, username, email)){
             // check if the user with a given username exists already
-            CollectionReference usersRef = firestore.collection("users");
-            Query queryUsernames = usersRef.whereEqualTo("username", username.getText().toString());
-            Query queryEmails = usersRef.whereEqualTo("email", email.getText().toString()) ;
 
-            queryUsernames.get().addOnCompleteListener(usernamesQueryListener(queryEmails));
+            fbi.signUp(username.getText().toString(), firstPassword.getText().toString(), email.getText().toString(), 100);
+
 
         }
 
     }
 
-    private void addUserToDatabase(){
-        new FirebaseInterface().getAuthInstance(false)
-                .createUserWithEmailAndPassword(email.getText().toString(), firstPassword.getText().toString())
-                .addOnSuccessListener(authResult -> {
-                    String uid = authResult.getUser().getUid();
-                });
-
-        Map<String, Object> user = new HashMap<>();
-        user.put("username", username.getText().toString());
-        user.put("age", 100);
-        user.put("email", email.getText().toString()) ;
-        firestore.collection("users")
-                .add(user)
-                .addOnSuccessListener(documentReference -> Log.d("SIGN_UP", "DocumentSnapshot added with ID: " + documentReference.getId()))
-                .addOnFailureListener(e -> Log.w("SIGN_UP", "Error adding document", e));
-    }
-
-    private OnCompleteListener<QuerySnapshot> usernamesQueryListener(Query queryEmails){
-        return task -> {
-            if(task.isSuccessful()) {
-                // user with this username already exists
-                if(task.getResult().size() > 0) {
-                    toastPopup("User already exists");
-                } else {
-                    queryEmails.get().addOnCompleteListener(emailsQueryListener()) ;
-                }
-            }
-        };
-    }
-
-
-    private OnCompleteListener<QuerySnapshot> emailsQueryListener(){
-        return task -> {
-
-            if (task.isSuccessful()) {
-                //user with this email already exists
-                if (task.getResult().size() > 0) {
-                    toastPopup("Email already exists");
-                } else {
-                    // otherwise, add a user to the firestore
-                    addUserToDatabase();
-                    toastPopup("Sign up successful");
-                }
-            }
-
-        };
-    }
 }

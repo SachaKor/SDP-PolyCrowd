@@ -19,14 +19,14 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import ch.epfl.polycrowd.Event;
+import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
 import ch.epfl.polycrowd.LoginActivity;
 import ch.epfl.polycrowd.OrganizerInviteActivity;
 import ch.epfl.polycrowd.R;
-import ch.epfl.polycrowd.firebase.FirebaseQueries;
+import ch.epfl.polycrowd.firebase.FirebaseInterface;
 
 public class FrontPageActivity extends AppCompatActivity {
 
@@ -35,21 +35,33 @@ public class FrontPageActivity extends AppCompatActivity {
     ViewPager viewPager;
     EventPagerAdaptor adapter;
 
+    private FirebaseInterface fbInterface;
+
+//    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public void setMocking(){
+        this.fbInterface.setMocking();
+    }
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     void setEventModels(){
-        FirebaseQueries.getAllEvents()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    List<Event> events = new ArrayList<>();
-                    queryDocumentSnapshots.forEach(queryDocumentSnapshot -> {
-                        Event e = Event.getFromDocument(queryDocumentSnapshot.getData());
-                        e.setId(queryDocumentSnapshot.getId());
-                        events.add(e);
-                    });
-                    setViewPager(events);
-                })
-                .addOnFailureListener(e -> Log.w(TAG, "Error retrieving Events from the database"));
+        fbInterface.getAllEvents(new EventsHandler() {
+            @Override
+            public void handle(List<Event> events) {
+                setViewPager(events);
+            }
+        });
+//        fbi.getAllEvents()
+//                .addOnSuccessListener(queryDocumentSnapshots -> {
+//                    List<Event> events = new ArrayList<>();
+//                    queryDocumentSnapshots.forEach(queryDocumentSnapshot -> {
+//                        Event e = Event.getFromDocument(queryDocumentSnapshot.getData());
+//                        e.setId(queryDocumentSnapshot.getId());
+//                        events.add(e);
+//                    });
+//                    setViewPager(events);
+//                })
+//                .addOnFailureListener(e -> Log.w(TAG, "Error retrieving Events from the database"));
     }
 
     void setViewPager(List<Event> events){
@@ -89,6 +101,7 @@ public class FrontPageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_front_page);
+        this.fbInterface = new FirebaseInterface(this);
 
         setEventModels();
 //        setViewPager();

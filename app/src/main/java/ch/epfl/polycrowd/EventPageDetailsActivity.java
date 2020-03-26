@@ -4,13 +4,13 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import ch.epfl.polycrowd.firebase.FirebaseQueries;
+import ch.epfl.polycrowd.firebase.FirebaseInterface;
+import ch.epfl.polycrowd.firebase.handlers.EventHandler;
 
 import android.app.AlertDialog;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -19,9 +19,7 @@ import com.google.firebase.dynamiclinks.DynamicLink;
 import com.google.firebase.dynamiclinks.DynamicLink.SocialMetaTagParameters;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class EventPageDetailsActivity extends AppCompatActivity {
 
@@ -66,18 +64,16 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         if (!getIntent().hasExtra("eventId")) {
             return;
         }
+        FirebaseInterface fbi = new FirebaseInterface(this);
         eventId = getIntent().getStringExtra("eventId");
-        FirebaseQueries.getEventById(eventId)
-                .addOnSuccessListener(documentSnapshot -> {
-                    Event event = Event.getFromDocument(Objects.requireNonNull(documentSnapshot.getData()));
-                    List<String> organizers = new ArrayList<>();
-                    organizers.addAll((List<String>) Objects.requireNonNull(documentSnapshot.get("organizers")));
-                    initRecyclerView(organizers);
-                    setUpViews(event.getName(), event.getDescription());
-                    eventName = event.getName();
-                    Log.d(LOG_TAG, "Event loaded from the database");
-                }).addOnFailureListener(e -> Log.e(LOG_TAG, "Error getting Event with id " + eventId));
-
+        fbi.getEventById(eventId, new EventHandler() {
+            @Override
+            public void handle(Event event) {
+                initRecyclerView(event.getOrganizers());
+                setUpViews(event.getName(), event.getDescription());
+                eventName = event.getName();
+            }
+        });
     }
 
     /**
