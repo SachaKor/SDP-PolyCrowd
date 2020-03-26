@@ -4,23 +4,30 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import ch.epfl.polycrowd.firebase.FirebaseQueries;
+import ch.epfl.polycrowd.firebase.FirebaseInterface;
+import ch.epfl.polycrowd.firebase.handlers.EventHandler;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import com.google.firebase.dynamiclinks.DynamicLink;
+import com.google.firebase.dynamiclinks.DynamicLink.SocialMetaTagParameters;
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
+
 import java.util.List;
 
 public class EventPageDetailsActivity extends AppCompatActivity {
+
+    private String eventName = "";
 
     private static final String LOG_TAG = "EventPageDetails";
 
@@ -32,7 +39,6 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_details_page);
-//        getIncomingIntent();
         initEvent();
 
         getIncomingIntent();
@@ -44,7 +50,6 @@ public class EventPageDetailsActivity extends AppCompatActivity {
             }
         });
     }
-
     private void getIncomingIntent() {
         if(getIntent().hasExtra("iTitle")
                 && getIntent().hasExtra("iDesc")
@@ -85,17 +90,51 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         if (!getIntent().hasExtra("eventId")) {
             return;
         }
+        FirebaseInterface fbi = new FirebaseInterface(this);
         eventId = getIntent().getStringExtra("eventId");
-        FirebaseQueries.getEventById(eventId)
-                .addOnSuccessListener(documentSnapshot -> {
-                    Event event = Event.getFromDocument(documentSnapshot.getData());
-                    List<String> organizers = new ArrayList<>();
-                    organizers.addAll((List<String>)documentSnapshot.get("organizers"));
-                    initRecyclerView(organizers);
-                    setUpViews(event.getName(), event.getDescription());
-                    Log.d(LOG_TAG, "Event loaded from the database");
-                }).addOnFailureListener(e -> Log.e(LOG_TAG, "Error getting Event with id " + eventId));
+        fbi.getEventById(eventId, new EventHandler() {
+            @Override
+            public void handle(Event event) {
+                initRecyclerView(event.getOrganizers());
+                setUpViews(event.getName(), event.getDescription());
+                eventName = event.getName();
+            }
+        });
+    }
 
+    /**
+     * OnClick "INVITE ORGANIZER"
+     * - Generates the dynamic link for the organizer invite
+     * - Displays the link in the dialog
+     */
+    public void inviteLinkClicked(View view) {
+        // build the invite dynamic link
+        // TODO: replace by short dynamic link
+        DynamicLink inviteLink = FirebaseDynamicLinks.getInstance().createDynamicLink()
+                .setLink(Uri.parse("https://www.example.com/invite/?eventId=" + eventId
+                        + "&eventName=" + eventName))
+                .setDomainUriPrefix("https://polycrowd.page.link")
+                .setAndroidParameters(new DynamicLink.AndroidParameters.Builder().build())
+                .setSocialMetaTagParameters(
+                        new SocialMetaTagParameters.Builder()
+                                .setTitle("PolyCrowd Organizer Invite")
+                                .setDescription("You are invited to become an organizer of " + eventName)
+                                .build())
+                .buildDynamicLink();
+
+        // display the dialog widget containing the link
+        TextView showText = new TextView(this);
+        showText.setText(inviteLink.getUri().toString());
+        showText.setTextIsSelectable(true);
+        showText.setLinksClickable(true);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        // TODO: make the dialog look better
+        builder.setView(showText)
+                .setTitle(R.string.invite_link_dialog_title)
+                .setCancelable(true)
+                .setPositiveButton("OK", (dialog, which) -> dialog.cancel())
+                .show();
     }
     public void clickSchedule(View view){
         Intent intent = new Intent(this, ScheduleActivity.class);

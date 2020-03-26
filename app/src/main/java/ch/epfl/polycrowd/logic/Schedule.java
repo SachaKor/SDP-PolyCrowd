@@ -39,24 +39,31 @@ public class Schedule {
 
     private final List<Activity> activities;
     private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH);
-
+    private String downloadPath;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Schedule(String url , File f){
-        if (url.equals("url") || url.length() == 0){ //Fine
-            }
-        else if (url==null || !url.contains("://") || f==null) {
-            throw new IllegalArgumentException("Invalid URL for schedule");
+
+        if (url==null || f==null) {
+            throw new IllegalArgumentException("File and url cannot be null");
         }
 
-        downloadIcsFile(url, f);
+        this.downloadPath = downloadIcsFile(url, f);
         this.activities = loadIcs(f);
     }
-
+    public String getDownloadPath(){
+        return this.downloadPath;
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public static String    downloadIcsFile(String url, File f){
+    public static String downloadIcsFile(String url, File f){
 
+        if (url.equals("url") || url.length() == 0){
+            return null;
+        }
+        else if ( !url.contains("://") ){
+            throw new IllegalArgumentException("This is not a url");
+        }
         try {
             URL downloadUrl = new URL(url.replace("webcal://","https://"));
             HttpURLConnection c = (HttpURLConnection) downloadUrl.openConnection();
@@ -82,8 +89,10 @@ public class Schedule {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public static List<Activity> loadIcs(File path) {
-
+    public List<Activity> loadIcs(File path) {
+        if ( downloadPath == null){
+            return  null;
+        }
         List<Activity> activities = new ArrayList<>();
 
         System.setProperty("net.fortuna.ical4j.timezone.cache.impl", "net.fortuna.ical4j.util.MapTimeZoneCache");

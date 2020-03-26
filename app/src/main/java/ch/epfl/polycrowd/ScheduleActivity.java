@@ -33,9 +33,11 @@ public class ScheduleActivity extends AppCompatActivity {
         giveHttpRequestPermissions();
 
         setContentView(R.layout.activity_schedule_page);
-        PolyContext.mocking=true;
             mRecyclerView = findViewById(R.id.recyclerView);
             mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+            if (PolyContext.getCurrentEvent() != null){
+                PolyContext.getCurrentEvent().loadCalendar(getApplicationContext().getFilesDir());
+            }
             List<Activity> activities = PolyContext.getActivities();
             if (activities!=null) {
                 List<Model> models = toModels(activities);

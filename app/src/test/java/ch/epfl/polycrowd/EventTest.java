@@ -1,24 +1,32 @@
 package ch.epfl.polycrowd;
 
-import java.util.Date;
-import com.google.type.TimeOfDay;
 
-import static ch.epfl.polycrowd.Event.stringToDate;
-import static ch.epfl.polycrowd.Event.dateToString;
-import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import com.google.firebase.Timestamp;
 
-import java.text.ParseException;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.Map;
 import java.util.Objects;
 
+import static ch.epfl.polycrowd.Event.dateToString;
+import static ch.epfl.polycrowd.Event.stringToDate;
+import static org.junit.Assert.assertEquals;
 
-class EventTest {
+//import static org.junit.Assert.assertThrows;
+//import static org.junit.jupiter.api.Assertions.*;
+//import org.junit.Before;
+//import org.junit.jupiter.api.BeforeAll;
+//import org.junit.jupiter.api.BeforeEach;
+//import org.junit.jupiter.api.Test;
+//import org.junit.runner.RunWith;
+//import org.junit.Assert.assertThrows;
+
+public class EventTest {
     private static final SimpleDateFormat dtFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
     private static Event e = null;
     private static final String default_owner = "1";
@@ -28,46 +36,46 @@ class EventTest {
     private static final Date default_e = stringToDate("12-12-2019 12:45", dtFormat);
     private static final String default_desc = "Description";
 
-    @BeforeEach
-    void initTest(){
+    @Before
+    public void initTest(){
         e = new Event(default_owner,default_name, false,
                 default_type, default_s, default_e, "None", default_desc);
 
     }
 
     @Test
-    void constructor(){
-        assertThrows(IllegalArgumentException.class, () -> new Event(null,default_name, false,
+    public void constructor(){
+        Assert.assertThrows(IllegalArgumentException.class, () -> new Event(null,default_name, false,
                 default_type, default_s, default_e,"None", default_desc));
-        assertThrows(IllegalArgumentException.class, () -> new Event(default_owner,null, false,
+        Assert.assertThrows(IllegalArgumentException.class, () -> new Event(default_owner,null, false,
                 default_type, default_s, default_e,"None", default_desc));
-        assertThrows(IllegalArgumentException.class, () -> new Event(default_owner,default_name, false,
+        Assert.assertThrows(IllegalArgumentException.class, () -> new Event(default_owner,default_name, false,
                 null, default_s, default_e,"None", default_desc));
-        assertThrows(IllegalArgumentException.class, () -> new Event(default_owner,default_name, false,
+        Assert.assertThrows(IllegalArgumentException.class, () -> new Event(default_owner,default_name, false,
                 default_type, null, default_e, "None", default_desc));
-        assertThrows(IllegalArgumentException.class, () -> new Event(default_owner,default_name, false,
+        Assert.assertThrows(IllegalArgumentException.class, () -> new Event(default_owner,default_name, false,
                 default_type, default_s, null, "None", default_desc));
-        assertThrows(IllegalArgumentException.class, () -> new Event(default_owner,default_name, false,
+        Assert.assertThrows(IllegalArgumentException.class, () -> new Event(default_owner,default_name, false,
                 default_type, default_s, default_e,null, default_desc));
     }
 
     @Test
-    void getOwner() {
+    public void getOwner() {
         assert(default_owner.equals(e.getOwner()));
 
     }
 
     @Test
-    void getSetName() {
+    public void getSetName() {
         final String new_name = "NewEventName";
         assertEquals(default_name, e.getName());
         e.setName(new_name);
         assertEquals(new_name, e.getName());
-        assertThrows(IllegalArgumentException.class, () -> e.setName(null));
+        Assert.assertThrows(IllegalArgumentException.class, () -> e.setName(null));
     }
 
     @Test
-    void getSetPublic() {
+    public void getSetPublic() {
         final Boolean new_public = true;
         assertEquals(false, e.getPublic());
         e.setPublic(new_public);
@@ -75,51 +83,51 @@ class EventTest {
     }
 
     @Test
-    void getSetType() {
+    public void getSetType() {
         assertEquals(default_type, e.getType());
         final Event.EventType new_type = Event.EventType.CONCERT;
         e.setType(new_type);
         assertEquals(new_type, e.getType());
-        assertThrows(IllegalArgumentException.class, () -> e.setType(null));
+        Assert.assertThrows(IllegalArgumentException.class, () -> e.setType(null));
     }
 
     @Test
-    void getSetStart() {
+    public void getSetStart() {
         assertEquals(dateToString(default_s,dtFormat), dateToString(e.getStart(), dtFormat));
         final Date new_date = stringToDate("20-02-2020 10:00",dtFormat);
         e.setStart(new_date);
         assertEquals(dateToString(new_date, dtFormat), dateToString(e.getStart(), dtFormat));
-        assertThrows(IllegalArgumentException.class, () -> e.setStart(null));
+        Assert.assertThrows(IllegalArgumentException.class, () -> e.setStart(null));
     }
 
     @Test
-    void getSetEnd() {
+    public void getSetEnd() {
         assertEquals(dateToString(default_e, dtFormat), dateToString(e.getEnd(), dtFormat));
         final Date new_date = stringToDate("20-02-2020 10:00",dtFormat);
         e.setEnd(new_date);
         assertEquals(dateToString(new_date, dtFormat), dateToString(e.getEnd(),dtFormat));
-        assertThrows(IllegalArgumentException.class, () -> e.setEnd(null));
+        Assert.assertThrows(IllegalArgumentException.class, () -> e.setEnd(null));
     }
 
     @Test
-    void getSetCalendar() {
+    public void getSetCalendar() {
 
         assertEquals("None", e.getCalendar());
         final String new_cal = "NewNone";
         e.setCalendar(new_cal);
         assertEquals(new_cal, e.getCalendar());
-        assertThrows(IllegalArgumentException.class, () -> e.setCalendar(null));
+        Assert.assertThrows(IllegalArgumentException.class, () -> e.setCalendar(null));
     }
 
-    @Test
-    void getSetHashMap(){
+   @Test
+    public void getSetHashMap(){
         Map<String,Object> hm = e.toHashMap();
 
         assertEquals(Objects.requireNonNull(hm.get("owner")).toString(), default_owner);
         assertEquals(Event.EventType.valueOf(Objects.requireNonNull(hm.get("type")).toString()), default_type);
         assertEquals(Objects.requireNonNull(hm.get("name")).toString(), default_name);
-        assertEquals(Objects.requireNonNull(hm.get("start")).toString(), dateToString(default_s, dtFormat));
-        assertEquals(Objects.requireNonNull(hm.get("end")).toString(), dateToString(default_e, dtFormat));
+        assertEquals(Objects.requireNonNull(hm.get("start")).toString(), new Timestamp(default_s).toString());
+        assertEquals(Objects.requireNonNull(hm.get("end")).toString(), new Timestamp(default_e).toString());
         assertEquals(Objects.requireNonNull(hm.get("calendar")).toString(), "None");
 
         Event ne = Event.getFromDocument(hm);
@@ -133,7 +141,4 @@ class EventTest {
         assertEquals("None", ne.getCalendar());
 
     }
-
-
-
 }

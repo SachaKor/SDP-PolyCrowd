@@ -1,10 +1,10 @@
 package ch.epfl.polycrowd;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import androidx.test.espresso.action.ViewActions;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
 
@@ -20,6 +20,12 @@ public class EventEditActivityTest {
     @Rule
     public final ActivityTestRule<EventEditActivity> mActivityRule =
             new ActivityTestRule<>(EventEditActivity.class);
+
+    @Before
+    public void setMocking() {
+        this.mActivityRule.getActivity().setMocking();
+    }
+
     @Test
     public void testDisplaysEventTitle() {
         onView(withId(R.id.event_name)).check(matches(withText(containsString("*event_title*"))));
@@ -47,5 +53,9 @@ public class EventEditActivityTest {
         onView(withId(R.id.EditEventCalendar)).perform(typeText("https://satellite.bar/agenda/ical.php"), closeSoftKeyboard());
         //onView(withId(R.id.EditEventSubmit)).perform(scrollTo(),click());
     }
+
+
+
+
 
 }

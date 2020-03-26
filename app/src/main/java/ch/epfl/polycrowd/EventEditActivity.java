@@ -17,16 +17,20 @@ import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import androidx.annotation.RequiresApi;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 
 import static ch.epfl.polycrowd.Event.dtFormat;
 
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
+import ch.epfl.polycrowd.logic.User;
 import ch.epfl.polycrowd.map.MapActivity;
 import ch.epfl.polycrowd.logic.PolyContext;
 import static ch.epfl.polycrowd.Event.stringToDate;
@@ -35,12 +39,20 @@ import static ch.epfl.polycrowd.Event.dateToString;
 public class EventEditActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = EventEditActivity.class.toString();
+    private FirebaseInterface firebaseInterface;
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public void setMocking(){
+        this.firebaseInterface.setMocking();
+    }
+    
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_edit);
+        this.firebaseInterface = new FirebaseInterface(this);
     }
 
 
@@ -86,11 +98,10 @@ public class EventEditActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void sendEventSubmit(View view) {
         final EditText evName = findViewById(R.id.EditEventName);
-        Log.d(LOG_TAG, "Send Event Button Clicked");
 
+        Log.d(LOG_TAG, "Send Event Button Clicked");
+        // Add the event
         // Add an Event to the firestore
-        FirebaseInterface firebaseInterface = new FirebaseInterface();
-        final FirebaseFirestore firestore = firebaseInterface.getFirestoreInstance(false);
         // Retrieve the field values from the Edit Event layout
         Switch isPublicSwitch = findViewById(R.id.EditEventPublic);
         Spinner eventTypeSpinner = findViewById(R.id.EditEventType);
@@ -112,13 +123,12 @@ public class EventEditActivity extends AppCompatActivity {
         }
 
 
-        // check if the user is logged in
-        FirebaseUser user = firebaseInterface.getAuthInstance(false).getCurrentUser();
-        if(user == null) {
-            Toast.makeText(getApplicationContext(), "Log in to add an event", Toast.LENGTH_SHORT).show();
-            return;
-        }
 
+        // check if the user is logged in
+        User user = firebaseInterface.getCurrentUser();
+
+        List<String> organizers = new ArrayList<>();
+        organizers.add(user.getEmail());
         // Create the map containing the event info
         EditText calendarUrl = findViewById(R.id.EditEventCalendar);
         // Create the map containing the event info
@@ -126,26 +136,10 @@ public class EventEditActivity extends AppCompatActivity {
         Event ev = new Event(user.getUid(), evName.getText().toString(), isPublic,
                 Event.EventType.valueOf(type.toUpperCase()),
                 startDate, endDate,
-                calendarUrl.getText().toString(), "");
-
-        Map<String, Object> event = ev.toHashMap();
-
-        // TODO: add the organizers via the Event class
-        // the first organizer is the creator of the event
-        event.put("organizers", Arrays.asList(user.getEmail()));
-
-        PolyContext.setCurrentEvent(ev);
-        // Add the event to the firestore
-        firestore.collection("polyevents")
-                .add(event)
-                .addOnSuccessListener(documentReference -> {
-                    Log.d(LOG_TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
-                    Toast.makeText(getApplicationContext(), "Event added", Toast.LENGTH_LONG).show();
-                })
-                .addOnFailureListener(e -> {
-                    Log.e(LOG_TAG, "Error adding document", e);
-                    Toast.makeText(getApplicationContext(), "Error occurred while adding the event", Toast.LENGTH_LONG).show();
-                });
+                "url", "", organizers);
+//        Map<String, Object> event = ev.toHashMap();
+        // add event to the database
+        firebaseInterface.addEvent(ev);
 
         Intent intent = new Intent(this, MapActivity.class);
         startActivity(intent);

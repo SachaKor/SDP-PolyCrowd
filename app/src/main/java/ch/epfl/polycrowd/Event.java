@@ -19,11 +19,14 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import ch.epfl.polycrowd.logic.Activity;
 import ch.epfl.polycrowd.logic.Schedule;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
@@ -54,7 +57,7 @@ public class Event {
     private String id;
     private int image;
     private Schedule schedule;
-
+    private List<String> organizers;
 
     public Event(String owner, String name, Boolean isPublic, EventType type,
                  Date start, Date end,
@@ -68,6 +71,8 @@ public class Event {
         this.start = start;
         this.end = end;
         this.calendar = calendar;
+        organizers = new ArrayList<>();
+        organizers.add(owner);
         setDescription(description);
     }
     private String getEventCalFilename(){
@@ -79,6 +84,20 @@ public class Event {
                  String calendar, String description, File dir){
         this(owner, name, isPublic, type, start, end, calendar, description);
         this.loadCalendar(dir);
+    }
+    public Event(Event e, File dir){
+        this(e.owner, e.name, e.isPublic, e.type, e.start, e.end, e.calendar, e.description);
+        this.loadCalendar(dir);
+    }
+
+    public Event(String owner, String name, Boolean isPublic, EventType type,
+                 Date start, Date end,
+                 String calendar, String description, List<String> organizers){
+        this(owner, name, isPublic, type, start, end, calendar, description);
+        if(organizers == null) {
+            throw new IllegalArgumentException("Invalid Argument for Event Constructor");
+        }
+        this.organizers = organizers;
     }
 
     public void setId(String id) {
@@ -207,12 +226,12 @@ public class Event {
         event.put("type", this.type.toString());
         event.put("calendar", this.calendar);
         event.put("description", this.description);
-
+        event.put("organizers", organizers);
         return event;
     }
 
     public static Event getFromDocument(Map<String, Object> data){
-        Log.d(LOG_TAG,"converting Firebase data to Event");
+        //Log.d(LOG_TAG,"converting Firebase data to Event");
         String owner = Objects.requireNonNull(data.get("owner")).toString();
         String name = Objects.requireNonNull(data.get("name")).toString();
         Boolean isPublic = Boolean.valueOf((Objects.requireNonNull(data.get("isPublic"))).toString());
@@ -225,7 +244,18 @@ public class Event {
         Date end = eStamp.toDate();
         EventType type = EventType.valueOf(Objects.requireNonNull(data.get("type")).toString().toUpperCase());
         String desc = data.get("description").toString();
-        return new Event(owner, name, isPublic, type, start, end, calendar, desc);
+        List<String> organizers = new ArrayList<>();
+        organizers.addAll((List<String>) Objects.requireNonNull(data.get("organizers")));
+        return new Event(owner, name, isPublic, type, start, end, calendar, desc, organizers);
+    }
+
+    public void addOrganizer(String organizer) {
+        if(organizer != null)
+            organizers.add(organizer);
+    }
+
+    public List<String> getOrganizers() {
+        return organizers;
 
     }
 
@@ -256,5 +286,12 @@ public class Event {
             ex.printStackTrace();
         }
         return null;
+    }
+    public static List<Model> toModels(List<Event> activities){
+        List<Model> models = new ArrayList<>();
+        for (Event e : activities){
+            models.add(e.getModel());
+        }
+        return models;
     }
 }

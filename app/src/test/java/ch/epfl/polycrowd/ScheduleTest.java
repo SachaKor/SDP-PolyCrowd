@@ -1,9 +1,8 @@
 package ch.epfl.polycrowd;
 
-
-import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -15,6 +14,9 @@ import java.time.LocalTime;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.Schedule;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
+
 
 public class ScheduleTest {
 
@@ -22,9 +24,8 @@ public class ScheduleTest {
 
     @Test
     public void testDownload(){
-        Schedule s = new Schedule("https://satellite.bar/agenda/ical.php",new File("calendars"));
-        System.out.println(s.downloadIcsFile("https://satellite.bar/agenda/ical.php", new File("calendars")));
-
+        Schedule s = new Schedule("https://satellite.bar/agenda/ical.php",new File("calendars/test.ics"));
+        assert(s.getDownloadPath().contains("test.ics"));
     }
     @Test
     public void testGetAndParse(){

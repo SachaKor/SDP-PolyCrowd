@@ -14,22 +14,20 @@ import android.os.StrictMode;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import ch.epfl.polycrowd.Event;
-import ch.epfl.polycrowd.EventPageActivity;
+import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
 import ch.epfl.polycrowd.LoginActivity;
 import ch.epfl.polycrowd.OrganizerInviteActivity;
 import ch.epfl.polycrowd.R;
-import ch.epfl.polycrowd.firebase.FirebaseQueries;
+import ch.epfl.polycrowd.firebase.FirebaseInterface;
 
 public class FrontPageActivity extends AppCompatActivity {
 
@@ -38,6 +36,12 @@ public class FrontPageActivity extends AppCompatActivity {
     ViewPager viewPager;
     EventPagerAdaptor adapter;
 
+    private FirebaseInterface fbInterface;
+
+//    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public void setMocking(){
+        this.fbInterface.setMocking();
+    }
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -45,19 +49,23 @@ public class FrontPageActivity extends AppCompatActivity {
         //For Connection permissions
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
-
-        FirebaseQueries.getAllEvents()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    List<Event> events = new ArrayList<>();
-                    queryDocumentSnapshots.forEach(queryDocumentSnapshot -> {
-                        Event e = Event.getFromDocument(queryDocumentSnapshot.getData());
-                        e.setId(queryDocumentSnapshot.getId());
-                        e.loadCalendar(getApplicationContext().getFilesDir());
-                        events.add(e);
-                    });
-                    setViewPager(events);
-                })
-                .addOnFailureListener(e -> Log.w(TAG, "Error retrieving Events from the database"));
+        fbInterface.getAllEvents(new EventsHandler() {
+            @Override
+            public void handle(List<Event> events) {
+                setViewPager(events);
+            }
+        });
+//        fbi.getAllEvents()
+//                .addOnSuccessListener(queryDocumentSnapshots -> {
+//                    List<Event> events = new ArrayList<>();
+//                    queryDocumentSnapshots.forEach(queryDocumentSnapshot -> {
+//                        Event e = Event.getFromDocument(queryDocumentSnapshot.getData());
+//                        e.setId(queryDocumentSnapshot.getId());
+//                        events.add(e);
+//                    });
+//                    setViewPager(events);
+//                })
+//                .addOnFailureListener(e -> Log.w(TAG, "Error retrieving Events from the database"));
     }
 
     void setViewPager(List<Event> events){
@@ -97,6 +105,7 @@ public class FrontPageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_front_page);
+        this.fbInterface = new FirebaseInterface(this);
 
         setEventModels();
 //        setViewPager();
@@ -118,7 +127,7 @@ public class FrontPageActivity extends AppCompatActivity {
                 .addOnSuccessListener(this, new OnSuccessListener<PendingDynamicLinkData>() {
                     @Override
                     public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
-                        Log.i(TAG, "Dynamic link received");
+                        Log.d(TAG, "Dynamic link received");
                         // Get deep link from result (may be null if no link is found)
                         Uri deepLink = null;
                         if (pendingDynamicLinkData != null) {
@@ -126,14 +135,17 @@ public class FrontPageActivity extends AppCompatActivity {
                         }
 
                         if (deepLink != null) {
-                            Log.i(TAG, "Deep link URL:\n" + deepLink.toString());
-                            String curPage = deepLink.getQueryParameter("curPage");
-//                            Toast.makeText(getApplicationContext(), "Cur page: " + curPage, Toast.LENGTH_SHORT).show();
-                            if(curPage.equalsIgnoreCase("invite")) {
-                                Toast.makeText(getApplicationContext(), "invite", Toast.LENGTH_SHORT).show();
-                                Log.i(TAG, "organizer invite deep link" + deepLink.toString());
-                                Intent intent = new Intent(c, OrganizerInviteActivity.class);
-                                startActivity(intent);
+                            Log.d(TAG, "Deep link URL:\n" + deepLink.toString());
+                            String lastPathSegment = deepLink.getLastPathSegment();
+                            if(lastPathSegment.equals("invite")) {
+                                String eventId = deepLink.getQueryParameter("eventId"),
+                                        eventName = deepLink.getQueryParameter("eventName");
+                                if (eventId != null && eventName != null) {
+                                    Intent intent = new Intent(c, OrganizerInviteActivity.class);
+                                    intent.putExtra("eventId", eventId);
+                                    intent.putExtra("eventName", eventName);
+                                    startActivity(intent);
+                                }
                             }
                         }
                     }

@@ -68,6 +68,13 @@
                 android:onClick="signUpButtonClicked"
                 android:text="@string/sign_up" />
 
+            <Button
+                android:id="@+id/forgot_password_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="forgotPasswordButtonClicked"
+                android:text="@string/forgot_password" />
+
         </LinearLayout>
     </ScrollView>
 

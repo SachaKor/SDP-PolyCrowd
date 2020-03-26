@@ -2,11 +2,12 @@ package ch.epfl.polycrowd;
 
 import com.google.firebase.firestore.auth.User;
 
-import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+
+import org.junit.Test;
 
 import ch.epfl.polycrowd.logic.PolyContext;
+
+import static org.junit.Assert.assertEquals;
 
 public class PolyContextTest {
     @Test

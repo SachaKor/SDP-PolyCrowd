@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -18,7 +17,6 @@ import java.util.List;
 
 import ch.epfl.polycrowd.Event;
 import ch.epfl.polycrowd.EventEditActivity;
-import ch.epfl.polycrowd.EventPageDetailsActivity;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.map.MapActivity;
@@ -61,12 +59,9 @@ public class EventPagerAdaptor extends PagerAdapter {
         if(position == 0){
             imageView.setImageResource(R.drawable.newevent);
 
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(context, EventEditActivity.class);
-                    context.startActivity(intent);
-                }
+            view.setOnClickListener(v -> {
+                Intent intent = new Intent(context, EventEditActivity.class);
+                context.startActivity(intent);
             });
         }else {
 

@@ -1,8 +1,10 @@
+
 package ch.epfl.polycrowd;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
+import ch.epfl.polycrowd.firebase.handlers.OrganizersHandler;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,16 +14,38 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
+import java.util.Objects;
 
 public class LoginActivity extends AppCompatActivity {
+
+    /** Names of the extra parameters for the organizer invites **/
+    private static final String IS_ORGANIZER_INVITE = "isOrganizerInvite";
+    private static final String EVENT_ID = "eventId";
+    private String eventId;
+    private boolean isOrganizerInvite;
+
+    private FirebaseInterface fbInterface;
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public void setMocking(){
+        this.fbInterface.setMocking();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        fbInterface = new FirebaseInterface(this);
+        setUpExtras();
+    }
+
+    private void setUpExtras() {
+        if(getIntent().hasExtra(IS_ORGANIZER_INVITE)
+                && getIntent().getBooleanExtra(IS_ORGANIZER_INVITE, true)
+                && getIntent().hasExtra(EVENT_ID)) {
+            eventId = getIntent().getStringExtra(EVENT_ID);
+            isOrganizerInvite = true;
+        }
     }
 
     private void toastPopup(String text) {
@@ -51,17 +75,29 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        new FirebaseInterface().getAuthInstance(false)
-                .signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if(task.isSuccessful()) {
-                            toastPopup("Sign in success");
-                        } else {
-                            toastPopup("Incorrect email or password");
-                        }
-                    }
-                });
+        fbInterface.signInWithEmailAndPassword(email, password);
+
+        /* if the user logs in to accept the organizer invitation, add him/her to the
+            organizers list, then open the event details page for the preview */
+        if(isOrganizerInvite) {
+            String organizerEmail =
+                    Objects.requireNonNull(fbInterface.getCurrentUser().getEmail());
+            Context c = this;
+            fbInterface.addOrganizerToEvent(eventId, organizerEmail, new OrganizersHandler() {
+                @Override
+                public void handle() {
+                    Intent eventDetails = new Intent(c, EventPageDetailsActivity.class);
+                    eventDetails.putExtra(EVENT_ID, eventId);
+                    startActivity(eventDetails);
+                }
+            });
+        }
+
+    }
+
+
+    public void forgotPasswordButtonClicked(View view){
+        Intent intent = new Intent(this, ResetPasswordActivity.class) ;
+        startActivity(intent);
     }
 }
