@@ -31,13 +31,14 @@ public class OrganizerInviteActivity extends AppCompatActivity {
         if(getIntent().hasExtra("eventName")) {
             TextView previewText = findViewById(R.id.organizer_invite_text);
             eventName = getIntent().getStringExtra("eventName");
-            previewText.setText(R.string.organizer_invite_text_1 +"\"" + eventName + "\"\n"+R.string.organizer_invite_text_2);
+            String toDisplay = "You are invited to become an organizer of \"" + eventName
+                    + "\"\nLog in to accept the invitation";
+            previewText.setText(toDisplay);
         }
     }
 
     public void logInClicked(View view) {
         if(getIntent().hasExtra("eventId")) {
-            Toast.makeText(this, getIntent().getStringExtra("eventId"), Toast.LENGTH_LONG).show();
             eventId = getIntent().getStringExtra("eventId");
         }
         Intent intent = new Intent(this, LoginActivity.class);
