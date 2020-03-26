@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -46,6 +47,9 @@ public class FrontPageActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     void setEventModels(){
+        //For Connection permissions
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
         fbInterface.getAllEvents(new EventsHandler() {
             @Override
             public void handle(List<Event> events) {
