@@ -3,6 +3,7 @@ package ch.epfl.polycrowd;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
+import ch.epfl.polycrowd.firebase.FirebaseQueries;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,15 +14,35 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 
+import java.util.Objects;
+
 public class LoginActivity extends AppCompatActivity {
+
+    /** Names of the extra parameters for the organizer invites **/
+    private static final String IS_ORGANIZER_INVITE = "isOrganizerInvite";
+    private static final String EVENT_ID = "eventId";
+    private String eventId;
+    private boolean isOrganizerInvite;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        setUpExtras();
+    }
+
+    private void setUpExtras() {
+        if(getIntent().hasExtra(IS_ORGANIZER_INVITE)
+                && getIntent().getBooleanExtra(IS_ORGANIZER_INVITE, true)
+                && getIntent().hasExtra(EVENT_ID)) {
+            eventId = getIntent().getStringExtra(EVENT_ID);
+            isOrganizerInvite = true;
+        }
     }
 
     private void toastPopup(String text) {
@@ -53,16 +74,29 @@ public class LoginActivity extends AppCompatActivity {
 
         new FirebaseInterface().getAuthInstance(false)
                 .signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if(task.isSuccessful()) {
-                            toastPopup("Sign in success");
-                        } else {
-                            toastPopup("Incorrect email or password");
-                        }
+                .addOnCompleteListener(task -> {
+                    if(task.isSuccessful()) {
+                        toastPopup("Sign in success");
+                    } else {
+                        toastPopup("Incorrect email or password");
                     }
                 });
+
+        /* if the user logs in to accept the organizer invitation, add him/her to the
+            organizers list, then open the event details page for the preview */
+        if(isOrganizerInvite) {
+            String organizerEmail =
+                    Objects.requireNonNull(new FirebaseInterface()
+                            .getAuthInstance(false)
+                            .getCurrentUser()).getEmail();
+            Context c = this;
+            FirebaseQueries.addOrganizerToEvent(eventId, organizerEmail, aVoid -> {
+                Intent eventDetails = new Intent(c, EventPageDetailsActivity.class);
+                eventDetails.putExtra(EVENT_ID, eventId);
+                startActivity(eventDetails);
+            });
+        }
+
     }
 
     public void forgotPasswordButtonClicked(View view){
