@@ -39,6 +39,7 @@ public class EventEditActivity extends AppCompatActivity {
     public void setMocking(){
         this.firebaseInterface.setMocking();
     }
+    
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
