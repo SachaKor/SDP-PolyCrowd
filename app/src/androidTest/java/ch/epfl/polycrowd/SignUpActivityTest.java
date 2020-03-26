@@ -1,5 +1,6 @@
 package ch.epfl.polycrowd;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,6 +28,12 @@ public class SignUpActivityTest {
     @Rule
     public final ActivityTestRule<SignUpActivity> mActivityRule =
             new ActivityTestRule<>(SignUpActivity.class);
+
+    @Before
+    public void setMocking() {
+        this.mActivityRule.getActivity().setMocking();
+    }
+
 
     private void typeTextAndCloseKeyboard(int viewId, String text) {
         onView(withId(viewId))

@@ -1,6 +1,7 @@
 package ch.epfl.polycrowd;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
 
@@ -36,6 +37,11 @@ public class SignUpActivity extends AppCompatActivity {
     private  EditText firstPassword, secondPassword , username , email  ;
 
     private final FirebaseInterface fbi = new FirebaseInterface(this);
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public void setMocking(){
+        this.fbi.setMocking();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
