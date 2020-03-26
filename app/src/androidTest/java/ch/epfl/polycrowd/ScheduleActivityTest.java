@@ -27,20 +27,19 @@ public class ScheduleActivityTest {
     @Rule
     public final ActivityTestRule<ScheduleActivity> mActivityRule =
             new ActivityTestRule<>(ScheduleActivity.class);
-/*
-    @Before
-    public void setupValidSchedule(){
-        setCurrentFakeEvent("https://satellite.bar/agenda/ical.php",getApplicationContext().getFilesDir());
 
+    @BeforeClass
+    public static void setupValidSchedule(){
+        PolyContext.mocking = true;
     }
 
     @Test
     public void testScheduleLoading(){
 
-        onView(withText("Degustation:")).check(matches(isDisplayed()));
+        onView(withText("summary")).check(matches(isDisplayed()));
     }
 
-
+/*
     @Test(expected = IllegalArgumentException.class)
     public void testScheduleWithNullString(){
         setCurrentFakeEvent(null,getApplicationContext().getFilesDir());

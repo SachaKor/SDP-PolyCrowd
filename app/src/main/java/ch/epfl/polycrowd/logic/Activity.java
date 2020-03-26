@@ -13,13 +13,14 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.Map;
 
 import ch.epfl.polycrowd.Model;
 
 public class Activity {
     private String location, uid, summary, description, organizer;
-    private LocalDateTime start,end;
+    private Date start,end;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Activity (Map<String,String> data)  {
@@ -29,11 +30,15 @@ public class Activity {
         this.description = data.get("DESCRIPTION");
         this.organizer = data.get("ORGANIZER");
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss");
-        LocalDateTime t =  LocalDateTime.parse("20200101T180000", formatter);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
+        try {
+            this.start = formatter.parse(data.get("DTSTART"));
+            this.end = formatter.parse(data.get("DTEND"));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
-        this.start = LocalDateTime.parse(data.get("DTSTART"), formatter);
-        this.end = LocalDateTime.parse(data.get("DTEND"), formatter);
+
 
     }
 
@@ -52,10 +57,10 @@ public class Activity {
     public String getOrganizer(){
         return this.organizer;
     }
-    public LocalDateTime getStart(){
+    public Date getStart(){
         return this.start;
     }
-    public LocalDateTime getEnd(){
+    public Date getEnd(){
         return this.end;
     }
 

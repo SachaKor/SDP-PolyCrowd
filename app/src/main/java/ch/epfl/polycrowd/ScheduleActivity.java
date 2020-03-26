@@ -32,26 +32,16 @@ public class ScheduleActivity extends AppCompatActivity {
         giveHttpRequestPermissions();
 
         setContentView(R.layout.activity_schedule_page);
-        System.out.println("#########################################");
-        System.out.println(getIntent().getData());
-
-        Event currentlySelectedEvent = PolyContext.getCurrentEvent();
-        if (currentlySelectedEvent!= null) {
-
-
+        PolyContext.mocking=true;
             mRecyclerView = findViewById(R.id.recyclerView);
             mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-            Schedule currentSchedule = currentlySelectedEvent.getSchedule();
-            if ( currentSchedule != null) {
-                //currentSchedule.debugActivity();
-                List<Activity> activities = currentSchedule.getActivities();
+            List<Activity> activities = PolyContext.getActivities();
+            if (activities!=null) {
                 List<Model> models = activities.stream().map(Activity::getModel).collect(Collectors.toList());
                 myAdapter = new MyAdapter(this, models);
                 mRecyclerView.setAdapter(myAdapter);
-            } else {
-                System.out.println("ERROR! NO EVENT ! ERROR ! NO EVENT ! ");
             }
-        }
+
 
     }
 

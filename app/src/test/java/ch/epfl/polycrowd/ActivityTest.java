@@ -38,17 +38,17 @@ public class ActivityTest {
         assertEquals(a.getUid(),"id1");
         assertEquals(a.getSummary(),"activity summary");
         assertEquals(a.getStart().getYear(), 2020);
-        assertEquals(a.getStart().getMonth().getValue(), 7);
-        assertEquals(a.getStart().getDayOfMonth(), 25);
-        assertEquals(a.getStart().getHour(), 16);
-        assertEquals(a.getStart().getMinute(), 30);
-        assertEquals(a.getStart().getSecond(), 58);
+        assertEquals(a.getStart().getMonth(), 7);
+        assertEquals(a.getStart().getDay(), 25);
+        assertEquals(a.getStart().getHours(), 16);
+        assertEquals(a.getStart().getMinutes(), 30);
+        assertEquals(a.getStart().getSeconds(), 58);
         assertEquals(a.getEnd().getYear(), 2022);
-        assertEquals(a.getEnd().getMonth().getValue(), 10);
-        assertEquals(a.getEnd().getDayOfMonth(), 26);
-        assertEquals(a.getEnd().getHour(), 18);
-        assertEquals(a.getEnd().getMinute(), 2);
-        assertEquals(a.getEnd().getSecond(), 28);
+        assertEquals(a.getEnd().getMonth(), 10);
+        assertEquals(a.getEnd().getDay(), 26);
+        assertEquals(a.getEnd().getHours(), 18);
+        assertEquals(a.getEnd().getMinutes(), 2);
+        assertEquals(a.getEnd().getSeconds(), 28);
         assertEquals(a.getOrganizer(), "MAILTO:email@email.com");
     }
 }
