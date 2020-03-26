@@ -127,8 +127,8 @@ public class MapActivity extends AppCompatActivity {
     }
 
 
-    @Override
     @RequiresApi(api = Build.VERSION_CODES.O)
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
