@@ -81,8 +81,6 @@ public class Activity {
                 +"Uid: "+ this.uid+'\n'
                 +"Summary: "+ this.summary+'\n'
                 +"Description: "+ this.description+'\n'
-                +"Start: "+ this.start.toInstant().toString()+'\n'
-                +"End: "+ this.end.toInstant().toString()+'\n'
                 +"Organizer: "+this.organizer
         ;
     }
