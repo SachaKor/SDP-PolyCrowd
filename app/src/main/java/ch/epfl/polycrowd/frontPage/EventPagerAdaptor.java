@@ -18,6 +18,7 @@ import java.util.List;
 import ch.epfl.polycrowd.Event;
 import ch.epfl.polycrowd.EventEditActivity;
 import ch.epfl.polycrowd.R;
+import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.map.MapActivity;
 
 public class EventPagerAdaptor extends PagerAdapter {
@@ -66,11 +67,16 @@ public class EventPagerAdaptor extends PagerAdapter {
 
             imageView.setImageResource(events.get(position-1).getImage());
 
-            view.setOnClickListener(v -> {
-                Intent intent = new Intent(context, MapActivity.class);
-                // TODO : update currentEvent to the given one
-                intent.putExtra("eventId", events.get(position-1).getId());
-                context.startActivity(intent);
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, MapActivity.class);
+                    // TODO : update currentEvent to the given one
+                    Event e =events.get(position-1);
+                    PolyContext.setCurrentEvent(e);
+                    intent.putExtra("eventId", e.getId());
+                    context.startActivity(intent);
+                }
             });
 
         }
