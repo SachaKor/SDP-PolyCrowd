@@ -6,12 +6,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
 import ch.epfl.polycrowd.firebase.handlers.EventHandler;
+import ch.epfl.polycrowd.logic.User;
 
 import android.app.AlertDialog;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -39,8 +41,8 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     }
 
     private void setUpViews(String title, String description) {
-        TextView eventTitle = findViewById(R.id.event_details_title),
-                eventDescription = findViewById(R.id.event_details_description);
+        TextView eventTitle = findViewById(R.id.event_details_title);
+        TextView eventDescription = findViewById(R.id.event_details_description);
         ImageView eventImg = findViewById(R.id.event_details_img);
         eventTitle.setText(title);
         eventDescription.setText(description);
@@ -72,6 +74,13 @@ public class EventPageDetailsActivity extends AppCompatActivity {
                 initRecyclerView(event.getOrganizers());
                 setUpViews(event.getName(), event.getDescription());
                 eventName = event.getName();
+
+                // Check logged-in user => do not show invite button if user isn't organizer
+                User user = fbi.getCurrentUser();
+                if(user == null || event.getOrganizers().indexOf(user.getEmail()) == -1) {
+                    Button inviteButton = findViewById(R.id.invite_organizer_button);
+                    inviteButton.setVisibility(View.GONE);
+                }
             }
         });
     }

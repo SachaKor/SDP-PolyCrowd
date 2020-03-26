@@ -10,9 +10,15 @@ import android.widget.Button;
 
 import com.google.android.gms.maps.SupportMapFragment;
 
+import java.util.List;
+
+import ch.epfl.polycrowd.Event;
 import ch.epfl.polycrowd.EventPageDetailsActivity;
 import ch.epfl.polycrowd.LoginActivity;
 import ch.epfl.polycrowd.R;
+import ch.epfl.polycrowd.firebase.FirebaseInterface;
+import ch.epfl.polycrowd.firebase.handlers.EventHandler;
+import ch.epfl.polycrowd.logic.User;
 
 public class MapActivity extends AppCompatActivity {
 
@@ -57,12 +63,12 @@ public class MapActivity extends AppCompatActivity {
 
 
     void setVisitorButtons( Button buttonLeft , Button  buttonRight){
-        buttonRight.setText("EVENTS");
+        buttonRight.setText("EVENT DETAILS");
         buttonLeft.setText("GROUPS");
 
         buttonRight.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) { }
+            public void onClick(View v) { clickEventDetails(v); }
         });
         buttonLeft.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,12 +77,12 @@ public class MapActivity extends AppCompatActivity {
     }
 
     void setOrganiserButtons(Button buttonLeft , Button  buttonRight){
-        buttonRight.setText("MANAGE");
+        buttonRight.setText("MANAGE DETAILS");
         buttonLeft.setText("STAFF");
 
         buttonRight.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) { }
+            public void onClick(View v) { clickEventDetails(v); }
         });
         buttonLeft.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,9 +95,6 @@ public class MapActivity extends AppCompatActivity {
     void createButtons(){
         Button buttonRight = findViewById(R.id.butRight);
         Button buttonLeft = findViewById(R.id.butLeft);
-
-        // TODO : switch status depending on LOGIN
-        status = level.GUEST;
 
         switch(status)  {
             case GUEST:
@@ -132,8 +135,28 @@ public class MapActivity extends AppCompatActivity {
             eventId = getIntent().getStringExtra("eventId");
         }
 
-        createButtons();
-        createMap();
+        // Check logged-in user
+        FirebaseInterface fbi = new FirebaseInterface(this);
+        User user = fbi.getCurrentUser();
+        if(user == null){
+            status = level.GUEST;
+            createButtons();
+            createMap();
+        }else{
+            fbi.getEventById(eventId, new EventHandler() {
+                @Override
+                public void handle(Event event) {
+                    List<String> organizerEmails = event.getOrganizers();
+                    if(organizerEmails.indexOf(user.getEmail()) == -1){
+                        status = level.VISITOR;
+                    }else{
+                        status = level.ORGANISER;
+                    }
+                    createButtons();
+                    createMap();
+                }
+            });
+        }
     }
 
 
