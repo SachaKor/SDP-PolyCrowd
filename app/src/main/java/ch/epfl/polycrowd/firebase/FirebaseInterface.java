@@ -185,6 +185,7 @@ public class FirebaseInterface {
                     .document(eventId).get()
                     .addOnSuccessListener(documentSnapshot -> {
                         Event event = Event.getFromDocument(Objects.requireNonNull(documentSnapshot.getData()));
+                        event.setId(eventId);
                         eventHandler.handle(event);
                     }).addOnFailureListener(e -> Log.e(TAG, "Error retrieving document with id " + eventId));
         }

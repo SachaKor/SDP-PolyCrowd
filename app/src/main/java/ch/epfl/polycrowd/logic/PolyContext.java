@@ -19,6 +19,7 @@ public abstract class PolyContext extends Context {
     public static boolean mocking= false;
     private static Event currentEvent;
     private static User currentUser;
+    private static String previousPage = "";
 
     public static void setCurrentEvent(Event ev){
         currentEvent = ev;
@@ -26,12 +27,18 @@ public abstract class PolyContext extends Context {
     public static Event getCurrentEvent(){
         return currentEvent;
     }
+    public static String getPreviousPage() {
+        return previousPage;
+    }
 
     public static User getCurrentUser() {
         return currentUser;
     }
     public static void setCurrentUser(User u){
        currentUser= u;
+    }
+    public static void setPreviousPage(String previousPage) {
+        PolyContext.previousPage = previousPage;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)

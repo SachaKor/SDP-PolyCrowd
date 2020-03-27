@@ -25,6 +25,8 @@ import ch.epfl.polycrowd.LoginActivity;
 import ch.epfl.polycrowd.OrganizerInviteActivity;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
+import ch.epfl.polycrowd.firebase.handlers.EventHandler;
+import ch.epfl.polycrowd.logic.PolyContext;
 
 public class FrontPageActivity extends AppCompatActivity {
 
@@ -124,6 +126,7 @@ public class FrontPageActivity extends AppCompatActivity {
         recreate();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void receiveDynamicLink() {
         Context c = this;
         FirebaseDynamicLinks.getInstance()
@@ -144,9 +147,13 @@ public class FrontPageActivity extends AppCompatActivity {
                                     eventName = deepLink.getQueryParameter("eventName");
                             if (eventId != null && eventName != null) {
                                 Intent intent = new Intent(c, OrganizerInviteActivity.class);
-                                intent.putExtra("eventId", eventId);
-                                intent.putExtra("eventName", eventName);
-                                startActivity(intent);
+                                fbInterface.getEventById(eventId, new EventHandler() {
+                                    @Override
+                                    public void handle(Event event) {
+                                        PolyContext.setCurrentEvent(event);
+                                        startActivity(intent);
+                                    }
+                                });
                             }
                         }
                     }
