@@ -27,7 +27,7 @@ public class Event {
     private static final String LOG_TAG = Event.class.toString();
 
     @VisibleForTesting
-    private static Event fakeEvent(String url, File f) throws ParseException {return new Event ("1",
+    static Event fakeEvent(String url, File f) throws ParseException {return new Event ("1",
             "fakeEvent", true,
             Event.EventType.CONVENTION,
             dtFormat.parse("01-08-2018 00:00"),
