@@ -3,22 +3,17 @@ package ch.epfl.polycrowd;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.util.Log;
-import android.view.Display;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import ch.epfl.polycrowd.logic.Activity;
 import ch.epfl.polycrowd.logic.PolyContext;
-import ch.epfl.polycrowd.logic.Schedule;
 
 public class ScheduleActivity extends AppCompatActivity {
 
