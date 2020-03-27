@@ -8,8 +8,8 @@ public class User extends Storable {
     //TODO: add necessary attributes and methods
 
     //Sample attributes
-    String name, email, uid;
-    Integer age;
+    private String name, email, uid;
+    private Integer age;
 
     //Sample constructor
     public User(String email, String uid, String name, Integer age){
@@ -21,7 +21,7 @@ public class User extends Storable {
 
     @Override
     public Map<String, Object> getRawData() {
-        Map<String,Object> m = new HashMap<String,Object>();
+        Map<String,Object> m = new HashMap<>();
         m.put("name", name);
         m.put("age", age);
         return m;

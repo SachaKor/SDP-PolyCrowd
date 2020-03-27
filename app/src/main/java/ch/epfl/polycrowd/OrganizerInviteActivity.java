@@ -9,6 +9,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.Locale;
+
 public class OrganizerInviteActivity extends AppCompatActivity {
     private static final String TAG = "OrganizerInviteActivity";
     private String eventId, eventName = "";
@@ -31,7 +33,7 @@ public class OrganizerInviteActivity extends AppCompatActivity {
         if(getIntent().hasExtra("eventName")) {
             TextView previewText = findViewById(R.id.organizer_invite_text);
             eventName = getIntent().getStringExtra("eventName");
-            previewText.setText(R.string.organizer_invite_text_1 +"\"" + eventName + "\"\n"+R.string.organizer_invite_text_2);
+            previewText.setText(String.format(Locale.ENGLISH,"%d\"%s\"\n%d", R.string.organizer_invite_text_1, eventName, R.string.organizer_invite_text_2));
         }
     }
 
