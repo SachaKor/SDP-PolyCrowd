@@ -43,13 +43,8 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         initEvent();
 
         getIncomingIntent();
-        final Button scheduleButton = (Button) findViewById(R.id.schedule);
-        scheduleButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                clickSchedule(v);
-            }
-        });
+        final Button scheduleButton = findViewById(R.id.schedule);
+        scheduleButton.setOnClickListener(v -> clickSchedule(v));
     }
     private void getIncomingIntent() {
         if(getIntent().hasExtra("iTitle")
@@ -93,19 +88,16 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         }
         FirebaseInterface fbi = new FirebaseInterface(this);
         eventId = getIntent().getStringExtra("eventId");
-        fbi.getEventById(eventId, new EventHandler() {
-            @Override
-            public void handle(Event event) {
-                initRecyclerView(event.getOrganizers());
-                setUpViews(event.getName(), event.getDescription());
-                eventName = event.getName();
+        fbi.getEventById(eventId, event -> {
+            initRecyclerView(event.getOrganizers());
+            setUpViews(event.getName(), event.getDescription());
+            eventName = event.getName();
 
-                // Check logged-in user => do not show invite button if user isn't organizer
-                User user = fbi.getCurrentUser();
-                if(user == null || event.getOrganizers().indexOf(user.getEmail()) == -1) {
-                    Button inviteButton = findViewById(R.id.invite_organizer_button);
-                    inviteButton.setVisibility(View.GONE);
-                }
+            // Check logged-in user => do not show invite button if user isn't organizer
+            User user = fbi.getCurrentUser();
+            if(user == null || event.getOrganizers().indexOf(user.getEmail()) == -1) {
+                Button inviteButton = findViewById(R.id.invite_organizer_button);
+                inviteButton.setVisibility(View.GONE);
             }
         });
     }
