@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
-import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
 
 import android.os.Bundle;
 import android.view.Menu;
@@ -16,8 +15,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.SearchView;
 import android.widget.Toast;
-
-import java.util.List;
 
 public class EventPageActivity extends AppCompatActivity {
 
@@ -39,12 +36,9 @@ public class EventPageActivity extends AppCompatActivity {
         fbi = new FirebaseInterface(this);
 
 
-        fbi.getAllEvents(new EventsHandler() {
-            @Override
-            public void handle(List<Event> events) {
-                myAdapter = new MyAdapter(context, Event.toModels( events));
-                mRecyclerView.setAdapter(myAdapter);
-            }
+        fbi.getAllEvents(events -> {
+            myAdapter = new MyAdapter(context, Event.toModels( events));
+            mRecyclerView.setAdapter(myAdapter);
         });
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
