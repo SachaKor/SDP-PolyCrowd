@@ -230,6 +230,8 @@ public class FirebaseInterface {
                                 }
                             })
                             .addOnFailureListener(e -> Log.w(TAG, "Error updating " + ORGANIZERS + " list"));
+                } else {
+                    handler.handle();
                 }
             }).addOnFailureListener(e -> Log.w(TAG, "Error retrieving event with id" + eventId));
 
