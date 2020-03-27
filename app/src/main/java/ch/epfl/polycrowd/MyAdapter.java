@@ -1,22 +1,17 @@
 package ch.epfl.polycrowd;
 
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,29 +44,25 @@ public class MyAdapter extends RecyclerView.Adapter<MyHolder> implements Filtera
         myHolder.mTitle.setText(models.get(i).getTitle()) ;
         myHolder.mDes.setText(models.get(i).getDescription());
         myHolder.mImaeView.setImageResource(R.drawable.p1);
-        myHolder.getParentLayout().setOnClickListener(new View.OnClickListener() {
+        myHolder.getParentLayout().setOnClickListener(v -> {
+            /*
+            String gTitle  = models.get(i).getTitle();
+            String gDesc = models.get(i).getDescription();
+            BitmapDrawable bitmapDrawable = (BitmapDrawable)myHolder.mImaeView.getDrawable();
 
-            @Override
-            public void onClick(View v) {
-                /*
-                String gTitle  = models.get(i).getTitle();
-                String gDesc = models.get(i).getDescription();
-                BitmapDrawable bitmapDrawable = (BitmapDrawable)myHolder.mImaeView.getDrawable();
+            Bitmap bitmap = bitmapDrawable.getBitmap() ;
+            ByteArrayOutputStream stream = new ByteArrayOutputStream() ; // image will get stream and bytes
 
-                Bitmap bitmap = bitmapDrawable.getBitmap() ;
-                ByteArrayOutputStream stream = new ByteArrayOutputStream() ; // image will get stream and bytes
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream) ;
 
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream) ;
+            byte[] bytes =  stream.toByteArray() ;
+            String eventId = models.get(i).getId();
 
-                byte[] bytes =  stream.toByteArray() ;
-                String eventId = models.get(i).getId();
-
-                Intent intent = new Intent(c, EventPageDetailsActivity.class) ;
-                intent.putExtra("eventId", eventId);
-                c.startActivity(intent);
-                Toast.makeText(c, "Clicked on: " + models.get(i).getTitle(), Toast.LENGTH_SHORT).show();
-                */
-            }
+            Intent intent = new Intent(c, EventPageDetailsActivity.class) ;
+            intent.putExtra("eventId", eventId);
+            c.startActivity(intent);
+            Toast.makeText(c, "Clicked on: " + models.get(i).getTitle(), Toast.LENGTH_SHORT).show();
+            */
         });
 
         //If we want to use different activities, can use this
