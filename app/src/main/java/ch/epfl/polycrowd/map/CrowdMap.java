@@ -112,12 +112,10 @@ public class CrowdMap implements OnMapReadyCallback {
         KmlLayer layer = null;
         try {
             layer = new KmlLayer(mMap, R.raw.example, act.getApplicationContext());
+            layer.addLayerToMap();
         } catch (XmlPullParserException | IOException e) {
             e.printStackTrace();
         }
-        layer.addLayerToMap();
-
-
 
         // --- Place MyLocation -------------------------------------------------------
         LatLng myPosition = new LatLng(46.518633, 6.566419);

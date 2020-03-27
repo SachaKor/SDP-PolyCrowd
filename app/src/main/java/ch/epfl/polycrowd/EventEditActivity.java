@@ -10,15 +10,10 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
 
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
@@ -29,17 +24,19 @@ import static ch.epfl.polycrowd.Event.dtFormat;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
 import ch.epfl.polycrowd.logic.User;
 import ch.epfl.polycrowd.map.MapActivity;
+import static ch.epfl.polycrowd.Event.stringToDate;
 
 public class EventEditActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = EventEditActivity.class.toString();
     private FirebaseInterface firebaseInterface;
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public void setMocking(){
         this.firebaseInterface.setMocking();
     }
     
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,20 +45,22 @@ public class EventEditActivity extends AppCompatActivity {
         this.firebaseInterface = new FirebaseInterface(this);
     }
 
+
+    /*
     @RequiresApi(api = Build.VERSION_CODES.O)
     private LocalDateTime parseDate(String dateStr) {
         String dateWithTime = dateStr + " 00:00";
         LocalDateTime date;
         try {
-            date = LocalDateTime.parse(dateWithTime, dtFormat);
-        } catch (DateTimeParseException e) {
+            date = dtFormat.parse(dateWithTime).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        } catch (DateTimeParseException | ParseException e) {
             Toast.makeText(getApplicationContext(), "Date " + dateStr + " is incorrect", Toast.LENGTH_SHORT).show();
             return null;
         }
 
         return date;
 
-    }
+    }*/
 
     private boolean fieldsNotEmpty() {
         final String eventName = findViewById(R.id.EditEventName).toString(),
@@ -106,8 +105,8 @@ public class EventEditActivity extends AppCompatActivity {
         if(!fieldsNotEmpty()) {
             return;
         }
-        LocalDateTime startDate = parseDate(sDate),
-                endDate = parseDate(eDate);
+        Date startDate = stringToDate(sDate+" 00:00", dtFormat),
+                endDate = stringToDate(eDate+" 00:00", dtFormat);
 
         if(startDate == null || endDate == null) {
             return;
@@ -121,6 +120,9 @@ public class EventEditActivity extends AppCompatActivity {
         List<String> organizers = new ArrayList<>();
         organizers.add(user.getEmail());
         // Create the map containing the event info
+        EditText calendarUrl = findViewById(R.id.EditEventCalendar);
+        // Create the map containing the event info
+
         Event ev = new Event(user.getUid(), evName.getText().toString(), isPublic,
                 Event.EventType.valueOf(type.toUpperCase()),
                 startDate, endDate,

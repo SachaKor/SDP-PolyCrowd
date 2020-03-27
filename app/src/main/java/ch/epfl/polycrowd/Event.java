@@ -1,49 +1,59 @@
 package ch.epfl.polycrowd;
 
-
 import android.os.Build;
-import android.util.Log;
-
 
 import com.google.firebase.Timestamp;
 
 
 import androidx.annotation.RequiresApi;
+import androidx.annotation.VisibleForTesting;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
+import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+
+import ch.epfl.polycrowd.logic.Schedule;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class Event {
 
     private static final String LOG_TAG = Event.class.toString();
 
+    @VisibleForTesting
+    static Event fakeEvent(String url, File f) throws ParseException {return new Event ("1",
+            "fakeEvent", true,
+            Event.EventType.CONVENTION,
+            dtFormat.parse("01-08-2018 00:00"),
+            dtFormat.parse("02-08-2018 01:00"),
+            url, "description", f);}
+
     public enum EventType {
         FESTIVAL, CONCERT, CONVENTION, OTHER
     }
 
-    public static final DateTimeFormatter dtFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
-    private String owner; // user uid is a string
+    static final SimpleDateFormat dtFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.ENGLISH);
+    private final String owner;
     private String name;
     private Boolean isPublic;
     private EventType type;
-    private LocalDateTime start;
-    private LocalDateTime end;
+    private Date start;
+    private Date end;
     private String calendar;
     private String description;
     private String id;
     private int image;
+    private Schedule schedule;
     private List<String> organizers;
 
     public Event(String owner, String name, Boolean isPublic, EventType type,
-                 LocalDateTime start, LocalDateTime end,
+                 Date start, Date end,
                  String calendar, String description){
         if(owner == null || name == null || type == null || start == null || end == null || calendar == null)
             throw new IllegalArgumentException("Invalid Argument for Event Constructor");
@@ -58,9 +68,23 @@ public class Event {
         organizers.add(owner); // TODO: this is wrong, organizers must contain the emails
         setDescription(description);
     }
+    private String getEventCalFilename(){
+        return String.join(".",this.name,"ics");
+    }
 
     public Event(String owner, String name, Boolean isPublic, EventType type,
-                 LocalDateTime start, LocalDateTime end,
+                 Date start, Date end,
+                 String calendar, String description, File dir){
+        this(owner, name, isPublic, type, start, end, calendar, description);
+        this.loadCalendar(dir);
+    }
+    public Event(Event e, File dir){
+        this(e.owner, e.name, e.isPublic, e.type, e.start, e.end, e.calendar, e.description);
+        this.loadCalendar(dir);
+    }
+
+    public Event(String owner, String name, Boolean isPublic, EventType type,
+                 Date start, Date end,
                  String calendar, String description, List<String> organizers){
         this(owner, name, isPublic, type, start, end, calendar, description);
         if(organizers == null) {
@@ -105,9 +129,14 @@ public class Event {
         return description;
     }
 
-//    public void setDescription(String d){
-//        description = d;
-//    }
+    public void setDescription(String description) {
+        if(description == null) {
+            this.description = "";
+        } else {
+            this.description = description;
+        }
+    }
+
 
     public String getId() {
         return id;
@@ -128,14 +157,6 @@ public class Event {
         this.name = name;
     }
 
-    public void setDescription(String description) {
-        if(description == null) {
-            this.description = "";
-        } else {
-            this.description = description;
-        }
-    }
-
     public Boolean getPublic() {
         return isPublic;
     }
@@ -154,21 +175,21 @@ public class Event {
         this.type = type;
     }
 
-    public LocalDateTime getStart() {
+    public Date getStart() {
         return start;
     }
 
-    public void setStart(LocalDateTime start) {
+    public void setStart(Date start) {
         if(start == null)
             throw new IllegalArgumentException("StartDate cannot be Null");
         this.start = start;
     }
 
-    public LocalDateTime getEnd() {
+    public Date getEnd() {
         return end;
     }
 
-    public void setEnd(LocalDateTime end) {
+    public void setEnd(Date end) {
         if(end == null)
             throw new IllegalArgumentException("EndDate cannot be Null");
         this.end = end;
@@ -190,8 +211,8 @@ public class Event {
         event.put("owner", this.owner);
         event.put("name", this.name);
         event.put("isPublic", this.isPublic.toString());
-        Timestamp sDate = new Timestamp(Date.from(this.start.atZone(ZoneId.systemDefault()).toInstant())),
-                eDate = new Timestamp(Date.from(this.end.atZone(ZoneId.systemDefault()).toInstant()));
+        Timestamp sDate = new Timestamp(getStart());
+        Timestamp eDate = new Timestamp(getEnd());
         event.put("start", sDate);
         event.put("end", eDate);
         event.put("type", this.type.toString());
@@ -202,20 +223,20 @@ public class Event {
     }
 
     public static Event getFromDocument(Map<String, Object> data){
-        Log.d(LOG_TAG,"converting Firebase data to Event");
+        //Log.d(LOG_TAG,"converting Firebase data to Event");
         String owner = Objects.requireNonNull(data.get("owner")).toString();
         String name = Objects.requireNonNull(data.get("name")).toString();
         Boolean isPublic = Boolean.valueOf((Objects.requireNonNull(data.get("isPublic"))).toString());
         String calendar = Objects.requireNonNull(data.get("calendar")).toString();
         // convert firebase timestamps to LocalDateTime
+
         Timestamp sStamp = Objects.requireNonNull((Timestamp) data.get("start")),
                 eStamp = Objects.requireNonNull((Timestamp) data.get("end"));
-        LocalDateTime start = (sStamp.toDate()).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-        LocalDateTime end = (eStamp.toDate()).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        Date start = sStamp.toDate();
+        Date end = eStamp.toDate();
         EventType type = EventType.valueOf(Objects.requireNonNull(data.get("type")).toString().toUpperCase());
         String desc = data.get("description").toString();
-        List<String> organizers = new ArrayList<>();
-        organizers.addAll((List<String>) Objects.requireNonNull(data.get("organizers")));
+        List<String> organizers = new ArrayList<>((List<String>) Objects.requireNonNull(data.get("organizers")));
         return new Event(owner, name, isPublic, type, start, end, calendar, desc, organizers);
     }
 
@@ -226,6 +247,42 @@ public class Event {
 
     public List<String> getOrganizers() {
         return organizers;
+
     }
 
+
+    public void loadCalendar(File dir){
+        if (dir == null) throw new IllegalArgumentException();
+        this.schedule = new Schedule(calendar, new File(dir, getEventCalFilename()));
+    }
+
+    public Schedule getSchedule(){
+        return this.schedule;
+    }
+
+    public Model getModel(){
+        Model m = new Model() ;
+        m.setTitle(getName());
+        m.setDescription(getDescription());
+        m.setId(this.getId());
+        return m;
+    }
+    public static String dateToString(Date d, SimpleDateFormat dtf){
+        return dtf.format(d);
+    }
+    public static Date stringToDate(String s, SimpleDateFormat dtf){
+        try {
+            return dtf.parse(s);
+        } catch (ParseException ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+    public static List<Model> toModels(List<Event> activities){
+        List<Model> models = new ArrayList<>();
+        for (Event e : activities){
+            models.add(e.getModel());
+        }
+        return models;
+    }
 }

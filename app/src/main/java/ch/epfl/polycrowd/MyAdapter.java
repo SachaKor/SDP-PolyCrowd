@@ -1,22 +1,17 @@
 package ch.epfl.polycrowd;
 
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,13 +19,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyHolder> implements Filtera
 
 
     private Context c;
-    private List<Event> events;
-    private List<Event> eventsFull;
 
-    public MyAdapter(Context c, List<Event> events){
+    private List<Model> models;
+    private List<Model> modelsFull;
+
+    public MyAdapter(Context c, List<Model> models){
         this.c = c ;
-        this.events = events ;
-        eventsFull = new ArrayList<>(events);
+        this.models= models ;
+        modelsFull = new ArrayList<>(models);
     }
 
     @NonNull
@@ -45,31 +41,28 @@ public class MyAdapter extends RecyclerView.Adapter<MyHolder> implements Filtera
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onBindViewHolder(@NonNull final MyHolder myHolder, int i) {
-        myHolder.mTitle.setText(events.get(i).getName()) ;
-        myHolder.mDes.setText(events.get(i).getDescription());
+        myHolder.mTitle.setText(models.get(i).getTitle()) ;
+        myHolder.mDes.setText(models.get(i).getDescription());
         myHolder.mImaeView.setImageResource(R.drawable.p1);
-        myHolder.getParentLayout().setOnClickListener(new View.OnClickListener() {
+        myHolder.getParentLayout().setOnClickListener(v -> {
+            /*
+            String gTitle  = models.get(i).getTitle();
+            String gDesc = models.get(i).getDescription();
+            BitmapDrawable bitmapDrawable = (BitmapDrawable)myHolder.mImaeView.getDrawable();
 
-            @Override
-            public void onClick(View v) {
-                String gTitle  = events.get(i).getName();
-                String gDesc = events.get(i).getDescription();
-                BitmapDrawable bitmapDrawable = (BitmapDrawable)myHolder.mImaeView.getDrawable();
+            Bitmap bitmap = bitmapDrawable.getBitmap() ;
+            ByteArrayOutputStream stream = new ByteArrayOutputStream() ; // image will get stream and bytes
 
-                Bitmap bitmap = bitmapDrawable.getBitmap() ;
-                ByteArrayOutputStream stream = new ByteArrayOutputStream() ; // image will get stream and bytes
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream) ;
 
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream) ;
+            byte[] bytes =  stream.toByteArray() ;
+            String eventId = models.get(i).getId();
 
-                byte[] bytes =  stream.toByteArray() ;
-                String eventId = events.get(i).getId();
-
-                Intent intent = new Intent(c, EventPageDetailsActivity.class) ;
-                intent.putExtra("eventId", eventId);
-                c.startActivity(intent);
-                Toast.makeText(c, "Clicked on: " + events.get(i).getName(), Toast.LENGTH_SHORT).show();
-
-            }
+            Intent intent = new Intent(c, EventPageDetailsActivity.class) ;
+            intent.putExtra("eventId", eventId);
+            c.startActivity(intent);
+            Toast.makeText(c, "Clicked on: " + models.get(i).getTitle(), Toast.LENGTH_SHORT).show();
+            */
         });
 
         //If we want to use different activities, can use this
@@ -107,7 +100,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyHolder> implements Filtera
 
     @Override
     public int getItemCount() {
-        return events.size() ;
+        return models.size() ;
     }
 
     @Override
@@ -119,15 +112,15 @@ public class MyAdapter extends RecyclerView.Adapter<MyHolder> implements Filtera
         @RequiresApi(api = Build.VERSION_CODES.O)
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
-            List<Event> filteredList = new ArrayList<>();
+            List<Model> filteredList = new ArrayList<>();
 
             // user did not enter anything in the search bar => display all the options
             if(constraint == null || constraint.length() == 0) {
-                filteredList.addAll(eventsFull);
+                filteredList.addAll(modelsFull);
             } else {
                 String filterPattern = constraint.toString().toLowerCase().trim();
-                for (Event item : eventsFull) {
-                    if(item.getName().toLowerCase().contains(filterPattern)) {
+                for (Model item : modelsFull) {
+                    if(item.getTitle().toLowerCase().contains(filterPattern)) {
                         filteredList.add(item);
                     }
                 }
@@ -140,8 +133,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyHolder> implements Filtera
 
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
-            events.clear();
-            events.addAll((List)results.values);
+            models.clear();
+            models.addAll((List)results.values);
             notifyDataSetChanged();
         }
     };
