@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.content.Intent;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -53,14 +54,8 @@ public class MapActivity extends AppCompatActivity {
         buttonRight.setText("EVENT DETAILS");
         buttonLeft.setText("LOGIN");
 
-        buttonRight.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) { clickEventDetails(v); }
-        });
-        buttonLeft.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) { clickSignIn(v); }
-        });
+        buttonRight.setOnClickListener(v -> clickEventDetails(v));
+        buttonLeft.setOnClickListener(v -> clickSignIn(v));
     }
 
 
@@ -68,28 +63,16 @@ public class MapActivity extends AppCompatActivity {
         buttonRight.setText("EVENT DETAILS");
         buttonLeft.setText("GROUPS");
 
-        buttonRight.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) { clickEventDetails(v); }
-        });
-        buttonLeft.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) { }
-        });
+        buttonRight.setOnClickListener(v -> clickEventDetails(v));
+        buttonLeft.setOnClickListener(v -> { });
     }
 
     void setOrganiserButtons(Button buttonLeft , Button  buttonRight){
         buttonRight.setText("MANAGE DETAILS");
         buttonLeft.setText("STAFF");
 
-        buttonRight.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) { clickEventDetails(v); }
-        });
-        buttonLeft.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) { }
-        });
+        buttonRight.setOnClickListener(v -> clickEventDetails(v));
+        buttonLeft.setOnClickListener(v -> { });
     }
 
 
@@ -121,9 +104,12 @@ public class MapActivity extends AppCompatActivity {
         startRepeatingTask();
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(mMap);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(mMap);
+        }else{
+            Log.e("MapFragment", "Argument is null");
+        }
     }
 
 
@@ -146,18 +132,15 @@ public class MapActivity extends AppCompatActivity {
             createButtons();
             createMap();
         }else{
-            fbi.getEventById(eventId, new EventHandler() {
-                @Override
-                public void handle(Event event) {
-                    List<String> organizerEmails = event.getOrganizers();
-                    if(organizerEmails.indexOf(user.getEmail()) == -1){
-                        status = level.VISITOR;
-                    }else{
-                        status = level.ORGANISER;
-                    }
-                    createButtons();
-                    createMap();
+            fbi.getEventById(eventId, event -> {
+                List<String> organizerEmails = event.getOrganizers();
+                if(organizerEmails.indexOf(user.getEmail()) == -1){
+                    status = level.VISITOR;
+                }else{
+                    status = level.ORGANISER;
                 }
+                createButtons();
+                createMap();
             });
         }
     }
