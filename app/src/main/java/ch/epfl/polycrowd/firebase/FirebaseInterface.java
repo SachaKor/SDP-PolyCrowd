@@ -179,9 +179,11 @@ public class FirebaseInterface {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void getEventById(String eventId, EventHandler eventHandler) {
         if(is_mocked) {
+            Log.d(TAG, "getEventById mocked");
             Event event = new Event();
             eventHandler.handle(event);
         } else {
+            Log.d(TAG, "getEventById is not mocked");
             getFirestoreInstance(false).collection(EVENTS)
                     .document(eventId).get()
                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {

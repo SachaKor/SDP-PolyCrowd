@@ -55,7 +55,7 @@ public class Event {
         this.end = end;
         this.calendar = calendar;
         organizers = new ArrayList<>();
-        organizers.add(owner);
+        organizers.add(owner); // TODO: this is wrong, organizers must contain the emails
         setDescription(description);
     }
 
@@ -80,7 +80,7 @@ public class Event {
 
     // default constructor for debugging
     public Event(){
-        this.owner = null;
+        this.owner = "1";
         this.name = "DEBUG EVENT";
         this.isPublic = true;
         this.type = EventType.OTHER;
@@ -89,6 +89,8 @@ public class Event {
         this.calendar = null;
         this.description = "this is only a debug event ... ";
         this.image = R.drawable.balelec;
+        this.organizers = new ArrayList<>();
+        organizers.add("fake@email.nu");
     }
 
     public int getImage(){

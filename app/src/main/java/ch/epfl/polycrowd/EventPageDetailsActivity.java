@@ -1,6 +1,7 @@
 package ch.epfl.polycrowd;
 
 import androidx.annotation.RequiresApi;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,6 +30,13 @@ public class EventPageDetailsActivity extends AppCompatActivity {
 
     // TODO: find another way to pass the event id
     private String eventId;
+
+    private final FirebaseInterface fbi = new FirebaseInterface(this);
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public void setMocking(){
+        this.fbi.setMocking();
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -64,15 +72,11 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         if (!getIntent().hasExtra("eventId")) {
             return;
         }
-        FirebaseInterface fbi = new FirebaseInterface(this);
         eventId = getIntent().getStringExtra("eventId");
-        fbi.getEventById(eventId, new EventHandler() {
-            @Override
-            public void handle(Event event) {
-                initRecyclerView(event.getOrganizers());
-                setUpViews(event.getName(), event.getDescription());
-                eventName = event.getName();
-            }
+        fbi.getEventById(eventId, event -> {
+            initRecyclerView(event.getOrganizers());
+            setUpViews(event.getName(), event.getDescription());
+            eventName = event.getName();
         });
     }
 
