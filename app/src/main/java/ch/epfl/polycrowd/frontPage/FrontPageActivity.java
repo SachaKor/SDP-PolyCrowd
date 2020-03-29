@@ -35,7 +35,7 @@ public class FrontPageActivity extends AppCompatActivity {
 
     private FirebaseInterface fbInterface;
 
-    @VisibleForTesting()
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public void setMocking(){
         this.fbInterface.setMocking();
     }
