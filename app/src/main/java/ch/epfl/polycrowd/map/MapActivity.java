@@ -56,7 +56,6 @@ public class MapActivity extends AppCompatActivity {
 
 
     //create buttons for testing location
-    private TextView locView;
     private LocationManager locationManager;
     private LocationListener locationListener;
 
@@ -102,7 +101,6 @@ public class MapActivity extends AppCompatActivity {
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                //locView.append("\n" + location.getLatitude() + " " + location.getLongitude());
                 mMap.update(new LatLng(location.getLatitude(), location.getLongitude()));
             }
 
