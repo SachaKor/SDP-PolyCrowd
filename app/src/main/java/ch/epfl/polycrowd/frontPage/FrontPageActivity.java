@@ -47,17 +47,6 @@ public class FrontPageActivity extends AppCompatActivity {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         fbInterface.getAllEvents(this::setViewPager);
-//        fbi.getAllEvents()
-//                .addOnSuccessListener(queryDocumentSnapshots -> {
-//                    List<Event> events = new ArrayList<>();
-//                    queryDocumentSnapshots.forEach(queryDocumentSnapshot -> {
-//                        Event e = Event.getFromDocument(queryDocumentSnapshot.getData());
-//                        e.setId(queryDocumentSnapshot.getId());
-//                        events.add(e);
-//                    });
-//                    setViewPager(events);
-//                })
-//                .addOnFailureListener(e -> Log.w(TAG, "Error retrieving Events from the database"));
     }
 
     void setViewPager(List<Event> events){

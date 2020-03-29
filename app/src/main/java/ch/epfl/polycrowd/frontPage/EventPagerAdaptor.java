@@ -7,6 +7,7 @@ import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -50,20 +51,30 @@ public class EventPagerAdaptor extends PagerAdapter {
 
 
         layoutInflater = LayoutInflater.from(context);
-        View view = layoutInflater.inflate(R.layout.event_card, container, false);
+        View view ;
 
-        ImageView imageView;
-        imageView = view.findViewById(R.id.image);
+
 
         // first button is the Create event one
         if(position == 0){
-            imageView.setImageResource(R.drawable.newevent);
+            // imageView.setImageResource(R.drawable.newevent);
+            // view = layoutInflater.inflate(R.layout.create_event_card, container, false);
+
+            //Button butt = fin
+
+            view = layoutInflater.inflate(R.layout.create_event_card, container, false);
+
 
             view.setOnClickListener(v -> {
                 Intent intent = new Intent(context, EventEditActivity.class);
                 context.startActivity(intent);
             });
         }else {
+
+            view = layoutInflater.inflate(R.layout.event_card, container, false);
+
+            ImageView imageView;
+            imageView = view.findViewById(R.id.image);
 
             imageView.setImageResource(events.get(position-1).getImage());
 
