@@ -89,7 +89,7 @@ public class LoginActivityTest {
                 .check(matches(isDisplayed()));
     }
 
-    /*
+
     @Test
     public void testEmailFieldEmpty() {
         sleep();
@@ -98,7 +98,7 @@ public class LoginActivityTest {
         onView(withText("Enter your email"))
                 .inRoot(withDecorView(not(loginActivityRule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));
-    }*/
+    }
 
    /* @Test
     public void testPasswordFieldEmpty() {
