@@ -50,11 +50,6 @@ public class MapActivity extends AppCompatActivity {
     // DEBUG
     private static final String TAG = "MainActivity";
 
-
-    //set timer for updating the heatMap
-    private int mInterval = 5000; // 5 seconds by default, can be changed later
-    private Handler mHandler;
-
     // eventId is needed to open the correct EventDetails page
     private String eventId;
 
@@ -102,8 +97,7 @@ public class MapActivity extends AppCompatActivity {
 
     @SuppressLint("NewApi")
     private void launchLocationRequest() {
-        //setup classes for instances needed for getting location
-        locView = (TextView) findViewById(R.id.locView);
+        //setup classe instances needed for getting location
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         locationListener = new LocationListener() {
             @Override
@@ -191,10 +185,6 @@ public class MapActivity extends AppCompatActivity {
         // display map  WARNING: TO DO AT THE END OF ONCREATE
         mMap = new CrowdMap(this);
 
-        //use as timer to refresh heatmap
-        mHandler = new Handler();
-        startRepeatingTask();
-
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -204,25 +194,7 @@ public class MapActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        stopRepeatingTask();
     }
-    //------------------TIMER SETUP----------------------------
-    Runnable updateHeatMap = new Runnable() {
-        @Override
-        public void run() {
-            //mMap.update();
-            mHandler.postDelayed(updateHeatMap, mInterval);
-        }
-    };
-
-    void startRepeatingTask() {
-        updateHeatMap.run();
-    }
-
-    void stopRepeatingTask() {
-        mHandler.removeCallbacks(updateHeatMap);
-    }
-
 
     // --- BUTTONS CLICKS -------------------------------
     public void clickSignIn(View view) {
