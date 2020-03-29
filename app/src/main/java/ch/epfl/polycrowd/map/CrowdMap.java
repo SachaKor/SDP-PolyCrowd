@@ -113,9 +113,11 @@ public class CrowdMap implements OnMapReadyCallback {
         KmlLayer layer = null;
         try {
             layer = new KmlLayer(mMap, R.raw.example, act.getApplicationContext());
+            layer.addLayerToMap();
         } catch (XmlPullParserException | IOException e) {
             e.printStackTrace();
         }
+
         layer.addLayerToMap();
 
         //TODO get eventLocation from firebase
@@ -125,6 +127,7 @@ public class CrowdMap implements OnMapReadyCallback {
         MarkerOptions currentLocationMarkerOptions = new MarkerOptions().position(eventLocation)
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.pointred));
         currentLocationMarker = googleMap.addMarker(currentLocationMarkerOptions);
+
 
         // --- Camera Zoom ------------------------------------------------------------
         googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(eventLocation , 17.8f));

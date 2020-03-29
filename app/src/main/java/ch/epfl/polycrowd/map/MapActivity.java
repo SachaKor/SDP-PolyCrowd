@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.content.Intent;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -53,10 +54,77 @@ public class MapActivity extends AppCompatActivity {
     // eventId is needed to open the correct EventDetails page
     private String eventId;
 
+
     //create buttons for testing location
     private TextView locView;
     private LocationManager locationManager;
     private LocationListener locationListener;
+
+
+
+
+    void setGuestButtons( Button buttonLeft , Button  buttonRight){
+        buttonRight.setText("EVENT DETAILS");
+        buttonLeft.setText("LOGIN");
+
+        buttonRight.setOnClickListener(v -> clickEventDetails(v));
+        buttonLeft.setOnClickListener(v -> clickSignIn(v));
+    }
+
+
+    void setVisitorButtons( Button buttonLeft , Button  buttonRight){
+        buttonRight.setText("EVENT DETAILS");
+        buttonLeft.setText("GROUPS");
+
+        buttonRight.setOnClickListener(v -> clickEventDetails(v));
+        buttonLeft.setOnClickListener(v -> { });
+    }
+
+    void setOrganiserButtons(Button buttonLeft , Button  buttonRight){
+        buttonRight.setText("MANAGE DETAILS");
+        buttonLeft.setText("STAFF");
+
+        buttonRight.setOnClickListener(v -> clickEventDetails(v));
+        buttonLeft.setOnClickListener(v -> { });
+    }
+
+
+
+    void createButtons(){
+        Button buttonRight = findViewById(R.id.butRight);
+        Button buttonLeft = findViewById(R.id.butLeft);
+
+        switch(status)  {
+            case GUEST:
+                setGuestButtons(buttonLeft , buttonRight);
+                break;
+            case VISITOR:
+                setVisitorButtons(buttonLeft , buttonRight);
+                break;
+            case ORGANISER:
+                setOrganiserButtons(buttonLeft , buttonRight);
+                break;
+
+        }
+    }
+
+    void createMap(){
+        // display map  WARNING: TO DO AT THE END OF ONCREATE
+        mMap = new CrowdMap(this);
+
+        //use as timer to refresh heatmap
+        mHandler = new Handler();
+        startRepeatingTask();
+
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(mMap);
+        }else{
+            Log.e("MapFragment", "Argument is null");
+        }
+    }
+
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -77,18 +145,15 @@ public class MapActivity extends AppCompatActivity {
             createButtons();
             createMap();
         }else{
-            fbi.getEventById(eventId, new EventHandler() {
-                @Override
-                public void handle(Event event) {
-                    List<String> organizerEmails = event.getOrganizers();
-                    if(organizerEmails.indexOf(user.getEmail()) == -1){
-                        status = level.VISITOR;
-                    }else{
-                        status = level.ORGANISER;
-                    }
-                    createButtons();
-                    createMap();
+            fbi.getEventById(eventId, event -> {
+                List<String> organizerEmails = event.getOrganizers();
+                if(organizerEmails.indexOf(user.getEmail()) == -1){
+                    status = level.VISITOR;
+                }else{
+                    status = level.ORGANISER;
                 }
+                createButtons();
+                createMap();
             });
         }
 
