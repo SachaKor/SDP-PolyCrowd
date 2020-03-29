@@ -1,18 +1,20 @@
 package ch.epfl.polycrowd;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import ch.epfl.polycrowd.logic.PolyContext;
 
 public class OrganizerInviteActivity extends AppCompatActivity {
     private static final String TAG = "OrganizerInviteActivity";
-    private String eventId, eventName = "";
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,6 +24,7 @@ public class OrganizerInviteActivity extends AppCompatActivity {
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void setInviteText() {
         Event curEvent = PolyContext.getCurrentEvent();
         if(curEvent == null) {

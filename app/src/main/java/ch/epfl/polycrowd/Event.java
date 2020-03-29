@@ -110,7 +110,7 @@ public class Event {
         this.type = EventType.OTHER;
         this.start = null;
         this.end = null;
-        this.calendar = null;
+        this.calendar = "url";
         this.description = "this is only a debug event ... ";
         this.image = R.drawable.balelec;
         this.organizers = new ArrayList<>();

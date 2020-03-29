@@ -97,13 +97,13 @@ public class EventTest {
         assertEquals("https://satellite.bar/agenda/ical.php", nec.getCalendar());
 
         Event ned = new Event();
-        assertNull(ned.getOwner());
+        assertEquals("1", ned.getOwner());
         assertEquals("DEBUG EVENT", ned.getName());
         assertEquals(true, ned.getPublic());
         assertEquals(Event.EventType.OTHER, ned.getType());
         assertNull(ned.getStart());
         assertNull(ned.getEnd());
-        assertNull(ned.getCalendar());
+        assertEquals("url", ned.getCalendar());
         assertEquals("this is only a debug event ... ",ned.getDescription());
     }
 

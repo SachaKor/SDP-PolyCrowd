@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
 import ch.epfl.polycrowd.firebase.handlers.EventHandler;
+import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 
 import android.app.AlertDialog;
@@ -16,6 +17,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -31,7 +33,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
 
     private String eventName = "";
 
-    private static final String LOG_TAG = "EventPageDetails";
+    private static final String TAG = "EventPageDetails";
 
     // TODO: find another way to pass the event id
     private String eventId;
@@ -52,22 +54,8 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_event_details_page);
         initEvent();
 
-        getIncomingIntent();
         final Button scheduleButton = findViewById(R.id.schedule);
         scheduleButton.setOnClickListener(v -> clickSchedule(v));
-    }
-    private void getIncomingIntent() {
-        if(getIntent().hasExtra("iTitle")
-                && getIntent().hasExtra("iDesc")
-                && getIntent().hasExtra("iImage")
-                && getIntent().hasExtra("eventId")) {
-            String mTitle = getIntent().getStringExtra("iTitle") ;
-            String mDescription = getIntent().getStringExtra("iDesc") ;
-            byte[] mBytes = getIntent().getByteArrayExtra("iImage") ;
-            eventId = getIntent().getStringExtra("eventId");
-            Bitmap bitmap = BitmapFactory.decodeByteArray(mBytes, 0, mBytes.length) ;
-            setUpViews(mTitle, mDescription);
-        }
     }
 
     @Override
@@ -109,10 +97,27 @@ public class EventPageDetailsActivity extends AppCompatActivity {
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void initEvent() {
-        if (!getIntent().hasExtra("eventId")) {
+//        if (!getIntent().hasExtra("eventId")) {
+//            return;
+//        }
+//        eventId = getIntent().getStringExtra("eventId");
+//        fbi.getEventById(eventId, event -> {
+//            initRecyclerView(event.getOrganizers());
+//            setUpViews(event.getName(), event.getDescription());
+//            eventName = event.getName();
+//            // Check logged-in user => do not show invite button if user isn't organizer
+//            User user = fbi.getCurrentUser();
+//            if(user == null || event.getOrganizers().indexOf(user.getEmail()) == -1) {
+//                Button inviteButton = findViewById(R.id.invite_organizer_button);
+//                inviteButton.setVisibility(View.GONE);
+//            }
+//        });
+        Event curEvent = PolyContext.getCurrentEvent();
+        if(curEvent == null) {
+            Log.e(TAG, "current event is null");
             return;
         }
-        eventId = getIntent().getStringExtra("eventId");
+        eventId = curEvent.getId();
         fbi.getEventById(eventId, event -> {
             initRecyclerView(event.getOrganizers());
             setUpViews(event.getName(), event.getDescription());

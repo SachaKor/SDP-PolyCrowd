@@ -2,6 +2,7 @@ package ch.epfl.polycrowd.logic;
 
 import android.content.Context;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
@@ -16,6 +17,9 @@ import ch.epfl.polycrowd.Event;
 
 
 public abstract class PolyContext extends Context {
+
+    private static final String TAG = "PolyContext";
+
     public static boolean mocking= false;
     private static Event currentEvent;
     private static User currentUser;
@@ -23,6 +27,7 @@ public abstract class PolyContext extends Context {
 
     public static void setCurrentEvent(Event ev){
         currentEvent = ev;
+        Log.d(TAG, "current event is set");
     }
     public static Event getCurrentEvent(){
         return currentEvent;
