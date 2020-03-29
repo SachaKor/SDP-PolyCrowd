@@ -2,6 +2,7 @@ package ch.epfl.polycrowd.map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -59,6 +60,7 @@ public class MapActivity extends AppCompatActivity {
     private LocationManager locationManager;
     private LocationListener locationListener;
 
+    private FirebaseInterface firebaseInterface;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -72,28 +74,30 @@ public class MapActivity extends AppCompatActivity {
         }
 
         // Check logged-in user
-        FirebaseInterface fbi = new FirebaseInterface(this);
-        User user = fbi.getCurrentUser();
+        firebaseInterface = new FirebaseInterface(this);
+
+        setStatusOfUser(firebaseInterface);
+        createButtons();
+        createMap();
+        launchLocationRequest();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    void setStatusOfUser(FirebaseInterface firebaseInterface){
+        User user = firebaseInterface.getCurrentUser();
         if(user == null){
             status = level.GUEST;
-            createButtons();
-            createMap();
         }else{
-            fbi.getEventById(eventId, event -> {
+            firebaseInterface.getEventById(eventId, event -> {
                 List<String> organizerEmails = event.getOrganizers();
                 if(organizerEmails.indexOf(user.getEmail()) == -1){
                     status = level.VISITOR;
                 }else{
                     status = level.ORGANISER;
                 }
-                createButtons();
-                createMap();
             });
         }
-
-        launchLocationRequest();
     }
-
     @SuppressLint("NewApi")
     private void launchLocationRequest() {
         //setup classe instances needed for getting location
