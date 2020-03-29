@@ -1,7 +1,7 @@
 package ch.epfl.polycrowd.frontPage;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
@@ -13,17 +13,14 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
-import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 
 import java.util.List;
 
 import ch.epfl.polycrowd.Event;
-import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
 import ch.epfl.polycrowd.LoginActivity;
 import ch.epfl.polycrowd.OrganizerInviteActivity;
 import ch.epfl.polycrowd.R;
@@ -38,7 +35,7 @@ public class FrontPageActivity extends AppCompatActivity {
 
     private FirebaseInterface fbInterface;
 
-//    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting()
     public void setMocking(){
         this.fbInterface.setMocking();
     }
@@ -49,12 +46,7 @@ public class FrontPageActivity extends AppCompatActivity {
         //For Connection permissions
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
-        fbInterface.getAllEvents(new EventsHandler() {
-            @Override
-            public void handle(List<Event> events) {
-                setViewPager(events);
-            }
-        });
+        fbInterface.getAllEvents(this::setViewPager);
 //        fbi.getAllEvents()
 //                .addOnSuccessListener(queryDocumentSnapshots -> {
 //                    List<Event> events = new ArrayList<>();
@@ -78,6 +70,8 @@ public class FrontPageActivity extends AppCompatActivity {
         viewPager.setCurrentItem(1);
 
         TextView description = findViewById(R.id.description);
+        TextView eventTitle = findViewById(R.id.eventTitle);
+
 
         viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
@@ -85,11 +79,15 @@ public class FrontPageActivity extends AppCompatActivity {
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 if(position != 0){
                     Event pointedEvent = events.get(position - 1 );
-                    description.setText( pointedEvent.getName()+" : \n" + pointedEvent.getDescription() );
+                    description.setText( pointedEvent.getDescription() );
+                    eventTitle.setText(pointedEvent.getName() );
                 }
 
-                else
-                    description.setText("create a new event")   ;
+
+                else {
+                    eventTitle.setText("Create an EVENT");
+                    description.setText("your journey starts now !");
+                }
             }
 
             @Override
@@ -111,9 +109,18 @@ public class FrontPageActivity extends AppCompatActivity {
 
         setEventModels();
 
-
+        // setViewPager();
+        
+        // front page should dispatch the dynamic links
 
         receiveDynamicLink();
+
+        // Toggle login/logout button
+        if(fbInterface.getCurrentUser() != null){
+            Button button = findViewById(R.id.button);
+            button.setText("LOGOUT");
+            button.setOnClickListener(v -> clickSignOut(v));
+        }
     }
 
 
@@ -124,42 +131,39 @@ public class FrontPageActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void clickSignOut(View view) {
+        fbInterface.signOut();
+        recreate();
+    }
+
     private void receiveDynamicLink() {
         Context c = this;
         FirebaseDynamicLinks.getInstance()
                 .getDynamicLink(getIntent())
-                .addOnSuccessListener(this, new OnSuccessListener<PendingDynamicLinkData>() {
-                    @Override
-                    public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
-                        Log.d(TAG, "Dynamic link received");
-                        // Get deep link from result (may be null if no link is found)
-                        Uri deepLink = null;
-                        if (pendingDynamicLinkData != null) {
-                            deepLink = pendingDynamicLinkData.getLink();
-                        }
+                .addOnSuccessListener(this, pendingDynamicLinkData -> {
+                    Log.d(TAG, "Dynamic link received");
+                    // Get deep link from result (may be null if no link is found)
+                    Uri deepLink = null;
+                    if (pendingDynamicLinkData != null) {
+                        deepLink = pendingDynamicLinkData.getLink();
+                    }
 
-                        if (deepLink != null) {
-                            Log.d(TAG, "Deep link URL:\n" + deepLink.toString());
-                            String lastPathSegment = deepLink.getLastPathSegment();
-                            if(lastPathSegment.equals("invite")) {
-                                String eventId = deepLink.getQueryParameter("eventId"),
-                                        eventName = deepLink.getQueryParameter("eventName");
-                                if (eventId != null && eventName != null) {
-                                    Intent intent = new Intent(c, OrganizerInviteActivity.class);
-                                    intent.putExtra("eventId", eventId);
-                                    intent.putExtra("eventName", eventName);
-                                    startActivity(intent);
-                                }
+                    if (deepLink != null) {
+                        Log.d(TAG, "Deep link URL:\n" + deepLink.toString());
+                        String lastPathSegment = deepLink.getLastPathSegment();
+                        if(lastPathSegment != null && lastPathSegment.equals("invite")) {
+                            String eventId = deepLink.getQueryParameter("eventId"),
+                                    eventName = deepLink.getQueryParameter("eventName");
+                            if (eventId != null && eventName != null) {
+                                Intent intent = new Intent(c, OrganizerInviteActivity.class);
+                                intent.putExtra("eventId", eventId);
+                                intent.putExtra("eventName", eventName);
+                                startActivity(intent);
                             }
                         }
                     }
                 })
-                .addOnFailureListener(this, new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "getDynamicLink:onFailure", e);
-                    }
-                });
+                .addOnFailureListener(this, e -> Log.w(TAG, "getDynamicLink:onFailure", e));
     }
 
 

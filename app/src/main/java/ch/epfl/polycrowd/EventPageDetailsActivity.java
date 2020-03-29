@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
 import ch.epfl.polycrowd.firebase.handlers.EventHandler;
+import ch.epfl.polycrowd.logic.User;
 
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -42,13 +43,8 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         initEvent();
 
         getIncomingIntent();
-        final Button scheduleButton = (Button) findViewById(R.id.schedule);
-        scheduleButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                clickSchedule(v);
-            }
-        });
+        final Button scheduleButton = findViewById(R.id.schedule);
+        scheduleButton.setOnClickListener(v -> clickSchedule(v));
     }
     private void getIncomingIntent() {
         if(getIntent().hasExtra("iTitle")
@@ -65,8 +61,8 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     }
 
     private void setUpViews(String title, String description) {
-        TextView eventTitle = findViewById(R.id.event_details_title),
-                eventDescription = findViewById(R.id.event_details_description);
+        TextView eventTitle = findViewById(R.id.event_details_title);
+        TextView eventDescription = findViewById(R.id.event_details_description);
         ImageView eventImg = findViewById(R.id.event_details_img);
         eventTitle.setText(title);
         eventDescription.setText(description);
@@ -92,12 +88,16 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         }
         FirebaseInterface fbi = new FirebaseInterface(this);
         eventId = getIntent().getStringExtra("eventId");
-        fbi.getEventById(eventId, new EventHandler() {
-            @Override
-            public void handle(Event event) {
-                initRecyclerView(event.getOrganizers());
-                setUpViews(event.getName(), event.getDescription());
-                eventName = event.getName();
+        fbi.getEventById(eventId, event -> {
+            initRecyclerView(event.getOrganizers());
+            setUpViews(event.getName(), event.getDescription());
+            eventName = event.getName();
+
+            // Check logged-in user => do not show invite button if user isn't organizer
+            User user = fbi.getCurrentUser();
+            if(user == null || event.getOrganizers().indexOf(user.getEmail()) == -1) {
+                Button inviteButton = findViewById(R.id.invite_organizer_button);
+                inviteButton.setVisibility(View.GONE);
             }
         });
     }

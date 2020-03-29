@@ -4,7 +4,6 @@ package ch.epfl.polycrowd;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
-import ch.epfl.polycrowd.firebase.handlers.OrganizersHandler;
 
 import android.content.Context;
 import android.content.Intent;
@@ -26,7 +25,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private FirebaseInterface fbInterface;
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public void setMocking(){
         this.fbInterface.setMocking();
     }
@@ -83,13 +82,10 @@ public class LoginActivity extends AppCompatActivity {
             String organizerEmail =
                     Objects.requireNonNull(fbInterface.getCurrentUser().getEmail());
             Context c = this;
-            fbInterface.addOrganizerToEvent(eventId, organizerEmail, new OrganizersHandler() {
-                @Override
-                public void handle() {
-                    Intent eventDetails = new Intent(c, EventPageDetailsActivity.class);
-                    eventDetails.putExtra(EVENT_ID, eventId);
-                    startActivity(eventDetails);
-                }
+            fbInterface.addOrganizerToEvent(eventId, organizerEmail, () -> {
+                Intent eventDetails = new Intent(c, EventPageDetailsActivity.class);
+                eventDetails.putExtra(EVENT_ID, eventId);
+                startActivity(eventDetails);
             });
         }
 

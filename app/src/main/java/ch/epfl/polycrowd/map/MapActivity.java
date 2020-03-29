@@ -1,18 +1,27 @@
 package ch.epfl.polycrowd.map;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.content.Intent;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
 import com.google.android.gms.maps.SupportMapFragment;
 
+import java.util.List;
+
+import ch.epfl.polycrowd.Event;
 import ch.epfl.polycrowd.EventPageDetailsActivity;
 import ch.epfl.polycrowd.LoginActivity;
 import ch.epfl.polycrowd.R;
+import ch.epfl.polycrowd.firebase.FirebaseInterface;
+import ch.epfl.polycrowd.firebase.handlers.EventHandler;
+import ch.epfl.polycrowd.logic.User;
 
 public class MapActivity extends AppCompatActivity {
 
@@ -45,43 +54,25 @@ public class MapActivity extends AppCompatActivity {
         buttonRight.setText("EVENT DETAILS");
         buttonLeft.setText("LOGIN");
 
-        buttonRight.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) { clickEventDetails(v); }
-        });
-        buttonLeft.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) { clickSignIn(v); }
-        });
+        buttonRight.setOnClickListener(v -> clickEventDetails(v));
+        buttonLeft.setOnClickListener(v -> clickSignIn(v));
     }
 
 
     void setVisitorButtons( Button buttonLeft , Button  buttonRight){
-        buttonRight.setText("EVENTS");
+        buttonRight.setText("EVENT DETAILS");
         buttonLeft.setText("GROUPS");
 
-        buttonRight.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) { }
-        });
-        buttonLeft.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) { }
-        });
+        buttonRight.setOnClickListener(v -> clickEventDetails(v));
+        buttonLeft.setOnClickListener(v -> { });
     }
 
     void setOrganiserButtons(Button buttonLeft , Button  buttonRight){
-        buttonRight.setText("MANAGE");
+        buttonRight.setText("MANAGE DETAILS");
         buttonLeft.setText("STAFF");
 
-        buttonRight.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) { }
-        });
-        buttonLeft.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) { }
-        });
+        buttonRight.setOnClickListener(v -> clickEventDetails(v));
+        buttonLeft.setOnClickListener(v -> { });
     }
 
 
@@ -89,9 +80,6 @@ public class MapActivity extends AppCompatActivity {
     void createButtons(){
         Button buttonRight = findViewById(R.id.butRight);
         Button buttonLeft = findViewById(R.id.butLeft);
-
-        // TODO : switch status depending on LOGIN
-        status = level.GUEST;
 
         switch(status)  {
             case GUEST:
@@ -116,12 +104,16 @@ public class MapActivity extends AppCompatActivity {
         startRepeatingTask();
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(mMap);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(mMap);
+        }else{
+            Log.e("MapFragment", "Argument is null");
+        }
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -132,8 +124,25 @@ public class MapActivity extends AppCompatActivity {
             eventId = getIntent().getStringExtra("eventId");
         }
 
-        createButtons();
-        createMap();
+        // Check logged-in user
+        FirebaseInterface fbi = new FirebaseInterface(this);
+        User user = fbi.getCurrentUser();
+        if(user == null){
+            status = level.GUEST;
+            createButtons();
+            createMap();
+        }else{
+            fbi.getEventById(eventId, event -> {
+                List<String> organizerEmails = event.getOrganizers();
+                if(organizerEmails.indexOf(user.getEmail()) == -1){
+                    status = level.VISITOR;
+                }else{
+                    status = level.ORGANISER;
+                }
+                createButtons();
+                createMap();
+            });
+        }
     }
 
 

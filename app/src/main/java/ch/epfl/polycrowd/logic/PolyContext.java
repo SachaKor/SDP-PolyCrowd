@@ -4,20 +4,15 @@ import android.content.Context;
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
-import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.firebase.firestore.auth.User;
 
-import java.io.File;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import ch.epfl.polycrowd.Event;
-import ch.epfl.polycrowd.R;
 
 
 public abstract class PolyContext extends Context {

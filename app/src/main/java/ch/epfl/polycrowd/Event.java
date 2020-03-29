@@ -2,31 +2,23 @@ package ch.epfl.polycrowd;
 
 import android.os.Build;
 
-
-import android.util.Log;
-
-
 import com.google.firebase.Timestamp;
 
 
 import androidx.annotation.RequiresApi;
+import androidx.annotation.VisibleForTesting;
 
 import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
-import ch.epfl.polycrowd.logic.Activity;
 import ch.epfl.polycrowd.logic.Schedule;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
@@ -34,7 +26,8 @@ public class Event {
 
     private static final String LOG_TAG = Event.class.toString();
 
-    public static Event fakeEvent(String url,File f) throws ParseException {return new Event ("1",
+    @VisibleForTesting
+    static Event fakeEvent(String url, File f) throws ParseException {return new Event ("1",
             "fakeEvent", true,
             Event.EventType.CONVENTION,
             dtFormat.parse("01-08-2018 00:00"),
@@ -45,8 +38,8 @@ public class Event {
         FESTIVAL, CONCERT, CONVENTION, OTHER
     }
 
-    public static final SimpleDateFormat dtFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
-    private final String owner; // user uid is a string
+    static final SimpleDateFormat dtFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.ENGLISH);
+    private final String owner;
     private String name;
     private Boolean isPublic;
     private EventType type;
@@ -134,9 +127,14 @@ public class Event {
         return description;
     }
 
-//    public void setDescription(String d){
-//        description = d;
-//    }
+    public void setDescription(String description) {
+        if(description == null) {
+            this.description = "";
+        } else {
+            this.description = description;
+        }
+    }
+
 
     public String getId() {
         return id;
@@ -155,14 +153,6 @@ public class Event {
         if(name == null)
             throw new IllegalArgumentException("Name cannot be Null");
         this.name = name;
-    }
-
-    public void setDescription(String description) {
-        if(description == null) {
-            this.description = "";
-        } else {
-            this.description = description;
-        }
     }
 
     public Boolean getPublic() {
@@ -244,8 +234,7 @@ public class Event {
         Date end = eStamp.toDate();
         EventType type = EventType.valueOf(Objects.requireNonNull(data.get("type")).toString().toUpperCase());
         String desc = data.get("description").toString();
-        List<String> organizers = new ArrayList<>();
-        organizers.addAll((List<String>) Objects.requireNonNull(data.get("organizers")));
+        List<String> organizers = new ArrayList<>((List<String>) Objects.requireNonNull(data.get("organizers")));
         return new Event(owner, name, isPublic, type, start, end, calendar, desc, organizers);
     }
 

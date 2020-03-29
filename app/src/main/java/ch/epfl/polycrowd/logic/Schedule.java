@@ -2,34 +2,26 @@ package ch.epfl.polycrowd.logic;
 
 
 import android.os.Build;
-import android.os.Environment;
-import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.Calendar;
-import net.fortuna.ical4j.model.Component;
 import net.fortuna.ical4j.model.Property;
 import net.fortuna.ical4j.model.component.CalendarComponent;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 
@@ -38,7 +30,6 @@ public class Schedule {
 
 
     private final List<Activity> activities;
-    private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH);
     private String downloadPath;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -121,15 +112,7 @@ public class Schedule {
 
         return activities;
     }
-/*
-    public void debugActivity(){
-        for (Activity a : this.activities){
 
-            System.out.println( a.toString());
-            System.out.println( "########");
-        }
-    }
-*/
     public List<Activity> getActivities(){
         return this.activities;
     }

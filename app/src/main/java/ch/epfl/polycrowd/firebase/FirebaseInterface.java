@@ -33,7 +33,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import ch.epfl.polycrowd.Event;
-import ch.epfl.polycrowd.ResetPasswordActivity;
 import ch.epfl.polycrowd.firebase.handlers.EventHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
 import ch.epfl.polycrowd.firebase.handlers.OrganizersHandler;
@@ -110,19 +109,20 @@ public class FirebaseInterface {
                 Toast.makeText(c, "Incorrect email or password", Toast.LENGTH_SHORT).show();
             }
         } else {
-            Task<AuthResult> task = this.getAuthInstance(true).signInWithEmailAndPassword(email,password)
-                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if(task.isSuccessful()) {
-                                Toast.makeText(c, "Sign in success", Toast.LENGTH_SHORT).show();
-                            } else {
-                                Toast.makeText(c, "Incorrect email or password", Toast.LENGTH_SHORT).show();
-                            }
+            this.getAuthInstance(true).signInWithEmailAndPassword(email,password)
+                    .addOnCompleteListener(taskc -> {
+                        if(taskc.isSuccessful()) {
+                            Toast.makeText(c, "Sign in success", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(c, "Incorrect email or password", Toast.LENGTH_SHORT).show();
                         }
                     });
 
         }
+    }
+
+    public void signOut(){
+        this.getAuthInstance(false).signOut();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -133,17 +133,14 @@ public class FirebaseInterface {
             events.add(e);
             handler.handle(events);
         } else {
-            getFirestoreInstance(false).collection(EVENTS).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                @Override
-                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                    List<Event> events = new ArrayList<>();
-                    queryDocumentSnapshots.forEach(queryDocumentSnapshot -> {
-                        Event e = ch.epfl.polycrowd.Event.getFromDocument(queryDocumentSnapshot.getData());
-                        e.setId(queryDocumentSnapshot.getId());
-                        events.add(e);
-                    });
-                    handler.handle(events);
-                }
+            getFirestoreInstance(false).collection(EVENTS).get().addOnSuccessListener(queryDocumentSnapshots -> {
+                List<Event> events = new ArrayList<>();
+                queryDocumentSnapshots.forEach(queryDocumentSnapshot -> {
+                    Event e = Event.getFromDocument(queryDocumentSnapshot.getData());
+                    e.setId(queryDocumentSnapshot.getId());
+                    events.add(e);
+                });
+                handler.handle(events);
             });
         }
     }
@@ -184,19 +181,10 @@ public class FirebaseInterface {
         } else {
             getFirestoreInstance(false).collection(EVENTS)
                     .document(eventId).get()
-                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                        @RequiresApi(api = Build.VERSION_CODES.O)
-                        @Override
-                        public void onSuccess(DocumentSnapshot documentSnapshot) {
-                            Event event = Event.getFromDocument(Objects.requireNonNull(documentSnapshot.getData()));
-                            eventHandler.handle(event);
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.e(TAG, "Error retrieving document with id " + eventId);
-                }
-            });
+                    .addOnSuccessListener(documentSnapshot -> {
+                        Event event = Event.getFromDocument(Objects.requireNonNull(documentSnapshot.getData()));
+                        eventHandler.handle(event);
+                    }).addOnFailureListener(e -> Log.e(TAG, "Error retrieving document with id " + eventId));
         }
     }
 
@@ -212,23 +200,19 @@ public class FirebaseInterface {
             // check if the organizer is already in the list
             getFirestoreInstance(false).collection(EVENTS)
                     .document(eventId).get().addOnSuccessListener(documentSnapshot -> {
-                List<String> organizers = new ArrayList<>();
-                organizers.addAll((List<String>)documentSnapshot.get(ORGANIZERS));
-                // if organizer is not in the list, add
-                if(!organizers.contains(organizerEmail)) {
-                    organizers.add(organizerEmail);
-                    Map<String, Object> data = new HashMap<>();
-                    data.put(ORGANIZERS, organizers);
-                    getFirestoreInstance(false).collection(EVENTS).document(eventId)
-                            .set(data, SetOptions.merge())
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    handler.handle();
-                                }
-                            })
-                            .addOnFailureListener(e -> Log.w(TAG, "Error updating " + ORGANIZERS + " list"));
-                }
+                        if(documentSnapshot.contains(ORGANIZERS)) {
+                            List<String> organizers = new ArrayList<>((List<String>) documentSnapshot.get(ORGANIZERS));
+                            // if organizer is not in the list, add
+                            if (!organizers.contains(organizerEmail)) {
+                                organizers.add(organizerEmail);
+                                Map<String, Object> data = new HashMap<>();
+                                data.put(ORGANIZERS, organizers);
+                                getFirestoreInstance(false).collection(EVENTS).document(eventId)
+                                        .set(data, SetOptions.merge())
+                                        .addOnSuccessListener(taskc -> handler.handle())
+                                        .addOnFailureListener(e -> Log.w(TAG, "Error updating " + ORGANIZERS + " list"));
+                            }
+                        }
             }).addOnFailureListener(e -> Log.w(TAG, "Error retrieving event with id" + eventId));
 
         }
@@ -314,39 +298,33 @@ public class FirebaseInterface {
             return new User("fake@fake.com", "1", "fake user", 100);
         } else {
             FirebaseUser u = getAuthInstance(false).getCurrentUser();
-            return new User(u.getEmail(), u.getUid(), u.getDisplayName(), 3);
+            if(u != null) {
+                return new User(u.getEmail(), u.getUid(), u.getDisplayName(), 3);
+            }else{
+                // Not logged in !
+                return null;
+            }
         }
     }
 
     public void resetPassword(String email){
         getAuthInstance(false).sendPasswordResetEmail(email).addOnCompleteListener(
-                new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(c, "A reset link has been sent to your email", Toast.LENGTH_SHORT).show();
-                        } else {
-                            //TODO check if the user exists or not, and if not, suggest signup
-                            //Otherwise, network error?
-                            FirebaseFirestore firestore = getFirestoreInstance(false) ;
-                            CollectionReference usersRef = firestore.collection("users");
-                            usersRef.whereEqualTo("email", email).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                @Override
-                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                    //Query was able to complete, but email was not found
-                                    if(task.isSuccessful()){
-                                        if(task.getResult().size() ==0)
-                                            Toast.makeText(c, "Email not found, please sign up", Toast.LENGTH_SHORT).show();
-                                    } else {
-                                        //in this case, there is probably a connection error
-                                        Toast.makeText(c, "Connection error, please try again later", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            }) ;
-                        }
+                task ->  {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(c, "A reset link has been sent to your email", Toast.LENGTH_SHORT).show();
+                    } else {
+                        //Check if the user exists or not, and if not, suggest signup ; otherwise network error
+                        FirebaseFirestore firestore = getFirestoreInstance(false) ;
+                        CollectionReference usersRef = firestore.collection("users");
+                        usersRef.whereEqualTo("email", email).get().addOnCompleteListener( task1 ->  {
+                            //Query was able to complete, but email was not found (size is either 1 or 0)
+                            if(task1.isSuccessful() && task1.getResult().size() == 0 ){
+                                Toast.makeText(c, "Email not found, please sign up", Toast.LENGTH_SHORT).show();
+                            } else {//in this case, there is probably a connection error
+                                Toast.makeText(c, "Connection error, please try again later", Toast.LENGTH_SHORT).show();
+                            } }) ;
                     }
-                }
-        );
+                });
     }
 
 }

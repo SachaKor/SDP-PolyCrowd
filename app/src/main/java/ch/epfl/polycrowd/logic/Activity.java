@@ -1,19 +1,15 @@
 package ch.epfl.polycrowd.logic;
 
-
-
-
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
-import java.io.Serializable;
-import java.text.DateFormat;
+import java.security.InvalidParameterException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
 
 import ch.epfl.polycrowd.Model;
@@ -30,16 +26,17 @@ public class Activity {
         this.description = data.get("DESCRIPTION");
         this.organizer = data.get("ORGANIZER");
 
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
-        try {
-            this.start = formatter.parse(data.get("DTSTART"));
-            this.end = formatter.parse(data.get("DTEND"));
-        } catch (ParseException e) {
-            e.printStackTrace();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd'T'HHmmss", Locale.ENGLISH);
+        try{
+            if(data.containsKey("DTSTART") && data.containsKey("DTEND")) {
+                this.start = formatter.parse(data.get("DTSTART"));
+                this.end = formatter.parse(data.get("DTEND"));
+            }else{
+                throw (new InvalidParameterException("Fields DTSTART and/or DTEND do not exist"));
+            }
+        }catch(NullPointerException | ParseException e){
+            Log.e("Error Parsing", "No or Invalid DTSTART and/or DTEND in the field ");
         }
-
-
-
     }
 
     public String getLocation(){
