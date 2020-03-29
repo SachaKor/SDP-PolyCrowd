@@ -33,15 +33,6 @@
         android:layout_marginEnd="25dp"
         android:paddingRight="10dp"/>
 
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Request Location"
-        android:id="@+id/buttonLocation"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
