@@ -22,12 +22,12 @@
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="264dp"
-        android:layout_below="@+id/textView"
-        android:layout_marginTop="26dp"
+        android:layout_below="@+id/frontPageTitle"
+        android:layout_marginTop="34dp"
+        android:background="@android:color/transparent"
         android:clipToPadding="false"
         android:foregroundGravity="center"
-        android:overScrollMode="never"
-        android:background="@android:color/transparent">
+        android:overScrollMode="never">
 
     </androidx.viewpager.widget.ViewPager>
 
