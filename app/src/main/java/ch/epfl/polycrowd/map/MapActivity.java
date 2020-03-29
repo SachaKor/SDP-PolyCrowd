@@ -108,12 +108,10 @@ public class MapActivity extends AppCompatActivity {
 
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) {
-
             }
 
             @Override
             public void onProviderEnabled(String provider) {
-
             }
 
             @Override
@@ -189,11 +187,6 @@ public class MapActivity extends AppCompatActivity {
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(mMap);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
     }
 
     // --- BUTTONS CLICKS -------------------------------

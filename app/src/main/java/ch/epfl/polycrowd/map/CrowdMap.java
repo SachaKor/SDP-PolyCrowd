@@ -122,8 +122,7 @@ public class CrowdMap implements OnMapReadyCallback {
         //set default location for the event
         eventLocation = new LatLng(46.518033, 6.566919);
         //place the location marker at the event by default
-        MarkerOptions currentLocationMarkerOptions = new MarkerOptions().position(eventLocation)
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.pointred));
+        MarkerOptions currentLocationMarkerOptions = new MarkerOptions().position(eventLocation).icon(BitmapDescriptorFactory.fromResource(R.drawable.pointred));
         currentLocationMarker = googleMap.addMarker(currentLocationMarkerOptions);
 
         // --- Camera Zoom ------------------------------------------------------------
@@ -143,52 +142,20 @@ public class CrowdMap implements OnMapReadyCallback {
     }
 
 
-
-    // --- MAP INTERACTION ------------------------------
-    private void placePoint( LatLng position , int markerImage ) {
-        mMap.addMarker(new MarkerOptions().position(position).icon(BitmapDescriptorFactory.fromResource(markerImage)));
-    }
-
-
     // --- GET USER DATA --------------------------------
     private List<LatLng> getEventGoersPositions(){
         List<LatLng> l = new LinkedList<>();
-        l.add(new LatLng(46.518033, 6.566919));
-        l.add(new LatLng(46.518933, 6.566819));
-        l.add(new LatLng(46.518533, 6.566719));
-        l.add(new LatLng(46.518333, 6.566119));
-        l.add(new LatLng(46.518033, 6.566319));
-        l.add(new LatLng(46.518933, 6.566419));
-        l.add(new LatLng(46.518733, 6.566519));
-        l.add(new LatLng(46.518033, 6.566619));
-        l.add(new LatLng(46.518633, 6.566719));
-        l.add(new LatLng(46.518533, 6.566819));
-        l.add(new LatLng(46.518333, 6.566319));
-        l.add(new LatLng(46.518233, 6.566419));
-        l.add(new LatLng(46.518333, 6.566919));
-        l.add(new LatLng(46.518433, 6.566419));
-        l.add(new LatLng(46.518533, 6.566519));
-        l.add(new LatLng(46.518633, 6.566919));
-        l.add(new LatLng(46.518733, 6.566219));
-        l.add(new LatLng(46.518733, 6.566819));
-        l.add(new LatLng(46.518233, 6.566619));
-        l.add(new LatLng(46.518033, 6.566419));
-        l.add(new LatLng(46.518433, 6.566219));
-        l.add(new LatLng(46.518533, 6.566319));
-        l.add(new LatLng(46.518553, 6.566319));
-        l.add(new LatLng(46.518533, 6.566319));
-        l.add(new LatLng(46.518333, 6.566399));
-        l.add(new LatLng(46.518503, 6.566389));
-        l.add(new LatLng(46.518493, 6.566389));
-        l.add(new LatLng(46.518533, 6.566379));
-        l.add(new LatLng(46.518363, 6.566359));
-        l.add(new LatLng(46.518233, 6.566359));
+        l.add(new LatLng(46.518033, 6.566919));l.add(new LatLng(46.518933, 6.566819));l.add(new LatLng(46.518533, 6.566719));
+        l.add(new LatLng(46.518333, 6.566119));l.add(new LatLng(46.518033, 6.566319));l.add(new LatLng(46.518933, 6.566419));
+        l.add(new LatLng(46.518733, 6.566519));l.add(new LatLng(46.518033, 6.566619));l.add(new LatLng(46.518633, 6.566719));
+        l.add(new LatLng(46.518533, 6.566819));l.add(new LatLng(46.518333, 6.566319));l.add(new LatLng(46.518233, 6.566419));
+        l.add(new LatLng(46.518333, 6.566919));l.add(new LatLng(46.518433, 6.566419));l.add(new LatLng(46.518533, 6.566519));
+        l.add(new LatLng(46.518633, 6.566919));l.add(new LatLng(46.518733, 6.566219));l.add(new LatLng(46.518733, 6.566819));
+        l.add(new LatLng(46.518233, 6.566619));l.add(new LatLng(46.518033, 6.566419));l.add(new LatLng(46.518433, 6.566219));
+        l.add(new LatLng(46.518533, 6.566319));l.add(new LatLng(46.518553, 6.566319));l.add(new LatLng(46.518533, 6.566319));
+        l.add(new LatLng(46.518333, 6.566399));l.add(new LatLng(46.518503, 6.566389));l.add(new LatLng(46.518493, 6.566389));
+        l.add(new LatLng(46.518533, 6.566379));l.add(new LatLng(46.518363, 6.566359));l.add(new LatLng(46.518233, 6.566359));
         return l;
     }
-
-    public LatLng getCurrentLocation() {
-        return currentLocation;
-    }
-
 
 }
