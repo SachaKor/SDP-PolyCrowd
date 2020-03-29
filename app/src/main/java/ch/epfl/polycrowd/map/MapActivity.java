@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.content.Intent;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -53,10 +54,12 @@ public class MapActivity extends AppCompatActivity {
     // eventId is needed to open the correct EventDetails page
     private String eventId;
 
+
     //create buttons for testing location
     private TextView locView;
     private LocationManager locationManager;
     private LocationListener locationListener;
+
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -77,18 +80,15 @@ public class MapActivity extends AppCompatActivity {
             createButtons();
             createMap();
         }else{
-            fbi.getEventById(eventId, new EventHandler() {
-                @Override
-                public void handle(Event event) {
-                    List<String> organizerEmails = event.getOrganizers();
-                    if(organizerEmails.indexOf(user.getEmail()) == -1){
-                        status = level.VISITOR;
-                    }else{
-                        status = level.ORGANISER;
-                    }
-                    createButtons();
-                    createMap();
+            fbi.getEventById(eventId, event -> {
+                List<String> organizerEmails = event.getOrganizers();
+                if(organizerEmails.indexOf(user.getEmail()) == -1){
+                    status = level.VISITOR;
+                }else{
+                    status = level.ORGANISER;
                 }
+                createButtons();
+                createMap();
             });
         }
 
