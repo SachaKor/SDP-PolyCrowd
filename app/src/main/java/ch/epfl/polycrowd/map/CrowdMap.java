@@ -37,7 +37,6 @@ public class CrowdMap implements OnMapReadyCallback {
     private GoogleMap mMap;
     private MapActivity act;
     private LatLng currentLocation;
-    private MarkerOptions currentLocationMarkerOptions;
     private Marker currentLocationMarker;
     //TODO make is a param in the firebase so if user is not at event he can still know where the event is
     private LatLng eventLocation;
@@ -123,7 +122,7 @@ public class CrowdMap implements OnMapReadyCallback {
         //set default location for the event
         eventLocation = new LatLng(46.518033, 6.566919);
         //place the location marker at the event by default
-        currentLocationMarkerOptions = new MarkerOptions().position(eventLocation)
+        MarkerOptions currentLocationMarkerOptions = new MarkerOptions().position(eventLocation)
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.pointred));
         currentLocationMarker = googleMap.addMarker(currentLocationMarkerOptions);
 
@@ -185,6 +184,10 @@ public class CrowdMap implements OnMapReadyCallback {
         l.add(new LatLng(46.518363, 6.566359));
         l.add(new LatLng(46.518233, 6.566359));
         return l;
+    }
+
+    public LatLng getCurrentLocation() {
+        return currentLocation;
     }
 
 

@@ -45,7 +45,7 @@ public class MapActivity extends AppCompatActivity {
     public level status;
 
     // map displayed
-    private CrowdMap mMap;
+    public CrowdMap mMap;
 
     // DEBUG
     private static final String TAG = "MainActivity";

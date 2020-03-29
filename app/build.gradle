@@ -26,7 +26,6 @@ android {
         // orchestrator
 //        testInstrumentationRunnerArguments clearPackageData: 'true'
     }
-
     // orchestrator
 //    testOptions {
 //        execution 'ANDROIDX_TEST_ORCHESTRATOR'
