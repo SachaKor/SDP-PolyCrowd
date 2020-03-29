@@ -131,6 +131,8 @@ public class FirebaseInterface {
             Event e = new Event();
             List<Event> events = new ArrayList<>();
             events.add(e);
+            events.add(e);
+            events.add(e);
             handler.handle(events);
         } else {
             getFirestoreInstance(false).collection(EVENTS).get().addOnSuccessListener(queryDocumentSnapshots -> {

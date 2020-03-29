@@ -30,4 +30,7 @@ public class FrontPageActivityTest {
         onView(withId(R.id.frontPageTitle)).check(matches(withText(containsString("POLY CROWD"))));
     }
 
+
+
+
 }
