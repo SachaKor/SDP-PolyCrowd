@@ -92,7 +92,7 @@ public class FrontPageActivity extends AppCompatActivity {
                     eventTitle.setText(pointedEvent.getName() );
                 } else {
                     eventTitle.setText("Create an EVENT");
-                    description.setText("your journey starts now !");
+                    description.setText("your journey starts now ! \n sky is the limit");
                 }
             }
             @Override

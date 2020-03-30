@@ -1,6 +1,7 @@
 package ch.epfl.polycrowd;
 
 import android.os.Build;
+import android.util.Log;
 
 import com.google.firebase.Timestamp;
 
@@ -133,7 +134,6 @@ public class Event {
             throw new IllegalArgumentException("Id cannot be null");
         }
         this.id = id;
-        this.description = "default descrption";
         this.image = R.drawable.balelec;
     }
 
@@ -149,11 +149,10 @@ public class Event {
         return description;
     }
     public void setDescription(String description) {
-        if(description == null) {
+        if(description == null)
             this.description = "";
-        } else {
-            this.description = description;
-        }
+        else
+            this.description = description.replaceAll("\\\\n", "\n" );
     }
 
 
