@@ -25,6 +25,16 @@ public class EventPageDetailsActivityTest {
     public final ActivityTestRule<EventPageDetailsActivity> mActivityRule =
             new ActivityTestRule<>(EventPageDetailsActivity.class);
 
+//    @Rule
+//    public final ActivityTestRule<EventPageDetailsActivity> mActivityRule =
+//            new ActivityTestRule<EventPageDetailsActivity>(EventPageDetailsActivity.class) {
+//        @Override
+//        protected void beforeActivityLaunched() {
+//            PolyContext.setCurrentEvent(new Event());
+//            super.beforeActivityLaunched();
+//        }
+//    };
+
     @Before
     public void setMocking() {
         PolyContext.setCurrentEvent(new Event());
