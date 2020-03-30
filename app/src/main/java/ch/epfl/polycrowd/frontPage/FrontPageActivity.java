@@ -44,11 +44,7 @@ public class FrontPageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_front_page);
         this.fbInterface = new FirebaseInterface(this);
 
-        try {
-            setEventModels();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        setEventModels();
 
         // front page should dispatch the dynamic links
         receiveDynamicLink();
@@ -67,7 +63,7 @@ public class FrontPageActivity extends AppCompatActivity {
     // --------- Create the event List and Create event button -----------------------
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    void setEventModels() throws ParseException {
+    void setEventModels()  {
         //For Connection permissions
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);

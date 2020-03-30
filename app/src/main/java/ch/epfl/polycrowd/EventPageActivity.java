@@ -38,14 +38,10 @@ public class EventPageActivity extends AppCompatActivity {
         fbi = new FirebaseInterface(this);
 
 
-        try {
-            fbi.getAllEvents(events -> {
-                myAdapter = new MyAdapter(context, Event.toModels( events));
-                mRecyclerView.setAdapter(myAdapter);
-            });
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        fbi.getAllEvents(events -> {
+            myAdapter = new MyAdapter(context, Event.toModels( events));
+            mRecyclerView.setAdapter(myAdapter);
+        });
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 

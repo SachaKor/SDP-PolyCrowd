@@ -118,7 +118,7 @@ public class FirebaseInterface {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public void getAllEvents(EventsHandler handler) throws ParseException {
+    public void getAllEvents(EventsHandler handler) {
         if( PolyContext.isRunningTest()) {
             List<Event> events = new ArrayList<>();
             events.add(new Event());

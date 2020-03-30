@@ -87,13 +87,18 @@ public class Event {
 
 
     // --------------------  FOR TESTING --------------------------------------------------
-    public Event() throws ParseException {
+    public Event()  {
         this.owner = "debug owner";
         this.name = "DEBUG EVENT";
         this.isPublic = true;
         this.type = EventType.OTHER;
-        this.start = dtFormat.parse("01-08-2018 00:00");
-        this.end = dtFormat.parse("02-08-2018 01:00");
+        try {
+            this.start = dtFormat.parse("01-08-2018 00:00");
+            this.end = dtFormat.parse("02-08-2018 01:00");
+        } catch (ParseException e){
+            this.start = null;
+            this.end = null;
+        }
         this.calendar = "";
         this.description = "this is only a debug event ... ";
         this.image = R.drawable.balelec;
