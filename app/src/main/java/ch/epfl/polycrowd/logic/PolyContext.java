@@ -5,8 +5,6 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
-
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +12,8 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import ch.epfl.polycrowd.Event;
+
+import ch.epfl.polycrowd.logic.User;
 
 
 public abstract class PolyContext extends Context {

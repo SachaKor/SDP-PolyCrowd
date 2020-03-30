@@ -64,6 +64,13 @@ public class FrontPageActivityTest {
                 .perform(swipeRight() , swipeLeft());
         sleep();
         onView(withId(R.id.eventTitle)).check(matches(withText(containsString("DEBUG EVENT"))));
+        onView(withId(R.id.description)).check(matches(withText(containsString("this is only a debug event ... "))));
+
+        onView(withId(R.id.viewPager))
+                .perform(swipeRight());
+        sleep();
+        onView(withId(R.id.eventTitle)).check(matches(withText(containsString("Create an EVENT"))));
+        onView(withId(R.id.description)).check(matches(withText(containsString("your journey starts now !"))));
     }
 
 
