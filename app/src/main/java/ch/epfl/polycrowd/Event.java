@@ -113,6 +113,9 @@ public class Event {
         this.calendar = null;
         this.description = "this is only a debug event ... ";
         this.image = R.drawable.balelec;
+        this.organizers = new ArrayList<>();
+        organizers.add("Pedro");
+        organizers.add("Juan");
     }
 
     public int getImage(){

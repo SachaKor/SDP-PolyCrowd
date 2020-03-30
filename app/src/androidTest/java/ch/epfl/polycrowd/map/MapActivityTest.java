@@ -57,6 +57,7 @@ public class MapActivityTest {
 
     @Test
     public void asGuestLoginButtonNavigatesToLoginPage() {
+        sleep();
         if(mActivityRule.getActivity().status == MapActivity.level.GUEST) {
             onView(withId(R.id.butLeft)).perform(click());
             onView(withId(R.id.sign_in_logo)).check(matches(isDisplayed()));
@@ -71,4 +72,12 @@ public class MapActivityTest {
             onView(withId(R.id.event_details_title)).check(matches(isDisplayed()));
         }
     }*/
+
+    private void sleep(){
+        try{
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 }
