@@ -73,6 +73,15 @@ public class FrontPageActivityTest {
         onView(withId(R.id.description)).check(matches(withText(containsString("your journey starts now !"))));
     }
 
+    @Test
+    public void testClickOnEventGoesToMapActivity(){
+        sleep();
+        onView(withId(R.id.viewPager)).perform(click());
+        sleep();
+        onView(withId(R.id.map)).check(matches(isDisplayed()));
+
+    }
+
 
     private void sleep(){
         try{

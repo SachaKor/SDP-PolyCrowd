@@ -24,5 +24,5 @@ public class PolyContextTest {
         PolyContext.setCurrentUser(u);
         assertEquals(u, PolyContext.getCurrentUser());
     }
-    
+
 }
