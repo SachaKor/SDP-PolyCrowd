@@ -2,7 +2,6 @@
 package ch.epfl.polycrowd;
 
 import androidx.annotation.RequiresApi;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
 import ch.epfl.polycrowd.logic.PolyContext;
@@ -26,8 +25,6 @@ public class LoginActivity extends AppCompatActivity {
     /** Names of the extra parameters for the organizer invites **/
     private static final String IS_ORGANIZER_INVITE = "isOrganizerInvite";
     private static final String EVENT_ID = "eventId";
-    private String eventId;
-    private boolean isOrganizerInvite;
 
     private FirebaseInterface fbInterface;
 
@@ -37,16 +34,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         fbInterface = new FirebaseInterface(this);
-        setUpExtras();
-    }
-
-    private void setUpExtras() {
-        if(getIntent().hasExtra(IS_ORGANIZER_INVITE)
-                && getIntent().getBooleanExtra(IS_ORGANIZER_INVITE, true)
-                && getIntent().hasExtra(EVENT_ID)) {
-            eventId = getIntent().getStringExtra(EVENT_ID);
-            isOrganizerInvite = true;
-        }
     }
 
     private void toastPopup(String text) {

@@ -1,19 +1,15 @@
 package ch.epfl.polycrowd;
 
 import androidx.annotation.RequiresApi;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
-import ch.epfl.polycrowd.firebase.handlers.EventHandler;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -92,7 +88,6 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     /**
      * Fetches the organizers of the event from the database
      * Initializes the RecyclerView displaying the organizers
-     * TODO: pass the organizers list to this activity via Event class to avoid extra db queries
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void initEvent() throws ParseException {

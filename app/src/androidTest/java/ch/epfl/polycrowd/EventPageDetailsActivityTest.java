@@ -1,7 +1,6 @@
 package ch.epfl.polycrowd;
 
 import android.content.Intent;
-import android.media.MediaDrm;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -29,19 +28,6 @@ public class EventPageDetailsActivityTest {
     public void checkTestMockingEnabled(){
         assertTrue(PolyContext.isRunningTest());
     }
-//    @Rule
-//    public final ActivityTestRule<EventPageDetailsActivity> mActivityRule =
-//            new ActivityTestRule<>(EventPageDetailsActivity.class);
-
-//    @Rule
-//    public final ActivityTestRule<EventPageDetailsActivity> mActivityRule =
-//            new ActivityTestRule<EventPageDetailsActivity>(EventPageDetailsActivity.class) {
-//        @Override
-//        protected void beforeActivityLaunched() {
-//            PolyContext.setCurrentEvent(new Event());
-////            super.beforeActivityLaunched();
-//        }
-//    };
 
     @Rule
     // https://stackoverflow.com/questions/31388847/how-to-get-the-activity-reference-before-its-oncreate-gets-called-during-testing
