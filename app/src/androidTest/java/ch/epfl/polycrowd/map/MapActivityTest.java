@@ -50,7 +50,7 @@ public class MapActivityTest {
     @Test
     public void setVisitorButtonsCorrectlyCreatesVisitorButtons() {
         if(mActivityRule.getActivity().status == MapActivity.level.VISITOR) {
-            onView(withId(R.id.butRight)).check(matches(withText(containsString("EVENTS"))));
+            onView(withId(R.id.butRight)).check(matches(withText(containsString("EVENT DETAILS"))));
             onView(withId(R.id.butLeft)).check(matches(withText(containsString("GROUPS"))));
         }
     }

@@ -13,9 +13,9 @@ import ch.epfl.polycrowd.logic.PolyContext;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static androidx.test.espresso.matcher.ViewMatchers.*;
 import static org.hamcrest.core.StringContains.containsString;
+import static androidx.test.espresso.action.ViewActions.*;
 
 import static org.junit.Assert.*;
 
@@ -38,8 +38,6 @@ public class FrontPageActivityTest {
         sleep();
         onView(withId(R.id.frontPageTitle)).check(matches(withText(containsString("POLY CROWD"))));
     }
-
-
 
 
 
