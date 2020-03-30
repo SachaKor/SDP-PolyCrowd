@@ -8,23 +8,29 @@ import org.junit.runner.RunWith;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
 
+import ch.epfl.polycrowd.logic.PolyContext;
+
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.espresso.action.ViewActions.*;
 import static org.hamcrest.core.StringContains.containsString;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
 public class EventEditActivityTest {
+
+    @Test
+    public void checkTestMockingEnabled(){
+        assertTrue(PolyContext.isRunningTest());
+    }
+
+
     @Rule
     public final ActivityTestRule<EventEditActivity> mActivityRule =
             new ActivityTestRule<>(EventEditActivity.class);
 
-    @Before
-    public void setMocking() {
-        this.mActivityRule.getActivity().setMocking();
-    }
 
     @Test
     public void testDisplaysEventTitle() {

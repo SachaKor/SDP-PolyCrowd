@@ -16,6 +16,8 @@ import android.view.MenuItem;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import java.text.ParseException;
+
 public class EventPageActivity extends AppCompatActivity {
 
 

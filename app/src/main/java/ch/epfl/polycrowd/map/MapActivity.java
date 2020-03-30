@@ -21,6 +21,7 @@ import android.widget.Button;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.text.ParseException;
 import java.util.List;
 
 import ch.epfl.polycrowd.EventPageDetailsActivity;
@@ -70,14 +71,18 @@ public class MapActivity extends AppCompatActivity {
         // Check logged-in user
         firebaseInterface = new FirebaseInterface(this);
 
-        setStatusOfUser(firebaseInterface);
+        try {
+            setStatusOfUser(firebaseInterface);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         createButtons();
         createMap();
         launchLocationRequest();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    void setStatusOfUser(FirebaseInterface firebaseInterface){
+    void setStatusOfUser(FirebaseInterface firebaseInterface) throws ParseException {
         User user = firebaseInterface.getCurrentUser();
         if(user == null){
             status = level.GUEST;

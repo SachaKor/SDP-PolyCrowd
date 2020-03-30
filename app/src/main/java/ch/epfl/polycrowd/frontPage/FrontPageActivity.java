@@ -1,7 +1,6 @@
 package ch.epfl.polycrowd.frontPage;
 
 import androidx.annotation.RequiresApi;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
@@ -18,6 +17,7 @@ import android.widget.TextView;
 
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
+import java.text.ParseException;
 import java.util.List;
 
 import ch.epfl.polycrowd.Event;
@@ -25,6 +25,7 @@ import ch.epfl.polycrowd.LoginActivity;
 import ch.epfl.polycrowd.OrganizerInviteActivity;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
+import ch.epfl.polycrowd.logic.PolyContext;
 
 public class FrontPageActivity extends AppCompatActivity {
 
@@ -35,63 +36,7 @@ public class FrontPageActivity extends AppCompatActivity {
 
     private FirebaseInterface fbInterface;
 
-    @VisibleForTesting()
-    public void setMocking(){
-        this.fbInterface.setMocking();
-    }
-
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    void setEventModels(){
-        //For Connection permissions
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-        fbInterface.getAllEvents(this::setViewPager);
-//        fbi.getAllEvents()
-//                .addOnSuccessListener(queryDocumentSnapshots -> {
-//                    List<Event> events = new ArrayList<>();
-//                    queryDocumentSnapshots.forEach(queryDocumentSnapshot -> {
-//                        Event e = Event.getFromDocument(queryDocumentSnapshot.getData());
-//                        e.setId(queryDocumentSnapshot.getId());
-//                        events.add(e);
-//                    });
-//                    setViewPager(events);
-//                })
-//                .addOnFailureListener(e -> Log.w(TAG, "Error retrieving Events from the database"));
-    }
-
-    void setViewPager(List<Event> events){
-
-        adapter = new EventPagerAdaptor(events, this);
-
-        viewPager = findViewById(R.id.viewPager);
-        viewPager.setAdapter(adapter);
-        viewPager.setPadding(130, 0, 130, 0);
-
-
-        TextView description = findViewById(R.id.description);
-
-
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @RequiresApi(api = Build.VERSION_CODES.O)
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                if(position != 0)
-                    description.setText(String.format("BRIEF DESCRIPTION : \n%s", events.get(position - 1).getDescription()));
-                else
-                    description.setText("create a new event");
-            }
-
-            @Override
-            public void onPageSelected(int position) { }
-
-            @Override
-            public void onPageScrollStateChanged(int state) { }
-        });
-
-    }
-
-
+    // ------------- ON CREATE ----------------------------------------------------------
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,19 +45,68 @@ public class FrontPageActivity extends AppCompatActivity {
         this.fbInterface = new FirebaseInterface(this);
 
         setEventModels();
-        // setViewPager();
-        
+
         // front page should dispatch the dynamic links
         receiveDynamicLink();
 
         // Toggle login/logout button
-        if(fbInterface.getCurrentUser() != null){
+        if(PolyContext.getCurrentUser() != null){
             Button button = findViewById(R.id.button);
             button.setText("LOGOUT");
             button.setOnClickListener(v -> clickSignOut(v));
         }
     }
+    // --------------------------------------------------------------------------------
 
+
+
+    // --------- Create the event List and Create event button -----------------------
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    void setEventModels()  {
+        //For Connection permissions
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+        fbInterface.getAllEvents(this::setAdapter);
+    }
+    void setAdapter(List<Event> events){
+        adapter = new EventPagerAdaptor(events, this);
+        setViewPager(events);
+    }
+    // called by setAdapter()
+    void setViewPager(List<Event> events){
+        viewPager = findViewById(R.id.viewPager);
+        viewPager.setAdapter(adapter);
+        viewPager.setPadding(130, 0, 130, 0);
+        viewPager.setCurrentItem(1);
+        TextView description = findViewById(R.id.description);
+        TextView eventTitle = findViewById(R.id.eventTitle);
+
+        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                if(position != 0){
+                    Event pointedEvent = events.get(position - 1 );
+                    description.setText( pointedEvent.getDescription() );
+                    eventTitle.setText(pointedEvent.getName() );
+                } else {
+                    eventTitle.setText("Create an EVENT");
+                    description.setText("your journey starts now !");
+                }
+            }
+            @Override
+            public void onPageSelected(int position) { }
+            @Override
+            public void onPageScrollStateChanged(int state) { }
+        } );
+    }
+
+
+
+
+
+    // --------- Button Activity ----------------------------------------------------------
 
     public void clickSignIn(View view) {
         Intent intent = new Intent(this, LoginActivity.class);
@@ -123,6 +117,9 @@ public class FrontPageActivity extends AppCompatActivity {
         fbInterface.signOut();
         recreate();
     }
+
+
+    // --------- Link --------------------------------------------------------------------
 
     private void receiveDynamicLink() {
         Context c = this;
@@ -153,7 +150,5 @@ public class FrontPageActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(this, e -> Log.w(TAG, "getDynamicLink:onFailure", e));
     }
-
-
 
 }

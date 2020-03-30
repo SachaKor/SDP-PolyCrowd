@@ -22,10 +22,7 @@ public class SignUpActivity extends AppCompatActivity {
 
     private final FirebaseInterface fbi = new FirebaseInterface(this);
 
-    @VisibleForTesting
-    public void setMocking(){
-        this.fbi.setMocking();
-    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
