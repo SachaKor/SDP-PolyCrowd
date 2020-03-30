@@ -48,6 +48,24 @@ public class FrontPageActivityTest {
             onView(withId(R.id.button)).check(matches(withText(containsString("LOGIN"))));
     }
 
+    @Test
+    public void testScrollingReachCreateButton(){
+        sleep();
+        onView(withId(R.id.viewPager))
+                .perform(swipeRight() , swipeLeft() , swipeRight() , click());
+        sleep();
+        onView(withId(R.id.event_name)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void testScrollingChangeTextAndDescription(){
+        sleep();
+        onView(withId(R.id.viewPager))
+                .perform(swipeRight() , swipeLeft());
+        sleep();
+        onView(withId(R.id.eventTitle)).check(matches(withText(containsString("DEBUG EVENT"))));
+    }
+
 
     private void sleep(){
         try{
