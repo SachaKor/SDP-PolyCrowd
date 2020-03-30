@@ -87,35 +87,38 @@ public class Event {
 
 
     // --------------------  FOR TESTING --------------------------------------------------
-    public Event(){
-        this.owner = null;
+    public Event() throws ParseException {
+        this.owner = "debug owner";
         this.name = "DEBUG EVENT";
         this.isPublic = true;
         this.type = EventType.OTHER;
-        this.start = null;
-        this.end = null;
-        this.calendar = null;
+        this.start = dtFormat.parse("01-08-2018 00:00");
+        this.end = dtFormat.parse("02-08-2018 01:00");
+        this.calendar = "";
         this.description = "this is only a debug event ... ";
         this.image = R.drawable.balelec;
         this.organizers = new ArrayList<>();
+        this.schedule = new Schedule();
     }
 
-    @VisibleForTesting
-    static Event fakeEvent(String url, File f) throws ParseException {return new Event ("1",
+    /*
+    static public Event fakeEvent(String url, File f) throws ParseException {return new Event ("1",
             "fakeEvent", true,
             Event.EventType.CONVENTION,
             dtFormat.parse("01-08-2018 00:00"),
             dtFormat.parse("02-08-2018 01:00"),
-            url, "description", f);}
-    private String getEventCalFilename(){
-        return String.join(".",this.name,"ics");
-    }
+            url, "description", f);
+    }*/
+
 
     // ------------------------------------------------------------------------------------------
 
 
 
 
+    private String getEventCalFilename(){
+        return String.join(".",this.name,"ics");
+    }
 
     public String getId() {
         return id;

@@ -21,6 +21,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -117,7 +118,7 @@ public class FirebaseInterface {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public void getAllEvents(EventsHandler handler) {
+    public void getAllEvents(EventsHandler handler) throws ParseException {
         if( PolyContext.isRunningTest()) {
             List<Event> events = new ArrayList<>();
             events.add(new Event());
@@ -164,7 +165,7 @@ public class FirebaseInterface {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public void getEventById(String eventId, EventHandler eventHandler) {
+    public void getEventById(String eventId, EventHandler eventHandler) throws ParseException {
         if( PolyContext.isRunningTest()) {
             Event event = new Event();
             eventHandler.handle(event);

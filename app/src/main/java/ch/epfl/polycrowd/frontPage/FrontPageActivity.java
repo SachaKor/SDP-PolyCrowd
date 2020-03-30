@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
+import java.text.ParseException;
 import java.util.List;
 
 import ch.epfl.polycrowd.Event;
@@ -43,7 +44,11 @@ public class FrontPageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_front_page);
         this.fbInterface = new FirebaseInterface(this);
 
-        setEventModels();
+        try {
+            setEventModels();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
         // front page should dispatch the dynamic links
         receiveDynamicLink();
@@ -62,7 +67,7 @@ public class FrontPageActivity extends AppCompatActivity {
     // --------- Create the event List and Create event button -----------------------
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    void setEventModels(){
+    void setEventModels() throws ParseException {
         //For Connection permissions
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);

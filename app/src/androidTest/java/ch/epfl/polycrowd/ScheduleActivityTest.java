@@ -2,6 +2,7 @@ package ch.epfl.polycrowd;
 
 import androidx.test.rule.ActivityTestRule;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -30,10 +31,8 @@ public class ScheduleActivityTest {
             new ActivityTestRule<>(ScheduleActivity.class);
 
 
-
     @Test
     public void testScheduleLoading(){
-
         onView(withText("summary")).check(matches(isDisplayed()));
     }
 
@@ -55,13 +54,5 @@ public class ScheduleActivityTest {
     public void testScheduleWithNullFile(){
         setCurrentFakeEvent("notAUrl",null);
     }*/
-
-    private void setCurrentFakeEvent(String scheduleUrl, File f){
-        try {
-            PolyContext.setCurrentEvent( Event.fakeEvent(scheduleUrl, f));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-    }
 
 }

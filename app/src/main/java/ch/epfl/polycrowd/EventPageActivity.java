@@ -16,6 +16,8 @@ import android.view.MenuItem;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import java.text.ParseException;
+
 public class EventPageActivity extends AppCompatActivity {
 
 
@@ -36,10 +38,14 @@ public class EventPageActivity extends AppCompatActivity {
         fbi = new FirebaseInterface(this);
 
 
-        fbi.getAllEvents(events -> {
-            myAdapter = new MyAdapter(context, Event.toModels( events));
-            mRecyclerView.setAdapter(myAdapter);
-        });
+        try {
+            fbi.getAllEvents(events -> {
+                myAdapter = new MyAdapter(context, Event.toModels( events));
+                mRecyclerView.setAdapter(myAdapter);
+            });
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
