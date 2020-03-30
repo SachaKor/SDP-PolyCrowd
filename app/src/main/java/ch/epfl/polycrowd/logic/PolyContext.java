@@ -6,12 +6,11 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
-import com.google.firebase.firestore.auth.User;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import ch.epfl.polycrowd.Event;
 
@@ -46,9 +45,35 @@ public abstract class PolyContext extends Context {
         PolyContext.previousPage = previousPage;
     }
 
+
+
+    // ----------- Use isRunningTest() to check if u are doing a test ------------------------
+    // https://stackoverflow.com/questions/28550370/how-to-detect-whether-android-app-is-running-ui-test-with-espresso
+    private static AtomicBoolean isRunningTest;
+    public static synchronized boolean isRunningTest () {
+        if (null == isRunningTest) {
+            boolean istest;
+
+            try {
+                Class.forName("org.junit.Test");
+                istest = true;
+            } catch (ClassNotFoundException e) {
+                istest = false;
+            }
+
+            isRunningTest = new AtomicBoolean (istest);
+        }
+
+        return isRunningTest.get ();
+    }
+
+
+
+    // --------------------------------------------------------------------------------------
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     public static List<Activity> getActivities(){
-       if (!mocking){
+       if (!isRunningTest()){
             Event currentlySelectedEvent = PolyContext.getCurrentEvent();
             if (currentlySelectedEvent!= null) {
                 Schedule currentSchedule = currentlySelectedEvent.getSchedule();

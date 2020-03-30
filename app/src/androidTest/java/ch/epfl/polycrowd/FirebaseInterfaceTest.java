@@ -3,6 +3,7 @@ package ch.epfl.polycrowd;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
+import ch.epfl.polycrowd.logic.PolyContext;
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -14,9 +15,16 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static org.junit.Assert.assertTrue;
+
 
 @RunWith(AndroidJUnit4.class)
 public class FirebaseInterfaceTest {
+
+    @Test
+    public void checkTestMockingEnabled(){
+        assertTrue(PolyContext.isRunningTest());
+    }
 
     private FirebaseInterface firebaseInterface;
 

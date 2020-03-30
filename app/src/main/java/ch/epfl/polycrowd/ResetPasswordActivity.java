@@ -17,10 +17,6 @@ public class ResetPasswordActivity extends AppCompatActivity {
 
     private FirebaseInterface fbi ;
 
-    @VisibleForTesting
-    public void setMocking(){
-        this.fbi.setMocking();
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

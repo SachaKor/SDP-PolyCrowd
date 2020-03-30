@@ -31,10 +31,6 @@ public class LoginActivity extends AppCompatActivity {
 
     private FirebaseInterface fbInterface;
 
-    @VisibleForTesting
-    public void setMocking(){
-        this.fbInterface.setMocking();
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

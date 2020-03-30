@@ -27,55 +27,39 @@ public class EventPagerAdaptor extends PagerAdapter {
     private LayoutInflater layoutInflater;
     private Context context;
 
+    // ----------- Constructor ---------------------------------------------------
     public EventPagerAdaptor(List<Event> models, Context context) {
         this.events = models;
         this.context = context;
     }
 
-    @Override
-    public int getCount() {
-        return events.size()+1;
-    }
-
-    @Override
-    public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
-        return view.equals(object);
-    }
-
+    // ----------- Create View from a given position in the ViewPager ------------
     @RequiresApi(api = Build.VERSION_CODES.O)
     @NonNull
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, final int position) {
-
-
-
         layoutInflater = LayoutInflater.from(context);
-        View view = layoutInflater.inflate(R.layout.event_card, container, false);
+        View view ;
 
-        ImageView imageView;
-        imageView = view.findViewById(R.id.image);
-
-        // first button is the Create event one
+        // position == 0 : view is the Create Event
         if(position == 0){
-            imageView.setImageResource(R.drawable.newevent);
+            view = layoutInflater.inflate(R.layout.create_event_card, container, false);
 
             view.setOnClickListener(v -> {
                 Intent intent = new Intent(context, EventEditActivity.class);
                 context.startActivity(intent);
             });
-        }else {
-
+        // position > 0 : views are the Event
+        } else {
+            view = layoutInflater.inflate(R.layout.event_card, container, false);
+            ImageView imageView = view.findViewById(R.id.image);
             imageView.setImageResource(events.get(position-1).getImage());
 
             view.setOnClickListener(v -> {
                 Intent intent = new Intent(context, MapActivity.class);
-                // TODO : update currentEvent to the given one
-                Event e =events.get(position-1);
-                PolyContext.setCurrentEvent(e);
-                intent.putExtra("eventId", e.getId());
+                PolyContext.setCurrentEvent(events.get(position-1));
                 context.startActivity(intent);
             });
-
         }
 
         container.addView(view);
@@ -85,5 +69,14 @@ public class EventPagerAdaptor extends PagerAdapter {
     @Override
     public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
         container.removeView((View)object);
+    }
+    @Override // +1 is the Create Event Button
+    public int getCount() {
+        return events.size()+1;
+    }
+
+    @Override
+    public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
+        return view.equals(object);
     }
 }

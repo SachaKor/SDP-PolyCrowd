@@ -10,7 +10,6 @@ import org.junit.Test;
 import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +18,7 @@ import java.util.Objects;
 import static ch.epfl.polycrowd.Event.dateToString;
 import static ch.epfl.polycrowd.Event.stringToDate;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 
@@ -49,7 +49,7 @@ public class EventTest {
     }
 
     @Test
-    public void constructor(){
+    public void constructor() throws ParseException {
         Assert.assertThrows(IllegalArgumentException.class, () -> new Event(null,default_name, false,
                 default_type, default_s, default_e,"None", default_desc));
         Assert.assertThrows(IllegalArgumentException.class, () -> new Event(default_owner,null, false,
@@ -97,12 +97,13 @@ public class EventTest {
         assertEquals("https://satellite.bar/agenda/ical.php", nec.getCalendar());
 
         Event ned = new Event();
-        assertEquals("1", ned.getOwner());
+
+        assertEquals(ned.getOwner() , "debug owner");
         assertEquals("DEBUG EVENT", ned.getName());
         assertEquals(true, ned.getPublic());
         assertEquals(Event.EventType.OTHER, ned.getType());
-        assertNull(ned.getStart());
-        assertNull(ned.getEnd());
+        assertNotNull(ned.getStart());
+        assertNotNull(ned.getEnd());
         assertEquals("url", ned.getCalendar());
         assertEquals("this is only a debug event ... ",ned.getDescription());
     }
@@ -120,6 +121,7 @@ public class EventTest {
 
     }
 
+    /*
     @Test
     public void fakeConstructor(){
         try {
@@ -128,7 +130,7 @@ public class EventTest {
             assert(false);
         }
 
-    }
+    }*/
 
     @Test
     public void getSetName() {

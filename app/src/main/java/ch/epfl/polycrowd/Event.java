@@ -24,15 +24,7 @@ import ch.epfl.polycrowd.logic.Schedule;
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class Event {
 
-    private static final String LOG_TAG = Event.class.toString();
-
-    @VisibleForTesting
-    static Event fakeEvent(String url, File f) throws ParseException {return new Event ("1",
-            "fakeEvent", true,
-            Event.EventType.CONVENTION,
-            dtFormat.parse("01-08-2018 00:00"),
-            dtFormat.parse("02-08-2018 01:00"),
-            url, "description", f);}
+    private static final String TAG = Event.class.toString();
 
     public enum EventType {
         FESTIVAL, CONCERT, CONVENTION, OTHER
@@ -52,6 +44,8 @@ public class Event {
     private Schedule schedule;
     private List<String> organizers;
 
+
+    // ---------- Constructors ---------------------------------------------------------
     public Event(String owner, String name, Boolean isPublic, EventType type,
                  Date start, Date end,
                  String calendar, String description){
@@ -68,9 +62,6 @@ public class Event {
         organizers.add(owner); // TODO: this is wrong, organizers must contain the emails
         setDescription(description);
     }
-    private String getEventCalFilename(){
-        return String.join(".",this.name,"ics");
-    }
 
     public Event(String owner, String name, Boolean isPublic, EventType type,
                  Date start, Date end,
@@ -78,6 +69,7 @@ public class Event {
         this(owner, name, isPublic, type, start, end, calendar, description);
         this.loadCalendar(dir);
     }
+
     public Event(Event e, File dir){
         this(e.owner, e.name, e.isPublic, e.type, e.start, e.end, e.calendar, e.description);
         this.loadCalendar(dir);
@@ -93,6 +85,50 @@ public class Event {
         this.organizers = organizers;
     }
 
+
+    // --------------------  FOR TESTING --------------------------------------------------
+    public Event()  {
+        this.owner = "debug owner";
+        this.name = "DEBUG EVENT";
+        this.isPublic = true;
+        this.type = EventType.OTHER;
+        try {
+            this.start = dtFormat.parse("01-08-2018 00:00");
+            this.end = dtFormat.parse("02-08-2018 01:00");
+        } catch (ParseException e){
+            this.start = null;
+            this.end = null;
+        }
+        this.calendar = "url";
+        this.description = "this is only a debug event ... ";
+        this.image = R.drawable.balelec;
+        this.organizers = new ArrayList<>();
+        organizers.add("fake@email.nu");
+        this.schedule = new Schedule();
+    }
+
+    /*
+    static public Event fakeEvent(String url, File f) throws ParseException {return new Event ("1",
+            "fakeEvent", true,
+            Event.EventType.CONVENTION,
+            dtFormat.parse("01-08-2018 00:00"),
+            dtFormat.parse("02-08-2018 01:00"),
+            url, "description", f);
+    }*/
+
+
+    // ------------------------------------------------------------------------------------------
+
+
+
+
+    private String getEventCalFilename(){
+        return String.join(".",this.name,"ics");
+    }
+
+    public String getId() {
+        return id;
+    }
     public void setId(String id) {
         if(id == null) {
             throw new IllegalArgumentException("Id cannot be null");
@@ -102,25 +138,10 @@ public class Event {
         this.image = R.drawable.demo1;
     }
 
-    // default constructor for debugging
-    public Event(){
-        this.owner = "1";
-        this.name = "DEBUG EVENT";
-        this.isPublic = true;
-        this.type = EventType.OTHER;
-        this.start = null;
-        this.end = null;
-        this.calendar = "url";
-        this.description = "this is only a debug event ... ";
-        this.image = R.drawable.balelec;
-        this.organizers = new ArrayList<>();
-        organizers.add("fake@email.nu");
-    }
 
     public int getImage(){
         return image;
     }
-
     public  void setImage( int im ){
         image = im;
     }
@@ -128,7 +149,6 @@ public class Event {
     public String getDescription(){
         return description;
     }
-
     public void setDescription(String description) {
         if(description == null) {
             this.description = "";
@@ -138,9 +158,7 @@ public class Event {
     }
 
 
-    public String getId() {
-        return id;
-    }
+
 
     public String getOwner() {
         return owner;
@@ -150,7 +168,6 @@ public class Event {
     public String getName() {
         return name;
     }
-
     public void setName(String name) {
         if(name == null)
             throw new IllegalArgumentException("Name cannot be Null");
@@ -160,7 +177,6 @@ public class Event {
     public Boolean getPublic() {
         return isPublic;
     }
-
     public void setPublic(Boolean aPublic) {
         isPublic = aPublic;
     }
@@ -168,7 +184,6 @@ public class Event {
     public EventType getType() {
         return type;
     }
-
     public void setType(EventType type) {
         if(type == null)
             throw new IllegalArgumentException("Type cannot be Null");
@@ -178,7 +193,6 @@ public class Event {
     public Date getStart() {
         return start;
     }
-
     public void setStart(Date start) {
         if(start == null)
             throw new IllegalArgumentException("StartDate cannot be Null");
@@ -188,7 +202,6 @@ public class Event {
     public Date getEnd() {
         return end;
     }
-
     public void setEnd(Date end) {
         if(end == null)
             throw new IllegalArgumentException("EndDate cannot be Null");
@@ -198,12 +211,15 @@ public class Event {
     public String getCalendar() {
         return calendar;
     }
-
     public void setCalendar(String calendar) {
         if(calendar == null)
             throw new IllegalArgumentException("Calendar cannot be null");
         this.calendar = calendar;
     }
+
+
+    // -------------------------------------------------------------------------------
+
 
     public Map<String, Object> toHashMap(){
         Map<String, Object> event = new HashMap<>();

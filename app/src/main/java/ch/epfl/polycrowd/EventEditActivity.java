@@ -16,7 +16,6 @@ import java.util.Date;
 import java.util.List;
 
 import androidx.annotation.RequiresApi;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 
 import static ch.epfl.polycrowd.Event.dtFormat;
@@ -30,12 +29,6 @@ public class EventEditActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = EventEditActivity.class.toString();
     private FirebaseInterface firebaseInterface;
-
-    @VisibleForTesting
-    public void setMocking(){
-        this.firebaseInterface.setMocking();
-    }
-    
 
 
     @Override

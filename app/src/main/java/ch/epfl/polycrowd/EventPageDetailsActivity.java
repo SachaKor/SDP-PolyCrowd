@@ -27,6 +27,7 @@ import com.google.firebase.dynamiclinks.DynamicLink;
 import com.google.firebase.dynamiclinks.DynamicLink.SocialMetaTagParameters;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
+import java.text.ParseException;
 import java.util.List;
 
 public class EventPageDetailsActivity extends AppCompatActivity {
@@ -35,24 +36,22 @@ public class EventPageDetailsActivity extends AppCompatActivity {
 
     private static final String TAG = "EventPageDetails";
 
-    // TODO: find another way to pass the event id
     private String eventId;
 
     private final FirebaseInterface fbi = new FirebaseInterface(this);
 
     private AlertDialog linkDialog;
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public void setMocking(){
-        this.fbi.setMocking();
-    }
-
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_details_page);
-        initEvent();
+        try {
+            initEvent();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
         final Button scheduleButton = findViewById(R.id.schedule);
         scheduleButton.setOnClickListener(v -> clickSchedule(v));
@@ -96,27 +95,13 @@ public class EventPageDetailsActivity extends AppCompatActivity {
      * TODO: pass the organizers list to this activity via Event class to avoid extra db queries
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void initEvent() {
-//        if (!getIntent().hasExtra("eventId")) {
-//            return;
-//        }
-//        eventId = getIntent().getStringExtra("eventId");
-//        fbi.getEventById(eventId, event -> {
-//            initRecyclerView(event.getOrganizers());
-//            setUpViews(event.getName(), event.getDescription());
-//            eventName = event.getName();
-//            // Check logged-in user => do not show invite button if user isn't organizer
-//            User user = fbi.getCurrentUser();
-//            if(user == null || event.getOrganizers().indexOf(user.getEmail()) == -1) {
-//                Button inviteButton = findViewById(R.id.invite_organizer_button);
-//                inviteButton.setVisibility(View.GONE);
-//            }
-//        });
+    private void initEvent() throws ParseException {
         Event curEvent = PolyContext.getCurrentEvent();
         if(curEvent == null) {
             Log.e(TAG, "current event is null");
             return;
         }
+        FirebaseInterface fbi = new FirebaseInterface(this);
         eventId = curEvent.getId();
         fbi.getEventById(eventId, event -> {
             initRecyclerView(event.getOrganizers());

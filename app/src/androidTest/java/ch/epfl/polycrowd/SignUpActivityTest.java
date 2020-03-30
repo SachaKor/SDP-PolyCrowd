@@ -6,6 +6,8 @@ import androidx.test.rule.ActivityTestRule;
 import org.junit.Rule;
 import org.junit.Test;
 
+import ch.epfl.polycrowd.logic.PolyContext;
+
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
@@ -16,20 +18,25 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertTrue;
 
 /**
  * To check if the toast is displayed:
  *  https://stackoverflow.com/questions/28390574/checking-toast-message-in-android-espresso
  */
 public class SignUpActivityTest {
+
+    @Test
+    public void checkTestMockingEnabled(){
+        assertTrue(PolyContext.isRunningTest());
+    }
+
+
     @Rule
     public final ActivityTestRule<SignUpActivity> mActivityRule =
             new ActivityTestRule<>(SignUpActivity.class);
 
-    @Before
-    public void setMocking() {
-        this.mActivityRule.getActivity().setMocking();
-    }
+
 
 
     private void typeTextAndCloseKeyboard(int viewId, String text) {

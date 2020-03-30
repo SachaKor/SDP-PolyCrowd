@@ -32,6 +32,13 @@ public class Schedule {
     private final List<Activity> activities;
     private String downloadPath;
 
+    // ------- Schedule for Testing --------------------------------------
+    public Schedule(){
+        downloadPath = "degug/path";
+        activities = new ArrayList<>();
+    }
+    // -------------------------------------------------------------------
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Schedule(String url , File f){
 
