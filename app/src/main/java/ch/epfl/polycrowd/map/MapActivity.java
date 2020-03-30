@@ -2,7 +2,6 @@ package ch.epfl.polycrowd.map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -14,25 +13,20 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.content.Intent;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
 
-import ch.epfl.polycrowd.Event;
 import ch.epfl.polycrowd.EventPageDetailsActivity;
 import ch.epfl.polycrowd.LoginActivity;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
-import ch.epfl.polycrowd.firebase.handlers.EventHandler;
 import ch.epfl.polycrowd.logic.User;
 
 public class MapActivity extends AppCompatActivity {
@@ -129,7 +123,6 @@ public class MapActivity extends AppCompatActivity {
                     Manifest.permission.ACCESS_COARSE_LOCATION,
                     Manifest.permission.INTERNET
             }, 10);
-            return;
         } else {
             startLocationRequests();
         }
@@ -162,7 +155,6 @@ public class MapActivity extends AppCompatActivity {
             case 10:
                 if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
                         startLocationRequests();
-            return;
         }
     }
 
@@ -188,6 +180,7 @@ public class MapActivity extends AppCompatActivity {
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
+        if(mapFragment == null) return;
         mapFragment.getMapAsync(mMap);
     }
 
@@ -208,18 +201,8 @@ public class MapActivity extends AppCompatActivity {
         buttonRight.setText("EVENT DETAILS");
         buttonLeft.setText("LOGIN");
 
-        buttonRight.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickEventDetails(v);
-            }
-        });
-        buttonLeft.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickSignIn(v);
-            }
-        });
+        buttonRight.setOnClickListener(v -> clickEventDetails(v));
+        buttonLeft.setOnClickListener(v -> clickSignIn(v));
     }
 
 
@@ -227,34 +210,16 @@ public class MapActivity extends AppCompatActivity {
         buttonRight.setText("EVENT DETAILS");
         buttonLeft.setText("GROUPS");
 
-        buttonRight.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickEventDetails(v);
-            }
-        });
-        buttonLeft.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            }
-        });
+        buttonRight.setOnClickListener(v -> clickEventDetails(v));
+        buttonLeft.setOnClickListener(v -> {});
     }
 
     void setOrganiserButtons(Button buttonLeft, Button buttonRight) {
         buttonRight.setText("MANAGE DETAILS");
         buttonLeft.setText("STAFF");
 
-        buttonRight.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickEventDetails(v);
-            }
-        });
-        buttonLeft.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            }
-        });
+        buttonRight.setOnClickListener(v -> clickEventDetails(v));
+        buttonLeft.setOnClickListener(v -> {});
     }
 
 
