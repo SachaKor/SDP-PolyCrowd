@@ -12,6 +12,8 @@ import org.junit.Test;
 
 import androidx.test.rule.ActivityTestRule;
 
+import ch.epfl.polycrowd.logic.PolyContext;
+
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.typeText;
@@ -24,11 +26,17 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.StringContains.containsString;
+import static org.junit.Assert.assertTrue;
 
 /**
  * TODO: sign in to firebase does not work with travis
  */
 public class LoginActivityTest {
+
+    @Test
+    public void checkTestMockingEnabled(){
+        assertTrue(PolyContext.isRunningTest());
+    }
 
     private static final String email = "nani@haha.com",
                 password = "123456";
@@ -37,10 +45,7 @@ public class LoginActivityTest {
     public final ActivityTestRule<LoginActivity> loginActivityRule =
             new ActivityTestRule<>(LoginActivity.class);
 
-    @Before
-    public void setMocking() {
-        this.loginActivityRule.getActivity().setMocking();
-    }
+
 
 //    @AfterClass
 //    public static void deleteUser() {

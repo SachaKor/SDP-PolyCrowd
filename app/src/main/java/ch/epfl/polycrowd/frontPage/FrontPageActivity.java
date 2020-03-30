@@ -35,11 +35,6 @@ public class FrontPageActivity extends AppCompatActivity {
 
     private FirebaseInterface fbInterface;
 
-    @VisibleForTesting
-    public void setMocking(){
-        this.fbInterface.setMocking();
-    }
-
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     void setEventModels(){

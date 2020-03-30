@@ -22,16 +22,21 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static org.junit.Assert.assertTrue;
 
 public class ScheduleActivityTest {
+
+    @Test
+    public void checkTestMockingEnabled(){
+        assertTrue(PolyContext.isRunningTest());
+    }
+
+
     @Rule
     public final ActivityTestRule<ScheduleActivity> mActivityRule =
             new ActivityTestRule<>(ScheduleActivity.class);
 
-    @BeforeClass
-    public static void setupValidSchedule(){
-        PolyContext.mocking = true;
-    }
+
 
     @Test
     public void testScheduleLoading(){

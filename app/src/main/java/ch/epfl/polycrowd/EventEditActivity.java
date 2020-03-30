@@ -31,12 +31,6 @@ public class EventEditActivity extends AppCompatActivity {
     private static final String LOG_TAG = EventEditActivity.class.toString();
     private FirebaseInterface firebaseInterface;
 
-    @VisibleForTesting
-    public void setMocking(){
-        this.firebaseInterface.setMocking();
-    }
-    
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
