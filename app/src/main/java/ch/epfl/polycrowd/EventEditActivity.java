@@ -16,7 +16,6 @@ import java.util.Date;
 import java.util.List;
 
 import androidx.annotation.RequiresApi;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 
 import static ch.epfl.polycrowd.Event.dtFormat;

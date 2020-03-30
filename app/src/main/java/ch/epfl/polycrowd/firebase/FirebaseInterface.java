@@ -8,19 +8,14 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.annotation.VisibleForTesting;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -124,11 +119,8 @@ public class FirebaseInterface {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void getAllEvents(EventsHandler handler) {
         if( PolyContext.isRunningTest()) {
-            Event e = new Event();
             List<Event> events = new ArrayList<>();
-            events.add(e);
-            //events.add(e);
-            //events.add(e);
+            events.add(new Event());
             handler.handle(events);
         } else {
             getFirestoreInstance(false).collection(EVENTS).get().addOnSuccessListener(queryDocumentSnapshots -> {
@@ -296,12 +288,17 @@ public class FirebaseInterface {
             return new User("fake@fake.com", "1", "fake user", 100);
         } else {
             FirebaseUser u = getAuthInstance(false).getCurrentUser();
+            User curentUser;
             if(u != null) {
-                return new User(u.getEmail(), u.getUid(), u.getDisplayName(), 3);
+
+                curentUser =  new User(u.getEmail(), u.getUid(), u.getDisplayName(), 3);
             }else{
                 // Not logged in !
-                return null;
+                curentUser =  null;
             }
+
+            PolyContext.setCurrentUser(curentUser);
+            return  curentUser;
         }
     }
 

@@ -2,22 +2,15 @@ package ch.epfl.polycrowd;
 
 import androidx.test.rule.ActivityTestRule;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
 import java.io.File;
 import java.text.ParseException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 
 
 import ch.epfl.polycrowd.logic.PolyContext;
-import ch.epfl.polycrowd.Event;
-import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
+
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;

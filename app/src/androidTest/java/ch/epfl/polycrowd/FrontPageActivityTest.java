@@ -1,5 +1,7 @@
 package ch.epfl.polycrowd;
 
+import android.util.Log;
+
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
 
@@ -32,21 +34,19 @@ public class FrontPageActivityTest {
             new ActivityTestRule<>(FrontPageActivity.class);
 
 
-
     @Test
     public void testDisplaysTitle() {
         sleep();
         onView(withId(R.id.frontPageTitle)).check(matches(withText(containsString("POLY CROWD"))));
     }
 
-
     @Test
     public void testLoginOnlyPresentNotLogin(){
-
-
-
+        if(PolyContext.getCurrentUser() != null)
+            onView(withId(R.id.button)).check(matches(withText(containsString("LOGOUT"))));
+        else
+            onView(withId(R.id.button)).check(matches(withText(containsString("LOGIN"))));
     }
-
 
 
     private void sleep(){

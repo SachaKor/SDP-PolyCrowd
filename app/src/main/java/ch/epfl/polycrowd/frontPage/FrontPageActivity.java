@@ -1,7 +1,6 @@
 package ch.epfl.polycrowd.frontPage;
 
 import androidx.annotation.RequiresApi;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
@@ -25,6 +24,7 @@ import ch.epfl.polycrowd.LoginActivity;
 import ch.epfl.polycrowd.OrganizerInviteActivity;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
+import ch.epfl.polycrowd.logic.PolyContext;
 
 public class FrontPageActivity extends AppCompatActivity {
 
@@ -35,6 +35,31 @@ public class FrontPageActivity extends AppCompatActivity {
 
     private FirebaseInterface fbInterface;
 
+    // ------------- ON CREATE ----------------------------------------------------------
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_front_page);
+        this.fbInterface = new FirebaseInterface(this);
+
+        setEventModels();
+
+        // front page should dispatch the dynamic links
+        receiveDynamicLink();
+
+        // Toggle login/logout button
+        if(PolyContext.getCurrentUser() != null){
+            Button button = findViewById(R.id.button);
+            button.setText("LOGOUT");
+            button.setOnClickListener(v -> clickSignOut(v));
+        }
+    }
+    // --------------------------------------------------------------------------------
+
+
+
+    // --------- Create the event List and Create event button -----------------------
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     void setEventModels(){
@@ -43,7 +68,11 @@ public class FrontPageActivity extends AppCompatActivity {
         StrictMode.setThreadPolicy(policy);
         fbInterface.getAllEvents(this::setAdapter);
     }
-
+    void setAdapter(List<Event> events){
+        adapter = new EventPagerAdaptor(events, this);
+        setViewPager(events);
+    }
+    // called by setAdapter()
     void setViewPager(List<Event> events){
         viewPager = findViewById(R.id.viewPager);
         viewPager.setAdapter(adapter);
@@ -72,36 +101,11 @@ public class FrontPageActivity extends AppCompatActivity {
         } );
     }
 
-    void setAdapter(List<Event> events){
-        adapter = new EventPagerAdaptor(events, this);
-        setViewPager(events);
-    }
 
 
 
-    // ------------- ON CREATE ----------------------------------------------------------
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_front_page);
-        this.fbInterface = new FirebaseInterface(this);
 
-        setEventModels();
-        
-        // front page should dispatch the dynamic links
-        receiveDynamicLink();
-
-        // Toggle login/logout button
-        if(fbInterface.getCurrentUser() != null){
-            Button button = findViewById(R.id.button);
-            button.setText("LOGOUT");
-            button.setOnClickListener(v -> clickSignOut(v));
-        }
-    }
-
-
-
+    // --------- Button Activity ----------------------------------------------------------
 
     public void clickSignIn(View view) {
         Intent intent = new Intent(this, LoginActivity.class);
@@ -112,6 +116,9 @@ public class FrontPageActivity extends AppCompatActivity {
         fbInterface.signOut();
         recreate();
     }
+
+
+    // --------- Link --------------------------------------------------------------------
 
     private void receiveDynamicLink() {
         Context c = this;
@@ -142,7 +149,5 @@ public class FrontPageActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(this, e -> Log.w(TAG, "getDynamicLink:onFailure", e));
     }
-
-
 
 }
