@@ -41,21 +41,16 @@ public class FrontPageActivity extends AppCompatActivity {
         //For Connection permissions
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
-        fbInterface.getAllEvents(this::setViewPager);
+        fbInterface.getAllEvents(this::setAdapter);
     }
 
     void setViewPager(List<Event> events){
-
-        adapter = new EventPagerAdaptor(events, this);
-
         viewPager = findViewById(R.id.viewPager);
         viewPager.setAdapter(adapter);
         viewPager.setPadding(130, 0, 130, 0);
         viewPager.setCurrentItem(1);
-
         TextView description = findViewById(R.id.description);
         TextView eventTitle = findViewById(R.id.eventTitle);
-
 
         viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
@@ -65,25 +60,26 @@ public class FrontPageActivity extends AppCompatActivity {
                     Event pointedEvent = events.get(position - 1 );
                     description.setText( pointedEvent.getDescription() );
                     eventTitle.setText(pointedEvent.getName() );
-                }
-
-
-                else {
+                } else {
                     eventTitle.setText("Create an EVENT");
                     description.setText("your journey starts now !");
                 }
             }
-
             @Override
             public void onPageSelected(int position) { }
-
             @Override
             public void onPageScrollStateChanged(int state) { }
-        });
+        } );
+    }
 
+    void setAdapter(List<Event> events){
+        adapter = new EventPagerAdaptor(events, this);
+        setViewPager(events);
     }
 
 
+
+    // ------------- ON CREATE ----------------------------------------------------------
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,11 +88,8 @@ public class FrontPageActivity extends AppCompatActivity {
         this.fbInterface = new FirebaseInterface(this);
 
         setEventModels();
-
-        // setViewPager();
         
         // front page should dispatch the dynamic links
-
         receiveDynamicLink();
 
         // Toggle login/logout button

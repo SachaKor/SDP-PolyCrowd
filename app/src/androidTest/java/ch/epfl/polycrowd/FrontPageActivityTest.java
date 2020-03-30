@@ -40,6 +40,14 @@ public class FrontPageActivityTest {
     }
 
 
+    @Test
+    public void testLoginOnlyPresentNotLogin(){
+
+
+
+    }
+
+
 
     private void sleep(){
         try{
