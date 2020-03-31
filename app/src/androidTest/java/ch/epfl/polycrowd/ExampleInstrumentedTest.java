@@ -9,6 +9,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import ch.epfl.polycrowd.logic.PolyContext;
+
 import static org.junit.Assert.*;
 
 /**
@@ -18,6 +20,13 @@ import static org.junit.Assert.*;
  */
 @RunWith(AndroidJUnit4.class)
 public class ExampleInstrumentedTest {
+
+    @Test
+    public void checkTestMockingEnabled(){
+        assertTrue(PolyContext.isRunningTest());
+    }
+
+
     @Test
     public void useAppContext() {
         // Context of the app under test.

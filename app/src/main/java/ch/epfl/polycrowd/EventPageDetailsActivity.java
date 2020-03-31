@@ -24,6 +24,7 @@ import com.google.firebase.dynamiclinks.DynamicLink;
 import com.google.firebase.dynamiclinks.DynamicLink.SocialMetaTagParameters;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
+import java.text.ParseException;
 import java.util.List;
 
 public class EventPageDetailsActivity extends AppCompatActivity {
@@ -40,7 +41,11 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_details_page);
-        initEvent();
+        try {
+            initEvent();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
         getIncomingIntent();
         final Button scheduleButton = findViewById(R.id.schedule);
@@ -82,7 +87,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
      * TODO: pass the organizers list to this activity via Event class to avoid extra db queries
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void initEvent() {
+    private void initEvent() throws ParseException {
         if (!getIntent().hasExtra("eventId")) {
             return;
         }

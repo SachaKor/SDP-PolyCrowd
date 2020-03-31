@@ -8,24 +8,20 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.annotation.VisibleForTesting;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +32,7 @@ import ch.epfl.polycrowd.Event;
 import ch.epfl.polycrowd.firebase.handlers.EventHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
 import ch.epfl.polycrowd.firebase.handlers.OrganizersHandler;
+import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 
 public class FirebaseInterface {
@@ -43,7 +40,6 @@ public class FirebaseInterface {
     private FirebaseAuth cachedAuth;
     private DatabaseReference cachedDbRef;
     private FirebaseFirestore cachedFirestore;
-    private boolean is_mocked;
     private Context c;
 
 
@@ -51,11 +47,7 @@ public class FirebaseInterface {
     private static final String ORGANIZERS = "organizers";
     private static final String TAG = "FirebaseInterface";
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public void setMocking(){
-        this.is_mocked = true;
-        Log.d(TAG, "Database Mocking enabled");
-    }
+
 
     public FirebaseInterface(Context context){
         this.c = context;
@@ -102,7 +94,7 @@ public class FirebaseInterface {
 
     public void signInWithEmailAndPassword(@NonNull final String email, @NonNull final String password){
 
-        if (is_mocked) {
+        if ( PolyContext.isRunningTest() ) {
             if (email.equals("nani@haha.com") && password.equals("123456") ) {
                 Toast.makeText(c, "Sign in success", Toast.LENGTH_SHORT).show();
             } else {
@@ -127,10 +119,9 @@ public class FirebaseInterface {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void getAllEvents(EventsHandler handler) {
-        if(is_mocked) {
-            Event e = new Event();
+        if( PolyContext.isRunningTest()) {
             List<Event> events = new ArrayList<>();
-            events.add(e);
+            events.add(new Event());
             handler.handle(events);
         } else {
             getFirestoreInstance(false).collection(EVENTS).get().addOnSuccessListener(queryDocumentSnapshots -> {
@@ -147,7 +138,7 @@ public class FirebaseInterface {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void addEvent(Event event){
-        if(is_mocked){
+        if( PolyContext.isRunningTest()){
             //TODO: set s from test suit
             boolean s = true;
             if (s) {
@@ -174,8 +165,8 @@ public class FirebaseInterface {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public void getEventById(String eventId, EventHandler eventHandler) {
-        if(is_mocked) {
+    public void getEventById(String eventId, EventHandler eventHandler) throws ParseException {
+        if( PolyContext.isRunningTest()) {
             Event event = new Event();
             eventHandler.handle(event);
         } else {
@@ -194,7 +185,7 @@ public class FirebaseInterface {
             Log.w(TAG, "addOrganizerToEvent: event id is null or empty");
             return;
         }
-        if(is_mocked){
+        if( PolyContext.isRunningTest()){
             handler.handle();
         } else {
             // check if the organizer is already in the list
@@ -219,7 +210,7 @@ public class FirebaseInterface {
     }
 
     public void  signUp(String username, String firstPassword, String email, int age) {
-        if (!is_mocked) {
+        if (! PolyContext.isRunningTest()) {
             CollectionReference usersRef = getFirestoreInstance(false).collection("users");
             Query queryUsernames = usersRef.whereEqualTo("username", username);
             Query queryEmails = usersRef.whereEqualTo("email", email);
@@ -294,16 +285,21 @@ public class FirebaseInterface {
     }
 
     public User getCurrentUser() {
-        if (is_mocked) {
+        if ( PolyContext.isRunningTest() ) {
             return new User("fake@fake.com", "1", "fake user", 100);
         } else {
             FirebaseUser u = getAuthInstance(false).getCurrentUser();
+            User curentUser;
             if(u != null) {
-                return new User(u.getEmail(), u.getUid(), u.getDisplayName(), 3);
+
+                curentUser =  new User(u.getEmail(), u.getUid(), u.getDisplayName(), 3);
             }else{
                 // Not logged in !
-                return null;
+                curentUser =  null;
             }
+
+            PolyContext.setCurrentUser(curentUser);
+            return  curentUser;
         }
     }
 
