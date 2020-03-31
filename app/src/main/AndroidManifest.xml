@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-
     xmlns:tools="http://schemas.android.com/tools"
     package="ch.epfl.polycrowd">
 
@@ -12,7 +11,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ResetPasswordActivity"></activity>
+        <activity android:name=".frontPage.UserProfilePageActivity"></activity>
+        <activity android:name=".ResetPasswordActivity" />
         <activity android:name=".SignUpActivity" />
         <activity
             android:name=".EventPageActivity"
@@ -27,7 +27,6 @@
         <activity android:name=".LoginActivity" />
         <activity android:name=".EventEditActivity" />
         <activity android:name=".ScheduleActivity" />
-
         <activity
             android:name=".frontPage.FrontPageActivity"
             android:label="@string/title_activity_main">
@@ -42,7 +41,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-
                 <data
                     android:host="example.com"
                     android:scheme="https" />
@@ -54,7 +52,7 @@
         <activity android:name=".OrganizerInviteActivity" />
         <activity
             android:name=".map.MapActivity"
-            android:label="@string/title_activity_main"></activity>
+            android:label="@string/title_activity_main" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -66,9 +64,6 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
-
-
     </application>
-
 
 </manifest>
