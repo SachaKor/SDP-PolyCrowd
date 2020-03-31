@@ -1,6 +1,9 @@
 package ch.epfl.polycrowd.firebase;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
 import android.view.Gravity;
@@ -16,6 +19,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.dynamiclinks.DynamicLink;
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -30,6 +35,8 @@ import java.util.Map;
 import java.util.Objects;
 
 import ch.epfl.polycrowd.Event;
+import ch.epfl.polycrowd.OrganizerInviteActivity;
+import ch.epfl.polycrowd.firebase.handlers.DynamicLinkHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
 import ch.epfl.polycrowd.firebase.handlers.OrganizersHandler;
@@ -171,12 +178,16 @@ public class FirebaseInterface {
         if( PolyContext.isRunningTest()) {
             Log.d(TAG, TAG1 + " is mocked");
             Event event = new Event();
+            // adding the the fake current user in the organizer list to test EventDetailsPage
+            event.addOrganizer("fake@fake.com");
             eventHandler.handle(event);
         } else {
             Log.d(TAG, TAG1 + " is not mocked");
+            Log.d(TAG, TAG1 + " event id: " + eventId);
             getFirestoreInstance(false).collection(EVENTS)
                     .document(eventId).get()
                     .addOnSuccessListener(documentSnapshot -> {
+                        Log.d(TAG, TAG1 + " success");
                         Event event = Event.getFromDocument(Objects.requireNonNull(documentSnapshot.getData()));
                         event.setId(eventId);
                         eventHandler.handle(event);
@@ -336,6 +347,52 @@ public class FirebaseInterface {
                             } }) ;
                     }
                 });
+    }
+
+    public void receiveDynamicLink(DynamicLinkHandler handler, Intent intent) {
+        if(PolyContext.isRunningTest()) {
+            DynamicLink inviteLink = FirebaseDynamicLinks.getInstance().createDynamicLink()
+                    .setLink(Uri.parse("https://www.example.com/invite/?eventId=" + "fakeEventId"
+                            + "&eventName=" + "fakeEventName"))
+                    .setDomainUriPrefix("https://polycrowd.page.link")
+                    .setAndroidParameters(new DynamicLink.AndroidParameters.Builder().build())
+                    .setSocialMetaTagParameters(
+                            new DynamicLink.SocialMetaTagParameters.Builder()
+                                    .setTitle("PolyCrowd Organizer Invite")
+                                    .setDescription("You are invited to become an organizer of " + "fakeEventName")
+                                    .build())
+                    .buildDynamicLink();
+            handler.handle(inviteLink.getUri());
+        } else {
+            FirebaseDynamicLinks.getInstance()
+                    .getDynamicLink(intent)
+                    .addOnSuccessListener(pendingDynamicLinkData -> {
+                        Log.d(TAG, "Dynamic link received");
+                        // Get deep link from result (may be null if no link is found)
+                        Uri deepLink = null;
+                        if (pendingDynamicLinkData != null) {
+                            deepLink = pendingDynamicLinkData.getLink();
+                        }
+
+                        if (deepLink != null) {
+//                            Log.d(TAG, "Deep link URL:\n" + deepLink.toString());
+//                            String lastPathSegment = deepLink.getLastPathSegment();
+//                            if(lastPathSegment != null && lastPathSegment.equals("invite")) {
+//                                String eventId = deepLink.getQueryParameter("eventId"),
+//                                        eventName = deepLink.getQueryParameter("eventName");
+//                                if (eventId != null && eventName != null) {
+//                                    Intent intent = new Intent(c, OrganizerInviteActivity.class);
+//                                    intent.putExtra("eventId", eventId);
+//                                    intent.putExtra("eventName", eventName);
+//                                    startActivity(intent);
+//                                }
+//                            }
+                            handler.handle(deepLink);
+                        }
+                    })
+                    .addOnFailureListener(e -> Log.w(TAG, "getDynamicLink:onFailure", e));
+        }
+
     }
 
 }

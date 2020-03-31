@@ -23,6 +23,7 @@ import ch.epfl.polycrowd.LoginActivity;
 import ch.epfl.polycrowd.OrganizerInviteActivity;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
+import ch.epfl.polycrowd.firebase.handlers.DynamicLinkHandler;
 import ch.epfl.polycrowd.logic.PolyContext;
 
 public class FrontPageActivity extends AppCompatActivity {
@@ -147,6 +148,25 @@ public class FrontPageActivity extends AppCompatActivity {
                     }
                 })
                 .addOnFailureListener(this, e -> Log.w(TAG, "getDynamicLink:onFailure", e));
+
+//        Context c = this;
+//        fbInterface.receiveDynamicLink(new DynamicLinkHandler() {
+//            @Override
+//            public void handle(Uri deepLink) {
+//                Log.d(TAG, "Deep link URL:\n" + deepLink.toString());
+//                String lastPathSegment = deepLink.getLastPathSegment();
+//                if(lastPathSegment != null && lastPathSegment.equals("invite")) {
+//                    String eventId = deepLink.getQueryParameter("eventId"),
+//                            eventName = deepLink.getQueryParameter("eventName");
+//                    if (eventId != null && eventName != null) {
+//                        Intent intent = new Intent(c, OrganizerInviteActivity.class);
+//                        intent.putExtra("eventId", eventId);
+//                        intent.putExtra("eventName", eventName);
+//                        startActivity(intent);
+//                    }
+//                }
+//            }
+//        }, getIntent());
     }
 
 }

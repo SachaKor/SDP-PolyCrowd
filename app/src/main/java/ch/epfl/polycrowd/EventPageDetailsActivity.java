@@ -105,6 +105,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
             // Check logged-in user => do not show invite button if user isn't organizer
             User user = fbi.getCurrentUser();
             if(user == null || event.getOrganizers().indexOf(user.getEmail()) == -1) {
+                Log.d(TAG, "current user is not an organizer");
                 Button inviteButton = findViewById(R.id.invite_organizer_button);
                 inviteButton.setVisibility(View.GONE);
             }
