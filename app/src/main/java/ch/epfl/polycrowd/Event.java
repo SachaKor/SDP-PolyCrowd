@@ -134,8 +134,6 @@ public class Event {
             throw new IllegalArgumentException("Id cannot be null");
         }
         this.id = id;
-        this.description = "default descrption";
-        this.image = R.drawable.demo1;
     }
 
 

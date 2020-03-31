@@ -95,6 +95,7 @@ public class MapActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.O)
     void setStatusOfUser(FirebaseInterface firebaseInterface) throws ParseException {
         final String TAG1 = "setStatusOfUser";
+        status = level.GUEST; // default status to debug
         User user = firebaseInterface.getCurrentUser();
         Log.d(TAG, TAG1 + " current user " + user);
         if(user == null){

@@ -23,6 +23,7 @@ public abstract class PolyContext extends Context {
     private static Event currentEvent;
     private static User currentUser;
     private static String previousPage = "";
+    private static boolean mockDynamicLink = false; // for the FrontPage testing
 
     public static void setCurrentEvent(Event ev){
         currentEvent = ev;
@@ -34,6 +35,7 @@ public abstract class PolyContext extends Context {
     public static String getPreviousPage() {
         return previousPage;
     }
+    public static boolean getMockDynamicLink() { return mockDynamicLink; }
 
     public static User getCurrentUser() {
         return currentUser;
@@ -44,7 +46,7 @@ public abstract class PolyContext extends Context {
     public static void setPreviousPage(String previousPage) {
         PolyContext.previousPage = previousPage;
     }
-
+    public static void setMockDynamicLink(boolean mock) { mockDynamicLink = mock; }
 
 
     // ----------- Use isRunningTest() to check if u are doing a test ------------------------

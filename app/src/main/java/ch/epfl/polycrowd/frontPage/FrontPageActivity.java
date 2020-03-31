@@ -122,51 +122,24 @@ public class FrontPageActivity extends AppCompatActivity {
 
     private void receiveDynamicLink() {
         Context c = this;
-        FirebaseDynamicLinks.getInstance()
-                .getDynamicLink(getIntent())
-                .addOnSuccessListener(this, pendingDynamicLinkData -> {
-                    Log.d(TAG, "Dynamic link received");
-                    // Get deep link from result (may be null if no link is found)
-                    Uri deepLink = null;
-                    if (pendingDynamicLinkData != null) {
-                        deepLink = pendingDynamicLinkData.getLink();
+        fbInterface.receiveDynamicLink(new DynamicLinkHandler() {
+            @Override
+            public void handle(Uri deepLink) {
+                Log.d(TAG, "Deep link URL:\n" + deepLink.toString());
+                String lastPathSegment = deepLink.getLastPathSegment();
+                Log.d(TAG, " last segment: " + lastPathSegment);
+                if(lastPathSegment != null && lastPathSegment.equals("invite")) {
+                    String eventId = deepLink.getQueryParameter("eventId"),
+                            eventName = deepLink.getQueryParameter("eventName");
+                    if (eventId != null && eventName != null) {
+                        Intent intent = new Intent(c, OrganizerInviteActivity.class);
+                        intent.putExtra("eventId", eventId);
+                        intent.putExtra("eventName", eventName);
+                        startActivity(intent);
                     }
-
-                    if (deepLink != null) {
-                        Log.d(TAG, "Deep link URL:\n" + deepLink.toString());
-                        String lastPathSegment = deepLink.getLastPathSegment();
-                        if(lastPathSegment != null && lastPathSegment.equals("invite")) {
-                            String eventId = deepLink.getQueryParameter("eventId"),
-                                    eventName = deepLink.getQueryParameter("eventName");
-                            if (eventId != null && eventName != null) {
-                                Intent intent = new Intent(c, OrganizerInviteActivity.class);
-                                intent.putExtra("eventId", eventId);
-                                intent.putExtra("eventName", eventName);
-                                startActivity(intent);
-                            }
-                        }
-                    }
-                })
-                .addOnFailureListener(this, e -> Log.w(TAG, "getDynamicLink:onFailure", e));
-
-//        Context c = this;
-//        fbInterface.receiveDynamicLink(new DynamicLinkHandler() {
-//            @Override
-//            public void handle(Uri deepLink) {
-//                Log.d(TAG, "Deep link URL:\n" + deepLink.toString());
-//                String lastPathSegment = deepLink.getLastPathSegment();
-//                if(lastPathSegment != null && lastPathSegment.equals("invite")) {
-//                    String eventId = deepLink.getQueryParameter("eventId"),
-//                            eventName = deepLink.getQueryParameter("eventName");
-//                    if (eventId != null && eventName != null) {
-//                        Intent intent = new Intent(c, OrganizerInviteActivity.class);
-//                        intent.putExtra("eventId", eventId);
-//                        intent.putExtra("eventName", eventName);
-//                        startActivity(intent);
-//                    }
-//                }
-//            }
-//        }, getIntent());
+                }
+            }
+        }, getIntent());
     }
 
 }
