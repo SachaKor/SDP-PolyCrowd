@@ -102,16 +102,13 @@ public class MapActivity extends AppCompatActivity {
             status = level.GUEST;
         }else{
             Log.d(TAG, TAG1 + " user email: " + user.getEmail());
-            firebaseInterface.getEventById(eventId, event -> {
-                Log.d(TAG, TAG1 + " retrieved current event");
-                Log.d(TAG, TAG1 + " event name: " + event.getName());
-                List<String> organizerEmails = event.getOrganizers();
-                if(organizerEmails.indexOf(user.getEmail()) == -1){
-                    status = level.VISITOR;
-                }else{
-                    status = level.ORGANISER;
-                }
-            });
+            Event event = PolyContext.getCurrentEvent();
+            List<String> organizerEmails = event.getOrganizers();
+            if(organizerEmails.indexOf(user.getEmail()) == -1){
+                status = level.VISITOR;
+            } else {
+                status = level.ORGANISER;
+            }
         }
     }
     @SuppressLint("NewApi")
