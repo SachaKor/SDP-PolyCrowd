@@ -2,6 +2,7 @@ package ch.epfl.polycrowd.logic;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class User extends Storable {
 
@@ -41,5 +42,13 @@ public class User extends Storable {
 
     public String getUid() {
         return uid;
+    }
+
+    public static User getFromDocument(Map<String, Object> data) {
+        String username = Objects.requireNonNull(data.get("username")).toString();
+        String email = Objects.requireNonNull(data.get("email")).toString();
+        Integer age = (Integer) Objects.requireNonNull(data.get("age"));
+        String uid = Objects.requireNonNull(data.get("uid")).toString();
+        return new User(email, uid, username, age);
     }
 }

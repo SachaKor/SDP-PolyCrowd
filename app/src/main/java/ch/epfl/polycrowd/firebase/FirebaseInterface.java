@@ -1,6 +1,5 @@
 package ch.epfl.polycrowd.firebase;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -19,7 +18,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.dynamiclinks.DynamicLink;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -33,14 +31,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import ch.epfl.polycrowd.Event;
-import ch.epfl.polycrowd.OrganizerInviteActivity;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.firebase.handlers.DynamicLinkHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
 import ch.epfl.polycrowd.firebase.handlers.OrganizersHandler;
+import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 
@@ -54,6 +53,7 @@ public class FirebaseInterface {
 
     private static final String EVENTS = "polyevents";
     private static final String ORGANIZERS = "organizers";
+    private static final String USERS = "users";
     private static final String TAG = "FirebaseInterface";
 
 
@@ -101,7 +101,9 @@ public class FirebaseInterface {
         }
     }
 
-    public void signInWithEmailAndPassword(@NonNull final String email, @NonNull final String password){
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public void signInWithEmailAndPassword(@NonNull final String email, @NonNull final String password,
+                                           UserHandler handler){
 
         if ( PolyContext.isRunningTest() ) {
             if (email.equals("nani@haha.com") && password.equals("123456") ) {
@@ -113,7 +115,11 @@ public class FirebaseInterface {
             this.getAuthInstance(true).signInWithEmailAndPassword(email,password)
                     .addOnCompleteListener(taskc -> {
                         if(taskc.isSuccessful()) {
+                            // TODO: use getUserByEmail, clean up firestore first
+                            User user = new User(email, taskc.getResult().getUser().getUid(), "username", 3);
+//                            getUserByEmail(email, handler);
                             Toast.makeText(c, "Sign in success", Toast.LENGTH_SHORT).show();
+                            handler.handle(user);
                         } else {
                             Toast.makeText(c, "Incorrect email or password", Toast.LENGTH_SHORT).show();
                         }
@@ -122,8 +128,31 @@ public class FirebaseInterface {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public void getUserByEmail(String email, UserHandler handler) {
+        if(PolyContext.isRunningTest()) {
+            handler.handle(new User("fake@fake.com", "1", "fake user", 100));
+        } else {
+            getFirestoreInstance(false).collection(USERS)
+                    .whereEqualTo("email", email).get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        if(queryDocumentSnapshots.size() > 1) {
+                            Log.e(TAG, " multiple users with email " + email);
+                        }
+                        // there MUST be one single snapshot
+                        queryDocumentSnapshots.forEach(queryDocumentSnapshot -> {
+                            Map<String, Object> data = queryDocumentSnapshot.getData();
+                            data.put("uid", queryDocumentSnapshot.getId());
+                            handler.handle(User.getFromDocument(data));
+                        });
+                    }).addOnFailureListener(e -> Log.e(TAG, "Error retrieving user with email " + email));
+        }
+
+    }
+
     public void signOut(){
         this.getAuthInstance(false).signOut();
+        PolyContext.setCurrentUser(null);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -330,6 +359,7 @@ public class FirebaseInterface {
             PolyContext.setCurrentUser(curentUser);
             return  curentUser;
         }
+
     }
 
     public void resetPassword(String email){

@@ -15,7 +15,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import java.util.List;
 
 import ch.epfl.polycrowd.Event;
@@ -47,7 +46,23 @@ public class FrontPageActivity extends AppCompatActivity {
 
         // front page should dispatch the dynamic links
         receiveDynamicLink();
+    }
+    // --------------------------------------------------------------------------------
 
+    // --------------------- ON START, ON RESTART -------------------------------------
+    @Override
+    protected void onStart() {
+        super.onStart();
+        toggleLoginLogout();
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        toggleLoginLogout();
+    }
+
+    private void toggleLoginLogout() {
         // Toggle login/logout button
         if(PolyContext.getCurrentUser() != null){
             Button button = findViewById(R.id.button);
@@ -55,7 +70,7 @@ public class FrontPageActivity extends AppCompatActivity {
             button.setOnClickListener(v -> clickSignOut(v));
         }
     }
-    // --------------------------------------------------------------------------------
+
 
 
 

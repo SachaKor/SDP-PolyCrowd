@@ -4,7 +4,9 @@ package ch.epfl.polycrowd;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
+import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.PolyContext;
+import ch.epfl.polycrowd.logic.User;
 
 import android.content.Context;
 import android.content.Intent;
@@ -64,31 +66,30 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        fbInterface.signInWithEmailAndPassword(email, password);
-
-        if(fbInterface.getCurrentUser() == null) {
-            return;
-        }
-
-        /* if the user logs in to accept the organizer invitation, add him/her to the
-            organizers list, then open the event details page for the preview */
-        Log.d(TAG, "previous page: " + PolyContext.getPreviousPage());
-        if(PolyContext.getPreviousPage().equals("OrganizerInviteActivity")) {
-            String organizerEmail =
-                    Objects.requireNonNull(fbInterface.getCurrentUser().getEmail());
-            if(PolyContext.getCurrentEvent() == null) {
-                Log.e(TAG, "current event is null");
+        Context c = this;
+        fbInterface.signInWithEmailAndPassword(email, password, user -> {
+            if(fbInterface.getCurrentUser() == null) {
                 return;
             }
-            Context c = this;
-            Event event = PolyContext.getCurrentEvent();
-            fbInterface.addOrganizerToEvent(event.getId(), organizerEmail, () -> {
-                Intent eventDetails = new Intent(c, EventPageDetailsActivity.class);
-                eventDetails.putExtra(EVENT_ID, event.getId());
-                startActivity(eventDetails);
-            });
-        }
-
+            PolyContext.setCurrentUser(user);
+            /* if the user logs in to accept the organizer invitation, add him/her to the
+                organizers list, then open the event details page for the preview */
+            Log.d(TAG, "previous page: " + PolyContext.getPreviousPage());
+            if(PolyContext.getPreviousPage().equals("OrganizerInviteActivity")) {
+                String organizerEmail =
+                        Objects.requireNonNull(fbInterface.getCurrentUser().getEmail());
+                if(PolyContext.getCurrentEvent() == null) {
+                    Log.e(TAG, "current event is null");
+                    return;
+                }
+                Event event = PolyContext.getCurrentEvent();
+                fbInterface.addOrganizerToEvent(event.getId(), organizerEmail, () -> {
+                    Intent eventDetails = new Intent(c, EventPageDetailsActivity.class);
+                    eventDetails.putExtra(EVENT_ID, event.getId());
+                    startActivity(eventDetails);
+                });
+            }
+        });
     }
 
 
