@@ -40,7 +40,6 @@ public class EventPageDetailsActivityTest {
             new ActivityTestRule<>(EventPageDetailsActivity.class, true /* Initial touch mode  */,
                     false /* Lazily launch activity */);
 
-
     @Before
     public void startIntent() {
         Event ev = new Event();
@@ -48,7 +47,6 @@ public class EventPageDetailsActivityTest {
         Intent intent = new Intent();
         mActivityRule.launchActivity(intent);
     }
-
 
     @Test
     public void dialogWithInviteLinkOpensWhenInviteClicked() {
