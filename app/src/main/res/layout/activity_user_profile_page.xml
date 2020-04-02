@@ -64,11 +64,12 @@
         android:layout_width="match_parent"
         android:layout_height="120dp"
         android:layout_gravity="center_vertical"
+        android:layout_marginTop="124dp"
         android:src="@drawable/default_user_pic"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="133dp" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
