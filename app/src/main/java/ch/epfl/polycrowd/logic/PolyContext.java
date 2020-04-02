@@ -2,6 +2,7 @@ package ch.epfl.polycrowd.logic;
 
 import android.content.Context;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
@@ -13,19 +14,28 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import ch.epfl.polycrowd.Event;
 
-import ch.epfl.polycrowd.logic.User;
-
 
 public abstract class PolyContext extends Context {
+
+    private static final String TAG = "PolyContext";
+
+    public static boolean mocking= false;
     private static Event currentEvent;
     private static User currentUser;
+    private static String previousPage = "";
+    private static boolean mockDynamicLink = false; // for the FrontPage testing
 
     public static void setCurrentEvent(Event ev){
         currentEvent = ev;
+        Log.d(TAG, "current event is set");
     }
     public static Event getCurrentEvent(){
         return currentEvent;
     }
+    public static String getPreviousPage() {
+        return previousPage;
+    }
+    public static boolean getMockDynamicLink() { return mockDynamicLink; }
 
     public static User getCurrentUser() {
         return currentUser;
@@ -33,7 +43,10 @@ public abstract class PolyContext extends Context {
     public static void setCurrentUser(User u){
        currentUser= u;
     }
-
+    public static void setPreviousPage(String previousPage) {
+        PolyContext.previousPage = previousPage;
+    }
+    public static void setMockDynamicLink(boolean mock) { mockDynamicLink = mock; }
 
 
     // ----------- Use isRunningTest() to check if u are doing a test ------------------------
@@ -88,7 +101,7 @@ public abstract class PolyContext extends Context {
             activity.put("DTEND","20200702T030000");
             ArrayList<Activity> fakeList = new ArrayList<>();
             fakeList.add(new Activity(activity));
-            return fakeList;
+            return fakeList;    // --------------------------------------------------------------------------------------
         }
     }
 }

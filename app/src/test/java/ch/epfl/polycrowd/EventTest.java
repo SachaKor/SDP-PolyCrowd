@@ -18,6 +18,7 @@ import java.util.Objects;
 import static ch.epfl.polycrowd.Event.dateToString;
 import static ch.epfl.polycrowd.Event.stringToDate;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 
@@ -96,13 +97,14 @@ public class EventTest {
         assertEquals("https://satellite.bar/agenda/ical.php", nec.getCalendar());
 
         Event ned = new Event();
+
         assertEquals(ned.getOwner() , "debug owner");
         assertEquals("DEBUG EVENT", ned.getName());
         assertEquals(true, ned.getPublic());
         assertEquals(Event.EventType.OTHER, ned.getType());
-        //assertNull(ned.getStart());
-        //assertNull(ned.getEnd());
-        //assertNull(ned.getCalendar());
+        assertNotNull(ned.getStart());
+        assertNotNull(ned.getEnd());
+        assertEquals("url", ned.getCalendar());
         assertEquals("this is only a debug event ... ",ned.getDescription());
     }
 
