@@ -53,7 +53,10 @@ public class UserEventListAdapter extends RecyclerView.Adapter {
             //CurrentUser that will be used by EventPageDetailsActivity
             /**/
             PolyContext.setCurrentUser(Utils.getFakeUser());
-            PolyContext.setCurrentEvent(new Event());
+            Event event = new Event() ;
+            String eventId = "ADYz6HuISjOiG4uBRY2z"; //id is the string that identifies the specific document?
+            event.setId(eventId);
+            PolyContext.setCurrentEvent(event);
 
             Intent intent = new Intent(c, EventPageDetailsActivity.class) ;
 
