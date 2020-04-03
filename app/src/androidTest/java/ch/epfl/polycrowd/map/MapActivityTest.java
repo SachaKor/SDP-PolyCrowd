@@ -1,14 +1,19 @@
 package ch.epfl.polycrowd.map;
 
+import android.content.Intent;
+
 import androidx.test.rule.ActivityTestRule;
 
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
 
+import ch.epfl.polycrowd.Event;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.logic.PolyContext;
+import ch.epfl.polycrowd.logic.User;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -21,6 +26,12 @@ import static org.junit.Assert.assertTrue;
 
 
 public class MapActivityTest {
+    @Before
+    public void startIntent() {
+        Event ev = new Event();
+        PolyContext.setCurrentEvent(ev);
+    }
+
 
     @Test
     public void checkTestMockingEnabled(){
@@ -29,10 +40,11 @@ public class MapActivityTest {
 
     @Rule
     public final ActivityTestRule<MapActivity> mActivityRule =
-            new ActivityTestRule<>(MapActivity.class);
+            new ActivityTestRule<>(MapActivity.class, true , false);
 
     @Test
     public void setGuestButtonsCorrectlyCreatesGuestButtons() {
+        launchActivity();
         if(mActivityRule.getActivity().status == MapActivity.level.GUEST) {
             onView(withId(R.id.butRight)).check(matches(withText(containsString("EVENT DETAILS"))));
             onView(withId(R.id.butLeft)).check(matches(withText(containsString("LOGIN"))));
@@ -41,22 +53,32 @@ public class MapActivityTest {
 
     @Test
     public void setOrgainizerButtonsCorrectlyCreatesOrganizerButtons() {
-        if(mActivityRule.getActivity().status == MapActivity.level.ORGANISER) {
-            onView(withId(R.id.butRight)).check(matches(withText(containsString("MANAGE"))));
-            onView(withId(R.id.butLeft)).check(matches(withText(containsString("STAFF"))));
-        }
+
+        //create a new user
+        User user = new User("fake@email.nu", "fakeuid", "thefamousnani", 18);
+        PolyContext.setCurrentUser(user);
+
+        launchActivity();
+        onView(withId(R.id.butRight)).check(matches(withText(containsString("MANAGE DETAILS"))));
+        onView(withId(R.id.butLeft)).check(matches(withText(containsString("STAFF"))));
+
     }
 
     @Test
     public void setVisitorButtonsCorrectlyCreatesVisitorButtons() {
-        if(mActivityRule.getActivity().status == MapActivity.level.VISITOR) {
-            onView(withId(R.id.butRight)).check(matches(withText(containsString("EVENT DETAILS"))));
-            onView(withId(R.id.butLeft)).check(matches(withText(containsString("GROUPS"))));
-        }
+        //set the user to that of a visitor
+        Event ev = new Event();
+        User user = new User("fake email", "fakeuid", "John", 18);
+        PolyContext.setCurrentUser(user);
+        launchActivity();
+        onView(withId(R.id.butRight)).check(matches(withText(containsString("EVENT DETAILS"))));
+        onView(withId(R.id.butLeft)).check(matches(withText(containsString("GROUPS"))));
+
     }
 
     @Test
     public void asGuestLoginButtonNavigatesToLoginPage() {
+        launchActivity();
         sleep();
         if(mActivityRule.getActivity().status == MapActivity.level.GUEST) {
             onView(withId(R.id.butLeft)).perform(click());
@@ -65,13 +87,24 @@ public class MapActivityTest {
     }
 
 
-    /*@Test
+    @Test
     public void asGuestLoginButtonNavigatesToEventDetailsPage() {
+        launchActivity();
+        sleep();
         if(mActivityRule.getActivity().status == MapActivity.level.GUEST) {
             onView(withId(R.id.butRight)).perform(click());
-            onView(withId(R.id.event_details_title)).check(matches(isDisplayed()));
+            onView(withId(R.id.event_details_img)).check(matches(isDisplayed()));
         }
-    }*/
+    }
+    @Test
+    public void asVistorLoginButtonNavigatesToEventDetailsPage() {
+        launchActivity();
+        sleep();
+        if(mActivityRule.getActivity().status == MapActivity.level.GUEST) {
+            onView(withId(R.id.butRight)).perform(click());
+            onView(withId(R.id.event_details_img)).check(matches(isDisplayed()));
+        }
+    }
 
     private void sleep(){
         try{
@@ -79,5 +112,9 @@ public class MapActivityTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+    private void launchActivity(){
+        Intent intent = new Intent();
+        mActivityRule.launchActivity(intent);
     }
 }
