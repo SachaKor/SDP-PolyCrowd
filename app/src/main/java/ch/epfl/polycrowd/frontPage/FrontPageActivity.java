@@ -18,8 +18,11 @@ import androidx.viewpager.widget.ViewPager;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.ListIterator;
 
 import ch.epfl.polycrowd.authentification.LoginActivity;
 import ch.epfl.polycrowd.organizerInvite.OrganizerInviteActivity;
@@ -126,8 +129,18 @@ public class FrontPageActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private List<Event> orderEvents(List<Event> es){
-        es.sort((o1, o2) -> o1.getStart().compareTo(o2.getStart()));
+        sort(es, (o1, o2) -> o1.getStart().compareTo(o2.getStart()));
         return es;
+    }
+
+    private void sort(List<Event> e,Comparator<Event> c) {
+        Object[] a = e.toArray();
+        Arrays.sort(a, (Comparator) c);
+        ListIterator<Event> i = e.listIterator();
+        for (Object ev : a) {
+            i.next();
+            i.set((Event) ev);
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
