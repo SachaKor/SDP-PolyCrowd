@@ -6,6 +6,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.content.Context;
 import android.content.Intent;
+import android.icu.util.Calendar;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,6 +19,8 @@ import android.widget.TextView;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import ch.epfl.polycrowd.Event;
@@ -69,7 +72,10 @@ public class FrontPageActivity extends AppCompatActivity {
         StrictMode.setThreadPolicy(policy);
         fbInterface.getAllEvents(this::setAdapter);
     }
+    @RequiresApi(api = Build.VERSION_CODES.O)
     void setAdapter(List<Event> events){
+        orderEvents(events);
+        trimFinishedEvents(events);
         adapter = new EventPagerAdaptor(events, this);
         setViewPager(events);
     }
@@ -103,7 +109,22 @@ public class FrontPageActivity extends AppCompatActivity {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private List<Event> orderEvents(List<Event> es){
+        es.sort((o1, o2) -> o1.getStart().compareTo(o2.getStart()));
+        return es;
+    }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void trimFinishedEvents(List<Event> es){
+        Date now = Calendar.getInstance().getTime();
+        List<Event> es1 = new ArrayList<>(es);
+        for (Event e : es1){
+            if (e.getEnd().compareTo(now) <0){
+                es.remove(e);
+            }
+        }
+    }
 
 
     // --------- Button Activity ----------------------------------------------------------

@@ -93,8 +93,8 @@ public class Event {
         this.isPublic = true;
         this.type = EventType.OTHER;
         try {
-            this.start = dtFormat.parse("01-08-2018 00:00");
-            this.end = dtFormat.parse("02-08-2018 01:00");
+            this.start = dtFormat.parse("01-08-2020 00:00");
+            this.end = dtFormat.parse("02-08-2020 01:00");
         } catch (ParseException e){
             this.start = null;
             this.end = null;
