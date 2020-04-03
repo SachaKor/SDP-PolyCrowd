@@ -21,7 +21,7 @@ import ch.epfl.polycrowd.firebase.FirebaseInterface;
 import ch.epfl.polycrowd.logic.Model;
 import ch.epfl.polycrowd.logic.PolyContext;
 
-public class UserEventListAdapter extends RecyclerView.Adapter {
+public class UserEventListAdapter extends RecyclerView.Adapter<UserEventListHolder> {
 
     Context c ;
     ArrayList<Model> models ;
@@ -33,7 +33,7 @@ public class UserEventListAdapter extends RecyclerView.Adapter {
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public UserEventListHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row, null) ;
 
         return new UserEventListHolder(view);
@@ -41,7 +41,7 @@ public class UserEventListAdapter extends RecyclerView.Adapter {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
-    public void onBindViewHolder(@NonNull  RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull UserEventListHolder holder, int position) {
 
         ((UserEventListHolder)holder).mTitle.setText(models.get(position).getTitle());
         ((UserEventListHolder)holder).mDes.setText(models.get(position).getDescription());
@@ -60,7 +60,7 @@ public class UserEventListAdapter extends RecyclerView.Adapter {
             //PolyContext.setCurrentEvent(event);
             //TODO figure out how to use position argument in the lambda to retrieve the eventId
             //TODO: Use position argument to get the model in the list, and then from the model,getId
-            //TODO Question, where is the model id set? --> inside the enclosing activity 
+            //TODO Question, where is the model id set? --> inside the enclosing activity
 
             FirebaseInterface fi = new FirebaseInterface(c);
             try {
@@ -77,9 +77,11 @@ public class UserEventListAdapter extends RecyclerView.Adapter {
 
     }
 
+
     @Override
     public int getItemCount() {
         return models.size();
     }
+
 
 }
