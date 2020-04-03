@@ -58,6 +58,9 @@ public class UserEventListAdapter extends RecyclerView.Adapter {
             String eventId = "ADYz6HuISjOiG4uBRY2z"; //id is the string that identifies the specific document?
             //event.setId(eventId);
             //PolyContext.setCurrentEvent(event);
+            //TODO figure out how to use position argument in the lambda to retrieve the eventId
+            //TODO: Use position argument to get the model in the list, and then from the model,getId
+            //TODO Question, where is the model id set?
 
             FirebaseInterface fi = new FirebaseInterface(c);
             try {
@@ -78,4 +81,5 @@ public class UserEventListAdapter extends RecyclerView.Adapter {
     public int getItemCount() {
         return models.size();
     }
+
 }
