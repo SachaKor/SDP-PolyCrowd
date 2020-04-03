@@ -25,6 +25,7 @@ import com.google.android.gms.maps.model.LatLng;
 import java.text.ParseException;
 import java.util.List;
 
+import ch.epfl.polycrowd.EmergencyActivity;
 import ch.epfl.polycrowd.Event;
 import ch.epfl.polycrowd.EventPageDetailsActivity;
 import ch.epfl.polycrowd.LoginActivity;
@@ -152,6 +153,7 @@ public class MapActivity extends AppCompatActivity {
     void createButtons() {
         Button buttonRight = findViewById(R.id.butRight);
         Button buttonLeft = findViewById(R.id.butLeft);
+        Button buttonSOS = findViewById(R.id.butSOS);
 
         Log.d(TAG, "user status: " + status);
 
@@ -161,6 +163,8 @@ public class MapActivity extends AppCompatActivity {
                 break;
             case VISITOR:
                 setVisitorButtons(buttonLeft, buttonRight);
+                buttonSOS.setVisibility(View.VISIBLE);
+                buttonSOS.setOnLongClickListener(v->clickSOS(v)); //TODO: hold for 5 seconds + animation ?
                 break;
             case ORGANISER:
                 setOrganiserButtons(buttonLeft, buttonRight);
@@ -215,6 +219,12 @@ public class MapActivity extends AppCompatActivity {
         Intent intent = new Intent(this, EventPageDetailsActivity.class);
         intent.putExtra("eventId", eventId);
         startActivity(intent);
+    }
+
+    public boolean clickSOS(View view) {
+        Intent intent = new Intent(this, EmergencyActivity.class);
+        startActivity(intent);
+        return true;
     }
 
 

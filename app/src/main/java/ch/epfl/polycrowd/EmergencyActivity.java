@@ -34,6 +34,8 @@ public class EmergencyActivity extends AppCompatActivity {
 
         Log.d(LOG_TAG, "Send SOS type Button Clicked: "+ view.getTooltipText());
 
+        //TODO: SEND TO FIREBASE
+
         Intent intent = new Intent(this, MapActivity.class);
         startActivity(intent);
         return true;
