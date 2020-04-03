@@ -15,6 +15,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.content.Intent;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -24,10 +25,12 @@ import com.google.android.gms.maps.model.LatLng;
 import java.text.ParseException;
 import java.util.List;
 
+import ch.epfl.polycrowd.Event;
 import ch.epfl.polycrowd.EventPageDetailsActivity;
 import ch.epfl.polycrowd.LoginActivity;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
+import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 
 public class MapActivity extends AppCompatActivity {
@@ -64,8 +67,16 @@ public class MapActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // TODO: replace this with the Context
-        if(getIntent().hasExtra("eventId")) {
-            eventId = getIntent().getStringExtra("eventId");
+//        if(getIntent().hasExtra("eventId")) {
+//            eventId = getIntent().getStringExtra("eventId");
+//        }
+
+        Event event = PolyContext.getCurrentEvent();
+        if(event != null) {
+            eventId = event.getId();
+            Log.d(TAG, "event " + eventId);
+        } else {
+            Log.e(TAG, "current event is null");
         }
 
         // Check logged-in user
@@ -83,18 +94,21 @@ public class MapActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     void setStatusOfUser(FirebaseInterface firebaseInterface) throws ParseException {
+        final String TAG1 = "setStatusOfUser";
+        status = level.GUEST; // default status to debug
         User user = firebaseInterface.getCurrentUser();
+        Log.d(TAG, TAG1 + " current user " + user);
         if(user == null){
             status = level.GUEST;
         }else{
-            firebaseInterface.getEventById(eventId, event -> {
-                List<String> organizerEmails = event.getOrganizers();
-                if(organizerEmails.indexOf(user.getEmail()) == -1){
-                    status = level.VISITOR;
-                }else{
-                    status = level.ORGANISER;
-                }
-            });
+            Log.d(TAG, TAG1 + " user email: " + user.getEmail());
+            Event event = PolyContext.getCurrentEvent();
+            List<String> organizerEmails = event.getOrganizers();
+            if(organizerEmails.indexOf(user.getEmail()) == -1){
+                status = level.VISITOR;
+            } else {
+                status = level.ORGANISER;
+            }
         }
     }
     @SuppressLint("NewApi")
@@ -138,6 +152,8 @@ public class MapActivity extends AppCompatActivity {
     void createButtons() {
         Button buttonRight = findViewById(R.id.butRight);
         Button buttonLeft = findViewById(R.id.butLeft);
+
+        Log.d(TAG, "user status: " + status);
 
         switch (status) {
             case GUEST:

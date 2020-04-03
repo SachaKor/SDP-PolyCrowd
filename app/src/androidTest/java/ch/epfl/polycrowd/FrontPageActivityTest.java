@@ -1,11 +1,8 @@
 package ch.epfl.polycrowd;
 
-import android.util.Log;
-
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
 
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,6 +29,7 @@ public class FrontPageActivityTest {
     @Rule
     public final ActivityTestRule<FrontPageActivity> frontPageActivityRule =
             new ActivityTestRule<>(FrontPageActivity.class);
+
 
 
     @Test
@@ -80,7 +78,6 @@ public class FrontPageActivityTest {
         sleep();
         onView(withId(R.id.map)).check(matches(isDisplayed()));
     }
-
 
     private void sleep(){
         try{

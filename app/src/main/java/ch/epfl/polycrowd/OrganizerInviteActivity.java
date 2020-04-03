@@ -1,52 +1,45 @@
 package ch.epfl.polycrowd;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-
-import java.util.Locale;
+import ch.epfl.polycrowd.logic.PolyContext;
 
 public class OrganizerInviteActivity extends AppCompatActivity {
     private static final String TAG = "OrganizerInviteActivity";
-    private String eventId, eventName = "";
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_organizer_invite);
-
-        setUpExtras();
-
+        setInviteText();
         Log.d(TAG, "onCreate");
 
     }
 
-    private void setUpExtras() {
-        if(getIntent().hasExtra("eventId")) {
-            eventId = getIntent().getStringExtra("eventId");
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void setInviteText() {
+        Event curEvent = PolyContext.getCurrentEvent();
+        if(curEvent == null) {
+            Log.e(TAG, "current event is null");
+            return;
         }
-        if(getIntent().hasExtra("eventName")) {
-            TextView previewText = findViewById(R.id.organizer_invite_text);
-            eventName = getIntent().getStringExtra("eventName");
-            previewText.setText(String.format(Locale.ENGLISH,"%d\"%s\"\n%d", R.string.organizer_invite_text_1, eventName, R.string.organizer_invite_text_2));
-        }
+        TextView previewText = findViewById(R.id.organizer_invite_text);
+        String toDisplay = "You are invited to become an organizer of \"" + curEvent.getName()
+                + "\"\nLog in to accept the invitation";
+        previewText.setText(toDisplay);
     }
 
     public void logInClicked(View view) {
-        if(getIntent().hasExtra("eventId")) {
-            Toast.makeText(this, getIntent().getStringExtra("eventId"), Toast.LENGTH_LONG).show();
-            eventId = getIntent().getStringExtra("eventId");
-        }
+        PolyContext.setPreviousPage(TAG);
         Intent intent = new Intent(this, LoginActivity.class);
-        // these extras are passed to the log in page to add the organizer to the
-        // organizers list once the user has signed in
-        intent.putExtra("isOrganizerInvite", true);
-        intent.putExtra("eventId", eventId);
         startActivity(intent);
     }
 }
