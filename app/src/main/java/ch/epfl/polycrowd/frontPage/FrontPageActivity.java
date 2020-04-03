@@ -15,9 +15,6 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
-import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
-
-
 import java.util.List;
 
 import ch.epfl.polycrowd.Event;
@@ -25,11 +22,8 @@ import ch.epfl.polycrowd.LoginActivity;
 import ch.epfl.polycrowd.OrganizerInviteActivity;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
-
-import ch.epfl.polycrowd.frontPage.userProfile.UserProfilePageActivity;
-
 import ch.epfl.polycrowd.firebase.handlers.DynamicLinkHandler;
-
+import ch.epfl.polycrowd.frontPage.userProfile.UserProfilePageActivity;
 import ch.epfl.polycrowd.logic.PolyContext;
 
 public class FrontPageActivity extends AppCompatActivity {
@@ -74,6 +68,9 @@ public class FrontPageActivity extends AppCompatActivity {
         if(PolyContext.getCurrentUser() != null){
             Button button = findViewById(R.id.button);
             button.setText("LOGOUT");
+            //Also show profile button
+            Button profileButton = findViewById(R.id.goToUserProfileButton) ;
+            profileButton.setVisibility(View.VISIBLE);
             button.setOnClickListener(v -> clickSignOut(v));
         }
     }
