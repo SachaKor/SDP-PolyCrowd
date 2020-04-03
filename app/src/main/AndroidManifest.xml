@@ -15,7 +15,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".frontPage.UserProfilePageActivity"></activity>
+        <activity android:name=".frontPage.userProfile.UserProfilePageActivity"></activity>
+        <activity android:name=".frontPage.userProfile.UserEventListActivity"/>
         <activity android:name=".ResetPasswordActivity" />
         <activity android:name=".SignUpActivity" />
         <activity
