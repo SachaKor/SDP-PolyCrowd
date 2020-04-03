@@ -25,9 +25,4 @@ public class Utils {
         return new User("fake@fake.com", "1", "fake user", 100);
     }
 
-    public Event getFakeEvent(){
-        return new Event() ;
-    }
-
-
 }
