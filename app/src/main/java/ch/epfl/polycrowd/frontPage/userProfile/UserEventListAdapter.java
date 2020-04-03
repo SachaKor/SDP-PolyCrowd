@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 import ch.epfl.polycrowd.Event;
 import ch.epfl.polycrowd.EventPageDetailsActivity;
-import ch.epfl.polycrowd.Model;
+import ch.epfl.polycrowd.logic.Model;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.Utils;
 import ch.epfl.polycrowd.logic.PolyContext;

@@ -2,11 +2,9 @@ package ch.epfl.polycrowd;
 
 import android.os.Build;
 
-import com.google.firebase.Timestamp;
-
-
 import androidx.annotation.RequiresApi;
-import androidx.annotation.VisibleForTesting;
+
+import com.google.firebase.Timestamp;
 
 import java.io.File;
 import java.text.ParseException;
@@ -19,6 +17,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
+import ch.epfl.polycrowd.logic.Model;
 import ch.epfl.polycrowd.logic.Schedule;
 
 @RequiresApi(api = Build.VERSION_CODES.O)

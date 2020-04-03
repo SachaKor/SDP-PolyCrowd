@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-import ch.epfl.polycrowd.Model;
+import ch.epfl.polycrowd.logic.Model;
 import ch.epfl.polycrowd.R;
 
 public class UserEventListActivity  extends AppCompatActivity {
