@@ -60,7 +60,7 @@ public class UserEventListAdapter extends RecyclerView.Adapter {
             //PolyContext.setCurrentEvent(event);
             //TODO figure out how to use position argument in the lambda to retrieve the eventId
             //TODO: Use position argument to get the model in the list, and then from the model,getId
-            //TODO Question, where is the model id set?
+            //TODO Question, where is the model id set? --> inside the enclosing activity 
 
             FirebaseInterface fi = new FirebaseInterface(c);
             try {
