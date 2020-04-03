@@ -19,14 +19,10 @@ import ch.epfl.polycrowd.logic.Model;
 
 public class MyAdapter extends RecyclerView.Adapter<MyHolder> implements Filterable {
 
-
-    private Context c;
-
     private List<Model> models;
     private List<Model> modelsFull;
 
     public MyAdapter(Context c, List<Model> models){
-        this.c = c ;
         this.models= models ;
         modelsFull = new ArrayList<>(models);
     }

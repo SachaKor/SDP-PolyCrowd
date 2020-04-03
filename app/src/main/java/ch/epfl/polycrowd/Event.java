@@ -58,7 +58,7 @@ public class Event {
         this.end = end;
         this.calendar = calendar;
         organizers = new ArrayList<>();
-        organizers.add(owner);
+        organizers.add(owner); // TODO: this is wrong, organizers must contain the emails
         setDescription(description);
     }
 
@@ -98,10 +98,11 @@ public class Event {
             this.start = null;
             this.end = null;
         }
-        this.calendar = "";
+        this.calendar = "url";
         this.description = "this is only a debug event ... ";
         this.image = R.drawable.balelec;
         this.organizers = new ArrayList<>();
+        organizers.add("fake@email.nu");
         this.schedule = new Schedule();
     }
 
@@ -132,8 +133,6 @@ public class Event {
             throw new IllegalArgumentException("Id cannot be null");
         }
         this.id = id;
-        this.description = "default descrption";
-        this.image = R.drawable.balelec;
     }
 
 

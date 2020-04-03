@@ -17,6 +17,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
+
 import java.util.List;
 
 import ch.epfl.polycrowd.Event;
@@ -24,7 +25,11 @@ import ch.epfl.polycrowd.LoginActivity;
 import ch.epfl.polycrowd.OrganizerInviteActivity;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
+
 import ch.epfl.polycrowd.frontPage.userProfile.UserProfilePageActivity;
+
+import ch.epfl.polycrowd.firebase.handlers.DynamicLinkHandler;
+
 import ch.epfl.polycrowd.logic.PolyContext;
 
 public class FrontPageActivity extends AppCompatActivity {
@@ -48,7 +53,23 @@ public class FrontPageActivity extends AppCompatActivity {
 
         // front page should dispatch the dynamic links
         receiveDynamicLink();
+    }
+    // --------------------------------------------------------------------------------
 
+    // --------------------- ON START, ON RESTART -------------------------------------
+    @Override
+    protected void onStart() {
+        super.onStart();
+        toggleLoginLogout();
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        toggleLoginLogout();
+    }
+
+    private void toggleLoginLogout() {
         // Toggle login/logout button
         if(PolyContext.getCurrentUser() != null){
             Button button = findViewById(R.id.button);
@@ -56,7 +77,7 @@ public class FrontPageActivity extends AppCompatActivity {
             button.setOnClickListener(v -> clickSignOut(v));
         }
     }
-    // --------------------------------------------------------------------------------
+
 
 
 
@@ -129,32 +150,24 @@ public class FrontPageActivity extends AppCompatActivity {
 
     private void receiveDynamicLink() {
         Context c = this;
-        FirebaseDynamicLinks.getInstance()
-                .getDynamicLink(getIntent())
-                .addOnSuccessListener(this, pendingDynamicLinkData -> {
-                    Log.d(TAG, "Dynamic link received");
-                    // Get deep link from result (may be null if no link is found)
-                    Uri deepLink = null;
-                    if (pendingDynamicLinkData != null) {
-                        deepLink = pendingDynamicLinkData.getLink();
+        fbInterface.receiveDynamicLink(new DynamicLinkHandler() {
+            @Override
+            public void handle(Uri deepLink) {
+                Log.d(TAG, "Deep link URL:\n" + deepLink.toString());
+                String lastPathSegment = deepLink.getLastPathSegment();
+                Log.d(TAG, " last segment: " + lastPathSegment);
+                if(lastPathSegment != null && lastPathSegment.equals("invite")) {
+                    String eventId = deepLink.getQueryParameter("eventId"),
+                            eventName = deepLink.getQueryParameter("eventName");
+                    if (eventId != null && eventName != null) {
+                        Intent intent = new Intent(c, OrganizerInviteActivity.class);
+                        intent.putExtra("eventId", eventId);
+                        intent.putExtra("eventName", eventName);
+                        startActivity(intent);
                     }
-
-                    if (deepLink != null) {
-                        Log.d(TAG, "Deep link URL:\n" + deepLink.toString());
-                        String lastPathSegment = deepLink.getLastPathSegment();
-                        if(lastPathSegment != null && lastPathSegment.equals("invite")) {
-                            String eventId = deepLink.getQueryParameter("eventId"),
-                                    eventName = deepLink.getQueryParameter("eventName");
-                            if (eventId != null && eventName != null) {
-                                Intent intent = new Intent(c, OrganizerInviteActivity.class);
-                                intent.putExtra("eventId", eventId);
-                                intent.putExtra("eventName", eventName);
-                                startActivity(intent);
-                            }
-                        }
-                    }
-                })
-                .addOnFailureListener(this, e -> Log.w(TAG, "getDynamicLink:onFailure", e));
+                }
+            }
+        }, getIntent());
     }
 
 }
