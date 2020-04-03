@@ -1,9 +1,5 @@
 package ch.epfl.polycrowd.frontPage;
 
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.viewpager.widget.ViewPager;
-
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -15,9 +11,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager.widget.ViewPager;
+
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
-import java.text.ParseException;
 import java.util.List;
 
 import ch.epfl.polycrowd.Event;
@@ -25,6 +24,7 @@ import ch.epfl.polycrowd.LoginActivity;
 import ch.epfl.polycrowd.OrganizerInviteActivity;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
+import ch.epfl.polycrowd.frontPage.userProfile.UserProfilePageActivity;
 import ch.epfl.polycrowd.logic.PolyContext;
 
 public class FrontPageActivity extends AppCompatActivity {
@@ -116,6 +116,12 @@ public class FrontPageActivity extends AppCompatActivity {
     public void clickSignOut(View view) {
         fbInterface.signOut();
         recreate();
+    }
+
+    public void clickUserProfile(View view){
+        Intent intent = new Intent(this, UserProfilePageActivity.class) ;
+        startActivity(intent) ;
+
     }
 
 
