@@ -11,13 +11,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 
-import ch.epfl.polycrowd.Event;
 import ch.epfl.polycrowd.EventPageDetailsActivity;
-import ch.epfl.polycrowd.logic.Model;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.Utils;
+import ch.epfl.polycrowd.firebase.FirebaseInterface;
+import ch.epfl.polycrowd.logic.Model;
 import ch.epfl.polycrowd.logic.PolyContext;
 
 public class UserEventListAdapter extends RecyclerView.Adapter {
@@ -53,14 +54,21 @@ public class UserEventListAdapter extends RecyclerView.Adapter {
             //CurrentUser that will be used by EventPageDetailsActivity
             /**/
             PolyContext.setCurrentUser(Utils.getFakeUser());
-            Event event = new Event() ;
+            //Event event = new Event() ;
             String eventId = "ADYz6HuISjOiG4uBRY2z"; //id is the string that identifies the specific document?
-            event.setId(eventId);
-            PolyContext.setCurrentEvent(event);
+            //event.setId(eventId);
+            //PolyContext.setCurrentEvent(event);
 
-            Intent intent = new Intent(c, EventPageDetailsActivity.class) ;
-
-            c.startActivity(intent);
+            FirebaseInterface fi = new FirebaseInterface(c);
+            try {
+                fi.getEventById(eventId,event -> {
+                    PolyContext.setCurrentEvent(event);
+                    Intent intent = new Intent(c, EventPageDetailsActivity.class) ;
+                    c.startActivity(intent);
+                } );
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
 
         } );
 
