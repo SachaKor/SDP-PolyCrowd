@@ -130,7 +130,7 @@ public class FrontPageActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void trimFinishedEvents(List<Event> es){
-        Date now = Calendar.getInstance().getTime();
+        Date now = new Date();
         List<Event> es1 = new ArrayList<>(es);
         for (Event e : es1){
             if (e.getEnd().compareTo(now) <0){
