@@ -34,7 +34,7 @@ public class UserEventListAdapter extends RecyclerView.Adapter<UserEventListHold
     @NonNull
     @Override
     public UserEventListHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row, null) ;
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row, parent, false) ;
 
         return new UserEventListHolder(view);
     }
