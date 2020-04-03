@@ -6,7 +6,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import ch.epfl.polycrowd.R;
-import ch.epfl.polycrowd.frontPage.userProfile.UserEventListActivity;
+import ch.epfl.polycrowd.frontPage.userProfile.UserProfilePageActivity;
 import ch.epfl.polycrowd.logic.PolyContext;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -25,8 +25,8 @@ public class UserProfilePageActivityTest {
     }
 
     @Rule
-    public final ActivityTestRule<UserEventListActivity.UserProfilePageActivity> userProfileActivityRule =
-            new ActivityTestRule<>(UserEventListActivity.UserProfilePageActivity.class);
+    public final ActivityTestRule<UserProfilePageActivity> userProfileActivityRule =
+            new ActivityTestRule<>(UserProfilePageActivity.class);
     @Test
     public void usernameFieldShowsCurrentUserValue() {
 
