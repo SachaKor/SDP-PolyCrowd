@@ -12,8 +12,6 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 
-import ch.epfl.polycrowd.Model;
-
 public class Activity {
     private String location, uid, summary, description, organizer;
     private Date start,end;

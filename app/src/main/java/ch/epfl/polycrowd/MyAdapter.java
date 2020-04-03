@@ -15,6 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.epfl.polycrowd.logic.Model;
+
 public class MyAdapter extends RecyclerView.Adapter<MyHolder> implements Filterable {
 
     private List<Model> models;

@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.epfl.polycrowd.logic.Activity;
+import ch.epfl.polycrowd.logic.Model;
 import ch.epfl.polycrowd.logic.PolyContext;
 
 public class ScheduleActivity extends AppCompatActivity {
