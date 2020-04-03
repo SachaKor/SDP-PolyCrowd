@@ -40,4 +40,7 @@
     <string name="organizer_invite_text">Log in to view the invite</string>
     <string name="organizer_invite_text_1">"You are invited to become an organizer of the event</string>
     <string name="organizer_invite_text_2">Sign in to accept the invitation</string>
+    <string name="goToUserEventsList">Events</string>
+    <string name="goToUserFriendsList">Friends</string>
+    <string name="profile">Profile</string>
 </resources>
