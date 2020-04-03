@@ -1,15 +1,20 @@
 package ch.epfl.polycrowd.frontPage.userProfile;
 
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-import ch.epfl.polycrowd.logic.Model;
+import ch.epfl.polycrowd.Event;
 import ch.epfl.polycrowd.R;
+import ch.epfl.polycrowd.firebase.FirebaseInterface;
+import ch.epfl.polycrowd.logic.Model;
 
 public class UserEventListActivity  extends AppCompatActivity {
 
@@ -17,8 +22,13 @@ public class UserEventListActivity  extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private UserEventListAdapter mAdapter ;
 
+    private FirebaseInterface fi = new FirebaseInterface(this) ;
+
+    private int calls = 0 ;
+
     //TODO: Create an extra field for the events for which the user is an organiser
     //For now, use a hard-coded event-list
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onCreate(Bundle  savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,26 +43,16 @@ public class UserEventListActivity  extends AppCompatActivity {
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private ArrayList<Model> getModelList(){
         ArrayList<Model> models = new ArrayList<>() ;
 
-        //TODO Replace Model Type with Event, or make Event extend Model
-        //TODO Use polycontext here to get the events list
-        //TODO Filter the list of events which contain the user as an organiser
-        //For now, hard-coded list:
-
-        Model m1 = new Model() ;
-        m1.setTitle("PolyEvent1");
-        m1.setDescription("PolyEvent1@EPFL");
-        m1.setImg(R.drawable.balelec);
-
-        Model m2 = new Model() ;
-        m2.setTitle("PolyEvent2");
-        m2.setDescription("PolyEvent2@EPFL");
-        m2.setImg(R.drawable.balelec);
-
-        models.add(m1) ;
-        models.add(m2) ;
+        //Use Firebase to get the events:
+        fi.getAllEvents(events -> {
+            Event.toModels(events).forEach(e -> {models.add(e) ; ++calls;});
+            mAdapter.notifyDataSetChanged();
+            Log.d("UserEventListActivity", "\n Count is "+calls+"\n") ;
+        });
 
         return models ;
 
