@@ -43,11 +43,11 @@ public class UserEventListAdapter extends RecyclerView.Adapter<UserEventListHold
     @Override
     public void onBindViewHolder(@NonNull UserEventListHolder holder, int position) {
 
-        ((UserEventListHolder)holder).mTitle.setText(models.get(position).getTitle());
-        ((UserEventListHolder)holder).mDes.setText(models.get(position).getDescription());
-        ((UserEventListHolder)holder).mImaeView.setImageResource(models.get(position).getImg());
+        (holder).mTitle.setText(models.get(position).getTitle());
+        (holder).mDes.setText(models.get(position).getDescription());
+        (holder).mImaeView.setImageResource(models.get(position).getImg());
 
-        ((UserEventListHolder) holder).setItemClickListener( (v, p) -> {
+        (holder).setItemClickListener( (v, p) -> {
             //Launch the event details activity,
             //For the moment, since no firebase support, use fixed eventId
             //Uses PolyContext to pass the event id
