@@ -42,7 +42,7 @@ public class FrontPageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_front_page);
         this.fbInterface = new FirebaseInterface(this);
 
-        setEventModels();
+//        setEventModels();
 
         // front page should dispatch the dynamic links
         receiveDynamicLink();
@@ -50,15 +50,19 @@ public class FrontPageActivity extends AppCompatActivity {
     // --------------------------------------------------------------------------------
 
     // --------------------- ON START, ON RESTART -------------------------------------
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onStart() {
         super.onStart();
+        setEventModels();
         toggleLoginLogout();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onRestart() {
         super.onRestart();
+        setEventModels();
         toggleLoginLogout();
     }
 

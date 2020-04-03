@@ -21,6 +21,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import static ch.epfl.polycrowd.Event.dtFormat;
 
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
+import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 import ch.epfl.polycrowd.map.MapActivity;
 import static ch.epfl.polycrowd.Event.stringToDate;
@@ -108,7 +109,11 @@ public class EventEditActivity extends AppCompatActivity {
 
 
         // check if the user is logged in
-        User user = firebaseInterface.getCurrentUser();
+        User user = PolyContext.getCurrentUser();
+        if(user == null) {
+            Toast.makeText(this, "Log in to create an event", Toast.LENGTH_LONG).show();
+            return;
+        }
 
         List<String> organizers = new ArrayList<>();
         organizers.add(user.getEmail());

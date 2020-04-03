@@ -2,6 +2,8 @@ package ch.epfl.polycrowd.firebase;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
@@ -9,6 +11,7 @@ import android.view.Gravity;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -20,8 +23,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 
@@ -60,6 +66,7 @@ public class FirebaseInterface {
 
     public FirebaseInterface(Context context){
         this.c = context;
+        listenToEventsUpdate();
     }
 
     /***
@@ -112,6 +119,10 @@ public class FirebaseInterface {
                 Toast.makeText(c, "Incorrect email or password", Toast.LENGTH_SHORT).show();
             }
         } else {
+            if(!isNetworkAvailable()) {
+                Toast.makeText(c, "Log in impossible offline", Toast.LENGTH_SHORT).show();
+                return;
+            }
             this.getAuthInstance(true).signInWithEmailAndPassword(email,password)
                     .addOnCompleteListener(taskc -> {
                         if(taskc.isSuccessful()) {
@@ -269,6 +280,11 @@ public class FirebaseInterface {
 
     public void  signUp(String username, String firstPassword, String email, int age) {
         if (! PolyContext.isRunningTest()) {
+            // disable sign up when the device is offline
+            if(!isNetworkAvailable()) {
+                Toast.makeText(c, "Device is offline", Toast.LENGTH_SHORT).show();
+                return;
+            }
             CollectionReference usersRef = getFirestoreInstance(false).collection("users");
             Query queryUsernames = usersRef.whereEqualTo("username", username);
             Query queryEmails = usersRef.whereEqualTo("email", email);
@@ -291,16 +307,15 @@ public class FirebaseInterface {
                 .createUserWithEmailAndPassword(email, firstPassword)
                 .addOnSuccessListener(authResult -> {
                     String uid = authResult.getUser().getUid();
+                    Map<String, Object> user = new HashMap<>();
+                    user.put("username", username);
+                    user.put("age", age);
+                    user.put("email", email) ;
+                    getFirestoreInstance(false).collection("users")
+                            .add(user)
+                            .addOnSuccessListener(documentReference -> Log.d("SIGN_UP", "DocumentSnapshot added with ID: " + documentReference.getId()))
+                            .addOnFailureListener(e -> Log.w("SIGN_UP", "Error adding document", e));
                 });
-
-        Map<String, Object> user = new HashMap<>();
-        user.put("username", username);
-        user.put("age", age);
-        user.put("email", email) ;
-        getFirestoreInstance(false).collection("users")
-                .add(user)
-                .addOnSuccessListener(documentReference -> Log.d("SIGN_UP", "DocumentSnapshot added with ID: " + documentReference.getId()))
-                .addOnFailureListener(e -> Log.w("SIGN_UP", "Error adding document", e));
     }
 
     private OnCompleteListener<QuerySnapshot> usernamesQueryListener(Task<QuerySnapshot> queryEmails, String email, String firstPassword,String username, int age){
@@ -408,6 +423,46 @@ public class FirebaseInterface {
                     .addOnFailureListener(e -> Log.w(TAG, "getDynamicLink:onFailure", e));
         }
 
+    }
+
+    // https://stackoverflow.com/questions/30343011/how-to-check-if-an-android-device-is-online/30343108
+    private boolean isNetworkAvailable() {
+        ConnectivityManager manager =
+                (ConnectivityManager) c.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = manager.getActiveNetworkInfo();
+        boolean isAvailable = false;
+        if (networkInfo != null && networkInfo.isConnected()) {
+            // Network is present and connected
+            isAvailable = true;
+        }
+        return isAvailable;
+    }
+
+    private void listenToEventsUpdate() {
+        getFirestoreInstance(true).collection(EVENTS)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @RequiresApi(api = Build.VERSION_CODES.N)
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                        if(e != null) {
+                            Log.w(TAG, "Event listen failed", e);
+                            return;
+                        }
+                        queryDocumentSnapshots.forEach(new Consumer<QueryDocumentSnapshot>() {
+                            @Override
+                            public void accept(QueryDocumentSnapshot snapshot) {
+                                String source = snapshot != null && snapshot.getMetadata().hasPendingWrites()
+                                        ? "Local" : "Server";
+                                if(source.equals("Local") && !isNetworkAvailable()) {
+                                    Log.d(TAG, "Events changed offline");
+                                    // TODO: not visible while adding the new event
+                                    Toast.makeText(c.getApplicationContext(), "Your device is currently offline.\n + " +
+                                            "The remote update will happen when the network will be available", Toast.LENGTH_LONG);
+                                }
+                            }
+                        });
+                    }
+                });
     }
 
 }
