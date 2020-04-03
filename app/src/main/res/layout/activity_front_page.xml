@@ -76,6 +76,7 @@
         android:layout_marginBottom="19dp"
         android:layout_toStartOf="@+id/button"
         android:text="@string/profile"
-        android:onClick="clickUserProfile"/>
+        android:onClick="clickUserProfile"
+        android:visibility="gone"/>
 
 </RelativeLayout>
