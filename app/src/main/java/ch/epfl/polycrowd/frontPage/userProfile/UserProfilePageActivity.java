@@ -37,8 +37,6 @@ public class UserProfilePageActivity extends AppCompatActivity {
 
     }
 
-
-
     public void onFriendsListClick(View view) {
 
     }
@@ -46,6 +44,5 @@ public class UserProfilePageActivity extends AppCompatActivity {
     public void onEventsListClick(View view) {
         Intent intent = new Intent(this, UserEventListActivity.class) ;
         startActivity(intent);
-
     }
 }
