@@ -27,8 +27,8 @@ public class UserEventListActivity  extends AppCompatActivity {
 
     private FirebaseInterface fi = new FirebaseInterface(this) ;
 
-    //TODO: Create an extra field for the events for which the user is an organiser
-    //For now, use a hard-coded event-list
+    private List<Model> models =  new ArrayList<Model>()  ;
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onCreate(Bundle  savedInstanceState) {
@@ -38,15 +38,14 @@ public class UserEventListActivity  extends AppCompatActivity {
         mRecyclerView = findViewById(R.id.userEventListRecyclerView) ;
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        mAdapter = new UserEventListAdapter(this, getModelList()) ;
+        mAdapter = new UserEventListAdapter(this, models) ;
         mRecyclerView.setAdapter(mAdapter);
 
-
+        List<Model> models = getModelListFromFirebase() ;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private ArrayList<Model> getModelList(){
-        ArrayList<Model> models = new ArrayList<>() ;
+    private List<Model> getModelListFromFirebase(){
         User currUser = fi.getCurrentUser();
 
         //Use Firebase to get the events:
