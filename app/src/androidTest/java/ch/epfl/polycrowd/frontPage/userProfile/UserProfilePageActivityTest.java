@@ -1,4 +1,4 @@
-package ch.epfl.polycrowd.frontPage;
+package ch.epfl.polycrowd.frontPage.userProfile;
 
 import androidx.test.rule.ActivityTestRule;
 
