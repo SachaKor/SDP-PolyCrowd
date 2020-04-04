@@ -12,11 +12,10 @@ import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.ParseException;
-import java.util.ArrayList;
+import java.util.List;
 
 import ch.epfl.polycrowd.EventPageDetailsActivity;
 import ch.epfl.polycrowd.R;
-import ch.epfl.polycrowd.Utils;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
 import ch.epfl.polycrowd.logic.Model;
 import ch.epfl.polycrowd.logic.PolyContext;
@@ -24,9 +23,9 @@ import ch.epfl.polycrowd.logic.PolyContext;
 public class UserEventListAdapter extends RecyclerView.Adapter<UserEventListHolder> {
 
     Context c ;
-    ArrayList<Model> models ;
+    List<Model> models ;
 
-    public UserEventListAdapter(Context c, ArrayList<Model> models){
+    public UserEventListAdapter(Context c, List<Model> models){
         this.c = c ;
         this.models = models ;
     }
@@ -48,19 +47,9 @@ public class UserEventListAdapter extends RecyclerView.Adapter<UserEventListHold
         (holder).mImaeView.setImageResource(models.get(position).getImg());
 
         (holder).setItemClickListener( (v, p) -> {
-            //Launch the event details activity,
-            //For the moment, since no firebase support, use fixed eventId
-            //Uses PolyContext to pass the event id
-            //CurrentUser that will be used by EventPageDetailsActivity
-            /**/
-            PolyContext.setCurrentUser(Utils.getFakeUser());
-            //Event event = new Event() ;
-            String eventId = "ADYz6HuISjOiG4uBRY2z"; //id is the string that identifies the specific document?
-            //event.setId(eventId);
-            //PolyContext.setCurrentEvent(event);
-            //TODO figure out how to use position argument in the lambda to retrieve the eventId
-            //TODO: Use position argument to get the model in the list, and then from the model,getId
-            //TODO Question, where is the model id set? --> inside the enclosing activity
+
+            Model clickedModel = models.get(p) ;
+            String eventId = clickedModel.getId() ;
 
             FirebaseInterface fi = new FirebaseInterface(c);
             try {
@@ -72,16 +61,12 @@ public class UserEventListAdapter extends RecyclerView.Adapter<UserEventListHold
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-
         } );
-
     }
-
 
     @Override
     public int getItemCount() {
         return models.size();
     }
-
 
 }
