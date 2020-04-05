@@ -32,7 +32,9 @@ public interface DatabaseInterface {
                                     UserHandler successHandler, UserHandler failureHandler);
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    void getUserByEmail(String email, UserHandler handler);
+    void getUserByEmail(String email, UserHandler successHandler, UserHandler failureHandler);
+
+    void getUserByUsername(String username, UserHandler successHandler, UserHandler failureHandler);
 
     void signOut();
 
