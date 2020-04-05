@@ -109,11 +109,11 @@ public class FirebaseInterface implements DatabaseInterface {
 
     @Override
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public void getUserByEmail(String email, UserHandler handler) {
+    public void getUserByEmail(String email, UserHandler successHandler, UserHandler failureHandler) {
         if(PolyContext.isRunningTest()) {
-            handler.handle(new User("fake@fake.com", "1", "fake user", 100));
+            successHandler.handle(new User("fake@fake.com", "1", "fake user", 100));
         } else {
-            getFirestoreInstance(false).collection(USERS)
+            /*getFirestoreInstance(false).collection(USERS)
                     .whereEqualTo("email", email).get()
                     .addOnSuccessListener(queryDocumentSnapshots -> {
                         if(queryDocumentSnapshots.size() > 1) {
@@ -123,11 +123,39 @@ public class FirebaseInterface implements DatabaseInterface {
                         queryDocumentSnapshots.forEach(queryDocumentSnapshot -> {
                             Map<String, Object> data = queryDocumentSnapshot.getData();
                             data.put("uid", queryDocumentSnapshot.getId());
-                            handler.handle(User.getFromDocument(data));
+                            successHandler.handle(User.getFromDocument(data));
                         });
-                    }).addOnFailureListener(e -> Log.e(TAG, "Error retrieving user with email " + email));
+                    }).addOnFailureListener(e -> {
+                        Log.e(TAG, "Error retrieving user with email " + email);
+                    failureHandler.handle(null);}); */
+            getUserByField("email", email, successHandler, failureHandler);
         }
 
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    @Override
+    public void getUserByUsername(String username, UserHandler successHandler, UserHandler failureHandler) {
+        getUserByField("username", username, successHandler, failureHandler);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void getUserByField(String fieldName, String fieldValue, UserHandler successHandler, UserHandler failureHandler){
+        getFirestoreInstance(false).collection(USERS)
+                .whereEqualTo(fieldName, fieldValue).get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if(queryDocumentSnapshots.size() > 1) {
+                        Log.e(TAG, " multiple users with fieldName " +fieldName);
+                    }
+                    // there MUST be one single snapshot
+                    queryDocumentSnapshots.forEach(queryDocumentSnapshot -> {
+                        Map<String, Object> data = queryDocumentSnapshot.getData();
+                        data.put("uid", queryDocumentSnapshot.getId());
+                        successHandler.handle(User.getFromDocument(data));
+                    });
+                }).addOnFailureListener(e -> {
+            Log.e(TAG, "Error retrieving user with "+ fieldName + " "+fieldValue);
+            failureHandler.handle(null);});
     }
 
     @Override
@@ -177,12 +205,10 @@ public class FirebaseInterface implements DatabaseInterface {
                     .add(event.toHashMap())
                     .addOnSuccessListener(documentReference -> {
                         Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
-                        //Toast.makeText(c, "Event added", Toast.LENGTH_LONG).show();
                         successHandler.handle(event);
                     })
                     .addOnFailureListener(e -> {
                         Log.e(TAG, "Error adding document", e);
-                        //Toast.makeText(c, "Error occurred while adding the event", Toast.LENGTH_LONG).show();
                         failureHandler.handle(event);
                     });
 
