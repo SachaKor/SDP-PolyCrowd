@@ -62,7 +62,8 @@ public class FirebaseMocker implements DatabaseInterface {
         }
 
         if(!foundRegisteredUser){
-            //User not registered
+            //User not registered, will simply display in our case incorrect email or password
+            failureHandler.handle(null);
         }
     }
 
@@ -90,8 +91,9 @@ public class FirebaseMocker implements DatabaseInterface {
     }
 
     @Override
-    public void addEvent(Event event) {
+    public void addEvent(Event event, EventHandler successHandler, EventHandler failureHandler) {
         events.add(event) ;
+        successHandler.handle(event); ;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
