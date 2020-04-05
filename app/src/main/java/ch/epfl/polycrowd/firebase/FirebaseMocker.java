@@ -44,7 +44,7 @@ public class FirebaseMocker implements DatabaseInterface {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
-    public void signInWithEmailAndPassword(@NonNull String email, @NonNull String password, UserHandler handler) {
+    public void signInWithEmailAndPassword(@NonNull String email, @NonNull String password, UserHandler successHandler, UserHandler failureHandler) {
         boolean foundRegisteredUser = false  ;
         Iterator<User> usersIterator = usersAndPasswords.keySet().iterator() ;
         while(!foundRegisteredUser && usersIterator.hasNext() ){
@@ -53,10 +53,10 @@ public class FirebaseMocker implements DatabaseInterface {
                 foundRegisteredUser = true ;
                 if(usersAndPasswords.get(user).equals(password)){
                     PolyContext.setCurrentUser(user);
-                    handler.handle(user); ;
+                    successHandler.handle(user); ;
                     //
                 } else{
-                    //IncorrectPw
+                   failureHandler.handle(null); ;
                 }
             }
         }
