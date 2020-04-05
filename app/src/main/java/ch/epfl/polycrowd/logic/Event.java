@@ -1,12 +1,10 @@
-package ch.epfl.polycrowd;
+package ch.epfl.polycrowd.logic;
 
 import android.os.Build;
 
-import com.google.firebase.Timestamp;
-
-
 import androidx.annotation.RequiresApi;
-import androidx.annotation.VisibleForTesting;
+
+import com.google.firebase.Timestamp;
 
 import java.io.File;
 import java.text.ParseException;
@@ -19,7 +17,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
-import ch.epfl.polycrowd.logic.Schedule;
+import ch.epfl.polycrowd.Model;
+import ch.epfl.polycrowd.R;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class Event {
@@ -30,7 +29,7 @@ public class Event {
         FESTIVAL, CONCERT, CONVENTION, OTHER
     }
 
-    static final SimpleDateFormat dtFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.ENGLISH);
+    public static final SimpleDateFormat dtFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.ENGLISH);
     private final String owner;
     private String name;
     private Boolean isPublic;

@@ -15,8 +15,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static ch.epfl.polycrowd.Event.dateToString;
-import static ch.epfl.polycrowd.Event.stringToDate;
+import ch.epfl.polycrowd.logic.Event;
+
+import static ch.epfl.polycrowd.logic.Event.dateToString;
+import static ch.epfl.polycrowd.logic.Event.stringToDate;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;

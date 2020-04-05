@@ -8,7 +8,7 @@ import androidx.annotation.RequiresApi;
 
 import java.text.ParseException;
 
-import ch.epfl.polycrowd.Event;
+import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.firebase.handlers.DynamicLinkHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventsHandler;

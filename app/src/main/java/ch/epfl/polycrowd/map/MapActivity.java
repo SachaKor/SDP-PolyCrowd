@@ -25,6 +25,7 @@ import com.google.android.gms.maps.model.LatLng;
 import java.text.ParseException;
 import java.util.List;
 
+import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.EmergencyActivity;
 import ch.epfl.polycrowd.Event;
 import ch.epfl.polycrowd.EventPageDetailsActivity;

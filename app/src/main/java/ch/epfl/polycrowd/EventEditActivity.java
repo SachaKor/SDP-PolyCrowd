@@ -10,20 +10,20 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-
-import static ch.epfl.polycrowd.Event.dtFormat;
-
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
+import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.User;
 import ch.epfl.polycrowd.map.MapActivity;
-import static ch.epfl.polycrowd.Event.stringToDate;
+
+import static ch.epfl.polycrowd.logic.Event.dtFormat;
+import static ch.epfl.polycrowd.logic.Event.stringToDate;
 
 public class EventEditActivity extends AppCompatActivity {
 
