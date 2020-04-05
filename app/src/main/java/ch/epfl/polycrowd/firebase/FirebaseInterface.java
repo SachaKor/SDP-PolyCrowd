@@ -74,30 +74,12 @@ public class FirebaseInterface implements DatabaseInterface {
 
     }
 
-    /*private DatabaseReference getDbRef(boolean refresh){
-        if (this.cachedDbRef == null || refresh) {
-            this.cachedDbRef = FirebaseDatabase.getInstance().getReference();
-        }
-        return this.cachedDbRef;
-    }*/
-
     private FirebaseFirestore getFirestoreInstance(boolean refresh) {
         if (this.cachedFirestore == null || refresh) {
             this.cachedFirestore = FirebaseFirestore.getInstance();
         }
         return this.cachedFirestore;
 
-    }
-
-    /***
-     * Utility function to check arguments' integrity
-     */
-    @Override
-    public void checkArgs(String... args){
-        for (String arg : args){
-            if (arg == null) throw new IllegalArgumentException("Firebase query cannot be null");
-            if (arg.length() == 0) throw new IllegalArgumentException("Firebase query cannot be empty");
-        }
     }
 
     @Override
