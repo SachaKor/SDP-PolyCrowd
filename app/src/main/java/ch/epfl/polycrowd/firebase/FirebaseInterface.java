@@ -160,7 +160,7 @@ public class FirebaseInterface implements DatabaseInterface {
 
     @Override
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public void addEvent(Event event){
+    public void addEvent(Event event, EventHandler successHandler, EventHandler failureHandler){
         if( PolyContext.isRunningTest()){
             //TODO: set s from test suit
             boolean s = true;
@@ -177,11 +177,13 @@ public class FirebaseInterface implements DatabaseInterface {
                     .add(event.toHashMap())
                     .addOnSuccessListener(documentReference -> {
                         Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
-                        Toast.makeText(c, "Event added", Toast.LENGTH_LONG).show();
+                        //Toast.makeText(c, "Event added", Toast.LENGTH_LONG).show();
+                        successHandler.handle(event);
                     })
                     .addOnFailureListener(e -> {
                         Log.e(TAG, "Error adding document", e);
-                        Toast.makeText(c, "Error occurred while adding the event", Toast.LENGTH_LONG).show();
+                        //Toast.makeText(c, "Error occurred while adding the event", Toast.LENGTH_LONG).show();
+                        failureHandler.handle(event);
                     });
 
         }
