@@ -29,7 +29,7 @@ public interface DatabaseInterface {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     void signInWithEmailAndPassword(@NonNull String email, @NonNull String password,
-                                    UserHandler handler);
+                                    UserHandler successHandler, UserHandler failureHandler);
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     void getUserByEmail(String email, UserHandler handler);
