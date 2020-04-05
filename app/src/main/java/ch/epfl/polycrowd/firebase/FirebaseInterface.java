@@ -31,7 +31,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 import ch.epfl.polycrowd.Event;
 import ch.epfl.polycrowd.R;
@@ -43,7 +42,7 @@ import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 
-public class FirebaseInterface {
+public class FirebaseInterface implements DatabaseInterface {
 
     private FirebaseAuth cachedAuth;
     private DatabaseReference cachedDbRef;
@@ -94,6 +93,7 @@ public class FirebaseInterface {
     /***
      * Utility function to check arguments' integrity
      */
+    @Override
     public void checkArgs(String... args){
         for (String arg : args){
             if (arg == null) throw new IllegalArgumentException("Firebase query cannot be null");
@@ -101,6 +101,7 @@ public class FirebaseInterface {
         }
     }
 
+    @Override
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void signInWithEmailAndPassword(@NonNull final String email, @NonNull final String password,
                                            UserHandler handler){
@@ -128,6 +129,7 @@ public class FirebaseInterface {
         }
     }
 
+    @Override
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void getUserByEmail(String email, UserHandler handler) {
         if(PolyContext.isRunningTest()) {
@@ -150,11 +152,13 @@ public class FirebaseInterface {
 
     }
 
+    @Override
     public void signOut(){
         this.getAuthInstance(false).signOut();
         PolyContext.setCurrentUser(null);
     }
 
+    @Override
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void getAllEvents(EventsHandler handler) {
         if( PolyContext.isRunningTest()) {
@@ -176,6 +180,7 @@ public class FirebaseInterface {
         }
     }
 
+    @Override
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void addEvent(Event event){
         if( PolyContext.isRunningTest()){
@@ -204,6 +209,7 @@ public class FirebaseInterface {
         }
     }
 
+    @Override
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void getEventById(String eventId, EventHandler eventHandler) throws ParseException {
         final String TAG1 = "getEventById";
@@ -227,6 +233,7 @@ public class FirebaseInterface {
         }
     }
 
+    @Override
     public void addOrganizerToEvent(String eventId, String organizerEmail,
                                     OrganizersHandler handler) {
         final String TAG1 = "addOrganizerToEvent";
@@ -267,6 +274,7 @@ public class FirebaseInterface {
         }
     }
 
+    @Override
     public void  signUp(String username, String firstPassword, String email, int age) {
         if (! PolyContext.isRunningTest()) {
             CollectionReference usersRef = getFirestoreInstance(false).collection("users");
@@ -359,9 +367,9 @@ public class FirebaseInterface {
             PolyContext.setCurrentUser(curentUser);
             return  curentUser;
         }
-
     }
 
+    @Override
     public void resetPassword(String email){
         getAuthInstance(false).sendPasswordResetEmail(email).addOnCompleteListener(
                 task ->  {
@@ -382,6 +390,7 @@ public class FirebaseInterface {
                 });
     }
 
+    @Override
     public void receiveDynamicLink(DynamicLinkHandler handler, Intent intent) {
         final String TAG1 = "receiveDynamicLink";
         if(PolyContext.isRunningTest()) {
