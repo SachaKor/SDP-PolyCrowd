@@ -15,7 +15,7 @@ import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
 import ch.epfl.polycrowd.firebase.handlers.OrganizersHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 
-interface DatabaseInterface {
+public interface DatabaseInterface {
 
     /***
      * Utility function to check arguments' integrity
