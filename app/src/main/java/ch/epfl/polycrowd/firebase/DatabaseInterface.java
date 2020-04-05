@@ -40,7 +40,7 @@ public interface DatabaseInterface {
     void getAllEvents(EventsHandler handler);
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    void addEvent(Event event);
+    void addEvent(Event event, EventHandler successHandler, EventHandler failureHandler);
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     void getEventById(String eventId, EventHandler eventHandler) throws ParseException;
