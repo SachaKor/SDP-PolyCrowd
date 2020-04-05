@@ -85,7 +85,7 @@ public class FirebaseInterface implements DatabaseInterface {
     @Override
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void signInWithEmailAndPassword(@NonNull final String email, @NonNull final String password,
-                                           UserHandler handler){
+                                           UserHandler successHandler, UserHandler failureHandler){
 
         if ( PolyContext.isRunningTest() ) {
             if (email.equals("nani@haha.com") && password.equals("123456") ) {
@@ -99,14 +99,11 @@ public class FirebaseInterface implements DatabaseInterface {
                         if(taskc.isSuccessful()) {
                             // TODO: use getUserByEmail, clean up firestore first
                             User user = new User(email, taskc.getResult().getUser().getUid(), "username", 3);
-//                            getUserByEmail(email, handler);
-                            Toast.makeText(c, "Sign in success", Toast.LENGTH_SHORT).show();
-                            handler.handle(user);
+                            successHandler.handle(user);
                         } else {
-                            Toast.makeText(c, "Incorrect email or password", Toast.LENGTH_SHORT).show();
+                            failureHandler.handle(null);
                         }
                     });
-
         }
     }
 
