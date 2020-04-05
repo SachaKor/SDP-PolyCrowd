@@ -16,7 +16,16 @@ import ch.epfl.polycrowd.firebase.handlers.OrganizersHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 
 interface DatabaseInterface {
-    void checkArgs(String... args);
+
+    /***
+     * Utility function to check arguments' integrity
+     */
+    public default void checkArgs(String... args){
+        for (String arg : args){
+            if (arg == null) throw new IllegalArgumentException("Firebase query cannot be null");
+            if (arg.length() == 0) throw new IllegalArgumentException("Firebase query cannot be empty");
+        }
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     void signInWithEmailAndPassword(@NonNull String email, @NonNull String password,
