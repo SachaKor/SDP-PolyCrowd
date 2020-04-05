@@ -68,16 +68,24 @@ public class FirebaseMocker implements DatabaseInterface {
     }
 
     @Override
-    public void getUserByEmail(String email, UserHandler handler) {
-        boolean userFound = false ;
-        Iterator<User> userIterator = usersAndPasswords.keySet().iterator() ;
-        while(!userFound && userIterator.hasNext()){
-            User user = userIterator.next() ;
-            if(user.getEmail().equals(email)){
-                userFound = true ;
-                handler.handle(user);
-            }
+    public void getUserByEmail(String email, UserHandler successHandler, UserHandler failureHandler) {
+        User user = findUserByEmail(email) ;
+        if(user != null){
+            successHandler.handle(user);
+        } else{
+            failureHandler.handle(user);
         }
+    }
+
+    @Override
+    public void getUserByUsername(String username, UserHandler successHandler, UserHandler failureHandler) {
+        User user = findUserByUsername(username);
+        if(user != null){
+            successHandler.handle(user);
+        } else{
+            failureHandler.handle(user);
+        }
+
     }
 
     @Override
@@ -166,6 +174,19 @@ public class FirebaseMocker implements DatabaseInterface {
         while(!userFound && userIterator.hasNext()){
             user = userIterator.next() ;
             if(user.getEmail().equals(email)){
+                userFound = true ;
+            }
+        }
+        return userFound? user:null ;
+    }
+
+    private User findUserByUsername(String username) {
+        User user = null ;
+        boolean userFound = false ;
+        Iterator<User> userIterator = usersAndPasswords.keySet().iterator() ;
+        while(!userFound && userIterator.hasNext()){
+            user = userIterator.next() ;
+            if(user.getName().equals(username)){
                 userFound = true ;
             }
         }
