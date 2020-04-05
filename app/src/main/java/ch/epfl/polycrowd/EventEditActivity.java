@@ -1,5 +1,6 @@
 package ch.epfl.polycrowd;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import java.util.Date;
 import java.util.List;
 
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
+import ch.epfl.polycrowd.firebase.handlers.EventHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.User;
 import ch.epfl.polycrowd.map.MapActivity;
@@ -105,8 +107,6 @@ public class EventEditActivity extends AppCompatActivity {
             return;
         }
 
-
-
         // check if the user is logged in
         User user = firebaseInterface.getCurrentUser();
 
@@ -122,7 +122,10 @@ public class EventEditActivity extends AppCompatActivity {
                 "url", "", organizers);
 //        Map<String, Object> event = ev.toHashMap();
         // add event to the database
-        firebaseInterface.addEvent(ev);
+        Context c = this ;
+        EventHandler successHandler = e -> Toast.makeText(c, "Event added", Toast.LENGTH_LONG).show();
+        EventHandler failureHandler = e -> Toast.makeText(c, "Error occurred while adding the event", Toast.LENGTH_LONG).show();
+        firebaseInterface.addEvent(ev,successHandler , failureHandler );
 
         Intent intent = new Intent(this, MapActivity.class);
         startActivity(intent);
