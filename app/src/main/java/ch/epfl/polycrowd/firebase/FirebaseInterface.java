@@ -17,7 +17,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -75,12 +74,12 @@ public class FirebaseInterface implements DatabaseInterface {
 
     }
 
-    private DatabaseReference getDbRef(boolean refresh){
+    /*private DatabaseReference getDbRef(boolean refresh){
         if (this.cachedDbRef == null || refresh) {
             this.cachedDbRef = FirebaseDatabase.getInstance().getReference();
         }
         return this.cachedDbRef;
-    }
+    }*/
 
     private FirebaseFirestore getFirestoreInstance(boolean refresh) {
         if (this.cachedFirestore == null || refresh) {
