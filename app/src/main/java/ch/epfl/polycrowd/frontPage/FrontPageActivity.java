@@ -17,7 +17,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import ch.epfl.polycrowd.Event;
+import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.LoginActivity;
 import ch.epfl.polycrowd.OrganizerInviteActivity;
 import ch.epfl.polycrowd.R;

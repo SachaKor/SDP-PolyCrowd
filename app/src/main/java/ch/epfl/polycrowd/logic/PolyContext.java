@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import ch.epfl.polycrowd.Event;
+import ch.epfl.polycrowd.firebase.DatabaseInterface;
 
 
 public abstract class PolyContext extends Context {
@@ -24,6 +24,7 @@ public abstract class PolyContext extends Context {
     private static User currentUser;
     private static String previousPage = "";
     private static boolean mockDynamicLink = false; // for the FrontPage testing
+    private static DatabaseInterface dbInterface ;
 
     public static void setCurrentEvent(Event ev){
         currentEvent = ev;
@@ -47,6 +48,15 @@ public abstract class PolyContext extends Context {
         PolyContext.previousPage = previousPage;
     }
     public static void setMockDynamicLink(boolean mock) { mockDynamicLink = mock; }
+
+
+    public static void setDbInterface(DatabaseInterface dbInterfaceInject){
+        dbInterface = dbInterfaceInject ;
+    }
+
+    public static DatabaseInterface getDatabaseInterface(){
+        return dbInterface ;
+    }
 
 
     // ----------- Use isRunningTest() to check if u are doing a test ------------------------

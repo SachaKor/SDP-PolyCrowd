@@ -1,7 +1,6 @@
 package ch.epfl.polycrowd;
 
 import android.content.Intent;
-import android.util.Log;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -10,13 +9,11 @@ import org.junit.runner.RunWith;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
-import ch.epfl.polycrowd.firebase.FirebaseInterface;
+
+import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 
-import ch.epfl.polycrowd.logic.User;
-
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.Espresso.registerIdlingResources;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;

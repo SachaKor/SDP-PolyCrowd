@@ -1,13 +1,6 @@
 
 package ch.epfl.polycrowd;
 
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import ch.epfl.polycrowd.firebase.FirebaseInterface;
-import ch.epfl.polycrowd.firebase.handlers.UserHandler;
-import ch.epfl.polycrowd.logic.PolyContext;
-import ch.epfl.polycrowd.logic.User;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -18,7 +11,14 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+
 import java.util.Objects;
+
+import ch.epfl.polycrowd.firebase.FirebaseInterface;
+import ch.epfl.polycrowd.logic.Event;
+import ch.epfl.polycrowd.logic.PolyContext;
 
 public class LoginActivity extends AppCompatActivity {
 
