@@ -1,23 +1,23 @@
 package ch.epfl.polycrowd.map;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.content.Intent;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -32,6 +32,7 @@ import ch.epfl.polycrowd.EventPageDetailsActivity;
 import ch.epfl.polycrowd.LoginActivity;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
+import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 
@@ -98,7 +99,7 @@ public class MapActivity extends AppCompatActivity {
     void setStatusOfUser(FirebaseInterface firebaseInterface) throws ParseException {
         final String TAG1 = "setStatusOfUser";
         status = level.GUEST; // default status to debug
-        User user = firebaseInterface.getCurrentUser();
+        User user = PolyContext.getCurrentUser();
         Log.d(TAG, TAG1 + " current user " + user);
         if(user == null){
             status = level.GUEST;
