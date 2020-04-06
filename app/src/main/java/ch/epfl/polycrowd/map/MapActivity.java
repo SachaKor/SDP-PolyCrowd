@@ -96,12 +96,12 @@ public class MapActivity extends AppCompatActivity {
     void setStatusOfUser(FirebaseInterface firebaseInterface) throws ParseException {
         final String TAG1 = "setStatusOfUser";
         status = level.GUEST; // default status to debug
-        User user = firebaseInterface.getCurrentUser();
-        Log.d(TAG, TAG1 + " current user " + user);
+        User user = PolyContext.getCurrentUser();
+        Log.d("user_tag", TAG1 + " current user " + user);
         if(user == null){
             status = level.GUEST;
         }else{
-            Log.d(TAG, TAG1 + " user email: " + user.getEmail());
+            Log.d("user_email_tag", TAG1 + " user email: " + user.getEmail());
             Event event = PolyContext.getCurrentEvent();
             List<String> organizerEmails = event.getOrganizers();
             if(organizerEmails.indexOf(user.getEmail()) == -1){
