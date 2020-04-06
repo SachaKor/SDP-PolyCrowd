@@ -134,7 +134,6 @@ public class FirebaseInterface implements DatabaseInterface {
     @Override
     public void signOut(){
         this.getAuthInstance(false).signOut();
-        PolyContext.setCurrentUser(null);
     }
 
     @Override
@@ -213,16 +212,9 @@ public class FirebaseInterface implements DatabaseInterface {
     }
 
     @Override
-    public void addOrganizerToEvent(String eventId, String organizerEmail,
+    public void addOrganizerToEvent(@NonNull String eventId, String organizerEmail,
                                     OrganizersHandler handler) {
         final String TAG1 = "addOrganizerToEvent";
-        if(eventId == null || eventId.isEmpty()) {
-            Log.w(TAG, TAG1 + " event id is null or empty");
-            return;
-        }
-        if( PolyContext.isRunningTest()){
-            handler.handle();
-        } else {
             Log.d(TAG, TAG1 + " is not mocked");
             // check if the organizer is already in the list
             getFirestoreInstance(false).collection(EVENTS)
@@ -249,8 +241,6 @@ public class FirebaseInterface implements DatabaseInterface {
                     handler.handle();
                 }
             }).addOnFailureListener(e -> Log.w(TAG, "Error retrieving event with id" + eventId));
-
-        }
     }
 
     @Override
@@ -268,15 +258,6 @@ public class FirebaseInterface implements DatabaseInterface {
                         }
                     }
             );
-        } else {
-            if (email.equals("already@exists.com") || username.equals("already exists")) {
-                Toast.makeText(c, "User already exists", Toast.LENGTH_SHORT).show();
-            } else if (email.equals("123@mail.com") && username.equals("yabdro") ) {
-
-                Toast.makeText(c, "User already exists", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(c, "Sign up successful", Toast.LENGTH_SHORT).show();
-            }
         }
     }
 
@@ -316,20 +297,9 @@ public class FirebaseInterface implements DatabaseInterface {
         getAuthInstance(false).sendPasswordResetEmail(email).addOnCompleteListener(
                 task ->  {
                     if (task.isSuccessful()) {
-                       // Toast.makeText(c, "A reset link has been sent to your email", Toast.LENGTH_SHORT).show();
                         //Nothing to be done here it seems with the user
                         successHandler.handle(null);
                     } else {
-                        //Check if the user exists or not, and if not, suggest signup ; otherwise network error
-                        /*FirebaseFirestore firestore = getFirestoreInstance(false) ;
-                        CollectionReference usersRef = firestore.collection("users");
-                        usersRef.whereEqualTo("email", email).get().addOnCompleteListener( task1 ->  {
-                            //Query was able to complete, but email was not found (size is either 1 or 0)
-                            if(task1.isSuccessful() && task1.getResult().size() == 0 ){
-                                Toast.makeText(c, "Email not found, please sign up", Toast.LENGTH_SHORT).show();
-                            } else {//in this case, there is probably a connection error
-                                //Toast.makeText(c, "Connection error, please try again later", Toast.LENGTH_SHORT).show();
-                            } }) ;*/
                         //nothing to do with user here either
                         failureHandler.handle(null);
                     }
