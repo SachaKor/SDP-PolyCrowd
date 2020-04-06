@@ -60,7 +60,7 @@ public class Event {
         this.end = end;
         this.calendar = calendar;
         organizers = new ArrayList<>();
-        organizers.add(owner);
+        organizers.add(owner); // TODO: this is wrong, organizers must contain the emails
         setDescription(description);
     }
 
@@ -94,16 +94,17 @@ public class Event {
         this.isPublic = true;
         this.type = EventType.OTHER;
         try {
-            this.start = dtFormat.parse("01-08-2018 00:00");
-            this.end = dtFormat.parse("02-08-2018 01:00");
+            this.start = dtFormat.parse("01-08-2020 00:00");
+            this.end = dtFormat.parse("02-08-2020 01:00");
         } catch (ParseException e){
             this.start = null;
             this.end = null;
         }
-        this.calendar = "";
+        this.calendar = "url";
         this.description = "this is only a debug event ... ";
         this.image = R.drawable.balelec;
         this.organizers = new ArrayList<>();
+        organizers.add("fake@email.nu");
         this.schedule = new Schedule();
     }
 
@@ -134,7 +135,6 @@ public class Event {
             throw new IllegalArgumentException("Id cannot be null");
         }
         this.id = id;
-        this.image = R.drawable.balelec;
     }
 
 

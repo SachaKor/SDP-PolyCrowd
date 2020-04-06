@@ -6,6 +6,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.content.Context;
 import android.content.Intent;
+import android.icu.util.Calendar;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,16 +16,22 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
-import java.text.ParseException;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Date;
+
 import java.util.List;
+import java.util.ListIterator;
 
 import ch.epfl.polycrowd.Event;
 import ch.epfl.polycrowd.LoginActivity;
 import ch.epfl.polycrowd.OrganizerInviteActivity;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
+import ch.epfl.polycrowd.firebase.handlers.DynamicLinkHandler;
 import ch.epfl.polycrowd.logic.PolyContext;
 
 public class FrontPageActivity extends AppCompatActivity {
@@ -48,7 +55,23 @@ public class FrontPageActivity extends AppCompatActivity {
 
         // front page should dispatch the dynamic links
         receiveDynamicLink();
+    }
+    // --------------------------------------------------------------------------------
 
+    // --------------------- ON START, ON RESTART -------------------------------------
+    @Override
+    protected void onStart() {
+        super.onStart();
+        toggleLoginLogout();
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        toggleLoginLogout();
+    }
+
+    private void toggleLoginLogout() {
         // Toggle login/logout button
         if(PolyContext.getCurrentUser() != null){
             Button button = findViewById(R.id.button);
@@ -56,7 +79,7 @@ public class FrontPageActivity extends AppCompatActivity {
             button.setOnClickListener(v -> clickSignOut(v));
         }
     }
-    // --------------------------------------------------------------------------------
+
 
 
 
@@ -69,7 +92,10 @@ public class FrontPageActivity extends AppCompatActivity {
         StrictMode.setThreadPolicy(policy);
         fbInterface.getAllEvents(this::setAdapter);
     }
+    @RequiresApi(api = Build.VERSION_CODES.O)
     void setAdapter(List<Event> events){
+        orderEvents(events);
+        trimFinishedEvents(events);
         adapter = new EventPagerAdaptor(events, this);
         setViewPager(events);
     }
@@ -103,7 +129,32 @@ public class FrontPageActivity extends AppCompatActivity {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private List<Event> orderEvents(List<Event> es){
+        sort(es, (o1, o2) -> o1.getStart().compareTo(o2.getStart()));
+        return es;
+    }
 
+    private void sort(List<Event> e,Comparator<Event> c) {
+        Object[] a = e.toArray();
+        Arrays.sort(a, (Comparator) c);
+        ListIterator<Event> i = e.listIterator();
+        for (Object ev : a) {
+            i.next();
+            i.set((Event) ev);
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void trimFinishedEvents(List<Event> es){
+        Date now = new Date();
+        List<Event> es1 = new ArrayList<>(es);
+        for (Event e : es1){
+            if (e.getEnd().compareTo(now) <0){
+                es.remove(e);
+            }
+        }
+    }
 
 
     // --------- Button Activity ----------------------------------------------------------
@@ -123,32 +174,24 @@ public class FrontPageActivity extends AppCompatActivity {
 
     private void receiveDynamicLink() {
         Context c = this;
-        FirebaseDynamicLinks.getInstance()
-                .getDynamicLink(getIntent())
-                .addOnSuccessListener(this, pendingDynamicLinkData -> {
-                    Log.d(TAG, "Dynamic link received");
-                    // Get deep link from result (may be null if no link is found)
-                    Uri deepLink = null;
-                    if (pendingDynamicLinkData != null) {
-                        deepLink = pendingDynamicLinkData.getLink();
+        fbInterface.receiveDynamicLink(new DynamicLinkHandler() {
+            @Override
+            public void handle(Uri deepLink) {
+                Log.d(TAG, "Deep link URL:\n" + deepLink.toString());
+                String lastPathSegment = deepLink.getLastPathSegment();
+                Log.d(TAG, " last segment: " + lastPathSegment);
+                if(lastPathSegment != null && lastPathSegment.equals("invite")) {
+                    String eventId = deepLink.getQueryParameter("eventId"),
+                            eventName = deepLink.getQueryParameter("eventName");
+                    if (eventId != null && eventName != null) {
+                        Intent intent = new Intent(c, OrganizerInviteActivity.class);
+                        intent.putExtra("eventId", eventId);
+                        intent.putExtra("eventName", eventName);
+                        startActivity(intent);
                     }
-
-                    if (deepLink != null) {
-                        Log.d(TAG, "Deep link URL:\n" + deepLink.toString());
-                        String lastPathSegment = deepLink.getLastPathSegment();
-                        if(lastPathSegment != null && lastPathSegment.equals("invite")) {
-                            String eventId = deepLink.getQueryParameter("eventId"),
-                                    eventName = deepLink.getQueryParameter("eventName");
-                            if (eventId != null && eventName != null) {
-                                Intent intent = new Intent(c, OrganizerInviteActivity.class);
-                                intent.putExtra("eventId", eventId);
-                                intent.putExtra("eventName", eventName);
-                                startActivity(intent);
-                            }
-                        }
-                    }
-                })
-                .addOnFailureListener(this, e -> Log.w(TAG, "getDynamicLink:onFailure", e));
+                }
+            }
+        }, getIntent());
     }
 
 }

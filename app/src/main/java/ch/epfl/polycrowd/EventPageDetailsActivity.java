@@ -5,21 +5,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
-import ch.epfl.polycrowd.firebase.handlers.EventHandler;
+import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.dynamiclinks.DynamicLink;
 import com.google.firebase.dynamiclinks.DynamicLink.SocialMetaTagParameters;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
@@ -31,10 +31,15 @@ public class EventPageDetailsActivity extends AppCompatActivity {
 
     private String eventName = "";
 
-    private static final String LOG_TAG = "EventPageDetails";
+    private static final String TAG = "EventPageDetails";
 
-    // TODO: find another way to pass the event id
     private String eventId;
+
+    private final FirebaseInterface fbi = new FirebaseInterface(this);
+
+    private AlertDialog linkDialog;
+
+    private boolean currentUserIsOrganizer = false;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -47,21 +52,23 @@ public class EventPageDetailsActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        getIncomingIntent();
         final Button scheduleButton = findViewById(R.id.schedule);
         scheduleButton.setOnClickListener(v -> clickSchedule(v));
     }
-    private void getIncomingIntent() {
-        if(getIntent().hasExtra("iTitle")
-                && getIntent().hasExtra("iDesc")
-                && getIntent().hasExtra("iImage")
-                && getIntent().hasExtra("eventId")) {
-            String mTitle = getIntent().getStringExtra("iTitle") ;
-            String mDescription = getIntent().getStringExtra("iDesc") ;
-            byte[] mBytes = getIntent().getByteArrayExtra("iImage") ;
-            eventId = getIntent().getStringExtra("eventId");
-            Bitmap bitmap = BitmapFactory.decodeByteArray(mBytes, 0, mBytes.length) ;
-            setUpViews(mTitle, mDescription);
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if(linkDialog != null) {
+            linkDialog.dismiss();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if(linkDialog != null) {
+            linkDialog.dismiss();
         }
     }
 
@@ -84,28 +91,60 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     /**
      * Fetches the organizers of the event from the database
      * Initializes the RecyclerView displaying the organizers
-     * TODO: pass the organizers list to this activity via Event class to avoid extra db queries
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void initEvent() throws ParseException {
-        if (!getIntent().hasExtra("eventId")) {
+        Event curEvent = PolyContext.getCurrentEvent();
+        if(curEvent == null) {
+            Log.e(TAG, "current event is null");
             return;
         }
         FirebaseInterface fbi = new FirebaseInterface(this);
-        eventId = getIntent().getStringExtra("eventId");
+        eventId = curEvent.getId();
         fbi.getEventById(eventId, event -> {
             initRecyclerView(event.getOrganizers());
             setUpViews(event.getName(), event.getDescription());
             eventName = event.getName();
-
             // Check logged-in user => do not show invite button if user isn't organizer
             User user = fbi.getCurrentUser();
             if(user == null || event.getOrganizers().indexOf(user.getEmail()) == -1) {
-                Button inviteButton = findViewById(R.id.invite_organizer_button);
-                inviteButton.setVisibility(View.GONE);
+                Log.d(TAG, "current user is not an organizer");
+                currentUserIsOrganizer = false;
+            } else {
+                currentUserIsOrganizer = true;
+                setUpOrganizerPrivileges();
             }
         });
     }
+
+    private void setUpOrganizerPrivileges() {
+        FloatingActionButton editButton = findViewById(R.id.event_details_fab);
+        editButton.setVisibility(View.VISIBLE);
+    }
+
+    private void setEditing(boolean enable) {
+        int visibilityEdit = enable ? View.VISIBLE : View.INVISIBLE;
+        int visibilityFab = enable ? View.INVISIBLE : View.VISIBLE;
+        // set the "Organizer Invite" button visible
+        Button button = findViewById(R.id.invite_organizer_button);
+        button.setVisibility(visibilityEdit);
+        // set the "Submit Changes" button visible
+        button = findViewById(R.id.event_details_submit);
+        button.setVisibility(visibilityEdit);
+        // set the "Edit" floating button invisible until the changes submitted
+        FloatingActionButton fab = findViewById(R.id.event_details_fab);
+        fab.setVisibility(visibilityFab);
+    }
+
+    public void onEditClicked(View view) {
+        setEditing(true);
+    }
+
+    public void onSubmitChangesClicked(View view) {
+        // TODO: update the db
+        setEditing(false);
+    }
+
 
     /**
      * OnClick "INVITE ORGANIZER"
@@ -135,7 +174,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         // TODO: make the dialog look better
-        builder.setView(showText)
+        linkDialog = builder.setView(showText)
                 .setTitle(R.string.invite_link_dialog_title)
                 .setCancelable(true)
                 .setPositiveButton("OK", (dialog, which) -> dialog.cancel())

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,71 +8,98 @@
     android:background="#fff"
     tools:context=".EventPageDetailsActivity">
 
-    <ImageView
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:id="@+id/event_details_img"
-        android:src="@mipmap/ic_launcher"
-        android:layout_centerHorizontal="true" />
-
-    <TextView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/event_details_title"
-        android:text="@string/title"
-        android:textSize="22sp"
-        android:textColor="#000"
-        android:textStyle="bold"
-        android:layout_below="@id/event_details_img"
-        />
+        android:layout_height="match_parent">
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:id="@+id/event_details_img"
+            android:src="@mipmap/ic_launcher"
+            android:layout_centerHorizontal="true" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/description"
-        android:id="@+id/event_details_description"
-        android:textSize="18sp"
-        android:textColor="#A9A9A9"
-        android:textStyle="bold"
-        android:layout_below="@id/event_details_title"
-        android:layout_marginTop="5dp"
-        />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/event_details_title"
+            android:text="@string/title"
+            android:textSize="22sp"
+            android:textColor="#000"
+            android:textStyle="bold"
+            android:layout_below="@id/event_details_img"
+            />
 
-    <TextView
-        android:id="@+id/EditEventOrganizers"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        android:text="@string/organizers"
-        android:padding="10dp"
-        android:ems="10"
-        android:layout_below="@id/event_details_description"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/description"
+            android:id="@+id/event_details_description"
+            android:textSize="18sp"
+            android:textColor="#A9A9A9"
+            android:textStyle="bold"
+            android:layout_below="@id/event_details_title"
+            android:layout_marginTop="5dp"
+            />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/organizers_recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/EditEventOrganizers"/>
+        <TextView
+            android:id="@+id/EditEventOrganizers"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:text="@string/organizers"
+            android:padding="10dp"
+            android:ems="10"
+            android:layout_below="@id/event_details_description"/>
 
-    <Button
-        android:id="@+id/invite_organizer_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/organizers_recycler_view"
-        android:layout_marginTop="10dp"
-        android:text="@string/invite_organizer"
-        android:onClick="inviteLinkClicked"/>
-    <Button
-        android:id="@+id/schedule"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/organizers_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/EditEventOrganizers"/>
+
+        <Button
+            android:id="@+id/invite_organizer_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/organizers_recycler_view"
+            android:layout_marginTop="10dp"
+            android:text="@string/invite_organizer"
+            android:onClick="inviteLinkClicked"
+            android:visibility="invisible"/>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/invite_organizer_button"
+            android:text="Submit Changes"
+            android:id="@+id/event_details_submit"
+            android:visibility="invisible"
+            android:onClick="onSubmitChangesClicked"/>
+
+        <Button
+            android:id="@+id/schedule"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|top"
+            android:text="Schedule"
+            android:padding="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="25dp"
+            android:paddingRight="10dp"/>
+    </RelativeLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="start|top"
-        android:text="Schedule"
-        android:padding="10dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginStart="25dp"
-        android:paddingRight="10dp"/>
+        android:layout_gravity="end|bottom"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_edit_black_24dp"
+        tools:ignore="PrivateResource"
+        app:fabSize="normal"
+        app:backgroundTint="@color/color2"
+        android:id="@+id/event_details_fab"
+        android:visibility="invisible"
+        android:onClick="onEditClicked"/>
 
-</RelativeLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
 

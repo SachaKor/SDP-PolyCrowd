@@ -17,7 +17,8 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth_percent="1."
-        android:padding="20dp">
+        android:padding="20dp"
+        android:id="@+id/invite_organizer_parent">
 
         <TextView
             android:layout_width="match_parent"
