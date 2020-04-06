@@ -55,7 +55,7 @@ public interface DatabaseInterface {
     //Checking for existing username or email not handled in signUp call, but via other async. requests
     void signUp(String username, String firstPassword, String email, Long age, UserHandler successHandler, UserHandler failureHandler);
 
-    void resetPassword(String email);
+    void resetPassword(String email, UserHandler successHandler, UserHandler failureHandler);
 
     void receiveDynamicLink(DynamicLinkHandler handler, Intent intent);
 }
