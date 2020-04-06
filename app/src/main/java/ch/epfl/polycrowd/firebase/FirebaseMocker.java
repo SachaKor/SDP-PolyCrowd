@@ -85,7 +85,6 @@ public class FirebaseMocker implements DatabaseInterface {
         } else{
             failureHandler.handle(user);
         }
-
     }
 
     @Override
@@ -124,20 +123,10 @@ public class FirebaseMocker implements DatabaseInterface {
         }
     }
 
-
-    //TODO Extract the toast-popup for username and pw vetting into the activity class
     @Override
-    public void signUp(String username, String firstPassword, String email, int age) {
+    public void signUp(String username, String firstPassword, String email, Long age, UserHandler successHandler, UserHandler failureHandler) {
         User newUser = new User(username, "1", email, age) ;
-        if(!usersAndPasswords.containsKey(username)){
-            if(firstPassword.length()<6){
-               //TODO
-            } else{
-                usersAndPasswords.put(newUser, firstPassword) ;
-            }
-        } else{
-           //TODO
-        }
+        successHandler.handle(newUser);
     }
 
     @Override
