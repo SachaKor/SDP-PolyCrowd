@@ -88,19 +88,14 @@ public class LoginActivity extends AppCompatActivity {
     private UserHandler successHandler(){
         return user->{
                 //When would the currentUser be null if signin was successful?
-                Context c = this;
-                if(fbInterface.getCurrentUser() == null) {
-                    return;
-                }
-
+            Context c = this;
             Toast.makeText(c, "Sign in success", Toast.LENGTH_SHORT).show();
             PolyContext.setCurrentUser(user);
             /* if the user logs in to accept the organizer invitation, add him/her to the
                 organizers list, then open the event details page for the preview */
                 Log.d(TAG, "previous page: " + PolyContext.getPreviousPage());
                 if(PolyContext.getPreviousPage().equals("OrganizerInviteActivity")) {
-                    String organizerEmail =
-                            Objects.requireNonNull(fbInterface.getCurrentUser().getEmail());
+                    String organizerEmail = Objects.requireNonNull(PolyContext.getCurrentUser().getEmail());
                     if(PolyContext.getCurrentEvent() == null) {
                         Log.e(TAG, "current event is null");
                         return;

@@ -21,6 +21,7 @@ import java.util.List;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
 import ch.epfl.polycrowd.firebase.handlers.EventHandler;
 import ch.epfl.polycrowd.logic.Event;
+import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 import ch.epfl.polycrowd.map.MapActivity;
 
@@ -108,7 +109,7 @@ public class EventEditActivity extends AppCompatActivity {
         }
 
         // check if the user is logged in
-        User user = firebaseInterface.getCurrentUser();
+        User user = PolyContext.getCurrentUser();
 
         List<String> organizers = new ArrayList<>();
         organizers.add(user.getEmail());

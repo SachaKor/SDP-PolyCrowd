@@ -1,14 +1,5 @@
 package ch.epfl.polycrowd;
 
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import ch.epfl.polycrowd.firebase.FirebaseInterface;
-import ch.epfl.polycrowd.logic.Event;
-import ch.epfl.polycrowd.logic.PolyContext;
-import ch.epfl.polycrowd.logic.User;
-
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
@@ -20,12 +11,22 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.firebase.dynamiclinks.DynamicLink;
 import com.google.firebase.dynamiclinks.DynamicLink.SocialMetaTagParameters;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
 import java.text.ParseException;
 import java.util.List;
+
+import ch.epfl.polycrowd.firebase.FirebaseInterface;
+import ch.epfl.polycrowd.logic.Event;
+import ch.epfl.polycrowd.logic.PolyContext;
+import ch.epfl.polycrowd.logic.User;
 
 public class EventPageDetailsActivity extends AppCompatActivity {
 
@@ -104,7 +105,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
             setUpViews(event.getName(), event.getDescription());
             eventName = event.getName();
             // Check logged-in user => do not show invite button if user isn't organizer
-            User user = fbi.getCurrentUser();
+            User user = PolyContext.getCurrentUser();
             if(user == null || event.getOrganizers().indexOf(user.getEmail()) == -1) {
                 Log.d(TAG, "current user is not an organizer");
                 Button inviteButton = findViewById(R.id.invite_organizer_button);
