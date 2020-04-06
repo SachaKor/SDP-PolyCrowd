@@ -11,9 +11,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -21,7 +19,6 @@ import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 
 import java.text.ParseException;
@@ -31,13 +28,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.firebase.handlers.DynamicLinkHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
 import ch.epfl.polycrowd.firebase.handlers.OrganizersHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
+import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 
@@ -281,12 +278,20 @@ public class FirebaseInterface implements DatabaseInterface {
     }
 
     @Override
-    public void  signUp(String username, String firstPassword, String email, int age) {
+    public void  signUp(String username, String firstPassword, String email, int age, UserHandler successHandler, UserHandler failureHandler) {
         if (! PolyContext.isRunningTest()) {
             CollectionReference usersRef = getFirestoreInstance(false).collection("users");
             Query queryUsernames = usersRef.whereEqualTo("username", username);
             Query queryEmails = usersRef.whereEqualTo("email", email);
-            queryUsernames.get().addOnCompleteListener(usernamesQueryListener(queryEmails.get(), email, firstPassword, username, age));
+            queryUsernames.get().addOnCompleteListener(
+                    task ->{
+                        if(task.isSuccessful()){
+                            addUserToDatabase(email,firstPassword,username, age, successHandler, failureHandler);
+                        } else{
+                            failureHandler.handle(new User(username, username, email, age ) );
+                        }
+                    }
+            );
         } else {
             if (email.equals("already@exists.com") || username.equals("already exists")) {
                 Toast.makeText(c, "User already exists", Toast.LENGTH_SHORT).show();
@@ -300,24 +305,25 @@ public class FirebaseInterface implements DatabaseInterface {
 
     }
 
-    private void addUserToDatabase(String email, String firstPassword, String username, int age){
+    private void addUserToDatabase(String email, String firstPassword, String username, int age, UserHandler successHandler, UserHandler failureHandler){
+
         getAuthInstance(false)
                 .createUserWithEmailAndPassword(email, firstPassword)
                 .addOnSuccessListener(authResult -> {
                     String uid = authResult.getUser().getUid();
                 });
-
         Map<String, Object> user = new HashMap<>();
         user.put("username", username);
         user.put("age", age);
         user.put("email", email) ;
         getFirestoreInstance(false).collection("users")
                 .add(user)
-                .addOnSuccessListener(documentReference -> Log.d("SIGN_UP", "DocumentSnapshot added with ID: " + documentReference.getId()))
-                .addOnFailureListener(e -> Log.w("SIGN_UP", "Error adding document", e));
+                .addOnSuccessListener(documentReference -> {Log.d("SIGN_UP", "DocumentSnapshot added with ID: " + documentReference.getId());
+                successHandler.handle(new User(email, username, username, age));})
+                .addOnFailureListener(e -> {Log.w("SIGN_UP", "Error adding document", e) ; failureHandler.handle(new User(email, username, username, age));});
     }
 
-    private OnCompleteListener<QuerySnapshot> usernamesQueryListener(Task<QuerySnapshot> queryEmails, String email, String firstPassword,String username, int age){
+    /*private OnCompleteListener<QuerySnapshot> usernamesQueryListener(Task<QuerySnapshot> queryEmails, String email, String firstPassword,String username, int age){
         return task -> {
             if(task.isSuccessful()) {
                 // user with this username already exists
@@ -329,10 +335,10 @@ public class FirebaseInterface implements DatabaseInterface {
                 }
             }
         };
-    }
+    }*/
 
 
-    private OnCompleteListener<QuerySnapshot> emailsQueryListener(String email, String firstPassword, String username, int age){
+    /*private OnCompleteListener<QuerySnapshot> emailsQueryListener(String email, String firstPassword, String username, int age){
         return task -> {
 
             if (task.isSuccessful()) {
@@ -341,13 +347,13 @@ public class FirebaseInterface implements DatabaseInterface {
                     toastPopup("Email already exists");
                 } else {
                     // otherwise, add a user to the firestore
-                    addUserToDatabase(email,firstPassword,username, age);
+                    addUserToDatabase(email,firstPassword,username, age, successHandler, failureHandler);
                     toastPopup("Sign up successful");
                 }
             }
 
         };
-    }
+    }*/
 
     private void toastPopup(String text) {
         int duration = Toast.LENGTH_SHORT;
