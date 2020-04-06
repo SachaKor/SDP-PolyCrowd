@@ -45,13 +45,10 @@ public class FirebaseInterface implements DatabaseInterface {
     private FirebaseFirestore cachedFirestore;
     private Context c;
 
-
     private static final String EVENTS = "polyevents";
     private static final String ORGANIZERS = "organizers";
     private static final String USERS = "users";
     private static final String TAG = "FirebaseInterface";
-
-
 
     public FirebaseInterface(Context context){
         this.c = context;
@@ -83,7 +80,6 @@ public class FirebaseInterface implements DatabaseInterface {
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void signInWithEmailAndPassword(@NonNull final String email, @NonNull final String password,
                                            UserHandler successHandler, UserHandler failureHandler){
-
         if ( PolyContext.isRunningTest() ) {
             if (email.equals("nani@haha.com") && password.equals("123456") ) {
                 Toast.makeText(c, "Sign in success", Toast.LENGTH_SHORT).show();
@@ -95,7 +91,7 @@ public class FirebaseInterface implements DatabaseInterface {
                     .addOnCompleteListener(taskc -> {
                         if(taskc.isSuccessful()) {
                             // TODO: use getUserByEmail, clean up firestore first
-                            User user = new User(email, taskc.getResult().getUser().getUid(), "username", 3);
+                            User user = new User(email, taskc.getResult().getUser().getUid(), "username", 3L);
                             successHandler.handle(user);
                         } else {
                             failureHandler.handle(null);
@@ -107,27 +103,7 @@ public class FirebaseInterface implements DatabaseInterface {
     @Override
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void getUserByEmail(String email, UserHandler successHandler, UserHandler failureHandler) {
-        if(PolyContext.isRunningTest()) {
-            successHandler.handle(new User("fake@fake.com", "1", "fake user", 100));
-        } else {
-            /*getFirestoreInstance(false).collection(USERS)
-                    .whereEqualTo("email", email).get()
-                    .addOnSuccessListener(queryDocumentSnapshots -> {
-                        if(queryDocumentSnapshots.size() > 1) {
-                            Log.e(TAG, " multiple users with email " + email);
-                        }
-                        // there MUST be one single snapshot
-                        queryDocumentSnapshots.forEach(queryDocumentSnapshot -> {
-                            Map<String, Object> data = queryDocumentSnapshot.getData();
-                            data.put("uid", queryDocumentSnapshot.getId());
-                            successHandler.handle(User.getFromDocument(data));
-                        });
-                    }).addOnFailureListener(e -> {
-                        Log.e(TAG, "Error retrieving user with email " + email);
-                    failureHandler.handle(null);}); */
             getUserByField("email", email, successHandler, failureHandler);
-        }
-
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -141,18 +117,20 @@ public class FirebaseInterface implements DatabaseInterface {
         getFirestoreInstance(false).collection(USERS)
                 .whereEqualTo(fieldName, fieldValue).get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    if(queryDocumentSnapshots.size() > 1) {
+                    if(queryDocumentSnapshots.size() == 1) {
+                        // there MUST be one single snapshot
+                        queryDocumentSnapshots.forEach(queryDocumentSnapshot -> {
+                            Map<String, Object> data = queryDocumentSnapshot.getData();
+                            data.put("uid", queryDocumentSnapshot.getId());
+                            successHandler.handle(User.getFromDocument(data));
+                        });
+                    } else if(queryDocumentSnapshots.size() == 0){
+                        //User doesn't exist yet
+                        failureHandler.handle(null);
+                    }else if(queryDocumentSnapshots.size()  > 1){
                         Log.e(TAG, " multiple users with fieldName " +fieldName);
                     }
-                    // there MUST be one single snapshot
-                    queryDocumentSnapshots.forEach(queryDocumentSnapshot -> {
-                        Map<String, Object> data = queryDocumentSnapshot.getData();
-                        data.put("uid", queryDocumentSnapshot.getId());
-                        successHandler.handle(User.getFromDocument(data));
-                    });
-                }).addOnFailureListener(e -> {
-            Log.e(TAG, "Error retrieving user with "+ fieldName + " "+fieldValue);
-            failureHandler.handle(null);});
+                }).addOnFailureListener(e -> Log.e(TAG, "Error retrieving user with "+ fieldName + " "+fieldValue));
     }
 
     @Override
@@ -278,14 +256,16 @@ public class FirebaseInterface implements DatabaseInterface {
     }
 
     @Override
-    public void  signUp(String username, String firstPassword, String email, int age, UserHandler successHandler, UserHandler failureHandler) {
+    public void  signUp(String username, String firstPassword, String email, Long age, UserHandler successHandler, UserHandler failureHandler) {
         if (! PolyContext.isRunningTest()) {
+            Log.d(TAG, "HERE IN SIGNUP AT TOP\n") ;
             CollectionReference usersRef = getFirestoreInstance(false).collection("users");
             Query queryUsernames = usersRef.whereEqualTo("username", username);
             Query queryEmails = usersRef.whereEqualTo("email", email);
             queryUsernames.get().addOnCompleteListener(
                     task ->{
                         if(task.isSuccessful()){
+                            Log.d(TAG, "HERE IN SIGNUP\n") ;
                             addUserToDatabase(email,firstPassword,username, age, successHandler, failureHandler);
                         } else{
                             failureHandler.handle(new User(username, username, email, age ) );
@@ -305,13 +285,14 @@ public class FirebaseInterface implements DatabaseInterface {
 
     }
 
-    private void addUserToDatabase(String email, String firstPassword, String username, int age, UserHandler successHandler, UserHandler failureHandler){
+    private void addUserToDatabase(String email, String firstPassword, String username, Long age, UserHandler successHandler, UserHandler failureHandler){
 
         getAuthInstance(false)
                 .createUserWithEmailAndPassword(email, firstPassword)
                 .addOnSuccessListener(authResult -> {
                     String uid = authResult.getUser().getUid();
                 });
+        Log.d(TAG, "HERE IN ADDUSERTODATABASE\n") ;
         Map<String, Object> user = new HashMap<>();
         user.put("username", username);
         user.put("age", age);
@@ -323,38 +304,6 @@ public class FirebaseInterface implements DatabaseInterface {
                 .addOnFailureListener(e -> {Log.w("SIGN_UP", "Error adding document", e) ; failureHandler.handle(new User(email, username, username, age));});
     }
 
-    /*private OnCompleteListener<QuerySnapshot> usernamesQueryListener(Task<QuerySnapshot> queryEmails, String email, String firstPassword,String username, int age){
-        return task -> {
-            if(task.isSuccessful()) {
-                // user with this username already exists
-
-                if(task.getResult().size() > 0) {
-                    toastPopup("User already exists");
-                } else {
-                    queryEmails.addOnCompleteListener(emailsQueryListener(email,firstPassword,username, age)) ;
-                }
-            }
-        };
-    }*/
-
-
-    /*private OnCompleteListener<QuerySnapshot> emailsQueryListener(String email, String firstPassword, String username, int age){
-        return task -> {
-
-            if (task.isSuccessful()) {
-                //user with this email already exists
-                if (task.getResult().size() > 0) {
-                    toastPopup("Email already exists");
-                } else {
-                    // otherwise, add a user to the firestore
-                    addUserToDatabase(email,firstPassword,username, age, successHandler, failureHandler);
-                    toastPopup("Sign up successful");
-                }
-            }
-
-        };
-    }*/
-
     private void toastPopup(String text) {
         int duration = Toast.LENGTH_SHORT;
         Toast toast = Toast.makeText(c, text, duration);
@@ -364,18 +313,16 @@ public class FirebaseInterface implements DatabaseInterface {
 
     public User getCurrentUser() {
         if ( PolyContext.isRunningTest() ) {
-            return new User("fake@fake.com", "1", "fake user", 100);
+            return new User("fake@fake.com", "1", "fake user", 100L);
         } else {
             FirebaseUser u = getAuthInstance(false).getCurrentUser();
             User curentUser;
             if(u != null) {
-
-                curentUser =  new User(u.getEmail(), u.getUid(), u.getDisplayName(), 3);
+                curentUser =  new User(u.getEmail(), u.getUid(), u.getDisplayName(), 3L);
             }else{
                 // Not logged in !
                 curentUser =  null;
             }
-
             PolyContext.setCurrentUser(curentUser);
             return  curentUser;
         }
@@ -428,7 +375,5 @@ public class FirebaseInterface implements DatabaseInterface {
                     })
                     .addOnFailureListener(e -> Log.w(TAG, "getDynamicLink:onFailure", e));
         }
-
     }
-
 }
