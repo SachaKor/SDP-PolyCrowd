@@ -8,6 +8,7 @@ import ch.epfl.polycrowd.firebase.FirebaseInterface;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
@@ -40,6 +41,14 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     private AlertDialog linkDialog;
 
     private boolean currentUserIsOrganizer = false;
+
+    public static final int PICK_IMAGE = 1;
+
+    ImageView eventImg;
+    ImageView editImg;
+    Button inviteOrganizerButton;
+    Button submitChanges;
+    FloatingActionButton editEventButton;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -75,10 +84,14 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     private void setUpViews(String title, String description) {
         TextView eventTitle = findViewById(R.id.event_details_title);
         TextView eventDescription = findViewById(R.id.event_details_description);
-        ImageView eventImg = findViewById(R.id.event_details_img);
+        eventImg = findViewById(R.id.event_details_img);
         eventTitle.setText(title);
         eventDescription.setText(description);
         eventImg.setImageResource(R.drawable.balelec);
+        editImg = findViewById(R.id.event_details_edit_img);
+        inviteOrganizerButton = findViewById(R.id.invite_organizer_button);
+        submitChanges = findViewById(R.id.event_details_submit);
+        editEventButton = findViewById(R.id.event_details_fab);
     }
 
     private void initRecyclerView(List<String> organizers) {
@@ -126,14 +139,30 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         int visibilityEdit = enable ? View.VISIBLE : View.INVISIBLE;
         int visibilityFab = enable ? View.INVISIBLE : View.VISIBLE;
         // set the "Organizer Invite" button visible
-        Button button = findViewById(R.id.invite_organizer_button);
-        button.setVisibility(visibilityEdit);
+        inviteOrganizerButton.setVisibility(visibilityEdit);
         // set the "Submit Changes" button visible
-        button = findViewById(R.id.event_details_submit);
-        button.setVisibility(visibilityEdit);
+        submitChanges.setVisibility(visibilityEdit);
         // set the "Edit" floating button invisible until the changes submitted
-        FloatingActionButton fab = findViewById(R.id.event_details_fab);
-        fab.setVisibility(visibilityFab);
+        editEventButton.setVisibility(visibilityFab);
+        editImg.setVisibility(visibilityEdit);
+    }
+
+    public void onEditImageClicked(View view) {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode,int resultCode,Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK)
+            if(requestCode == PICK_IMAGE) {
+                //data.getData returns the content URI for the selected Image
+                Uri selectedImage = data.getData();
+                eventImg.setImageURI(selectedImage);
+            }
     }
 
     public void onEditClicked(View view) {
