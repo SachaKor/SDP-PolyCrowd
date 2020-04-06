@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
-import android.view.Gravity;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -73,7 +72,6 @@ public class FirebaseInterface implements DatabaseInterface {
             this.cachedFirestore = FirebaseFirestore.getInstance();
         }
         return this.cachedFirestore;
-
     }
 
     @Override
@@ -127,7 +125,7 @@ public class FirebaseInterface implements DatabaseInterface {
                     } else if(queryDocumentSnapshots.size() == 0){
                         //User doesn't exist yet
                         failureHandler.handle(null);
-                    }else if(queryDocumentSnapshots.size()  > 1){
+                    } else if(queryDocumentSnapshots.size()  > 1){
                         Log.e(TAG, " multiple users with fieldName " +fieldName);
                     }
                 }).addOnFailureListener(e -> Log.e(TAG, "Error retrieving user with "+ fieldName + " "+fieldValue));
@@ -256,16 +254,14 @@ public class FirebaseInterface implements DatabaseInterface {
     }
 
     @Override
-    public void  signUp(String username, String firstPassword, String email, Long age, UserHandler successHandler, UserHandler failureHandler) {
+    public void signUp(String username, String firstPassword, String email, Long age, UserHandler successHandler, UserHandler failureHandler) {
         if (! PolyContext.isRunningTest()) {
-            Log.d(TAG, "HERE IN SIGNUP AT TOP\n") ;
             CollectionReference usersRef = getFirestoreInstance(false).collection("users");
             Query queryUsernames = usersRef.whereEqualTo("username", username);
             Query queryEmails = usersRef.whereEqualTo("email", email);
             queryUsernames.get().addOnCompleteListener(
                     task ->{
                         if(task.isSuccessful()){
-                            Log.d(TAG, "HERE IN SIGNUP\n") ;
                             addUserToDatabase(email,firstPassword,username, age, successHandler, failureHandler);
                         } else{
                             failureHandler.handle(new User(username, username, email, age ) );
@@ -282,17 +278,10 @@ public class FirebaseInterface implements DatabaseInterface {
                 Toast.makeText(c, "Sign up successful", Toast.LENGTH_SHORT).show();
             }
         }
-
     }
 
     private void addUserToDatabase(String email, String firstPassword, String username, Long age, UserHandler successHandler, UserHandler failureHandler){
-
-        getAuthInstance(false)
-                .createUserWithEmailAndPassword(email, firstPassword)
-                .addOnSuccessListener(authResult -> {
-                    String uid = authResult.getUser().getUid();
-                });
-        Log.d(TAG, "HERE IN ADDUSERTODATABASE\n") ;
+        getAuthInstance(false).createUserWithEmailAndPassword(email, firstPassword) ;
         Map<String, Object> user = new HashMap<>();
         user.put("username", username);
         user.put("age", age);
@@ -304,12 +293,6 @@ public class FirebaseInterface implements DatabaseInterface {
                 .addOnFailureListener(e -> {Log.w("SIGN_UP", "Error adding document", e) ; failureHandler.handle(new User(email, username, username, age));});
     }
 
-    private void toastPopup(String text) {
-        int duration = Toast.LENGTH_SHORT;
-        Toast toast = Toast.makeText(c, text, duration);
-        toast.setGravity(Gravity.BOTTOM, 0, 16);
-        toast.show();
-    }
 
     public User getCurrentUser() {
         if ( PolyContext.isRunningTest() ) {
@@ -329,22 +312,26 @@ public class FirebaseInterface implements DatabaseInterface {
     }
 
     @Override
-    public void resetPassword(String email){
+    public void resetPassword(String email, UserHandler successHandler, UserHandler failureHandler){
         getAuthInstance(false).sendPasswordResetEmail(email).addOnCompleteListener(
                 task ->  {
                     if (task.isSuccessful()) {
-                        Toast.makeText(c, "A reset link has been sent to your email", Toast.LENGTH_SHORT).show();
+                       // Toast.makeText(c, "A reset link has been sent to your email", Toast.LENGTH_SHORT).show();
+                        //Nothing to be done here it seems with the user
+                        successHandler.handle(null);
                     } else {
                         //Check if the user exists or not, and if not, suggest signup ; otherwise network error
-                        FirebaseFirestore firestore = getFirestoreInstance(false) ;
+                        /*FirebaseFirestore firestore = getFirestoreInstance(false) ;
                         CollectionReference usersRef = firestore.collection("users");
                         usersRef.whereEqualTo("email", email).get().addOnCompleteListener( task1 ->  {
                             //Query was able to complete, but email was not found (size is either 1 or 0)
                             if(task1.isSuccessful() && task1.getResult().size() == 0 ){
                                 Toast.makeText(c, "Email not found, please sign up", Toast.LENGTH_SHORT).show();
                             } else {//in this case, there is probably a connection error
-                                Toast.makeText(c, "Connection error, please try again later", Toast.LENGTH_SHORT).show();
-                            } }) ;
+                                //Toast.makeText(c, "Connection error, please try again later", Toast.LENGTH_SHORT).show();
+                            } }) ;*/
+                        //nothing to do with user here either
+                        failureHandler.handle(null);
                     }
                 });
     }

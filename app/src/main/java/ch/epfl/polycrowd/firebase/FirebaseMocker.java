@@ -130,8 +130,9 @@ public class FirebaseMocker implements DatabaseInterface {
     }
 
     @Override
-    public void resetPassword(String email) {
-        //Need external dependency for this
+    public void resetPassword(String email, UserHandler successHandler, UserHandler failureHandler) {
+        //Need external dependency for this, so just call failureHandler
+        failureHandler.handle(null);
     }
 
     @Override
