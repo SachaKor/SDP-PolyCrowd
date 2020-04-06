@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -33,7 +32,6 @@ import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
 import ch.epfl.polycrowd.firebase.handlers.OrganizersHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
-import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 
 public class FirebaseInterface implements DatabaseInterface {
@@ -77,13 +75,6 @@ public class FirebaseInterface implements DatabaseInterface {
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void signInWithEmailAndPassword(@NonNull final String email, @NonNull final String password,
                                            UserHandler successHandler, UserHandler failureHandler){
-        if ( PolyContext.isRunningTest() ) {
-            if (email.equals("nani@haha.com") && password.equals("123456") ) {
-                Toast.makeText(c, "Sign in success", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(c, "Incorrect email or password", Toast.LENGTH_SHORT).show();
-            }
-        } else {
             this.getAuthInstance(true).signInWithEmailAndPassword(email,password)
                     .addOnCompleteListener(taskc -> {
                         if(taskc.isSuccessful()) {
@@ -94,7 +85,6 @@ public class FirebaseInterface implements DatabaseInterface {
                             failureHandler.handle(null);
                         }
                     });
-        }
     }
 
     @Override
@@ -138,11 +128,6 @@ public class FirebaseInterface implements DatabaseInterface {
     @Override
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void getAllEvents(EventsHandler handler) {
-        if( PolyContext.isRunningTest()) {
-            List<Event> events = new ArrayList<>();
-            events.add(new Event());
-            handler.handle(events);
-        } else {
             getFirestoreInstance(false).collection(EVENTS).get().addOnSuccessListener(queryDocumentSnapshots -> {
                 List<Event> events = new ArrayList<>();
                 queryDocumentSnapshots.forEach(queryDocumentSnapshot -> {
@@ -154,24 +139,11 @@ public class FirebaseInterface implements DatabaseInterface {
                 });
                 handler.handle(events);
             });
-        }
     }
 
     @Override
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void addEvent(Event event, EventHandler successHandler, EventHandler failureHandler){
-        if( PolyContext.isRunningTest()){
-            //TODO: set s from test suit
-            boolean s = true;
-            if (s) {
-                Log.d(TAG, "DocumentSnapshot added with ID: " + "fakeDocumentId");
-                Toast.makeText(c, "Event added", Toast.LENGTH_LONG).show();
-            } else {
-                Log.e(TAG, "Error adding document");
-                Toast.makeText(c, "Error occurred while adding the event", Toast.LENGTH_LONG).show();
-            }
-
-        } else {
             getFirestoreInstance(false).collection("polyevents")
                     .add(event.toHashMap())
                     .addOnSuccessListener(documentReference -> {
@@ -182,21 +154,12 @@ public class FirebaseInterface implements DatabaseInterface {
                         Log.e(TAG, "Error adding document", e);
                         failureHandler.handle(event);
                     });
-
-        }
     }
 
     @Override
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void getEventById(String eventId, EventHandler eventHandler) throws ParseException {
         final String TAG1 = "getEventById";
-        if( PolyContext.isRunningTest()) {
-            Log.d(TAG, TAG1 + " is mocked");
-            Event event = new Event();
-            // adding the the fake current user in the organizer list to test EventDetailsPage
-            event.addOrganizer("fake@fake.com");
-            eventHandler.handle(event);
-        } else {
             Log.d(TAG, TAG1 + " is not mocked");
             Log.d(TAG, TAG1 + " event id: " + eventId);
             getFirestoreInstance(false).collection(EVENTS)
@@ -207,7 +170,6 @@ public class FirebaseInterface implements DatabaseInterface {
                         event.setId(eventId);
                         eventHandler.handle(event);
                     }).addOnFailureListener(e -> Log.e(TAG, "Error retrieving document with id " + eventId));
-        }
     }
 
     @Override
@@ -244,7 +206,6 @@ public class FirebaseInterface implements DatabaseInterface {
 
     @Override
     public void signUp(String username, String firstPassword, String email, Long age, UserHandler successHandler, UserHandler failureHandler) {
-        if (! PolyContext.isRunningTest()) {
             CollectionReference usersRef = getFirestoreInstance(false).collection("users");
             Query queryUsernames = usersRef.whereEqualTo("username", username);
             Query queryEmails = usersRef.whereEqualTo("email", email);
@@ -257,7 +218,6 @@ public class FirebaseInterface implements DatabaseInterface {
                         }
                     }
             );
-        }
     }
 
     private void addUserToDatabase(String email, String firstPassword, String username, Long age, UserHandler successHandler, UserHandler failureHandler){
@@ -290,13 +250,6 @@ public class FirebaseInterface implements DatabaseInterface {
     @Override
     public void receiveDynamicLink(DynamicLinkHandler handler, Intent intent) {
         final String TAG1 = "receiveDynamicLink";
-        if(PolyContext.isRunningTest()) {
-            Log.d(TAG, TAG1 + " is mocked");
-            Uri link = Uri.parse("https://www.example.com/invite/?eventId=K3Zy20id3fUgjDFaRqYA&eventName=testaze");
-            if(PolyContext.getMockDynamicLink()) {
-                handler.handle(link);
-            }
-        } else {
             FirebaseDynamicLinks.getInstance()
                     .getDynamicLink(intent)
                     .addOnSuccessListener(pendingDynamicLinkData -> {
@@ -312,6 +265,5 @@ public class FirebaseInterface implements DatabaseInterface {
                         }
                     })
                     .addOnFailureListener(e -> Log.w(TAG, "getDynamicLink:onFailure", e));
-        }
     }
 }
