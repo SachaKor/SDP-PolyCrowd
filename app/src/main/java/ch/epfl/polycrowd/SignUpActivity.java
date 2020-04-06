@@ -110,12 +110,14 @@ public class SignUpActivity extends AppCompatActivity {
             Context c = this ;
             UserHandler userExistsHandler = user -> Toast.makeText(c, "User already exists", Toast.LENGTH_SHORT).show();
             UserHandler userDoesNotExistHandler = user -> fbi.signUp(username.getText().toString(),
-                    firstPassword.getText().toString(), email.getText().toString(), 100,
+                    firstPassword.getText().toString(), email.getText().toString(), 100L,
                     u ->Toast.makeText(c, "Sign up successful", Toast.LENGTH_SHORT).show() ,
                     u ->Toast.makeText(c, "Error registering user", Toast.LENGTH_SHORT).show() );
             //Finally, query database
+            //Note that even though user in the second handler will be null, it is not actually referenced anywhere in the lambda expression
+            //For now, we use the same type of success and failure handlers
             fbi.getUserByEmail(email.getText().toString(), userExistsHandler, user -> {
-                fbi.getUserByUsername(username.getText().toString(), userExistsHandler, userDoesNotExistHandler );
+                fbi.getUserByUsername(username.getText().toString(), userExistsHandler, userDoesNotExistHandler);
             });
 
         }
