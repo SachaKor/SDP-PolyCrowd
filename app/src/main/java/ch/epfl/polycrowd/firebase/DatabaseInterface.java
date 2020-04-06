@@ -31,6 +31,8 @@ public interface DatabaseInterface {
     void signInWithEmailAndPassword(@NonNull String email, @NonNull String password,
                                     UserHandler successHandler, UserHandler failureHandler);
 
+    //The success and failure handlers here denote in the case where the query is sucessful,
+    // but 1 user is found, or 0 user is found resp. Same applies for getUserByUsername
     @RequiresApi(api = Build.VERSION_CODES.N)
     void getUserByEmail(String email, UserHandler successHandler, UserHandler failureHandler);
 
@@ -50,7 +52,8 @@ public interface DatabaseInterface {
     void addOrganizerToEvent(String eventId, String organizerEmail,
                              OrganizersHandler handler);
 
-    void  signUp(String username, String firstPassword, String email, int age);
+    //Checking for existing username or email not handled in signUp call, but via other async. requests
+    void signUp(String username, String firstPassword, String email, Long age, UserHandler successHandler, UserHandler failureHandler);
 
     void resetPassword(String email);
 
