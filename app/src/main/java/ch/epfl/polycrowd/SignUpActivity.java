@@ -1,15 +1,18 @@
 package ch.epfl.polycrowd;
 
-import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.app.AppCompatActivity;
-import ch.epfl.polycrowd.firebase.FirebaseInterface;
-
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+
+import ch.epfl.polycrowd.firebase.FirebaseInterface;
+import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 
 /**
  * TODO: refactor if possible
@@ -93,6 +96,7 @@ public class SignUpActivity extends AppCompatActivity {
      * - Checks all the Sign Up fields
      * - Adds a user to the database if the checks pass
      */
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public void registerClicked(View view) {
 
         firstPassword = findViewById(R.id.sign_up_pswd) ;
@@ -103,9 +107,16 @@ public class SignUpActivity extends AppCompatActivity {
 
         if(registrationFieldsValid(firstPassword, secondPassword, username, email)){
             // check if the user with a given username exists already
-
-            fbi.signUp(username.getText().toString(), firstPassword.getText().toString(), email.getText().toString(), 100);
-
+            Context c = this ;
+            UserHandler userExistsHandler = user -> Toast.makeText(c, "User already exists", Toast.LENGTH_SHORT).show();
+            UserHandler userDoesNotExistHandler = user -> fbi.signUp(username.getText().toString(),
+                    firstPassword.getText().toString(), email.getText().toString(), 100,
+                    u ->Toast.makeText(c, "Sign up successful", Toast.LENGTH_SHORT).show() ,
+                    u ->Toast.makeText(c, "Error registering user", Toast.LENGTH_SHORT).show() );
+            //Finally, query database
+            fbi.getUserByEmail(email.getText().toString(), userExistsHandler, user -> {
+                fbi.getUserByUsername(username.getText().toString(), userExistsHandler, userDoesNotExistHandler );
+            });
 
         }
 
