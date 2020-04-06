@@ -19,7 +19,6 @@ public class ResetPasswordActivity extends AppCompatActivity {
 
     private FirebaseInterface fbi ;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

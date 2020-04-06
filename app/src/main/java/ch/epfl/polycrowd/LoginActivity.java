@@ -95,8 +95,6 @@ public class LoginActivity extends AppCompatActivity {
 
             Toast.makeText(c, "Sign in success", Toast.LENGTH_SHORT).show();
             PolyContext.setCurrentUser(user);
-
-
             /* if the user logs in to accept the organizer invitation, add him/her to the
                 organizers list, then open the event details page for the preview */
                 Log.d(TAG, "previous page: " + PolyContext.getPreviousPage());
@@ -114,8 +112,6 @@ public class LoginActivity extends AppCompatActivity {
                         startActivity(eventDetails);
                     });
                 }
-
-
         } ;
     }
 }
