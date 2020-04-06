@@ -12,7 +12,6 @@ import androidx.annotation.RequiresApi;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.firestore.CollectionReference;
@@ -254,7 +253,7 @@ public class FirebaseInterface implements DatabaseInterface {
                         if(task.isSuccessful()){
                             addUserToDatabase(email,firstPassword,username, age, successHandler, failureHandler);
                         } else{
-                            failureHandler.handle(new User(username, username, email, age ) );
+                            failureHandler.handle(null);
                         }
                     }
             );
@@ -272,24 +271,6 @@ public class FirebaseInterface implements DatabaseInterface {
                 .addOnSuccessListener(documentReference -> {Log.d("SIGN_UP", "DocumentSnapshot added with ID: " + documentReference.getId());
                 successHandler.handle(new User(email, username, username, age));})
                 .addOnFailureListener(e -> {Log.w("SIGN_UP", "Error adding document", e) ; failureHandler.handle(new User(email, username, username, age));});
-    }
-
-
-    public User getCurrentUser() {
-        if ( PolyContext.isRunningTest() ) {
-            return new User("fake@fake.com", "1", "fake user", 100L);
-        } else {
-            FirebaseUser u = getAuthInstance(false).getCurrentUser();
-            User curentUser;
-            if(u != null) {
-                curentUser =  new User(u.getEmail(), u.getUid(), u.getDisplayName(), 3L);
-            }else{
-                // Not logged in !
-                curentUser =  null;
-            }
-            PolyContext.setCurrentUser(curentUser);
-            return  curentUser;
-        }
     }
 
     @Override
