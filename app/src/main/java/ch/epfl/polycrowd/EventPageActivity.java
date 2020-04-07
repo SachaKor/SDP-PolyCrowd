@@ -2,14 +2,6 @@ package ch.epfl.polycrowd;
 
 import android.content.Context;
 import android.os.Build;
-
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import ch.epfl.polycrowd.firebase.FirebaseInterface;
-import ch.epfl.polycrowd.logic.Event;
-
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,13 +9,22 @@ import android.view.MenuItem;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import ch.epfl.polycrowd.firebase.DatabaseInterface;
+import ch.epfl.polycrowd.logic.Event;
+import ch.epfl.polycrowd.logic.PolyContext;
+
 public class EventPageActivity extends AppCompatActivity {
 
 
 
     RecyclerView mRecyclerView ;
     MyAdapter myAdapter ;
-    FirebaseInterface fbi;
+    DatabaseInterface fbi;
     Context context;
 
 
@@ -34,7 +35,7 @@ public class EventPageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_event_page);
 
         mRecyclerView = findViewById(R.id.recyclerView);
-        fbi = new FirebaseInterface(this);
+        fbi = PolyContext.getDatabaseInterface();
 
 
         fbi.getAllEvents(events -> {

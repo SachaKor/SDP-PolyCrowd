@@ -20,7 +20,7 @@ import java.util.List;
 import ch.epfl.polycrowd.LoginActivity;
 import ch.epfl.polycrowd.OrganizerInviteActivity;
 import ch.epfl.polycrowd.R;
-import ch.epfl.polycrowd.firebase.FirebaseInterface;
+import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.firebase.handlers.DynamicLinkHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
@@ -32,7 +32,7 @@ public class FrontPageActivity extends AppCompatActivity {
     ViewPager viewPager;
     EventPagerAdaptor adapter;
 
-    private FirebaseInterface fbInterface;
+    private DatabaseInterface dbi;
 
     // ------------- ON CREATE ----------------------------------------------------------
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -40,7 +40,7 @@ public class FrontPageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_front_page);
-        this.fbInterface = new FirebaseInterface(this);
+        this.dbi = PolyContext.getDatabaseInterface();
 
         setEventModels();
 
@@ -81,7 +81,7 @@ public class FrontPageActivity extends AppCompatActivity {
         //For Connection permissions
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
-        fbInterface.getAllEvents(this::setAdapter);
+        dbi.getAllEvents(this::setAdapter);
     }
     void setAdapter(List<Event> events){
         adapter = new EventPagerAdaptor(events, this);
@@ -128,7 +128,7 @@ public class FrontPageActivity extends AppCompatActivity {
     }
 
     public void clickSignOut(View view) {
-        fbInterface.signOut();
+        dbi.signOut();
         PolyContext.setCurrentUser(null);
         recreate();
     }
@@ -138,7 +138,7 @@ public class FrontPageActivity extends AppCompatActivity {
 
     private void receiveDynamicLink() {
         Context c = this;
-        fbInterface.receiveDynamicLink(new DynamicLinkHandler() {
+        dbi.receiveDynamicLink(new DynamicLinkHandler() {
             @Override
             public void handle(Uri deepLink) {
                 Log.d(TAG, "Deep link URL:\n" + deepLink.toString());

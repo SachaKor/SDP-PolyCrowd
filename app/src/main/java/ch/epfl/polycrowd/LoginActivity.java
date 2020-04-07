@@ -16,7 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.Objects;
 
-import ch.epfl.polycrowd.firebase.FirebaseInterface;
+import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
@@ -29,14 +29,14 @@ public class LoginActivity extends AppCompatActivity {
     private static final String IS_ORGANIZER_INVITE = "isOrganizerInvite";
     private static final String EVENT_ID = "eventId";
 
-    private FirebaseInterface fbInterface;
+    private DatabaseInterface dbi;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        fbInterface = new FirebaseInterface(this);
+        dbi = PolyContext.getDatabaseInterface();
     }
 
     private void toastPopup(String text) {
@@ -69,7 +69,7 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        fbInterface.signInWithEmailAndPassword(email, password, successHandler(), failureHandler());
+        dbi.signInWithEmailAndPassword(email, password, successHandler(), failureHandler());
     }
 
 
@@ -101,7 +101,7 @@ public class LoginActivity extends AppCompatActivity {
                         return;
                     }
                     Event event = PolyContext.getCurrentEvent();
-                    fbInterface.addOrganizerToEvent(event.getId(), organizerEmail, () -> {
+                    dbi.addOrganizerToEvent(event.getId(), organizerEmail, () -> {
                         Intent eventDetails = new Intent(c, EventPageDetailsActivity.class);
                         eventDetails.putExtra(EVENT_ID, event.getId());
                         startActivity(eventDetails);

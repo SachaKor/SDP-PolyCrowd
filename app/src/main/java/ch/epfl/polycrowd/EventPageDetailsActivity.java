@@ -23,7 +23,7 @@ import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import java.text.ParseException;
 import java.util.List;
 
-import ch.epfl.polycrowd.firebase.FirebaseInterface;
+import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
@@ -35,8 +35,6 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     private static final String TAG = "EventPageDetails";
 
     private String eventId;
-
-    private final FirebaseInterface fbi = new FirebaseInterface(this);
 
     private AlertDialog linkDialog;
 
@@ -98,9 +96,9 @@ public class EventPageDetailsActivity extends AppCompatActivity {
             Log.e(TAG, "current event is null");
             return;
         }
-        FirebaseInterface fbi = new FirebaseInterface(this);
+        DatabaseInterface dbi = PolyContext.getDatabaseInterface();
         eventId = curEvent.getId();
-        fbi.getEventById(eventId, event -> {
+        dbi.getEventById(eventId, event -> {
             initRecyclerView(event.getOrganizers());
             setUpViews(event.getName(), event.getDescription());
             eventName = event.getName();
