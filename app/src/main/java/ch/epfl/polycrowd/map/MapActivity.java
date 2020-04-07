@@ -28,7 +28,7 @@ import java.util.List;
 import ch.epfl.polycrowd.EventPageDetailsActivity;
 import ch.epfl.polycrowd.LoginActivity;
 import ch.epfl.polycrowd.R;
-import ch.epfl.polycrowd.firebase.FirebaseInterface;
+import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
@@ -58,7 +58,7 @@ public class MapActivity extends AppCompatActivity {
     private LocationManager locationManager;
     private LocationListener locationListener;
 
-    private FirebaseInterface firebaseInterface;
+    private DatabaseInterface dbi;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -80,10 +80,10 @@ public class MapActivity extends AppCompatActivity {
         }
 
         // Check logged-in user
-        firebaseInterface = new FirebaseInterface(this);
+        dbi = PolyContext.getDatabaseInterface() ;
 
         try {
-            setStatusOfUser(firebaseInterface);
+            setStatusOfUser(dbi);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -93,7 +93,7 @@ public class MapActivity extends AppCompatActivity {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    void setStatusOfUser(FirebaseInterface firebaseInterface) throws ParseException {
+    void setStatusOfUser(DatabaseInterface firebaseInterface) throws ParseException {
         final String TAG1 = "setStatusOfUser";
         status = level.GUEST; // default status to debug
         User user = PolyContext.getCurrentUser();

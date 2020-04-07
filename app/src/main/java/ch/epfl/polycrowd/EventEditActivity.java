@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import ch.epfl.polycrowd.firebase.FirebaseInterface;
+import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.firebase.handlers.EventHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
@@ -31,14 +31,14 @@ import static ch.epfl.polycrowd.logic.Event.stringToDate;
 public class EventEditActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = EventEditActivity.class.toString();
-    private FirebaseInterface firebaseInterface;
+    private DatabaseInterface databaseInterface;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_edit);
-        this.firebaseInterface = new FirebaseInterface(this);
+        this.databaseInterface = PolyContext.getDatabaseInterface();
     }
 
 
@@ -126,7 +126,7 @@ public class EventEditActivity extends AppCompatActivity {
         Context c = this ;
         EventHandler successHandler = e -> Toast.makeText(c, "Event added", Toast.LENGTH_LONG).show();
         EventHandler failureHandler = e -> Toast.makeText(c, "Error occurred while adding the event", Toast.LENGTH_LONG).show();
-        firebaseInterface.addEvent(ev,successHandler , failureHandler );
+        databaseInterface.addEvent(ev,successHandler , failureHandler );
 
         Intent intent = new Intent(this, MapActivity.class);
         startActivity(intent);

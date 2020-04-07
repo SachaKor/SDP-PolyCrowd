@@ -11,8 +11,9 @@ import android.widget.Toast;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
-import ch.epfl.polycrowd.firebase.FirebaseInterface;
+import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
+import ch.epfl.polycrowd.logic.PolyContext;
 
 /**
  * TODO: refactor if possible
@@ -23,7 +24,7 @@ public class SignUpActivity extends AppCompatActivity {
 
     private  EditText firstPassword, secondPassword , username , email  ;
 
-    private final FirebaseInterface fbi = new FirebaseInterface(this);
+    private final DatabaseInterface dbi = PolyContext.getDatabaseInterface();
 
 
 
@@ -109,15 +110,15 @@ public class SignUpActivity extends AppCompatActivity {
             // check if the user with a given username exists already
             Context c = this ;
             UserHandler userExistsHandler = user -> Toast.makeText(c, "User already exists", Toast.LENGTH_SHORT).show();
-            UserHandler userDoesNotExistHandler = user -> fbi.signUp(username.getText().toString(),
+            UserHandler userDoesNotExistHandler = user -> dbi.signUp(username.getText().toString(),
                     firstPassword.getText().toString(), email.getText().toString(), 100L,
                     u ->Toast.makeText(c, "Sign up successful", Toast.LENGTH_SHORT).show() ,
                     u ->Toast.makeText(c, "Error registering user", Toast.LENGTH_SHORT).show() );
             //Finally, query database
             //Note that even though user in the second handler will be null, it is not actually referenced anywhere in the lambda expression
             //For now, we use the same type of success and failure handlers
-            fbi.getUserByEmail(email.getText().toString(), userExistsHandler, user -> {
-                fbi.getUserByUsername(username.getText().toString(), userExistsHandler, userDoesNotExistHandler);
+            dbi.getUserByEmail(email.getText().toString(), userExistsHandler, user -> {
+                dbi.getUserByUsername(username.getText().toString(), userExistsHandler, userDoesNotExistHandler);
             });
 
         }
