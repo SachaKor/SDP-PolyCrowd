@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.util.Log;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -16,7 +17,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,6 +35,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 // https://proandroiddev.com/testing-camera-and-galley-intents-with-espresso-218eb9f59da9
 @RunWith(AndroidJUnit4.class)
 public class EventPageDetailsGalleryTest {
+
+    private static final String TAG = "EventDetailsGalleryTest";
     @Rule
     public GrantPermissionRule grantExternalStorage =
             GrantPermissionRule.grant(Manifest.permission.READ_EXTERNAL_STORAGE);
@@ -63,6 +65,7 @@ public class EventPageDetailsGalleryTest {
     private void savePickedImage(Context context) {
         Bitmap bm = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher1);
         File dir = context.getExternalCacheDir();
+        Log.d(TAG, "save image, cache dir: " + dir.getPath());
         File file = new File(dir.getPath(), "pickImageResult.jpeg");
         FileOutputStream outStream;
         try {
@@ -80,6 +83,7 @@ public class EventPageDetailsGalleryTest {
         ArrayList<Parcelable> parcels = new ArrayList<>();
         Intent resultData = new Intent();
         File dir = context.getExternalCacheDir();
+        Log.d(TAG, "create stub : external cache path: " + dir.getPath());
         File file = new File(dir.getPath(), "pickImageResult.jpeg");
         Uri uri = Uri.fromFile(file);
         Parcelable parcelable1 = (Parcelable) uri;
