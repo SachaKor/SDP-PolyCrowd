@@ -46,9 +46,7 @@ public class FirebaseInterface implements DatabaseInterface {
     private static final String USERS = "users";
     private static final String TAG = "FirebaseInterface";
 
-    public FirebaseInterface(Context context){
-        this.c = context;
-    }
+    public FirebaseInterface(){}
 
     /***
      * Returns the firebase authentication instance
