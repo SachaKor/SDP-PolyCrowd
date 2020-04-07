@@ -37,7 +37,13 @@ import static androidx.test.espresso.intent.Intents.intending;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
-// https://proandroiddev.com/testing-camera-and-galley-intents-with-espresso-218eb9f59da9
+/**
+ * Mocking the gallery intent & image pick:
+ * https://proandroiddev.com/testing-camera-and-galley-intents-with-espresso-218eb9f59da9
+ *
+ * Create an SDCard for the Travis (<3) emulator
+ * https://travis-ci.community/t/android-emulator-throws-permission-denied/1229
+ */
 @RunWith(AndroidJUnit4.class)
 public class EventPageDetailsGalleryTest {
 
@@ -73,12 +79,9 @@ public class EventPageDetailsGalleryTest {
 
     private void savePickedImage(Context context) {
         Bitmap bm = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher1);
-        /*
         File dir = context.getExternalCacheDir(); // /storage/sdcard/Android/data/ch.epfl.polycrowd/cache
         Log.d(TAG, "save image, cache dir: " + dir.getPath());
         File file = new File(dir.getPath(), "pickImageResult.jpeg");
-         */
-        File file = new File("/storage/sdcard/Android/data/ch.epfl.polycrowd/cache", "pickImageResult.jpeg");
         FileOutputStream outStream;
         try {
             outStream = new FileOutputStream(file);
@@ -94,12 +97,9 @@ public class EventPageDetailsGalleryTest {
         Bundle bundle = new Bundle();
         ArrayList<Parcelable> parcels = new ArrayList<>();
         Intent resultData = new Intent();
-        /*
         File dir = context.getExternalCacheDir(); // /storage/sdcard/Android/data/ch.epfl.polycrowd/cache
         Log.d(TAG, "create stub : external cache path: " + dir.getPath());
         File file = new File(dir.getPath(), "pickImageResult.jpeg");
-        */
-        File file = new File("/storage/sdcard/Android/data/ch.epfl.polycrowd/cache", "pickImageResult.jpeg");
         Uri uri = Uri.fromFile(file);
         Parcelable parcelable1 = (Parcelable) uri;
         parcels.add(parcelable1);
