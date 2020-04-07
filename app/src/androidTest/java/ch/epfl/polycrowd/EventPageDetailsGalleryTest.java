@@ -38,8 +38,11 @@ public class EventPageDetailsGalleryTest {
 
     private static final String TAG = "EventDetailsGalleryTest";
     @Rule
-    public GrantPermissionRule grantExternalStorage =
+    public GrantPermissionRule grantReadExternalStorage =
             GrantPermissionRule.grant(Manifest.permission.READ_EXTERNAL_STORAGE);
+    @Rule
+    public GrantPermissionRule grantWriteExternalStorage =
+            GrantPermissionRule.grant(Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
     @Rule
     public IntentsTestRule<EventPageDetailsActivity> mActivityTestRule =
