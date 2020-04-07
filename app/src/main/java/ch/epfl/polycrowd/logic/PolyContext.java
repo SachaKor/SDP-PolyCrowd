@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import ch.epfl.polycrowd.firebase.DatabaseInterface;
+import ch.epfl.polycrowd.firebase.FirebaseInterface;
 
 
 public abstract class PolyContext extends Context {
@@ -24,7 +25,7 @@ public abstract class PolyContext extends Context {
     private static User currentUser;
     private static String previousPage = "";
     private static boolean mockDynamicLink = false; // for the FrontPage testing
-    private static DatabaseInterface dbInterface ;
+    private static DatabaseInterface dbInterface  = new FirebaseInterface();
 
     public static void setCurrentEvent(Event ev){
         currentEvent = ev;
