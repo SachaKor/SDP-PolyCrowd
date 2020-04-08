@@ -5,14 +5,24 @@ package ch.epfl.polycrowd;
 
 //import org.junit.AfterClass;
 //import org.junit.BeforeClass;
+import android.content.Intent;
+
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import androidx.test.rule.ActivityTestRule;
 
+import ch.epfl.polycrowd.firebase.DatabaseInterface;
+import ch.epfl.polycrowd.firebase.FirebaseMocker;
+import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
+import ch.epfl.polycrowd.logic.User;
 
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
@@ -26,24 +36,30 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.StringContains.containsString;
-import static org.junit.Assert.assertTrue;
 
-/**
- * TODO: sign in to firebase does not work with travis
- */
 public class LoginActivityTest {
 
-    @Test
-    public void checkTestMockingEnabled(){
-        assertTrue(PolyContext.isRunningTest());
-    }
-
-    private static final String email = "nani@haha.com",
-                password = "123456";
+    private static final String VALID_EMAIL = "nani@haha.com";
+    private static final String VALID_PASSWORD = "123456";
 
     @Rule
     public final ActivityTestRule<LoginActivity> loginActivityRule =
-            new ActivityTestRule<>(LoginActivity.class);
+            new ActivityTestRule<>(LoginActivity.class, true, false);
+
+    @Before
+    public void setUp() {
+        // database mock setup
+        List<Event> events = new ArrayList<>();
+        Map<User, String> usersAndPasswords = new HashMap<>();
+        User user = new User(VALID_EMAIL, "1", "nani", 3L);
+        usersAndPasswords.put(user, VALID_PASSWORD);
+        DatabaseInterface dbi = new FirebaseMocker(usersAndPasswords, events);
+        PolyContext.setDbInterface(dbi);
+
+        // launch the intent
+        Intent intent = new Intent();
+        loginActivityRule.launchActivity(intent);
+    }
 
 
 
@@ -61,24 +77,19 @@ public class LoginActivityTest {
 //    }
 
     @Test
-    public void testDisplaysSignIn() {
-        onView(withId(R.id.sign_in_logo)).check(matches(withText(containsString("Sign in"))));
-    }
-
-    @Test
     public void testSignInButtonIsThere() {
         onView(withId(R.id.sign_in_button)).check(matches(withText(containsString("Sign in"))));
     }
 
-//    @Test
-//    public void testSuccessfulSignIn() {
-//        onView(withId(R.id.sign_in_email)).perform(typeText(email), closeSoftKeyboard());
-//        onView(withId(R.id.sign_in_pswd)).perform(typeText(password), closeSoftKeyboard());
-//        onView(withId(R.id.sign_in_button)).perform(click());
-//        onView(withText("Sign in success"))
-//                .inRoot(withDecorView(not(loginActivityRule.getActivity().getWindow().getDecorView())))
-//                .check(matches(isDisplayed()));
-//    }
+    @Test
+    public void testSuccessfulSignIn() {
+        onView(withId(R.id.sign_in_email)).perform(typeText(VALID_EMAIL), closeSoftKeyboard());
+        onView(withId(R.id.sign_in_pswd)).perform(typeText(VALID_PASSWORD), closeSoftKeyboard());
+        onView(withId(R.id.sign_in_button)).perform(click());
+        onView(withText("Sign in success"))
+                .inRoot(withDecorView(not(loginActivityRule.getActivity().getWindow().getDecorView())))
+                .check(matches(isDisplayed()));
+    }
 
     @Test
     public void testUnsuccessfulSignIn() {
@@ -105,7 +116,7 @@ public class LoginActivityTest {
                 .check(matches(isDisplayed()));
     }
 
-   /* @Test
+   @Test
     public void testPasswordFieldEmpty() {
         sleep();
         onView(withId(R.id.sign_in_email)).perform(typeText("sasha@ha.com"), closeSoftKeyboard());
@@ -114,13 +125,14 @@ public class LoginActivityTest {
         onView(withText("Enter your password"))
                 .inRoot(withDecorView(not(loginActivityRule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));
-    }*/
+    }
 
     @Test
     public void testNavigateToSignUpPage() {
         onView(withId(R.id.sign_in_sign_up_button)).perform(click());
         onView(withId(R.id.sign_up_logo)).check(matches(isDisplayed()));
     }
+
     private void sleep(){
         try{
             Thread.sleep(1000);
