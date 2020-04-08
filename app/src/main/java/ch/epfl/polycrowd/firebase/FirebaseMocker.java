@@ -3,6 +3,7 @@ package ch.epfl.polycrowd.firebase;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -14,12 +15,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.firebase.handlers.DynamicLinkHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
 import ch.epfl.polycrowd.firebase.handlers.OrganizersHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
+import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 
@@ -51,10 +52,9 @@ public class FirebaseMocker implements DatabaseInterface {
             User user = usersIterator.next() ;
             if(user.getEmail().equals(email)){
                 foundRegisteredUser = true ;
+                Log.d("MOCKER", "USER PASSWORD IS "+ usersAndPasswords.get(user)) ;
                 if(usersAndPasswords.get(user).equals(password)){
-                    PolyContext.setCurrentUser(user);
                     successHandler.handle(user); ;
-                    //
                 } else{
                    failureHandler.handle(null); ;
                 }
