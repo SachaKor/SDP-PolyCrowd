@@ -2,18 +2,16 @@ package ch.epfl.polycrowd;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
-import ch.epfl.polycrowd.firebase.FirebaseInterface;
-import ch.epfl.polycrowd.logic.PolyContext;
 
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import ch.epfl.polycrowd.firebase.FirebaseInterface;
+import ch.epfl.polycrowd.logic.PolyContext;
 
 import static org.junit.Assert.assertTrue;
 
@@ -35,7 +33,7 @@ public class FirebaseInterfaceTest {
 
     @Before
     public void setupTest(){
-        this.firebaseInterface = new FirebaseInterface(null);
+        this.firebaseInterface = new FirebaseInterface();
     }
 
     @Test(expected = IllegalArgumentException.class)
