@@ -1,12 +1,23 @@
 package ch.epfl.polycrowd;
 
+import android.content.Intent;
+
 import org.junit.Before;
 import androidx.test.rule.ActivityTestRule;
 
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import ch.epfl.polycrowd.firebase.DatabaseInterface;
+import ch.epfl.polycrowd.firebase.FirebaseMocker;
+import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
+import ch.epfl.polycrowd.logic.User;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -18,7 +29,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertTrue;
 
 /**
  * To check if the toast is displayed:
@@ -26,26 +36,33 @@ import static org.junit.Assert.assertTrue;
  */
 public class SignUpActivityTest {
 
-    @Test
-    public void checkTestMockingEnabled(){
-        assertTrue(PolyContext.isRunningTest());
-    }
-
-
     @Rule
     public final ActivityTestRule<SignUpActivity> mActivityRule =
-            new ActivityTestRule<>(SignUpActivity.class);
+            new ActivityTestRule<>(SignUpActivity.class, true, false);
 
+    @Before
+    public void setUp() {
 
+        // Database Interface & PolyContext setup
+        List<Event> events = new ArrayList<>();
+        Map<User, String> usersAndPasswords = new HashMap<>();
+        User alreadyExists = new User("123@mail.com", "1", "yabdro", 3L);
+        usersAndPasswords.put(alreadyExists, "123456");
+        DatabaseInterface dbi = new FirebaseMocker(usersAndPasswords, events);
+        PolyContext.setDbInterface(dbi);
 
+        // launch the intent
+        Intent intent = new Intent();
+        mActivityRule.launchActivity(intent);
+    }
 
     private void typeTextAndCloseKeyboard(int viewId, String text) {
         onView(withId(viewId))
                 .perform(typeText(text), closeSoftKeyboard());
     }
 
-    /*@Test
-    public void testToastIsDisplayedWhenNoFieldIsFill() {
+    @Test
+    public void testToastIsDisplayedWhenInputInvalid() {
         sleep();
         sleep();
         onView(withId(R.id.sign_up_button)).perform(click());
@@ -53,9 +70,36 @@ public class SignUpActivityTest {
         onView(withText("Incorrect email"))
                 .inRoot(withDecorView(not(mActivityRule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));
-    }*/
 
-   /*@Test
+        typeTextAndCloseKeyboard(R.id.sign_up_email, "sasha@haha.com");
+        onView(withId(R.id.sign_up_button)).perform(click());
+        onView(withText("Enter your username"))
+                .inRoot(withDecorView(not(mActivityRule.getActivity().getWindow().getDecorView())))
+                .check(matches(isDisplayed()));
+
+        typeTextAndCloseKeyboard(R.id.sign_up_username, "fake sasha");
+        typeTextAndCloseKeyboard(R.id.sign_up_pswd, "123");
+        onView(withId(R.id.sign_up_button)).perform(click());
+        onView(withText("Password must contain at least 6 characters"))
+                .inRoot(withDecorView(not(mActivityRule.getActivity().getWindow().getDecorView())))
+                .check(matches(isDisplayed()));
+
+        typeTextAndCloseKeyboard(R.id.sign_up_username, "fake sasha");
+        typeTextAndCloseKeyboard(R.id.sign_up_pswd, "123456");
+        onView(withId(R.id.sign_up_button)).perform(click());
+        onView(withText("Confirm your password"))
+                .inRoot(withDecorView(not(mActivityRule.getActivity().getWindow().getDecorView())))
+                .check(matches(isDisplayed()));
+
+        typeTextAndCloseKeyboard(R.id.sign_up_pswd, "123456");
+        typeTextAndCloseKeyboard(R.id.repeat_pswd, "567891");
+        onView(withId(R.id.sign_up_button)).perform(click());
+        onView(withText("Different passwords"))
+                .inRoot(withDecorView(not(mActivityRule.getActivity().getWindow().getDecorView())))
+                .check(matches(isDisplayed()));
+    }
+
+   @Test
     public void testToastIsDisplayedWhenPasswordsDoNotMatch() {
         sleep();
         typeTextAndCloseKeyboard(R.id.sign_up_email, "sasha@bla.com");
@@ -67,7 +111,7 @@ public class SignUpActivityTest {
         onView(withText("Different passwords"))
                 .inRoot(withDecorView(not(mActivityRule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));
-    }*/
+    }
 
     @Test
     public void testIncorrectEmailToast() {
@@ -85,7 +129,7 @@ public class SignUpActivityTest {
 
     @Test
     public void testUsernameExistsToast(){
-        typeTextAndCloseKeyboard(R.id.sign_up_email, "123@mail.com");
+        typeTextAndCloseKeyboard(R.id.sign_up_email, "234@mail.com");
         typeTextAndCloseKeyboard(R.id.sign_up_username, "yabdro");
         typeTextAndCloseKeyboard(R.id.sign_up_pswd, "123456");
         typeTextAndCloseKeyboard(R.id.repeat_pswd, "123456");
@@ -94,6 +138,31 @@ public class SignUpActivityTest {
         onView(withText("User already exists")).inRoot(withDecorView(not(mActivityRule.getActivity().getWindow().getDecorView()))).
                 check(matches(isDisplayed()));
 
+    }
+
+    @Test
+    public void testEmailExistsToast(){
+        typeTextAndCloseKeyboard(R.id.sign_up_email, "123@mail.com");
+        typeTextAndCloseKeyboard(R.id.sign_up_username, "someusername");
+        typeTextAndCloseKeyboard(R.id.sign_up_pswd, "123456");
+        typeTextAndCloseKeyboard(R.id.repeat_pswd, "123456");
+
+        onView(withId(R.id.sign_up_button)).perform(click()) ;
+        onView(withText("User already exists")).inRoot(withDecorView(not(mActivityRule.getActivity().getWindow().getDecorView()))).
+                check(matches(isDisplayed()));
+
+    }
+
+    @Test
+    public void testSuccessfulSignUp() {
+        typeTextAndCloseKeyboard(R.id.sign_up_email, "new@mail.com");
+        typeTextAndCloseKeyboard(R.id.sign_up_username, "new fake");
+        typeTextAndCloseKeyboard(R.id.sign_up_pswd, "123456");
+        typeTextAndCloseKeyboard(R.id.repeat_pswd, "123456");
+
+        onView(withId(R.id.sign_up_button)).perform(click()) ;
+        onView(withText("Sign up successful")).inRoot(withDecorView(not(mActivityRule.getActivity().getWindow().getDecorView()))).
+                check(matches(isDisplayed()));
     }
 
 
