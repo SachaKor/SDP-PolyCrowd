@@ -18,7 +18,6 @@ import androidx.test.rule.ActivityTestRule;
 
 import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.firebase.FirebaseMocker;
-import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
@@ -29,7 +28,6 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
 public class EventPageDetailsActivityTest {
@@ -58,10 +56,14 @@ public class EventPageDetailsActivityTest {
         events = new ArrayList<>();
         events.add(ev);
         usersAndPasswords.put(user, "123456");
+
+        // PolyContext setup
         DatabaseInterface dbi = new FirebaseMocker(usersAndPasswords, events);
         PolyContext.setDbInterface(dbi);
         PolyContext.setCurrentUser(user);
         PolyContext.setCurrentEvent(ev);
+
+        // launch the intent
         Intent intent = new Intent();
         mActivityRule.launchActivity(intent);
     }
