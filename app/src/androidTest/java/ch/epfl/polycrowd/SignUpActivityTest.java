@@ -2,9 +2,9 @@ package ch.epfl.polycrowd;
 
 import android.content.Intent;
 
-import org.junit.Before;
 import androidx.test.rule.ActivityTestRule;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -83,6 +83,8 @@ public class SignUpActivityTest {
         onView(withText("Password must contain at least 6 characters"))
                 .inRoot(withDecorView(not(mActivityRule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));
+
+        sleep();
 
         typeTextAndCloseKeyboard(R.id.sign_up_username, "fake sasha");
         typeTextAndCloseKeyboard(R.id.sign_up_pswd, "123456");
