@@ -54,8 +54,11 @@ public class TestExampleMocking {
         List<Event> events = new ArrayList<>() ;
         usersAndPasswords = new HashMap<>();
         User u1 = new User("blah@mail.com", "1", "mrBlah", 23L) ;
-        usersAndPasswords.put(u1, "123456") ;
-        usersAndPasswords.keySet().forEach(u -> users.add(u)); ;
+        usersAndPasswords.put(u1, "123456");
+        for(User u : usersAndPasswords.keySet()) {
+            users.add(u);
+        }
+//        usersAndPasswords.keySet().forEach(u -> users.add(u));
         DatabaseInterface dbi = new FirebaseMocker(usersAndPasswords, events) ;
         PolyContext.setDbInterface(dbi);
         Intent intent = new Intent();
@@ -76,5 +79,4 @@ public class TestExampleMocking {
                 .inRoot(withDecorView(not(mActivityRule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));
     }
-
 }

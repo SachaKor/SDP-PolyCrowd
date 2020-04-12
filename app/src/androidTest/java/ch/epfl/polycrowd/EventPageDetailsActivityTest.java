@@ -34,9 +34,6 @@ public class EventPageDetailsActivityTest {
 
     private static final String TAG = "EventPageDetailsTest";
 
-    private List<Event> events;
-    private Map<User, String> usersAndPasswords;
-
     @Rule
     // https://stackoverflow.com/questions/31388847/how-to-get-the-activity-reference-before-its-oncreate-gets-called-during-testing
     public ActivityTestRule<EventPageDetailsActivity> mActivityRule =
@@ -45,6 +42,8 @@ public class EventPageDetailsActivityTest {
 
     @Before
     public void startIntent() {
+        List<Event> events;
+        Map<User, String> usersAndPasswords;
         Date sDate = new Date(1649430344),
                 eDate = new Date(1649516744);
         Event ev = new Event("eventOwner", "testEvent", true, Event.EventType.CONCERT,

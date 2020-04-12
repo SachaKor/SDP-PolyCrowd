@@ -30,8 +30,13 @@ import static ch.epfl.polycrowd.logic.Event.stringToDate;
 
 public class EventEditActivity extends AppCompatActivity {
 
-    private static final String LOG_TAG = EventEditActivity.class.toString();
+    private static final String TAG = "EventEditActivity";
     private DatabaseInterface databaseInterface;
+
+    private EditText eventName;
+    private EditText startDate, endDate;
+    private Switch isPublicSwitch;
+    private Spinner eventTypeSpinner;
 
 
     @Override
@@ -39,6 +44,15 @@ public class EventEditActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_edit);
         this.databaseInterface = PolyContext.getDatabaseInterface();
+        setUpViews();
+    }
+
+    private void setUpViews() {
+        eventName = findViewById(R.id.EditEventName);
+        startDate = findViewById(R.id.EditEventStart);
+        endDate = findViewById(R.id.EditEventEnd);
+        isPublicSwitch = findViewById(R.id.EditEventPublic);
+        eventTypeSpinner = findViewById(R.id.EditEventType);
     }
 
 
@@ -58,26 +72,25 @@ public class EventEditActivity extends AppCompatActivity {
 
     }*/
 
-    private boolean fieldsNotEmpty() {
-        final String eventName = findViewById(R.id.EditEventName).toString(),
-                sDate = findViewById(R.id.EditEventStart).toString(),
-                eDate = findViewById(R.id.EditEventEnd).toString();
-        if(eventName.isEmpty()) {
+    private boolean hasEmptyFields() {
+        Log.d(TAG, "fieldsNotEmpty");
+        String eventNameText = eventName.getText().toString();
+        if(eventNameText.isEmpty()) {
             Toast.makeText(getApplicationContext(), "Enter the name of the event", Toast.LENGTH_SHORT).show();
-            return false;
+            return true;
         }
 
-        if (sDate.isEmpty()) {
+        if (startDate.getText().toString().isEmpty()) {
             Toast.makeText(getApplicationContext(), "Enter the starting date", Toast.LENGTH_SHORT).show();
-            return false;
+            return true;
         }
 
-        if (eDate.isEmpty()) {
+        if (endDate.getText().toString().isEmpty()) {
             Toast.makeText(getApplicationContext(), "Enter the ending date", Toast.LENGTH_SHORT).show();
-            return false;
+            return true;
         }
 
-        return true;
+        return false;
 
     }
 
@@ -85,20 +98,16 @@ public class EventEditActivity extends AppCompatActivity {
     public void sendEventSubmit(View view) {
         final EditText evName = findViewById(R.id.EditEventName);
 
-        Log.d(LOG_TAG, "Send Event Button Clicked");
+        Log.d(TAG, "Send Event Button Clicked");
         // Add the event
         // Add an Event to the firestore
         // Retrieve the field values from the Edit Event layout
-        Switch isPublicSwitch = findViewById(R.id.EditEventPublic);
-        Spinner eventTypeSpinner = findViewById(R.id.EditEventType);
-        EditText sDateEditText = findViewById(R.id.EditEventStart),
-                eDateEditText = findViewById(R.id.EditEventEnd);
         Boolean isPublic = isPublicSwitch.isChecked();
-        String sDate = sDateEditText.getText().toString(),
-                eDate = eDateEditText.getText().toString(),
-                type = eventTypeSpinner.getSelectedItem().toString() ;
+        String sDate = startDate.getText().toString(),
+                eDate = endDate.getText().toString(),
+                type = eventTypeSpinner.getSelectedItem().toString();
 
-        if(!fieldsNotEmpty()) {
+        if(!hasEmptyFields()) {
             return;
         }
         Date startDate = stringToDate(sDate+" 00:00", dtFormat),
