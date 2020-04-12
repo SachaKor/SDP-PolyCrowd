@@ -98,6 +98,7 @@ public class EventEditActivityTest {
 
     @Test
     public void testEmptyEventName() {
+        onView(withId(R.id.EditEventName)).perform(typeText(""),closeSoftKeyboard());
         sleep();
         onView(withId(R.id.EditEventSubmit)).perform(click());
         sleep();
@@ -127,9 +128,6 @@ public class EventEditActivityTest {
                 .inRoot(withDecorView(not(mActivityRule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));
     }
-
-
-
 
     private void sleep(){
         try{
