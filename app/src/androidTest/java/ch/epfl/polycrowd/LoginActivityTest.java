@@ -78,6 +78,13 @@ public class LoginActivityTest {
 //    }
 
     @Test
+    public void testClickForgotPassword(){
+        onView(withId(R.id.forgot_password_button)).perform(click());
+        sleep();
+        onView(withId(R.id.send_reset_link_logo)).check(matches(isDisplayed()));
+    }
+
+    @Test
     public void testSignInButtonIsThere() {
         onView(withId(R.id.sign_in_button)).check(matches(withText(containsString("Sign in"))));
     }
