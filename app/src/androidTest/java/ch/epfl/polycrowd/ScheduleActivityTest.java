@@ -63,7 +63,7 @@ public class ScheduleActivityTest {
 
     @Test
     public void testScheduleLoading(){
-        for(int i = 0 ; i < 10 ; ++i) sleep();
+        //for(int i = 0 ; i < 10 ; ++i) sleep();
 
         onView(withText("summary")).check(matches(isDisplayed()));
     }
