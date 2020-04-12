@@ -1,11 +1,26 @@
 package ch.epfl.polycrowd;
 
+import android.content.Intent;
+
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import ch.epfl.polycrowd.firebase.DatabaseInterface;
+import ch.epfl.polycrowd.firebase.FirebaseMocker;
+import ch.epfl.polycrowd.logic.Event;
+import ch.epfl.polycrowd.logic.PolyContext;
+import ch.epfl.polycrowd.logic.User;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -23,6 +38,33 @@ public class EventEditActivityTest {
     @Rule
     public final ActivityTestRule<EventEditActivity> mActivityRule =
             new ActivityTestRule<>(EventEditActivity.class);
+
+    @Before
+    public void setUp() {
+        Date sDate = new Date(1649430344),
+                eDate = new Date(1649516744);
+
+        // events setup
+        Event ev = new Event("eventOwner", "DEBUG EVENT", true, Event.EventType.CONCERT,
+                sDate, eDate, "testCalendar", "this is only a debug event ... ");
+        ev.setId("1");
+        List<Event> events = new ArrayList<>();
+        events.add(ev);
+
+        // users setup
+        Map<User, String> usersAndPasswords = new HashMap<>();
+        usersAndPasswords.put(new User("fake@user", "1", "fakeUser", 3L), "1234567");
+
+        // database interface setup
+        DatabaseInterface dbi = new FirebaseMocker(usersAndPasswords, events);
+        PolyContext.setDbInterface(dbi);
+        PolyContext.setCurrentUser(new User("fake@user", "1", "fakeUser", 3L));
+
+        // launch the intent
+        Intent intent = new Intent();
+        mActivityRule.launchActivity(intent);
+    }
+
 
 
     @Test
@@ -50,7 +92,8 @@ public class EventEditActivityTest {
         onView(withId(R.id.EditEventStart)).perform(typeText("30-12-1971"),closeSoftKeyboard());
         onView(withId(R.id.EditEventEnd)).perform(typeText("31-12-1971"),closeSoftKeyboard());
         onView(withId(R.id.EditEventCalendar)).perform(typeText("https://satellite.bar/agenda/ical.php"), closeSoftKeyboard());
-        //onView(withId(R.id.EditEventSubmit)).perform(scrollTo(),click());
+        onView(withId(R.id.EditEventSubmit)).perform(scrollTo(),click());
+        sleep();
     }
 
     @Test
@@ -82,6 +125,14 @@ public class EventEditActivityTest {
 
 
 
+
+    private void sleep(){
+        try{
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
 
 }

@@ -107,7 +107,7 @@ public class EventEditActivity extends AppCompatActivity {
                 eDate = endDate.getText().toString(),
                 type = eventTypeSpinner.getSelectedItem().toString();
 
-        if(!hasEmptyFields()) {
+        if(hasEmptyFields()) {
             return;
         }
         Date startDate = stringToDate(sDate+" 00:00", dtFormat),
@@ -133,7 +133,7 @@ public class EventEditActivity extends AppCompatActivity {
 //        Map<String, Object> event = ev.toHashMap();
         // add event to the database
         Context c = this ;
-        EventHandler successHandler = e -> Toast.makeText(c, "Event added", Toast.LENGTH_LONG).show();
+        EventHandler successHandler = e -> { PolyContext.setCurrentEvent(e); Toast.makeText(c, "Event added", Toast.LENGTH_LONG).show();};
         EventHandler failureHandler = e -> Toast.makeText(c, "Error occurred while adding the event", Toast.LENGTH_LONG).show();
         databaseInterface.addEvent(ev,successHandler , failureHandler );
 
