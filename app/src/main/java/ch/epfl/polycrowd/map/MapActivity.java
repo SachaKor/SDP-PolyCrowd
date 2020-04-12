@@ -22,11 +22,10 @@ import androidx.core.app.ActivityCompat;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
-import java.text.ParseException;
 import java.util.List;
 
 import ch.epfl.polycrowd.EventPageDetailsActivity;
-import ch.epfl.polycrowd.LoginActivity;
+import ch.epfl.polycrowd.authentification.LoginActivity;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.logic.Event;
@@ -72,28 +71,23 @@ public class MapActivity extends AppCompatActivity {
 //        }
 
         Event event = PolyContext.getCurrentEvent();
-        if(event != null) {
+        if(event != null)
             eventId = event.getId();
-            Log.d(TAG, "event " + eventId);
-        } else {
-            Log.e(TAG, "current event is null");
-        }
+
+        Log.d(TAG, "event is : " + eventId);
 
         // Check logged-in user
         dbi = PolyContext.getDatabaseInterface() ;
 
-        try {
-            setStatusOfUser(dbi);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        setStatusOfUser(dbi);
+
         createButtons();
         createMap();
         launchLocationRequest();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    void setStatusOfUser(DatabaseInterface firebaseInterface) throws ParseException {
+    void setStatusOfUser(DatabaseInterface firebaseInterface) {
         final String TAG1 = "setStatusOfUser";
         status = level.GUEST; // default status to debug
         User user = PolyContext.getCurrentUser();

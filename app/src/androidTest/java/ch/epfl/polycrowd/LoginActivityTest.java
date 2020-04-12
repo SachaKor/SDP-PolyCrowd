@@ -18,6 +18,7 @@ import java.util.Map;
 
 import androidx.test.rule.ActivityTestRule;
 
+import ch.epfl.polycrowd.authentification.LoginActivity;
 import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.firebase.FirebaseMocker;
 import ch.epfl.polycrowd.logic.Event;

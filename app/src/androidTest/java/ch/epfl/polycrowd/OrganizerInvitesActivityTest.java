@@ -7,6 +7,7 @@ import androidx.test.rule.ActivityTestRule;
 
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
+import ch.epfl.polycrowd.organizerInvite.OrganizerInviteActivity;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;

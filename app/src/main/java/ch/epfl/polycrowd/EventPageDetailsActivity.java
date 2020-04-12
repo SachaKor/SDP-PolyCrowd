@@ -27,6 +27,8 @@ import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
+import ch.epfl.polycrowd.organizerInvite.OrganizersAdapter;
+import ch.epfl.polycrowd.schedulePage.ScheduleActivity;
 
 public class EventPageDetailsActivity extends AppCompatActivity {
 

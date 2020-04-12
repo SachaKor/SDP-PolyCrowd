@@ -12,8 +12,6 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 
-import ch.epfl.polycrowd.Model;
-
 public class Activity {
     private String location, uid, summary, description, organizer;
     private Date start,end;
@@ -61,14 +59,6 @@ public class Activity {
         return this.end;
     }
 
-
-    public Model getModel(){
-        Model m = new Model() ;
-        m.setTitle(getSummary());
-        m.setDescription(getStart()+"-"+getEnd()+'\n'+getLocation()+'\n'+getDescription());
-        m.setId("");
-        return m;
-    }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override

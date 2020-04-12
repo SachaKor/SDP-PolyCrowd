@@ -1,5 +1,5 @@
 
-package ch.epfl.polycrowd;
+package ch.epfl.polycrowd.authentification;
 
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +16,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.Objects;
 
+import ch.epfl.polycrowd.EventPageDetailsActivity;
+import ch.epfl.polycrowd.R;
+import ch.epfl.polycrowd.authentification.ResetPasswordActivity;
+import ch.epfl.polycrowd.authentification.SignUpActivity;
 import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
