@@ -7,6 +7,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,6 +34,11 @@ import static androidx.test.espresso.action.ViewActions.*;
 
 @RunWith(AndroidJUnit4.class)
 public class FrontPageActivityTest {
+
+    @BeforeClass
+    public static void setUpBeforeActivityLaunch(){
+        PolyContext.reset();
+    }
 
     @Rule
     public final ActivityTestRule<FrontPageActivity> frontPageActivityRule =
