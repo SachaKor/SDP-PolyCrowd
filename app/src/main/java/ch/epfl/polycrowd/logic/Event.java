@@ -84,37 +84,6 @@ public class Event {
     }
 
 
-    // --------------------  FOR TESTING --------------------------------------------------
-    public Event()  {
-        this.owner = "debug owner";
-        this.name = "DEBUG EVENT";
-        this.isPublic = true;
-        this.type = EventType.OTHER;
-        this.start = stringToDate("01-08-2018 00:00" , dtFormat);
-        this.end = stringToDate("02-08-2018 01:00" , dtFormat);
-        this.calendar = "url";
-        this.description = "this is only a debug event ... ";
-        this.image = R.drawable.balelec;
-        this.organizers = new ArrayList<>();
-        organizers.add("fake@email.nu");
-        this.schedule = new Schedule();
-    }
-
-    /*
-    static public Event fakeEvent(String url, File f) throws ParseException {return new Event ("1",
-            "fakeEvent", true,
-            Event.EventType.CONVENTION,
-            dtFormat.parse("01-08-2018 00:00"),
-            dtFormat.parse("02-08-2018 01:00"),
-            url, "description", f);
-    }*/
-
-
-    // ------------------------------------------------------------------------------------------
-
-
-
-
     private String getEventCalFilename(){
         return String.join(".",this.name,"ics");
     }
@@ -147,8 +116,6 @@ public class Event {
             this.description = description;
         }
     }
-
-
 
 
     public String getOwner() {
@@ -211,10 +178,8 @@ public class Event {
 
     // -------------------------------------------------------------------------------
 
-
     public Map<String, Object> toHashMap(){
         Map<String, Object> event = new HashMap<>();
-
         event.put("owner", this.owner);
         event.put("name", this.name);
         event.put("isPublic", this.isPublic.toString());

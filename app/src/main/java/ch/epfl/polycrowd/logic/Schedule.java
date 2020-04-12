@@ -60,7 +60,7 @@ public class Schedule {
             return null;
         }
         else if ( !url.contains("://") ){
-            throw new IllegalArgumentException("This is not a url");
+            throw new IllegalArgumentException(url +" is not a url");
         }
         try {
             URL downloadUrl = new URL(url.replace("webcal://","https://"));

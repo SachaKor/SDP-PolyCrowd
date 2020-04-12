@@ -5,6 +5,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import androidx.test.rule.ActivityTestRule;
 
+import java.util.Date;
+
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.organizerInvite.OrganizerInviteActivity;
@@ -24,7 +26,14 @@ public class OrganizerInvitesActivityTest {
 
     @Before
     public void setUp() {
-        PolyContext.setCurrentEvent(new Event());
+        Date sDate = new Date(1649430344),
+                eDate = new Date(1649516744);
+
+        // events setup
+        Event ev = new Event("eventOwner", "DEBUG EVENT", true, Event.EventType.CONCERT,
+                sDate, eDate, "testCalendar", "this is only a debug event ... ");
+        ev.setId("1");
+        PolyContext.setCurrentEvent(ev);
     }
 
     @Test

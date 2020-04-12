@@ -37,12 +37,14 @@ public class ScheduleActivityTest {
 
     @Before
     public void setUp() {
+        PolyContext.reset();
+
         Date sDate = new Date(1649430344),
                 eDate = new Date(1649516744);
 
         // events setup
         Event ev = new Event("eventOwner", "DEBUG EVENT", true, Event.EventType.CONCERT,
-                sDate, eDate, "testCalendar", "this is only a debug event ... ");
+                sDate, eDate, "https://thisIsAUrl", "this is only a debug event ... ");
         ev.setId("1");
         List<Event> events = new ArrayList<>();
         events.add(ev);
@@ -54,6 +56,7 @@ public class ScheduleActivityTest {
         // database interface setup
         DatabaseInterface dbi = new FirebaseMocker(usersAndPasswords, events);
         PolyContext.setDbInterface(dbi);
+        PolyContext.setCurrentEvent(ev);
 
         // launch the intent
         Intent intent = new Intent();
