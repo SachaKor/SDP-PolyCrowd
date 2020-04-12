@@ -17,10 +17,7 @@ import static org.junit.Assert.assertTrue;
 /* Test the dynamic link handling on the FrontPage */
 public class ReceiveDynamicLinkTest {
 
-    @Test
-    public void checkTestMockingEnabled(){
-        assertTrue(PolyContext.isRunningTest());
-    }
+
 
     @Rule
     public final ActivityTestRule<FrontPageActivity> frontPageActivityRule =

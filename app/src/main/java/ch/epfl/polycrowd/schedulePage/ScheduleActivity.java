@@ -36,7 +36,7 @@ public class ScheduleActivity extends AppCompatActivity {
             if (PolyContext.getCurrentEvent() != null){
                 PolyContext.getCurrentEvent().loadCalendar(getApplicationContext().getFilesDir());
             }
-            List<Activity> activities = PolyContext.getActivities();
+            List<Activity> activities = PolyContext.getCurrentEvent().getSchedule().getActivities();
             if (activities!=null) {
                 myAdapter = new MyAdapter(this, activities);
                 mRecyclerView.setAdapter(myAdapter);

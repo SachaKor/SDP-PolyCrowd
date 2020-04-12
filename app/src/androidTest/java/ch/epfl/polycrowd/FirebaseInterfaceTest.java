@@ -19,10 +19,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(AndroidJUnit4.class)
 public class FirebaseInterfaceTest {
 
-    @Test
-    public void checkTestMockingEnabled(){
-        assertTrue(PolyContext.isRunningTest());
-    }
+
 
     private FirebaseInterface firebaseInterface;
 

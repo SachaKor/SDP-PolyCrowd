@@ -69,6 +69,7 @@ public abstract class PolyContext extends Context {
 
 
 
+    /*
     // ----------- Use isRunningTest() to check if u are doing a test ------------------------
     // https://stackoverflow.com/questions/28550370/how-to-detect-whether-android-app-is-running-ui-test-with-espresso
     private static AtomicBoolean isRunningTest;
@@ -87,25 +88,8 @@ public abstract class PolyContext extends Context {
         }
 
         return isRunningTest.get ();
-    }
-
+    }*/
 
     // --------------------------------------------------------------------------------------
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public static List<Activity> getActivities(){
-            Event currentlySelectedEvent = PolyContext.getCurrentEvent();
-            if (currentlySelectedEvent!= null) {
-                Schedule currentSchedule = currentlySelectedEvent.getSchedule();
-                if ( currentSchedule != null) {
-                    return currentSchedule.getActivities();
-                } else{
-                    System.out.println("ERROR! NO SCHEDULE ! ERROR ! NO SCHEDULE ! ");
-                }
-            }else{
-                System.out.println("ERROR! NO EVENT ! ERROR ! NO EVENT ! ");
-            }
-            return null;
-    }
 
 }
