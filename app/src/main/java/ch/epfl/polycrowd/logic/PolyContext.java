@@ -111,6 +111,8 @@ public abstract class PolyContext extends Context {
             activity.put("DTEND","20200702T030000");
             ArrayList<Activity> fakeList = new ArrayList<>();
             fakeList.add(new Activity(activity));
+           activity.put("SUMMARY", "summary2");
+           fakeList.add(new Activity(activity));
             return fakeList;    // --------------------------------------------------------------------------------------
         }
     }

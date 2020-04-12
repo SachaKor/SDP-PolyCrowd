@@ -18,7 +18,7 @@ import java.util.List;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.logic.Activity;
 
-public class MyAdapter extends RecyclerView.Adapter<MyHolder> implements Filterable {
+public class MyAdapter extends RecyclerView.Adapter<MyHolder> {
 
     private List<Activity> models;
     private List<Activity> modelsFull;
@@ -102,6 +102,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyHolder> implements Filtera
         return models.size() ;
     }
 
+    /*
     @Override
     public Filter getFilter() {
         return eventSearchFilter;
@@ -136,5 +137,5 @@ public class MyAdapter extends RecyclerView.Adapter<MyHolder> implements Filtera
             models.addAll((List)results.values);
             notifyDataSetChanged();
         }
-    };
+    };*/
 }
