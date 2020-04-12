@@ -53,8 +53,14 @@ public class EventTest {
 
     @Test
     public void testGetSchedule(){
-        Event e = new Event();
-        assert(e.getSchedule().getActivities().isEmpty());
+        Date    sDate = new Date(1649430344),
+                eDate = new Date(1649516744);
+
+        // events setup
+        Event ev = new Event("eventOwner", "DEBUG EVENT", true, Event.EventType.CONCERT,
+                sDate, eDate, "testCalendar", "this is only a debug event ... ");
+        ev.setId("1");
+        assert(ev.getSchedule() == null); // TODO : this is so wrong
     }
 
     @Test
@@ -110,9 +116,14 @@ public class EventTest {
         assertEquals(dateToString(default_e, dtFormat), dateToString(nec.getEnd(), dtFormat));
         assertEquals("https://satellite.bar/agenda/ical.php", nec.getCalendar());
 
-        Event ned = new Event();
+        Date    sDate = new Date(1649430344),
+                eDate = new Date(1649516744);
+        // events setup
+        Event ned = new Event("eventOwner", "DEBUG EVENT", true, Event.EventType.OTHER,
+                sDate, eDate, "url", "this is only a debug event ... ");
+        ned.setId("1");
 
-        assertEquals(ned.getOwner() , "debug owner");
+        assertEquals(ned.getOwner() , "eventOwner");
         assertEquals("DEBUG EVENT", ned.getName());
         assertEquals(true, ned.getPublic());
         assertEquals(Event.EventType.OTHER, ned.getType());

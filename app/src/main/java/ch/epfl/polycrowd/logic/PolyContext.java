@@ -26,6 +26,14 @@ public abstract class PolyContext extends Context {
     private static boolean mockDynamicLink = false; // for the FrontPage testing
     private static DatabaseInterface dbInterface  = new FirebaseInterface();
 
+    public static void reset(){
+        currentEvent = null;
+        currentUser = null;
+        previousPage = null;
+        mockDynamicLink = false;
+        dbInterface = null;
+    }
+
     public static void setCurrentEvent(Event ev){
         currentEvent = ev;
         Log.d(TAG, "current event is set");
