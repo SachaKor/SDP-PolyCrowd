@@ -5,6 +5,7 @@ import android.content.Intent;
 import androidx.test.rule.ActivityTestRule;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -32,6 +33,11 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.core.IsNot.not;
 
 public class TestExampleMocking {
+
+    @BeforeClass
+    public static void setUpBeforeActivityLaunch(){
+        PolyContext.reset();
+    }
 
     Map<User, String> usersAndPasswords ;
     List<Event> events ;

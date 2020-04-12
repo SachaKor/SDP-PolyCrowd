@@ -7,6 +7,7 @@ import androidx.test.rule.ActivityTestRule;
 
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -36,6 +37,11 @@ import static org.junit.Assert.assertTrue;
 
 
 public class MapActivityTest {
+
+    @BeforeClass
+    public static void setUpBeforeActivityLaunch(){
+        PolyContext.reset();
+    }
 
     private User u1 = new User("fake@user", "1", "fakeUser", 3L);
     private User u2 = new User("eventOwner@user", "1", "eventOwner", 3L);

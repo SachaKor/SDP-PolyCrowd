@@ -1,6 +1,7 @@
 package ch.epfl.polycrowd;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import androidx.test.rule.ActivityTestRule;
@@ -20,6 +21,12 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.junit.Assert.assertEquals;
 
 public class OrganizerInvitesActivityTest {
+
+    @BeforeClass
+    public static void setUpBeforeActivityLaunch(){
+        PolyContext.reset();
+    }
+
     @Rule
     public final ActivityTestRule<OrganizerInviteActivity> mActivityRule =
             new ActivityTestRule<>(OrganizerInviteActivity.class);

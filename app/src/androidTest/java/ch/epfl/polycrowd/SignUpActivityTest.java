@@ -5,6 +5,7 @@ import android.content.Intent;
 import androidx.test.rule.ActivityTestRule;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -36,6 +37,11 @@ import static org.hamcrest.Matchers.not;
  *  https://stackoverflow.com/questions/28390574/checking-toast-message-in-android-espresso
  */
 public class SignUpActivityTest {
+
+    @BeforeClass
+    public static void setUpBeforeActivityLaunch(){
+        PolyContext.reset();
+    }
 
     @Rule
     public final ActivityTestRule<SignUpActivity> mActivityRule =
