@@ -10,11 +10,6 @@ import static org.junit.Assert.assertTrue;
 
 public class PolyContextTest {
 
-    @Test
-    public void checkTestMockingEnabled(){
-        assertTrue(PolyContext.isRunningTest());
-    }
-
 
     @Test
     public void testUserSetAndGet(){
