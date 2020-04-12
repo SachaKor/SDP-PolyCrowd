@@ -20,7 +20,6 @@ public abstract class PolyContext extends Context {
 
     private static final String TAG = "PolyContext";
 
-    public static boolean mocking= false;
     private static Event currentEvent;
     private static User currentUser;
     private static String previousPage = "";
