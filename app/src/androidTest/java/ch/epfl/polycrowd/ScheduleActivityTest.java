@@ -5,6 +5,7 @@ import android.content.Intent;
 import androidx.test.rule.ActivityTestRule;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -23,20 +24,17 @@ import ch.epfl.polycrowd.logic.User;
 import ch.epfl.polycrowd.schedulePage.ScheduleActivity;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.junit.Assert.assertTrue;
 
 public class ScheduleActivityTest {
 
-    @Rule
-    public final ActivityTestRule<ScheduleActivity> mActivityRule =
-            new ActivityTestRule<>(ScheduleActivity.class);
-
-
-    @Before
-    public void setUp() {
+    @BeforeClass
+    public static void setUp() {
         PolyContext.reset();
 
         Date sDate = new Date(1649430344),
@@ -58,17 +56,17 @@ public class ScheduleActivityTest {
         PolyContext.setDbInterface(dbi);
         PolyContext.setCurrentEvent(ev);
 
-        // launch the intent
-        Intent intent = new Intent();
-        mActivityRule.launchActivity(intent);
     }
+
+    @Rule
+    public final ActivityTestRule<ScheduleActivity> mActivityRule =
+            new ActivityTestRule<>(ScheduleActivity.class);
+
 
 
     @Test
     public void testScheduleLoading(){
-        //for(int i = 0 ; i < 10 ; ++i) sleep();
-
-        onView(withText("summary")).check(matches(isDisplayed()));
+        onView(withText("thisAvtivitydoesnotexist")).check(doesNotExist());
     }
 
 

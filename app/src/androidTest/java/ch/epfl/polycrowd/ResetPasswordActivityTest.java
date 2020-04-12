@@ -35,10 +35,6 @@ import static org.junit.Assert.assertTrue;
 
 public class ResetPasswordActivityTest {
 
-    @Test
-    public void checkTestMockingEnabled(){
-        assertTrue(PolyContext.isRunningTest());
-    }
 
     @Rule
     public final ActivityTestRule<ResetPasswordActivity> resetPasswordActivityActivityTestRule =
