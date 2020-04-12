@@ -31,8 +31,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.*;
 import static org.hamcrest.core.StringContains.containsString;
 import static androidx.test.espresso.action.ViewActions.*;
 
-import static org.junit.Assert.*;
-
 @RunWith(AndroidJUnit4.class)
 public class FrontPageActivityTest {
 
