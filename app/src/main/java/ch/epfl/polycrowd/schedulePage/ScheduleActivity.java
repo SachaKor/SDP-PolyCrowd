@@ -29,6 +29,8 @@ public class ScheduleActivity extends AppCompatActivity {
         giveHttpRequestPermissions();
 
         setContentView(R.layout.activity_schedule_page);
+
+
             mRecyclerView = findViewById(R.id.recyclerView);
             mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
             if (PolyContext.getCurrentEvent() != null){
@@ -40,11 +42,11 @@ public class ScheduleActivity extends AppCompatActivity {
                 mRecyclerView.setAdapter(myAdapter);
             }
 
-
     }
 
     private void giveHttpRequestPermissions(){
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
     }
+
 }
