@@ -90,13 +90,8 @@ public class Event {
         this.name = "DEBUG EVENT";
         this.isPublic = true;
         this.type = EventType.OTHER;
-        try {
-            this.start = dtFormat.parse("01-08-2018 00:00");
-            this.end = dtFormat.parse("02-08-2018 01:00");
-        } catch (ParseException e){
-            this.start = null;
-            this.end = null;
-        }
+        this.start = stringToDate("01-08-2018 00:00" , dtFormat);
+        this.end = stringToDate("02-08-2018 01:00" , dtFormat);
         this.calendar = "url";
         this.description = "this is only a debug event ... ";
         this.image = R.drawable.balelec;
@@ -279,7 +274,7 @@ public class Event {
         try {
             return dtf.parse(s);
         } catch (ParseException ex) {
-            ex.printStackTrace();
+            // ...
         }
         return null;
     }
