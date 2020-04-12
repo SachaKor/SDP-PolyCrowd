@@ -50,6 +50,18 @@ public class EventTest {
 
     }
 
+
+    @Test
+    public void testGetSchedule(){
+        Event e = new Event();
+        assert(e.getSchedule().getActivities().isEmpty());
+    }
+
+    @Test
+    public void testStringToDateFail(){
+        assertEquals(stringToDate("notadate" , Event.dtFormat ) , null);
+    }
+
     @Test
     public void constructor() throws ParseException {
         Assert.assertThrows(IllegalArgumentException.class, () -> new Event(null,default_name, false,
