@@ -1,4 +1,4 @@
-package ch.epfl.polycrowd;
+package ch.epfl.polycrowd.organizerInvite;
 
 import android.content.Context;
 import android.util.Log;
@@ -12,6 +12,8 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import ch.epfl.polycrowd.R;
 
 public class OrganizersAdapter extends RecyclerView.Adapter<OrganizersAdapter.ViewHolder>{
     private static final String LOG_TAG = "OrganizersAdapter";

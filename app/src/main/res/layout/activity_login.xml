@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
-    tools:context=".LoginActivity">
+    tools:context=".authentification.LoginActivity">
 
     <!--    https://stackoverflow.com/questions/43143468/how-to-center-the-elements-in-constraintlayout-->
 

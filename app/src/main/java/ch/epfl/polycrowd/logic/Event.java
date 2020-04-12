@@ -17,7 +17,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
-import ch.epfl.polycrowd.Model;
 import ch.epfl.polycrowd.R;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
@@ -273,13 +272,6 @@ public class Event {
         return this.schedule;
     }
 
-    public Model getModel(){
-        Model m = new Model() ;
-        m.setTitle(getName());
-        m.setDescription(getDescription());
-        m.setId(this.getId());
-        return m;
-    }
     public static String dateToString(Date d, SimpleDateFormat dtf){
         return dtf.format(d);
     }
@@ -291,11 +283,5 @@ public class Event {
         }
         return null;
     }
-    public static List<Model> toModels(List<Event> activities){
-        List<Model> models = new ArrayList<>();
-        for (Event e : activities){
-            models.add(e.getModel());
-        }
-        return models;
-    }
+
 }

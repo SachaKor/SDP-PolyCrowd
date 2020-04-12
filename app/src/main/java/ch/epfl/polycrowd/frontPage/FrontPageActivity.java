@@ -17,8 +17,8 @@ import androidx.viewpager.widget.ViewPager;
 
 import java.util.List;
 
-import ch.epfl.polycrowd.LoginActivity;
-import ch.epfl.polycrowd.OrganizerInviteActivity;
+import ch.epfl.polycrowd.authentification.LoginActivity;
+import ch.epfl.polycrowd.organizerInvite.OrganizerInviteActivity;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.firebase.handlers.DynamicLinkHandler;

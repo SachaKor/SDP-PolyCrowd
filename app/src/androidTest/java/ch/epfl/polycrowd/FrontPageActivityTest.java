@@ -50,7 +50,7 @@ public class FrontPageActivityTest {
 
     @Before
     public void setUp() {
-        Date sDate = new Date(1649430344),
+        Date    sDate = new Date(1649430344),
                 eDate = new Date(1649516744);
 
         // events setup
@@ -118,6 +118,29 @@ public class FrontPageActivityTest {
         onView(withId(R.id.viewPager)).perform(click());
         sleep();
         onView(withId(R.id.map)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void TestRestart(){
+        // TODO
+    }
+
+    @Test
+    public void testClickSignInSignOut(){
+        sleep();
+        if(PolyContext.getCurrentUser() != null) {
+            onView(withId(R.id.button)).perform(click());
+            sleep();
+            onView(withId(R.id.viewPager)).check(matches(isDisplayed()));
+
+        }
+        else {
+            onView(withId(R.id.button)).perform(click());
+            sleep();
+            onView(withId(R.id.sign_in_scroll)).check(matches(isDisplayed()));
+        }
+
+
     }
 
     private void sleep(){

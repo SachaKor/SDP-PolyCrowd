@@ -2,15 +2,12 @@ package ch.epfl.polycrowd;
 
 import androidx.test.rule.ActivityTestRule;
 
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.io.File;
-import java.text.ParseException;
-
 
 import ch.epfl.polycrowd.logic.PolyContext;
+import ch.epfl.polycrowd.schedulePage.ScheduleActivity;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
