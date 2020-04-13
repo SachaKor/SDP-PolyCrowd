@@ -120,6 +120,18 @@ public class Event {
 
 
 
+    public List<Activity> getActivities() {
+        if(this.getSchedule() == null) return null;
+        return this.getSchedule().getActivities();
+    }
+
+    public Event setActivities(List<Activity> ac) {
+        if(this.getSchedule() == null) this.schedule = new Schedule();
+        this.schedule.setActivities(ac);
+        return this;
+    }
+
+
     private String getEventCalFilename(){
         return String.join(".",this.name,"ics");
     }
@@ -268,15 +280,6 @@ public class Event {
         return this.schedule;
     }
 
-    public List<Activity> getActivities() {
-        if(this.getSchedule() == null) return null;
-        return this.getSchedule().getActivities();
-    }
-
-    public void setActivities(List<Activity> ac) {
-        if(this.getSchedule() == null) this.schedule = new Schedule();
-        this.schedule.setActivities(ac);
-    }
 
     public static String dateToString(Date d, SimpleDateFormat dtf){
         return dtf.format(d);
