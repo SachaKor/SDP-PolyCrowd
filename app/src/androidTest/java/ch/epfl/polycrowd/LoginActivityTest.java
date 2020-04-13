@@ -83,16 +83,18 @@ public class LoginActivityTest {
 //                );
 //    }
 
+
     @Test
     public void testClickForgotPassword(){
         /*
         onView(withId(R.id.forgot_password_button)).perform(click());
         sleep();
         onView(withId(R.id.send_reset_link_logo)).check(matches(isDisplayed()));
-        
+
          */
     }
 
+    /*
     @Test
     public void testSignInButtonIsThere() {
         onView(withId(R.id.sign_in_button)).check(matches(withText(containsString("Sign in"))));
@@ -100,7 +102,7 @@ public class LoginActivityTest {
 
     @Test
     public void testSuccessfulSignIn() {
-        /*
+
         onView(withId(R.id.sign_in_email)).perform(typeText(VALID_EMAIL), closeSoftKeyboard());
         onView(withId(R.id.sign_in_pswd)).perform(typeText(VALID_PASSWORD), closeSoftKeyboard());
         sleep();
@@ -110,7 +112,7 @@ public class LoginActivityTest {
                 .inRoot(withDecorView(not(loginActivityRule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));
 
-         */
+
     }
 
     @Test
@@ -162,4 +164,6 @@ public class LoginActivityTest {
             e.printStackTrace();
         }
     }
+
+     */
 }
