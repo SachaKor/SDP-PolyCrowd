@@ -18,6 +18,7 @@ import java.util.Map;
 
 import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.firebase.FirebaseMocker;
+import ch.epfl.polycrowd.logic.Activity;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
@@ -44,6 +45,13 @@ public class ScheduleActivityTest {
         Event ev = new Event("eventOwner", "DEBUG EVENT", true, Event.EventType.CONCERT,
                 sDate, eDate, "https://thisIsAUrl", "this is only a debug event ... ");
         ev.setId("1");
+
+        Activity ac1 = new Activity( "location" , "uid" , "summary" ,
+                "description" , "organizer" , sDate , eDate);
+
+        List<Activity> la = new ArrayList<>();
+        la.add(ac1);
+        ev.setActivities( la );
         List<Event> events = new ArrayList<>();
         events.add(ev);
 
@@ -67,6 +75,7 @@ public class ScheduleActivityTest {
     @Test
     public void testScheduleLoading(){
         onView(withText("thisAvtivitydoesnotexist")).check(doesNotExist());
+        onView(withText("summary")).check(matches(isDisplayed()));
     }
 
 

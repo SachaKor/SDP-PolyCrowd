@@ -49,6 +49,7 @@ public class Event {
                  String calendar, String description){
         if(owner == null || name == null || type == null || start == null || end == null || calendar == null)
             throw new IllegalArgumentException("Invalid Argument for Event Constructor");
+
         this.owner = owner;
         this.name = name;
         this.isPublic = isPublic;
@@ -82,6 +83,9 @@ public class Event {
         }
         this.organizers = organizers;
     }
+
+
+    // ---------------------------------------------------------------------------------
 
 
     private String getEventCalFilename(){
@@ -230,6 +234,16 @@ public class Event {
 
     public Schedule getSchedule(){
         return this.schedule;
+    }
+
+    public List<Activity> getActivities() {
+        if(this.getSchedule() == null) return null;
+        return this.getSchedule().getActivities();
+    }
+
+    public void setActivities(List<Activity> ac) {
+        if(this.getSchedule() == null) this.schedule = new Schedule();
+        this.schedule.setActivities(ac);
     }
 
     public static String dateToString(Date d, SimpleDateFormat dtf){

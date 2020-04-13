@@ -29,7 +29,7 @@ public class Schedule {
 
 
 
-    private final List<Activity> activities;
+    private List<Activity> activities;
     private String downloadPath;
 
     // ------- Schedule for Testing --------------------------------------
@@ -123,5 +123,7 @@ public class Schedule {
     public List<Activity> getActivities(){
         return this.activities;
     }
+
+    public void setActivities(List<Activity> a) { this.activities = a; }
 
 }
