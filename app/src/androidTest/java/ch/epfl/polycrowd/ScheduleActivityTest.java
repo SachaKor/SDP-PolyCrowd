@@ -11,6 +11,7 @@ import org.junit.Test;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -34,36 +35,31 @@ import static org.junit.Assert.assertTrue;
 
 public class ScheduleActivityTest {
 
+    private static Event theEvent = new Event("eventOwner", "DEBUG EVENT", true,Event.EventType.CONCERT,
+                                 new Date(1649430344), new Date(1649516744), "https://thisIsAUrl",
+                                "this is only a debug event ... ");
+
+    private static Activity oneActivity = new Activity( "location" , "uid" , "summary" ,
+                                        "description" , "organizer" ,
+                                         new Date(1649430344), new Date(1649516744));
+
+
+
     @BeforeClass
     public static void setUp() {
         PolyContext.reset();
 
-        Date sDate = new Date(1649430344),
-                eDate = new Date(1649516744);
-
-        // events setup
-        Event ev = new Event("eventOwner", "DEBUG EVENT", true, Event.EventType.CONCERT,
-                sDate, eDate, "https://thisIsAUrl", "this is only a debug event ... ");
-        ev.setId("1");
-
-        Activity ac1 = new Activity( "location" , "uid" , "summary" ,
-                "description" , "organizer" , sDate , eDate);
-
-        List<Activity> la = new ArrayList<>();
-        la.add(ac1);
-        ev.setActivities( la );
-        List<Event> events = new ArrayList<>();
-        events.add(ev);
+        theEvent.setId("1");
+        theEvent.setActivities( Arrays.asList(oneActivity) );
 
         // users setup
         Map<User, String> usersAndPasswords = new HashMap<>();
         usersAndPasswords.put(new User("fake@user", "1", "fakeUser", 3L), "1234567");
 
         // database interface setup
-        DatabaseInterface dbi = new FirebaseMocker(usersAndPasswords, events);
+        DatabaseInterface dbi = new FirebaseMocker(usersAndPasswords, Arrays.asList(theEvent) );
         PolyContext.setDbInterface(dbi);
-        PolyContext.setCurrentEvent(ev);
-
+        PolyContext.setCurrentEvent(theEvent);
     }
 
     @Rule
@@ -71,13 +67,11 @@ public class ScheduleActivityTest {
             new ActivityTestRule<>(ScheduleActivity.class);
 
 
-
     @Test
     public void testScheduleLoading(){
-        onView(withText("thisAvtivitydoesnotexist")).check(doesNotExist());
+        onView(withText("thisAvtivityDoesNotExist")).check(doesNotExist());
         onView(withText("summary")).check(matches(isDisplayed()));
     }
-
 
 
     private void sleep(){
