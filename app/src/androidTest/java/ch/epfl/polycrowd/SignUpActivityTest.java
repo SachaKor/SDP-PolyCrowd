@@ -124,11 +124,11 @@ public class SignUpActivityTest {
 
     @Test
     public void testIncorrectEmailToast() {
-        sleep();
+
         typeTextAndCloseKeyboard(R.id.sign_up_username, "sasha");
         typeTextAndCloseKeyboard(R.id.sign_up_pswd, "123");
         typeTextAndCloseKeyboard(R.id.repeat_pswd, "123");
-
+        sleep();
         onView(withId(R.id.sign_up_button)).perform(click());
         sleep();
         onView(withText("Incorrect email"))
