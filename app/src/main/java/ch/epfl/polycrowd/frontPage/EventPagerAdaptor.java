@@ -15,7 +15,7 @@ import androidx.viewpager.widget.PagerAdapter;
 
 import java.util.List;
 
-import ch.epfl.polycrowd.Event;
+import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.EventEditActivity;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.logic.PolyContext;
