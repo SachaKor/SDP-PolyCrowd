@@ -14,6 +14,7 @@ import ch.epfl.polycrowd.firebase.handlers.EventHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
 import ch.epfl.polycrowd.firebase.handlers.OrganizersHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
+import ch.epfl.polycrowd.logic.User;
 
 public interface DatabaseInterface {
 
@@ -58,4 +59,6 @@ public interface DatabaseInterface {
     void resetPassword(String email, UserHandler successHandler, UserHandler failureHandler);
 
     void receiveDynamicLink(DynamicLinkHandler handler, Intent intent);
+
+    void addSOS(String userId, String eventId, String reason);
 }

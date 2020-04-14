@@ -264,4 +264,10 @@ public class FirebaseInterface implements DatabaseInterface {
                     })
                     .addOnFailureListener(e -> Log.w(TAG, "getDynamicLink:onFailure", e));
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    @Override
+    public void addSOS(String userId, String eventId, String reason) {
+        getFirestoreInstance(false).collection(USERS).document(userId).update("sos."+eventId,reason).addOnFailureListener(e-> Log.w(TAG, "addSOS:onFailure",e));
+    }
 }

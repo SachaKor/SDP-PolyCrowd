@@ -9,12 +9,16 @@ import android.view.View;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import ch.epfl.polycrowd.firebase.DatabaseInterface;
+import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.map.MapActivity;
 
 public class EmergencyActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = EmergencyActivity.class.toString();
 
+
+    private DatabaseInterface dbi;
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -34,7 +38,7 @@ public class EmergencyActivity extends AppCompatActivity {
 
         Log.d(LOG_TAG, "Send SOS type Button Clicked: "+ view.getTooltipText());
 
-        //TODO: SEND TO FIREBASE
+        dbi.addSOS(PolyContext.getCurrentUser().getUid(),PolyContext.getCurrentEvent().getId(), view.toString());
 
         Intent intent = new Intent(this, MapActivity.class);
         startActivity(intent);
