@@ -23,12 +23,20 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.GrantPermissionRule;
+import ch.epfl.polycrowd.firebase.DatabaseInterface;
+import ch.epfl.polycrowd.firebase.FirebaseMocker;
+import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
+import ch.epfl.polycrowd.logic.User;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -61,8 +69,28 @@ public class EventPageDetailsGalleryTest {
 
     @Before
     public void startIntent() {
-        Event ev = new Event();
+        List<Event> events;
+        Map<User, String> usersAndPasswords;
+        Date sDate = new Date(1649430344),
+                eDate = new Date(1649516744);
+        Event ev = new Event("eventOwner", "testEvent", true, Event.EventType.CONCERT,
+                sDate, eDate, "testCalendar", "testDescription");
+        ev.setId("1");
+        User user = new User("organizer@op.com", "1", "organizer", 3L);
+        ev.addOrganizer(user.getEmail());
         PolyContext.setCurrentEvent(ev);
+        usersAndPasswords = new HashMap<>();
+        events = new ArrayList<>();
+        events.add(ev);
+        usersAndPasswords.put(user, "123456");
+
+        // PolyContext setup
+        DatabaseInterface dbi = new FirebaseMocker(usersAndPasswords, events);
+        PolyContext.setDbInterface(dbi);
+        PolyContext.setCurrentUser(user);
+        PolyContext.setCurrentEvent(ev);
+
+        // launch the intent
         Intent intent = new Intent();
         mActivityTestRule.launchActivity(intent);
     }
