@@ -10,10 +10,10 @@ public class User extends Storable {
 
     //Sample attributes
     private String name, email, uid;
-    private Integer age;
+    private Long age;
 
     //Sample constructor
-    public User(String email, String uid, String name, Integer age){
+    public User(String email, String uid, String name, Long age){
         this.name = name;
         this.age = age;
         this.email = email;
@@ -28,7 +28,7 @@ public class User extends Storable {
         return m;
     }
 
-    public Integer getAge() {
+    public Long getAge() {
         return age;
     }
 
@@ -47,7 +47,7 @@ public class User extends Storable {
     public static User getFromDocument(Map<String, Object> data) {
         String username = Objects.requireNonNull(data.get("username")).toString();
         String email = Objects.requireNonNull(data.get("email")).toString();
-        Integer age = (Integer) Objects.requireNonNull(data.get("age"));
+        Long age = (Long) Objects.requireNonNull(data.get("age"));
         String uid = Objects.requireNonNull(data.get("uid")).toString();
         return new User(email, uid, username, age);
     }

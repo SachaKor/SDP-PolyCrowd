@@ -1,4 +1,4 @@
-package ch.epfl.polycrowd;
+package ch.epfl.polycrowd.schedulePage;
 
 import android.content.Context;
 import android.os.Build;
@@ -15,12 +15,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MyAdapter extends RecyclerView.Adapter<MyHolder> implements Filterable {
+import ch.epfl.polycrowd.R;
+import ch.epfl.polycrowd.logic.Activity;
 
-    private List<Model> models;
-    private List<Model> modelsFull;
+public class MyAdapter extends RecyclerView.Adapter<MyHolder> {
 
-    public MyAdapter(Context c, List<Model> models){
+    private List<Activity> models;
+    private List<Activity> modelsFull;
+
+    public MyAdapter(Context c, List<Activity> models){
         this.models= models ;
         modelsFull = new ArrayList<>(models);
     }
@@ -37,7 +40,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyHolder> implements Filtera
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onBindViewHolder(@NonNull final MyHolder myHolder, int i) {
-        myHolder.mTitle.setText(models.get(i).getTitle()) ;
+        myHolder.mTitle.setText(models.get(i).getSummary()) ;
         myHolder.mDes.setText(models.get(i).getDescription());
         myHolder.mImaeView.setImageResource(R.drawable.p1);
         myHolder.getParentLayout().setOnClickListener(v -> {
@@ -99,6 +102,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyHolder> implements Filtera
         return models.size() ;
     }
 
+    /*
     @Override
     public Filter getFilter() {
         return eventSearchFilter;
@@ -108,15 +112,15 @@ public class MyAdapter extends RecyclerView.Adapter<MyHolder> implements Filtera
         @RequiresApi(api = Build.VERSION_CODES.O)
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
-            List<Model> filteredList = new ArrayList<>();
+            List<Activity> filteredList = new ArrayList<>();
 
             // user did not enter anything in the search bar => display all the options
             if(constraint == null || constraint.length() == 0) {
                 filteredList.addAll(modelsFull);
             } else {
                 String filterPattern = constraint.toString().toLowerCase().trim();
-                for (Model item : modelsFull) {
-                    if(item.getTitle().toLowerCase().contains(filterPattern)) {
+                for (Activity item : modelsFull) {
+                    if(item.getSummary().toLowerCase().contains(filterPattern)) {
                         filteredList.add(item);
                     }
                 }
@@ -133,5 +137,5 @@ public class MyAdapter extends RecyclerView.Adapter<MyHolder> implements Filtera
             models.addAll((List)results.values);
             notifyDataSetChanged();
         }
-    };
+    };*/
 }

@@ -21,12 +21,24 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.firebase.dynamiclinks.DynamicLink;
 import com.google.firebase.dynamiclinks.DynamicLink.SocialMetaTagParameters;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
 import java.text.ParseException;
 import java.util.List;
+
+import ch.epfl.polycrowd.firebase.DatabaseInterface;
+import ch.epfl.polycrowd.logic.Event;
+import ch.epfl.polycrowd.logic.PolyContext;
+import ch.epfl.polycrowd.logic.User;
+import ch.epfl.polycrowd.organizerInvite.OrganizersAdapter;
+import ch.epfl.polycrowd.schedulePage.ScheduleActivity;
 
 public class EventPageDetailsActivity extends AppCompatActivity {
 
@@ -35,8 +47,6 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     private static final String TAG = "EventPageDetails";
 
     private String eventId;
-
-    private final FirebaseInterface fbi = new FirebaseInterface(this);
 
     private AlertDialog linkDialog;
 
@@ -112,14 +122,14 @@ public class EventPageDetailsActivity extends AppCompatActivity {
             Log.e(TAG, "current event is null");
             return;
         }
-        FirebaseInterface fbi = new FirebaseInterface(this);
+        DatabaseInterface dbi = PolyContext.getDatabaseInterface();
         eventId = curEvent.getId();
-        fbi.getEventById(eventId, event -> {
+        dbi.getEventById(eventId, event -> {
             initRecyclerView(event.getOrganizers());
             setUpViews(event.getName(), event.getDescription());
             eventName = event.getName();
             // Check logged-in user => do not show invite button if user isn't organizer
-            User user = fbi.getCurrentUser();
+            User user = PolyContext.getCurrentUser();
             if(user == null || event.getOrganizers().indexOf(user.getEmail()) == -1) {
                 Log.d(TAG, "current user is not an organizer");
                 currentUserIsOrganizer = false;

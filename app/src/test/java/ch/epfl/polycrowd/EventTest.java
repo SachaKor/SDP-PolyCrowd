@@ -15,8 +15,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static ch.epfl.polycrowd.Event.dateToString;
-import static ch.epfl.polycrowd.Event.stringToDate;
+import ch.epfl.polycrowd.logic.Event;
+
+import static ch.epfl.polycrowd.logic.Event.dateToString;
+import static ch.epfl.polycrowd.logic.Event.stringToDate;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -46,6 +48,24 @@ public class EventTest {
         e = new Event(default_owner,default_name, false,
                 default_type, default_s, default_e, "None", default_desc);
 
+    }
+
+
+    @Test
+    public void testGetSchedule(){
+        Date    sDate = new Date(1649430344),
+                eDate = new Date(1649516744);
+
+        // events setup
+        Event ev = new Event("eventOwner", "DEBUG EVENT", true, Event.EventType.CONCERT,
+                sDate, eDate, "testCalendar", "this is only a debug event ... ");
+        ev.setId("1");
+        assert(ev.getSchedule() == null); // TODO : this is so wrong
+    }
+
+    @Test
+    public void testStringToDateFail(){
+        assertEquals(stringToDate("notadate" , Event.dtFormat ) , null);
     }
 
     @Test
@@ -96,9 +116,14 @@ public class EventTest {
         assertEquals(dateToString(default_e, dtFormat), dateToString(nec.getEnd(), dtFormat));
         assertEquals("https://satellite.bar/agenda/ical.php", nec.getCalendar());
 
-        Event ned = new Event();
+        Date    sDate = new Date(1649430344),
+                eDate = new Date(1649516744);
+        // events setup
+        Event ned = new Event("eventOwner", "DEBUG EVENT", true, Event.EventType.OTHER,
+                sDate, eDate, "url", "this is only a debug event ... ");
+        ned.setId("1");
 
-        assertEquals(ned.getOwner() , "debug owner");
+        assertEquals(ned.getOwner() , "eventOwner");
         assertEquals("DEBUG EVENT", ned.getName());
         assertEquals(true, ned.getPublic());
         assertEquals(Event.EventType.OTHER, ned.getType());

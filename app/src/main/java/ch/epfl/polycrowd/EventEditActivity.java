@@ -1,5 +1,6 @@
 package ch.epfl.polycrowd;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -10,32 +11,48 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-
-import static ch.epfl.polycrowd.Event.dtFormat;
-
-import ch.epfl.polycrowd.firebase.FirebaseInterface;
+import ch.epfl.polycrowd.firebase.DatabaseInterface;
+import ch.epfl.polycrowd.firebase.handlers.EventHandler;
+import ch.epfl.polycrowd.logic.Event;
+import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 import ch.epfl.polycrowd.map.MapActivity;
-import static ch.epfl.polycrowd.Event.stringToDate;
+
+import static ch.epfl.polycrowd.logic.Event.dtFormat;
+import static ch.epfl.polycrowd.logic.Event.stringToDate;
 
 public class EventEditActivity extends AppCompatActivity {
 
-    private static final String LOG_TAG = EventEditActivity.class.toString();
-    private FirebaseInterface firebaseInterface;
+    private static final String TAG = "EventEditActivity";
+    private DatabaseInterface databaseInterface;
+
+    private EditText eventName;
+    private EditText startDate, endDate;
+    private Switch isPublicSwitch;
+    private Spinner eventTypeSpinner;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_edit);
-        this.firebaseInterface = new FirebaseInterface(this);
+        this.databaseInterface = PolyContext.getDatabaseInterface();
+        setUpViews();
+    }
+
+    private void setUpViews() {
+        eventName = findViewById(R.id.EditEventName);
+        startDate = findViewById(R.id.EditEventStart);
+        endDate = findViewById(R.id.EditEventEnd);
+        isPublicSwitch = findViewById(R.id.EditEventPublic);
+        eventTypeSpinner = findViewById(R.id.EditEventType);
     }
 
 
@@ -55,26 +72,25 @@ public class EventEditActivity extends AppCompatActivity {
 
     }*/
 
-    private boolean fieldsNotEmpty() {
-        final String eventName = findViewById(R.id.EditEventName).toString(),
-                sDate = findViewById(R.id.EditEventStart).toString(),
-                eDate = findViewById(R.id.EditEventEnd).toString();
-        if(eventName.isEmpty()) {
+    private boolean hasEmptyFields() {
+        Log.d(TAG, "fieldsNotEmpty");
+        String eventNameText = eventName.getText().toString();
+        if(eventNameText.isEmpty()) {
             Toast.makeText(getApplicationContext(), "Enter the name of the event", Toast.LENGTH_SHORT).show();
-            return false;
+            return true;
         }
 
-        if (sDate.isEmpty()) {
+        if (startDate.getText().toString().isEmpty()) {
             Toast.makeText(getApplicationContext(), "Enter the starting date", Toast.LENGTH_SHORT).show();
-            return false;
+            return true;
         }
 
-        if (eDate.isEmpty()) {
+        if (endDate.getText().toString().isEmpty()) {
             Toast.makeText(getApplicationContext(), "Enter the ending date", Toast.LENGTH_SHORT).show();
-            return false;
+            return true;
         }
 
-        return true;
+        return false;
 
     }
 
@@ -82,20 +98,16 @@ public class EventEditActivity extends AppCompatActivity {
     public void sendEventSubmit(View view) {
         final EditText evName = findViewById(R.id.EditEventName);
 
-        Log.d(LOG_TAG, "Send Event Button Clicked");
+        Log.d(TAG, "Send Event Button Clicked");
         // Add the event
         // Add an Event to the firestore
         // Retrieve the field values from the Edit Event layout
-        Switch isPublicSwitch = findViewById(R.id.EditEventPublic);
-        Spinner eventTypeSpinner = findViewById(R.id.EditEventType);
-        EditText sDateEditText = findViewById(R.id.EditEventStart),
-                eDateEditText = findViewById(R.id.EditEventEnd);
         Boolean isPublic = isPublicSwitch.isChecked();
-        String sDate = sDateEditText.getText().toString(),
-                eDate = eDateEditText.getText().toString(),
-                type = eventTypeSpinner.getSelectedItem().toString() ;
+        String sDate = startDate.getText().toString(),
+                eDate = endDate.getText().toString(),
+                type = eventTypeSpinner.getSelectedItem().toString();
 
-        if(!fieldsNotEmpty()) {
+        if(hasEmptyFields()) {
             return;
         }
         Date startDate = stringToDate(sDate+" 00:00", dtFormat),
@@ -105,10 +117,8 @@ public class EventEditActivity extends AppCompatActivity {
             return;
         }
 
-
-
         // check if the user is logged in
-        User user = firebaseInterface.getCurrentUser();
+        User user = PolyContext.getCurrentUser();
 
         List<String> organizers = new ArrayList<>();
         organizers.add(user.getEmail());
@@ -122,7 +132,10 @@ public class EventEditActivity extends AppCompatActivity {
                 "url", "", organizers);
 //        Map<String, Object> event = ev.toHashMap();
         // add event to the database
-        firebaseInterface.addEvent(ev);
+        Context c = this ;
+        EventHandler successHandler = e -> { PolyContext.setCurrentEvent(e); Toast.makeText(c, "Event added", Toast.LENGTH_LONG).show();};
+        EventHandler failureHandler = e -> Toast.makeText(c, "Error occurred while adding the event", Toast.LENGTH_LONG).show();
+        databaseInterface.addEvent(ev,successHandler , failureHandler );
 
         Intent intent = new Intent(this, MapActivity.class);
         startActivity(intent);
