@@ -55,7 +55,7 @@ public class EventPageDetailsActivityTest {
         Event ev = new Event("eventOwner", "testEvent", true, Event.EventType.CONCERT,
                 sDate, eDate, "testCalendar", "testDescription");
         ev.setId("1");
-        User user = new User("organizer@op.com", "1", "organizer", 3L);
+        User user = new User("organizer@op.com", "1", "organizer", 3);
         ev.addOrganizer(user.getEmail());
         usersAndPasswords = new HashMap<>();
         events = new ArrayList<>();

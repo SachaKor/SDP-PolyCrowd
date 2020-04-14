@@ -59,7 +59,7 @@ public class TestExampleMocking {
         users = new ArrayList<>();
         List<Event> events = new ArrayList<>() ;
         usersAndPasswords = new HashMap<>();
-        User u1 = new User("blah@mail.com", "1", "mrBlah", 23L) ;
+        User u1 = new User("blah@mail.com", "1", "mrBlah", 23) ;
         usersAndPasswords.put(u1, "123456");
         for(User u : usersAndPasswords.keySet()) {
             users.add(u);

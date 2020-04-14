@@ -53,7 +53,7 @@ public class SignUpActivityTest {
         // Database Interface & PolyContext setup
         List<Event> events = new ArrayList<>();
         Map<User, String> usersAndPasswords = new HashMap<>();
-        User alreadyExists = new User("123@mail.com", "1", "yabdro", 3L);
+        User alreadyExists = new User("123@mail.com", "1", "yabdro", 3);
         usersAndPasswords.put(alreadyExists, "123456");
         DatabaseInterface dbi = new FirebaseMocker(usersAndPasswords, events);
         PolyContext.setDbInterface(dbi);

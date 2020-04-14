@@ -112,7 +112,7 @@ public class SignUpActivity extends AppCompatActivity {
             Context c = this ;
             UserHandler userExistsHandler = user -> Toast.makeText(c, "User already exists", Toast.LENGTH_SHORT).show();
             UserHandler userDoesNotExistHandler = user -> dbi.signUp(username.getText().toString(),
-                    firstPassword.getText().toString(), email.getText().toString(), 100L,
+                    firstPassword.getText().toString(), email.getText().toString(), 100,
                     u ->Toast.makeText(c, "Sign up successful", Toast.LENGTH_SHORT).show() ,
                     u ->Toast.makeText(c, "Error registering user", Toast.LENGTH_SHORT).show() );
             //Finally, query database

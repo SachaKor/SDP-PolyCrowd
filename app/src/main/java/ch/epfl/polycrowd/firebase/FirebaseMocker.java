@@ -124,7 +124,7 @@ public class FirebaseMocker implements DatabaseInterface {
     }
 
     @Override
-    public void signUp(String username, String firstPassword, String email, Long age, UserHandler successHandler, UserHandler failureHandler) {
+    public void signUp(String username, String firstPassword, String email, Integer age, UserHandler successHandler, UserHandler failureHandler) {
         User newUser = new User(username, "1", email, age) ;
         //Search for existing user handled by calling class
         usersAndPasswords.put(newUser, firstPassword) ;

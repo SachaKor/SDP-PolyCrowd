@@ -60,7 +60,7 @@ public class ResetPasswordActivityTest {
 
         // users setup
         Map<User, String> usersAndPasswords = new HashMap<>();
-        usersAndPasswords.put(new User("fake@user", "1", "fakeUser", 3L), "1234567");
+        usersAndPasswords.put(new User("fake@user", "1", "fakeUser", 3), "1234567");
 
         // database interface setup
         DatabaseInterface dbi = new FirebaseMocker(usersAndPasswords, events);

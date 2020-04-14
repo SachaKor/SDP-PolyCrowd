@@ -77,7 +77,7 @@ public class FirebaseInterface implements DatabaseInterface {
                     .addOnCompleteListener(taskc -> {
                         if(taskc.isSuccessful()) {
                             // TODO: use getUserByEmail, clean up firestore first
-                            User user = new User(email, taskc.getResult().getUser().getUid(), "username", 3L);
+                            User user = new User(email, taskc.getResult().getUser().getUid(), "username", 3);
                             successHandler.handle(user);
                         } else {
                             failureHandler.handle(null);
@@ -203,7 +203,7 @@ public class FirebaseInterface implements DatabaseInterface {
     }
 
     @Override
-    public void signUp(String username, String firstPassword, String email, Long age, UserHandler successHandler, UserHandler failureHandler) {
+    public void signUp(String username, String firstPassword, String email, Integer age, UserHandler successHandler, UserHandler failureHandler) {
             CollectionReference usersRef = getFirestoreInstance(false).collection("users");
             Query queryUsernames = usersRef.whereEqualTo("username", username);
             Query queryEmails = usersRef.whereEqualTo("email", email);
@@ -218,7 +218,7 @@ public class FirebaseInterface implements DatabaseInterface {
             );
     }
 
-    private void addUserToDatabase(String email, String firstPassword, String username, Long age, UserHandler successHandler, UserHandler failureHandler){
+    private void addUserToDatabase(String email, String firstPassword, String username, Integer age, UserHandler successHandler, UserHandler failureHandler){
         getAuthInstance(false).createUserWithEmailAndPassword(email, firstPassword) ;
         Map<String, Object> user = new HashMap<>();
         user.put("username", username);

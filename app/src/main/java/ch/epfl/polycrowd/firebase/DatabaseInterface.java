@@ -54,7 +54,7 @@ public interface DatabaseInterface {
                              OrganizersHandler handler);
 
     //Checking for existing username or email not handled in signUp call, but via other async. requests
-    void signUp(String username, String firstPassword, String email, Long age, UserHandler successHandler, UserHandler failureHandler);
+    void signUp(String username, String firstPassword, String email, Integer age, UserHandler successHandler, UserHandler failureHandler);
 
     void resetPassword(String email, UserHandler successHandler, UserHandler failureHandler);
 

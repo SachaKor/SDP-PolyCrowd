@@ -28,6 +28,7 @@ import ch.epfl.polycrowd.map.MapActivity;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -43,8 +44,8 @@ public class MapActivityTest {
         PolyContext.reset();
     }
 
-    private User u1 = new User("fake@user", "1", "fakeUser", 3L);
-    private User u2 = new User("eventOwner@user", "1", "eventOwner", 3L);
+    private User u1 = new User("fake@user", "1", "fakeUser", 3);
+    private User u2 = new User("eventOwner@user", "1", "eventOwner", 3);
 
     @Rule
     public final ActivityTestRule<MapActivity> mActivityRule =
