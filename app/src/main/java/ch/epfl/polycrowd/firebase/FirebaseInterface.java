@@ -267,7 +267,7 @@ public class FirebaseInterface implements DatabaseInterface {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
-    public void addSOS(String userId, String eventId, String reason) {
-        getFirestoreInstance(false).collection(USERS).document(userId).update("sos."+eventId,reason).addOnFailureListener(e-> Log.w(TAG, "addSOS:onFailure",e));
+    public void addSOS(@NonNull String userId, @NonNull String eventId, @NonNull String reason) {
+        getFirestoreInstance(false).collection(EVENTS).document(eventId).update("sos."+userId,reason).addOnFailureListener(e-> Log.w(TAG, "addSOS:onFailure",e));
     }
 }
