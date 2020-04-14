@@ -45,17 +45,13 @@ public class FrontPageActivityTest {
             new ActivityTestRule<>(FrontPageActivity.class, true, false);
 
     @Rule
-    public GrantPermissionRule grantCoarseLocation =
-            GrantPermissionRule.grant(Manifest.permission.ACCESS_COARSE_LOCATION);
-
-    @Rule
     public GrantPermissionRule grantFineLocation =
             GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION);
 
     @Before
     public void setUp() {
-        Date    sDate = new Date(1649430344),
-                eDate = new Date(1649516744);
+        Date    sDate = new Date(2086903058204L),
+                eDate = new Date(2086903058204L);
 
         // events setup
         Event ev = new Event("eventOwner", "DEBUG EVENT", true, Event.EventType.CONCERT,
@@ -75,6 +71,7 @@ public class FrontPageActivityTest {
         // launch the intent
         Intent intent = new Intent();
         frontPageActivityRule.launchActivity(intent);
+
     }
 
     @Test
@@ -104,7 +101,7 @@ public class FrontPageActivityTest {
     public void testScrollingChangeTextAndDescription(){
         sleep();
         onView(withId(R.id.viewPager))
-                .perform(swipeRight() , swipeLeft());
+                .perform(swipeRight() , swipeLeft(),swipeLeft());
         sleep();
         onView(withId(R.id.eventTitle)).check(matches(withText(containsString("DEBUG EVENT"))));
         onView(withId(R.id.description)).check(matches(withText(containsString("this is only a debug event ... "))));

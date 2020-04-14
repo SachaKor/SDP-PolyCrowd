@@ -26,8 +26,8 @@ import ch.epfl.polycrowd.logic.User;
 
 public class FirebaseMocker implements DatabaseInterface {
 
-    Map<User,String> usersAndPasswords ;
-    List<Event> events ;
+    private Map<User,String> usersAndPasswords ;
+    private List<Event> events ;
 
     public FirebaseMocker(Map<User, String> defaultUsersAndPasswords, List<Event> defaultEvents){
 
@@ -36,10 +36,8 @@ public class FirebaseMocker implements DatabaseInterface {
             usersAndPasswords.put(entry.getKey(), entry.getValue()) ;
         }
 
-        events = new ArrayList<>() ;
-        for(Event e: defaultEvents){
-            events.add(e) ;
-        }
+        events = new ArrayList<>();
+        events.addAll(defaultEvents);
     }
 
 
