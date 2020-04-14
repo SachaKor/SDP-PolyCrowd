@@ -16,6 +16,7 @@ import java.util.Map;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
+import androidx.test.rule.GrantPermissionRule;
 
 import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.firebase.FirebaseMocker;
@@ -39,6 +40,9 @@ public class EventPageDetailsActivityTest {
     }
 
     private static final String TAG = "EventPageDetailsTest";
+
+    @Rule public GrantPermissionRule permissionRule = GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
+
 
     @Rule
     // https://stackoverflow.com/questions/31388847/how-to-get-the-activity-reference-before-its-oncreate-gets-called-during-testing

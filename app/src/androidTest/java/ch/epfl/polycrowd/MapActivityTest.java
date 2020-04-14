@@ -4,6 +4,7 @@ import android.content.Intent;
 
 import androidx.test.espresso.Espresso;
 import androidx.test.rule.ActivityTestRule;
+import androidx.test.rule.GrantPermissionRule;
 
 
 import org.junit.Before;
@@ -46,6 +47,9 @@ public class MapActivityTest {
 
     private User u1 = new User("fake@user", "1", "fakeUser", 3);
     private User u2 = new User("eventOwner@user", "1", "eventOwner", 3);
+
+    @Rule public GrantPermissionRule permissionRule = GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
+
 
     @Rule
     public final ActivityTestRule<MapActivity> mActivityRule =

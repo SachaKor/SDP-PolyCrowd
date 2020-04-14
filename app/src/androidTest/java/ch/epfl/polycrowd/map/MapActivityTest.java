@@ -3,6 +3,7 @@ package ch.epfl.polycrowd.map;
 import android.content.Intent;
 
 import androidx.test.rule.ActivityTestRule;
+import androidx.test.rule.GrantPermissionRule;
 
 
 import org.junit.Before;
@@ -37,6 +38,9 @@ public class MapActivityTest {
     public void checkTestMockingEnabled(){
         assertTrue(PolyContext.isRunningTest());
     }
+
+    @Rule public GrantPermissionRule permissionRule = GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
+
 
     @Rule
     public final ActivityTestRule<MapActivity> mActivityRule =
