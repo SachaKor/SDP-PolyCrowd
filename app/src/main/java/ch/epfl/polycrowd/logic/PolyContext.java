@@ -69,7 +69,7 @@ public abstract class PolyContext extends Context {
 
 
 
-    /*
+
     // ----------- Use isRunningTest() to check if u are doing a test ------------------------
     // https://stackoverflow.com/questions/28550370/how-to-detect-whether-android-app-is-running-ui-test-with-espresso
     private static AtomicBoolean isRunningTest;
@@ -88,7 +88,7 @@ public abstract class PolyContext extends Context {
         }
 
         return isRunningTest.get ();
-    }*/
+    }
 
     // --------------------------------------------------------------------------------------
 

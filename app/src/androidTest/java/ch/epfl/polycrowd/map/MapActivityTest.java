@@ -10,7 +10,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 
-import ch.epfl.polycrowd.Event;
+import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
