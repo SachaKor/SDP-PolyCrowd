@@ -30,6 +30,7 @@ public class MapActivityTest {
     @Before
     public void startIntent() {
         Event ev = new Event();
+        ev.addOrganizer("fake_owner@email.net");
         PolyContext.setCurrentEvent(ev);
     }
 
@@ -59,7 +60,7 @@ public class MapActivityTest {
     public void setOrgainizerButtonsCorrectlyCreatesOrganizerButtons() {
 
         //create a new user
-        User user = new User("fake@email.nu", "fakeuid", "thefamousnani", 18);
+        User user = new User("fake_owner@email.net", "fakeuid_owner", "thefamousnani", 18);
         PolyContext.setCurrentUser(user);
 
         launchActivity();
@@ -72,7 +73,7 @@ public class MapActivityTest {
     public void setVisitorButtonsCorrectlyCreatesVisitorButtons() {
         //set the user to that of a visitor
         Event ev = new Event();
-        User user = new User("fake email", "fakeuid", "John", 18);
+        User user = new User("fake@email.net", "fakeuid", "John", 18);
         PolyContext.setCurrentUser(user);
         launchActivity();
         onView(withId(R.id.butRight)).check(matches(withText(containsString("EVENT DETAILS"))));
