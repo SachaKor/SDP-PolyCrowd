@@ -18,9 +18,6 @@ import java.util.Objects;
 
 import ch.epfl.polycrowd.EventPageDetailsActivity;
 import ch.epfl.polycrowd.R;
-import ch.epfl.polycrowd.authentification.ResetPasswordActivity;
-import ch.epfl.polycrowd.authentification.SignUpActivity;
-import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
@@ -33,14 +30,11 @@ public class LoginActivity extends AppCompatActivity {
     private static final String IS_ORGANIZER_INVITE = "isOrganizerInvite";
     private static final String EVENT_ID = "eventId";
 
-    private DatabaseInterface dbi;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        dbi = PolyContext.getDatabaseInterface();
     }
 
     private void toastPopup(String text) {
@@ -73,7 +67,7 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        dbi.signInWithEmailAndPassword(email, password, successHandler(), failureHandler());
+        PolyContext.getDatabaseInterface().signInWithEmailAndPassword(email, password, successHandler(), failureHandler());
     }
 
 
@@ -105,7 +99,7 @@ public class LoginActivity extends AppCompatActivity {
                         return;
                     }
                     Event event = PolyContext.getCurrentEvent();
-                    dbi.addOrganizerToEvent(event.getId(), organizerEmail, () -> {
+                    PolyContext.getDatabaseInterface().addOrganizerToEvent(event.getId(), organizerEmail, () -> {
                         Intent eventDetails = new Intent(c, EventPageDetailsActivity.class);
                         eventDetails.putExtra(EVENT_ID, event.getId());
                         startActivity(eventDetails);
