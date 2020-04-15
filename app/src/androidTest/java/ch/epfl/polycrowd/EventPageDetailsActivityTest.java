@@ -1,5 +1,6 @@
 package ch.epfl.polycrowd;
 
+import android.Manifest;
 import android.content.Intent;
 
 import org.junit.Before;
@@ -16,6 +17,7 @@ import java.util.Map;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
+import androidx.test.rule.GrantPermissionRule;
 
 import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.firebase.FirebaseMocker;
@@ -46,6 +48,11 @@ public class EventPageDetailsActivityTest {
             new ActivityTestRule<>(EventPageDetailsActivity.class, true /* Initial touch mode  */,
                     false /* Lazily launch activity */);
 
+
+    @Rule
+    public GrantPermissionRule grantFineLocation =
+            GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION);
+
     @Before
     public void startIntent() {
         List<Event> events;
@@ -55,7 +62,7 @@ public class EventPageDetailsActivityTest {
         Event ev = new Event("eventOwner", "testEvent", true, Event.EventType.CONCERT,
                 sDate, eDate, "testCalendar", "testDescription");
         ev.setId("1");
-        User user = new User("organizer@op.com", "1", "organizer", 3L);
+        User user = new User("organizer@op.com", "1", "organizer", 3);
         ev.addOrganizer(user.getEmail());
         usersAndPasswords = new HashMap<>();
         events = new ArrayList<>();

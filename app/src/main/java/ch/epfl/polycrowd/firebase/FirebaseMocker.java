@@ -26,8 +26,8 @@ import ch.epfl.polycrowd.logic.User;
 
 public class FirebaseMocker implements DatabaseInterface {
 
-    Map<User,String> usersAndPasswords ;
-    List<Event> events ;
+    private Map<User,String> usersAndPasswords ;
+    private List<Event> events ;
 
     public FirebaseMocker(Map<User, String> defaultUsersAndPasswords, List<Event> defaultEvents){
 
@@ -36,10 +36,8 @@ public class FirebaseMocker implements DatabaseInterface {
             usersAndPasswords.put(entry.getKey(), entry.getValue()) ;
         }
 
-        events = new ArrayList<>() ;
-        for(Event e: defaultEvents){
-            events.add(e) ;
-        }
+        events = new ArrayList<>();
+        events.addAll(defaultEvents);
     }
 
 
@@ -124,7 +122,7 @@ public class FirebaseMocker implements DatabaseInterface {
     }
 
     @Override
-    public void signUp(String username, String firstPassword, String email, Long age, UserHandler successHandler, UserHandler failureHandler) {
+    public void signUp(String username, String firstPassword, String email, Integer age, UserHandler successHandler, UserHandler failureHandler) {
         User newUser = new User(username, "1", email, age) ;
         //Search for existing user handled by calling class
         usersAndPasswords.put(newUser, firstPassword) ;
@@ -143,6 +141,11 @@ public class FirebaseMocker implements DatabaseInterface {
         if(PolyContext.getMockDynamicLink()) {
             handler.handle(link);
         }
+    }
+
+    @Override
+    public void addSOS(String userId, String eventId, String reason) {
+        //TODO ???
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)

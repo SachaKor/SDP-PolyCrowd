@@ -58,7 +58,7 @@ public class LoginActivityTest {
         // database mock setup
         List<Event> events = new ArrayList<>();
         Map<User, String> usersAndPasswords = new HashMap<>();
-        User user = new User(VALID_EMAIL, "1", "nani", 3L);
+        User user = new User(VALID_EMAIL, "1", "nani", 3);
         usersAndPasswords.put(user, VALID_PASSWORD);
         DatabaseInterface dbi = new FirebaseMocker(usersAndPasswords, events);
         PolyContext.setDbInterface(dbi);

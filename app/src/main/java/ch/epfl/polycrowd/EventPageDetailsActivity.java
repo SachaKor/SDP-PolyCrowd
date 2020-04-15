@@ -98,9 +98,9 @@ public class EventPageDetailsActivity extends AppCompatActivity {
             Log.e(TAG, "current event is null");
             return;
         }
-        DatabaseInterface dbi = PolyContext.getDatabaseInterface();
         eventId = curEvent.getId();
-        dbi.getEventById(eventId, event -> {
+        Event event = curEvent;
+       // PolyContext.getDatabaseInterface().getEventById(eventId, event -> {
             initRecyclerView(event.getOrganizers());
             setUpViews(event.getName(), event.getDescription());
             eventName = event.getName();
@@ -111,7 +111,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
                 Button inviteButton = findViewById(R.id.invite_organizer_button);
                 inviteButton.setVisibility(View.GONE);
             }
-        });
+        //});
     }
 
     /**

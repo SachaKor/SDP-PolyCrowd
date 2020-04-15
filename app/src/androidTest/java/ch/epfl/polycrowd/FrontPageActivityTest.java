@@ -44,9 +44,6 @@ public class FrontPageActivityTest {
     public final ActivityTestRule<FrontPageActivity> frontPageActivityRule =
             new ActivityTestRule<>(FrontPageActivity.class, true, false);
 
-    @Rule
-    public GrantPermissionRule grantCoarseLocation =
-            GrantPermissionRule.grant(Manifest.permission.ACCESS_COARSE_LOCATION);
 
     @Rule
     public GrantPermissionRule grantFineLocation =
@@ -54,8 +51,8 @@ public class FrontPageActivityTest {
 
     @Before
     public void setUp() {
-        Date    sDate = new Date(1649430344),
-                eDate = new Date(1649516744);
+        Date    sDate = new Date(2586946985399L),
+                eDate = new Date(2586946985399L);
 
         // events setup
         Event ev = new Event("eventOwner", "DEBUG EVENT", true, Event.EventType.CONCERT,
@@ -66,7 +63,7 @@ public class FrontPageActivityTest {
 
         // users setup
         Map<User, String> usersAndPasswords = new HashMap<>();
-        usersAndPasswords.put(new User("fake@user", "1", "fakeUser", 3L), "1234567");
+        usersAndPasswords.put(new User("fake@user", "1", "fakeUser", 3), "1234567");
 
         // database interface setup
         DatabaseInterface dbi = new FirebaseMocker(usersAndPasswords, events);
@@ -104,7 +101,7 @@ public class FrontPageActivityTest {
     public void testScrollingChangeTextAndDescription(){
         sleep();
         onView(withId(R.id.viewPager))
-                .perform(swipeRight() , swipeLeft());
+                .perform(swipeRight() , swipeLeft(),swipeLeft());
         sleep();
         onView(withId(R.id.eventTitle)).check(matches(withText(containsString("DEBUG EVENT"))));
         onView(withId(R.id.description)).check(matches(withText(containsString("this is only a debug event ... "))));

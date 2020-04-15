@@ -11,7 +11,7 @@ import static org.junit.Assert.assertEquals;
 
 public class UserTest {
 
-    private User testUser = new User("fake@user", "1", "fakeUser", 3L);
+    private User testUser = new User("fake@user", "1", "fakeUser", 3);
 
     @Test
     public void testGetRawData(){
@@ -20,7 +20,7 @@ public class UserTest {
 
     @Test
     public void testGetAge(){
-        assert(testUser.getAge() ==  3L);
+        assert(testUser.getAge() ==  3);
     }
 
     @Test
@@ -33,7 +33,7 @@ public class UserTest {
         Map<String, Object> data = new HashMap<>();
         data.put("username", "test");
         data.put("email" , "test@test");
-        data.put("age" , 3L);
+        data.put("age" , 3);
         data.put("uid" , "1");
 
         assertEquals(User.getFromDocument(data).getUid() , "1" );

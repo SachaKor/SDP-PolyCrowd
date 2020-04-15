@@ -13,7 +13,7 @@ public class PolyContextTest {
 
     @Test
     public void testUserSetAndGet(){
-        User u = new User("fake@fake.com", "1", "fake user", 100L);
+        User u = new User("fake@fake.com", "1", "fake user", 100);
         PolyContext.setCurrentUser(u);
         assertEquals(u, PolyContext.getCurrentUser());
     }

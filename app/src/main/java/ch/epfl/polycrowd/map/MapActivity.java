@@ -24,11 +24,12 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
 
+import ch.epfl.polycrowd.logic.Event;
+import ch.epfl.polycrowd.EmergencyActivity;
 import ch.epfl.polycrowd.EventPageDetailsActivity;
 import ch.epfl.polycrowd.authentification.LoginActivity;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.firebase.DatabaseInterface;
-import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 
@@ -95,7 +96,7 @@ public class MapActivity extends AppCompatActivity {
         if(user == null){
             status = level.GUEST;
         }else{
-            Log.d(TAG, TAG1 + " user email: " + user.getEmail());
+            Log.d("user_email_tag", TAG1 + " user email: " + user.getEmail());
             Event event = PolyContext.getCurrentEvent();
             List<String> organizerEmails = event.getOrganizers();
             if(organizerEmails.indexOf(user.getEmail()) == -1){
@@ -146,6 +147,7 @@ public class MapActivity extends AppCompatActivity {
     void createButtons() {
         Button buttonRight = findViewById(R.id.butRight);
         Button buttonLeft = findViewById(R.id.butLeft);
+        Button buttonSOS = findViewById(R.id.butSOS);
 
         Log.d(TAG, "user status: " + status);
 
@@ -155,6 +157,8 @@ public class MapActivity extends AppCompatActivity {
                 break;
             case VISITOR:
                 setVisitorButtons(buttonLeft, buttonRight);
+                buttonSOS.setVisibility(View.VISIBLE);
+                buttonSOS.setOnLongClickListener(v->clickSOS(v)); //TODO: hold for 5 seconds + animation ?
                 break;
             case ORGANISER:
                 setOrganiserButtons(buttonLeft, buttonRight);
@@ -209,6 +213,12 @@ public class MapActivity extends AppCompatActivity {
         Intent intent = new Intent(this, EventPageDetailsActivity.class);
         intent.putExtra("eventId", eventId);
         startActivity(intent);
+    }
+
+    public boolean clickSOS(View view) {
+        Intent intent = new Intent(this, EmergencyActivity.class);
+        startActivity(intent);
+        return true;
     }
 
 

@@ -1,9 +1,11 @@
 package ch.epfl.polycrowd;
 
+import android.Manifest;
 import android.content.Intent;
 
 import androidx.test.espresso.Espresso;
 import androidx.test.rule.ActivityTestRule;
+import androidx.test.rule.GrantPermissionRule;
 
 
 import org.junit.Before;
@@ -43,13 +45,17 @@ public class MapActivityTest {
         PolyContext.reset();
     }
 
-    private User u1 = new User("fake@user", "1", "fakeUser", 3L);
-    private User u2 = new User("eventOwner@user", "1", "eventOwner", 3L);
+    private User u1 = new User("fake@user", "1", "fakeUser", 3);
+    private User u2 = new User("eventOwner@user", "1", "eventOwner", 3);
 
     @Rule
     public final ActivityTestRule<MapActivity> mActivityRule =
             new ActivityTestRule<>(MapActivity.class);
 
+
+    @Rule
+    public GrantPermissionRule grantFineLocation =
+            GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION);
 
     @Before
     public void setUp() {
