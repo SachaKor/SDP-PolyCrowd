@@ -1,5 +1,6 @@
 package ch.epfl.polycrowd;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
@@ -15,6 +16,10 @@ public class ScheduleTest {
     private static final String CalURL = "https://calendar.google.com/calendar/ical/816h2e8601aniprqniv7a8tn90%40group.calendar.google.com/public/basic.ics";
 
 
+    @Before
+    public void init(){
+
+    }
 
     @Test
     public void testDownload(){
@@ -25,7 +30,7 @@ public class ScheduleTest {
     public void testGetAndParse(){
         Schedule s = new Schedule(CalURL ,new File("calendars/test.ics"));
         assertNotNull(s.getActivities());
-        assertEquals(s.getDownloadPath(), "calendars/test.ics");
+        assertEquals(s.getDownloadPath(), new File("calendars/test.ics").getAbsolutePath());
     }
 
     @Test
