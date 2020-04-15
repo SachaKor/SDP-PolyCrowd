@@ -16,16 +16,16 @@ import java.util.List;
 
 import ch.epfl.polycrowd.EventPageDetailsActivity;
 import ch.epfl.polycrowd.R;
-import ch.epfl.polycrowd.firebase.FirebaseInterface;
-import ch.epfl.polycrowd.logic.Model;
+import ch.epfl.polycrowd.firebase.DatabaseInterface;
+import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 
 public class UserEventListAdapter extends RecyclerView.Adapter<UserEventListHolder> {
 
     Context c ;
-    List<Model> models ;
+    List<Event> models ;
 
-    public UserEventListAdapter(Context c, List<Model> models){
+    public UserEventListAdapter(Context c, List<Event> models){
         this.c = c ;
         this.models = models ;
     }
@@ -42,18 +42,20 @@ public class UserEventListAdapter extends RecyclerView.Adapter<UserEventListHold
     @Override
     public void onBindViewHolder(@NonNull UserEventListHolder holder, int position) {
 
-        (holder).mTitle.setText(models.get(position).getTitle());
+        (holder).mTitle.setText(models.get(position).getName());
         (holder).mDes.setText(models.get(position).getDescription());
-        (holder).mImaeView.setImageResource(models.get(position).getImg());
+        //(holder).mImaeView.setImageResource(models.get(position).getImg());
+        //TODO For now, use hard-coded balelec image, until have custom images for each event
+        (holder).mImaeView.setImageResource(R.drawable.balelec);
 
         (holder).setItemClickListener( (v, p) -> {
 
-            Model clickedModel = models.get(p) ;
+            Event clickedModel = models.get(p) ;
             String eventId = clickedModel.getId() ;
 
-            FirebaseInterface fi = new FirebaseInterface(c);
+            DatabaseInterface dbi = PolyContext.getDatabaseInterface();
             try {
-                fi.getEventById(eventId,event -> {
+                dbi.getEventById(eventId,event -> {
                     PolyContext.setCurrentEvent(event);
                     Intent intent = new Intent(c, EventPageDetailsActivity.class) ;
                     c.startActivity(intent);

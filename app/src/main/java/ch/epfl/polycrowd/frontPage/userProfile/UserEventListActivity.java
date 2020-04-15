@@ -11,10 +11,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.epfl.polycrowd.Event;
+import ch.epfl.polycrowd.firebase.DatabaseInterface;
+import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
-import ch.epfl.polycrowd.logic.Model;
+import ch.epfl.polycrowd.logic.Activity;
+import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 
 public class UserEventListActivity  extends AppCompatActivity {
@@ -25,9 +27,9 @@ public class UserEventListActivity  extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private UserEventListAdapter mAdapter ;
 
-    private FirebaseInterface fi = new FirebaseInterface(this) ;
+    private DatabaseInterface fi = PolyContext.getDatabaseInterface();
 
-    private List<Model> models =  new ArrayList<Model>()  ;
+    private List<Activity> models =  new ArrayList<Activity>()  ;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -41,11 +43,11 @@ public class UserEventListActivity  extends AppCompatActivity {
         mAdapter = new UserEventListAdapter(this, models) ;
         mRecyclerView.setAdapter(mAdapter);
 
-        List<Model> models = getModelListFromFirebase() ;
+        List<Activity> models = getModelListFromFirebase() ;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private List<Model> getModelListFromFirebase(){
+    private List<Activity> getModelListFromFirebase(){
         User currUser = fi.getCurrentUser();
 
         //Use Firebase to get the events:
