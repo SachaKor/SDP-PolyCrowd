@@ -6,8 +6,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
-import ch.epfl.polycrowd.ItemClickListener;
 import ch.epfl.polycrowd.R;
 
 public class UserEventListHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
