@@ -14,7 +14,6 @@ import java.util.List;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.logic.Activity;
 import ch.epfl.polycrowd.logic.PolyContext;
-import ch.epfl.polycrowd.schedulePage.MyAdapter;
 
 public class ScheduleActivity extends AppCompatActivity {
 
@@ -33,9 +32,10 @@ public class ScheduleActivity extends AppCompatActivity {
 
             mRecyclerView = findViewById(R.id.recyclerView);
             mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-            if (PolyContext.getCurrentEvent() != null){
+            //if (PolyContext.getCurrentEvent() != null){
                 // PolyContext.getCurrentEvent().loadCalendar(getApplicationContext().getFilesDir());
-            }
+            //}
+            assert PolyContext.getCurrentEvent() != null;
             List<Activity> activities = PolyContext.getCurrentEvent().getActivities();
             if (activities!=null) {
                 myAdapter = new MyAdapter(this, activities);
