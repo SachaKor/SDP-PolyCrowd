@@ -91,7 +91,6 @@ public class Schedule {
             Calendar calendar = builder.build(fin);
             if(calendar == null)
                 throw new IOException("Null Calendar");
-
             for (CalendarComponent cc : calendar.getComponents()) {
                 if (cc.getName().equalsIgnoreCase("VEVENT")) {
                     Map<String, String> calendarEntry = new HashMap<>();
