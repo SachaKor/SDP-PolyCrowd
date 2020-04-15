@@ -85,11 +85,6 @@ public class Event {
         return this.getSchedule().getActivities();
     }
 
-    public Event setActivities(List<Activity> ac) {
-        if(this.getSchedule() == null) this.schedule = new Schedule();
-        this.schedule.setActivities(ac);
-        return this;
-    }
 
 
     private String getEventCalFilename(){
