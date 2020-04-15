@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
+import android.util.Pair;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -29,11 +30,11 @@ public class FirebaseMocker implements DatabaseInterface {
     private Map<User,String> usersAndPasswords ;
     private List<Event> events ;
 
-    public FirebaseMocker(Map<User, String> defaultUsersAndPasswords, List<Event> defaultEvents){
+    public FirebaseMocker(Map<String, Pair<User, String>> defaultMailAndUserPassPair, List<Event> defaultEvents){
 
         usersAndPasswords = new HashMap<>() ;
-        for(Map.Entry<User, String> entry: defaultUsersAndPasswords.entrySet()){
-            usersAndPasswords.put(entry.getKey(), entry.getValue()) ;
+        for(Map.Entry<String, Pair<User, String>> entry: defaultMailAndUserPassPair.entrySet()){
+            usersAndPasswords.put(entry.getValue().first, entry.getValue().second) ;
         }
 
         events = new ArrayList<>();
