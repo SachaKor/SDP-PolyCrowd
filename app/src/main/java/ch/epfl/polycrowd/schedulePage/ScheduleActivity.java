@@ -13,9 +13,7 @@ import java.util.List;
 
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.logic.Activity;
-import ch.epfl.polycrowd.logic.Model;
 import ch.epfl.polycrowd.logic.PolyContext;
-import ch.epfl.polycrowd.schedulePage.MyAdapter;
 
 public class ScheduleActivity extends AppCompatActivity {
 
