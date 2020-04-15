@@ -3,6 +3,7 @@ package ch.epfl.polycrowd.schedulePage;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -32,16 +33,14 @@ public class ScheduleActivity extends AppCompatActivity {
 
             mRecyclerView = findViewById(R.id.recyclerView);
             mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-            //if (PolyContext.getCurrentEvent() != null){
-                // PolyContext.getCurrentEvent().loadCalendar(getApplicationContext().getFilesDir());
-            //}
-            assert PolyContext.getCurrentEvent() != null;
-            List<Activity> activities = PolyContext.getCurrentEvent().getActivities();
-            if (activities!=null) {
-                myAdapter = new MyAdapter(this, activities);
-                mRecyclerView.setAdapter(myAdapter);
+            if (PolyContext.getCurrentEvent() != null && PolyContext.getCurrentEvent().getSchedule() == null) {
+                PolyContext.getCurrentEvent().loadCalendar(getApplicationContext().getFilesDir());
+                List<Activity> activities = PolyContext.getCurrentEvent().getActivities();
+                if (activities != null) {
+                    myAdapter = new MyAdapter(this, activities);
+                    mRecyclerView.setAdapter(myAdapter);
+                }
             }
-
     }
 
     private void giveHttpRequestPermissions(){

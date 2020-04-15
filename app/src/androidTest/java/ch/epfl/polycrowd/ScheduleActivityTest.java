@@ -2,11 +2,12 @@ package ch.epfl.polycrowd;
 
 
 import android.Manifest;
+import android.content.Intent;
 
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
 
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -18,30 +19,36 @@ import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static ch.epfl.polycrowd.AndroidTestHelper.sleep;
 
 public class ScheduleActivityTest {
 
-
-
-    @BeforeClass
-    public static void setUp() {
-        PolyContext.reset();
-
-        AndroidTestHelper.SetupMockDBI();
-    }
-
     @Rule
     public final ActivityTestRule<ScheduleActivity> mActivityRule =
-            new ActivityTestRule<>(ScheduleActivity.class);
+            new ActivityTestRule<>(ScheduleActivity.class, true, false);
 
     @Rule
     public GrantPermissionRule grantFineLocation =
             GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION);
 
 
+    @Before
+    public void setUp() {
+        PolyContext.reset();
+
+        AndroidTestHelper.SetupMockDBI();
+
+        Intent intent = new Intent();
+        mActivityRule.launchActivity(intent);
+    }
+
+
     @Test
     public void testScheduleLoading(){
+        ///PolyContext.getCurrentEvent().getActivities();
+        sleep(); sleep(); sleep(); sleep();
         onView(withText("thisActivityDoesNotExist")).check(doesNotExist());
         onView(withText("summary")).check(matches(isDisplayed()));
+        sleep(); sleep(); sleep(); sleep();
     }
 }
