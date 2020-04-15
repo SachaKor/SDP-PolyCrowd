@@ -9,7 +9,6 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
@@ -18,7 +17,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.SetOptions;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,7 +37,6 @@ public class FirebaseInterface implements DatabaseInterface {
     private FirebaseAuth cachedAuth;
     private DatabaseReference cachedDbRef;
     private FirebaseFirestore cachedFirestore;
-    private Context c;
 
     private static final String EVENTS = "polyevents";
     private static final String ORGANIZERS = "organizers";
@@ -156,7 +153,7 @@ public class FirebaseInterface implements DatabaseInterface {
 
     @Override
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public void getEventById(String eventId, EventHandler eventHandler) throws ParseException {
+    public void getEventById(String eventId, EventHandler eventHandler) {
         final String TAG1 = "getEventById";
             Log.d(TAG, TAG1 + " is not mocked");
             Log.d(TAG, TAG1 + " event id: " + eventId);
@@ -178,8 +175,7 @@ public class FirebaseInterface implements DatabaseInterface {
             // check if the organizer is already in the list
             getFirestoreInstance(false).collection(EVENTS)
                     .document(eventId).get().addOnSuccessListener(documentSnapshot -> {
-                List<String> organizers = new ArrayList<>();
-                organizers.addAll((List<String>)documentSnapshot.get(ORGANIZERS));
+                List<String> organizers = new ArrayList<>((List<String>) documentSnapshot.get(ORGANIZERS));
                 // if organizer is not in the list, add
                 if(!organizers.contains(organizerEmail)) {
                     Log.d(TAG, TAG1 + " adding organizer " + organizerEmail + " to the list");
@@ -188,12 +184,7 @@ public class FirebaseInterface implements DatabaseInterface {
                     data.put(ORGANIZERS, organizers);
                     getFirestoreInstance(false).collection(EVENTS).document(eventId)
                             .set(data, SetOptions.merge())
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    handler.handle();
-                                }
-                            })
+                            .addOnSuccessListener(e -> handler.handle())
                             .addOnFailureListener(e -> Log.w(TAG, "Error updating " + ORGANIZERS + " list"));
                 } else {
                     Log.d(TAG, TAG1 + " organizer " + organizerEmail + " already in the list");

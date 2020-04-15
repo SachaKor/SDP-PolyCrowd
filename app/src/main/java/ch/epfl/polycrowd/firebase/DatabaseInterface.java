@@ -14,14 +14,13 @@ import ch.epfl.polycrowd.firebase.handlers.EventHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
 import ch.epfl.polycrowd.firebase.handlers.OrganizersHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
-import ch.epfl.polycrowd.logic.User;
 
 public interface DatabaseInterface {
 
     /***
      * Utility function to check arguments' integrity
      */
-    public default void checkArgs(String... args){
+    default void checkArgs(String... args){
         for (String arg : args){
             if (arg == null) throw new IllegalArgumentException("Firebase query cannot be null");
             if (arg.length() == 0) throw new IllegalArgumentException("Firebase query cannot be empty");
