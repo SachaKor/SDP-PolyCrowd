@@ -2,6 +2,7 @@ package ch.epfl.polycrowd;
 
 import android.content.Intent;
 
+import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.rule.ActivityTestRule;
 
@@ -22,6 +23,8 @@ import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.longClick;
+import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isClickable;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -69,8 +72,6 @@ public class EmergencyActivityTest {
     public void testEmergency() {
         onView(withId(R.id.b0)).check(matches(withText(containsString("Accident"))));
         onView(withId(R.id.b1)).check(matches(withText(containsString("Lost Minor"))));
-
-        onView(withId(R.id.b0)).perform(ViewActions.longClick());
 
     }
 
