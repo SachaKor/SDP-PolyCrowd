@@ -116,7 +116,7 @@ public class FrontPageActivityTest {
 
     @Test
     public void TestRestart(){
-        // TODO
+        sleep();
     }
 
     @Test
