@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
@@ -116,20 +117,20 @@ public class FrontPageActivity extends AppCompatActivity {
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private List<Event> orderEvents(List<Event> es){
+    private List<Event> orderEvents(@NonNull List<Event> es){
         es.sort( (o1, o2) -> o1.getStart().compareTo(o2.getStart()));
         return es;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private List<Event> trimFinishedEvents(List<Event> es){
+    private List<Event> trimFinishedEvents(@NonNull List<Event> es){
         final Date now = new Date();
         es.removeIf(e -> (e.getEnd().compareTo(now)<=0));
         return es;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private List<Event> trimHiddenEvents(List<Event> es){
+    private List<Event> trimHiddenEvents(@NonNull List<Event> es){
         es.removeIf(e -> (!e.getPublic()));
         return es;
     }

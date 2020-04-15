@@ -16,13 +16,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".authentification.ResetPasswordActivity"></activity>
+        <activity android:name=".authentification.ResetPasswordActivity" />
         <activity android:name=".authentification.SignUpActivity" />
-        <activity
-            android:name=".EventPageDetailsActivity"
-            android:parentActivityName=".EventPageActivity" />
-        <activity
-            android:name="com.google.firebase.auth.internal.FederatedSignInActivity"
+        <activity android:name=".EventPageDetailsActivity" />
+        <activity android:name="com.google.firebase.auth.internal.FederatedSignInActivity"
             android:launchMode="standard"
             tools:replace="android:launchMode" />
         <activity android:name=".authentification.LoginActivity" />
@@ -53,9 +50,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".organizerInvite.OrganizerInviteActivity" />
-        <activity
-            android:name=".map.MapActivity"
-            android:label="@string/title_activity_main"></activity>
+        <activity android:name=".map.MapActivity"
+            android:label="@string/title_activity_main" />
         <activity android:name=".EmergencyActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
