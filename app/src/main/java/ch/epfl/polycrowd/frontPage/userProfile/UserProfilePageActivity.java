@@ -9,7 +9,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import ch.epfl.polycrowd.R;
-import ch.epfl.polycrowd.firebase.FirebaseInterface;
+import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 
 public class UserProfilePageActivity extends AppCompatActivity {
@@ -23,9 +23,7 @@ public class UserProfilePageActivity extends AppCompatActivity {
 
         View view = LayoutInflater.from(this).inflate(R.layout.activity_user_profile_page, null, false) ;
 
-        FirebaseInterface fi = new FirebaseInterface(this) ;
-        user = fi.getCurrentUser() ;
-
+        user = PolyContext.getCurrentUser() ;
 
         TextView usernameField = view.findViewById(R.id.usernameField) ;
         usernameField.setText(user.getName());

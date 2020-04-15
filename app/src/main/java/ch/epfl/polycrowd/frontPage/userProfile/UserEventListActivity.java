@@ -11,11 +11,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.logic.Event;
-import ch.epfl.polycrowd.R;
-import ch.epfl.polycrowd.firebase.FirebaseInterface;
-import ch.epfl.polycrowd.logic.Activity;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 
@@ -27,9 +25,9 @@ public class UserEventListActivity  extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private UserEventListAdapter mAdapter ;
 
-    private DatabaseInterface fi = PolyContext.getDatabaseInterface();
+    private DatabaseInterface dbi = PolyContext.getDatabaseInterface();
 
-    private List<Activity> models =  new ArrayList<Activity>()  ;
+    private List<Event> models =  new ArrayList<Event>()  ;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -43,16 +41,14 @@ public class UserEventListActivity  extends AppCompatActivity {
         mAdapter = new UserEventListAdapter(this, models) ;
         mRecyclerView.setAdapter(mAdapter);
 
-        List<Activity> models = getModelListFromFirebase() ;
+        List<Event> models = getModelListFromFirebase() ;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private List<Activity> getModelListFromFirebase(){
-        User currUser = fi.getCurrentUser();
-
+    private List<Event> getModelListFromFirebase(){
+        User currUser = PolyContext.getCurrentUser();
         //Use Firebase to get the events:
-        fi.getAllEvents(events -> {
-
+        dbi.getAllEvents(events -> {
             List<Event> filtered = new ArrayList<>() ;
             events.forEach( e -> {
                 if(e.getOrganizers().contains(currUser.getEmail())){
@@ -60,10 +56,10 @@ public class UserEventListActivity  extends AppCompatActivity {
                 } ;
             });
             //Filtered events to models
-            Event.toModels(filtered).forEach(e -> models.add(e));
+            //TODO, figure out an alternative way to do this that doesn't break it
+            filtered.forEach(e -> models.add(e));
             mAdapter.notifyDataSetChanged();
         });
-
         return models ;
     }
 
