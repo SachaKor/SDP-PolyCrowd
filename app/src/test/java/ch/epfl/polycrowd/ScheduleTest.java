@@ -1,35 +1,28 @@
 package ch.epfl.polycrowd;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
-import java.nio.file.Paths;
-import java.text.ParseException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 
-import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.Schedule;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 
 
 public class ScheduleTest {
+    public static final String CalURL = "https://calendar.google.com/calendar/ical/816h2e8601aniprqniv7a8tn90%40group.calendar.google.com/public/basic.ics";
 
 
 
     @Test
     public void testDownload(){
-        Schedule s = new Schedule("https://satellite.bar/agenda/ical.php",new File("calendars/test.ics"));
+        Schedule s = new Schedule(CalURL,new File("calendars/test.ics"));
         assert(s.getDownloadPath().contains("test.ics"));
     }
     @Test
     public void testGetAndParse(){
-        Schedule s = new Schedule("https://satellite.bar/agenda/ical.php",new File("calendars/test.ics"));
+        Schedule s = new Schedule(CalURL ,new File("calendars/test.ics"));
 
     }
     @Test
