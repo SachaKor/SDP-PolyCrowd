@@ -1,9 +1,5 @@
 package ch.epfl.polycrowd.frontPage;
 
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.viewpager.widget.ViewPager;
-
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -14,6 +10,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager.widget.ViewPager;
 
 import java.util.List;
 
@@ -130,6 +130,12 @@ public class FrontPageActivity extends AppCompatActivity {
     public void clickSignOut(View view) {
         fbInterface.signOut();
         recreate();
+    }
+
+    public void clickUserProfile(View view){
+        Intent intent = new Intent(this, ch.epfl.polycrowd.frontPage.UserProfilePageActivity.class) ;
+        startActivity(intent) ;
+
     }
 
 
