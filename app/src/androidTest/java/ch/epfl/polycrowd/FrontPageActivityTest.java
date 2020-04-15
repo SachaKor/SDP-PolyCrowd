@@ -29,6 +29,7 @@ import ch.epfl.polycrowd.logic.User;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.*;
+import static ch.epfl.polycrowd.AndroidTestHelper.sleep;
 import static org.hamcrest.core.StringContains.containsString;
 import static androidx.test.espresso.action.ViewActions.*;
 
@@ -51,23 +52,9 @@ public class FrontPageActivityTest {
 
     @Before
     public void setUp() {
-        Date    sDate = new Date(2586946985399L),
-                eDate = new Date(2586946985399L);
+        AndroidTestHelper.SetupMockDBI();
 
-        // events setup
-        Event ev = new Event("eventOwner", "DEBUG EVENT", true, Event.EventType.CONCERT,
-                sDate, eDate, "testCalendar", "this is only a debug event ... ");
-        ev.setId("1");
-        List<Event> events = new ArrayList<>();
-        events.add(ev);
-
-        // users setup
-        Map<User, String> usersAndPasswords = new HashMap<>();
-        usersAndPasswords.put(new User("fake@user", "1", "fakeUser", 3), "1234567");
-
-        // database interface setup
-        DatabaseInterface dbi = new FirebaseMocker(usersAndPasswords, events);
-        PolyContext.setDbInterface(dbi);
+        PolyContext.setCurrentUser(AndroidTestHelper.getUser());
 
         // launch the intent
         Intent intent = new Intent();
@@ -101,7 +88,13 @@ public class FrontPageActivityTest {
     public void testScrollingChangeTextAndDescription(){
         sleep();
         onView(withId(R.id.viewPager))
-                .perform(swipeRight() , swipeLeft(),swipeLeft());
+                .perform(swipeRight(), swipeLeft());
+        sleep();
+        onView(withId(R.id.eventTitle)).check(matches(withText(containsString("DEBUG EVENT"))));
+        onView(withId(R.id.description)).check(matches(withText(containsString("this is only a debug event ... "))));
+
+        onView(withId(R.id.viewPager))
+                .perform(swipeLeft());
         sleep();
         onView(withId(R.id.eventTitle)).check(matches(withText(containsString("DEBUG EVENT"))));
         onView(withId(R.id.description)).check(matches(withText(containsString("this is only a debug event ... "))));
@@ -142,14 +135,6 @@ public class FrontPageActivityTest {
         }
 
 
-    }
-
-    private void sleep(){
-        try{
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
 }
