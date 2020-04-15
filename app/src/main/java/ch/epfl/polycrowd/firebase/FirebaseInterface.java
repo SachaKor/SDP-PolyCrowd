@@ -9,6 +9,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -17,6 +18,9 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -39,11 +43,13 @@ public class FirebaseInterface implements DatabaseInterface {
     private FirebaseAuth cachedAuth;
     private DatabaseReference cachedDbRef;
     private FirebaseFirestore cachedFirestore;
+    private FirebaseStorage storage;
     private Context c;
 
     private static final String EVENTS = "polyevents";
     private static final String ORGANIZERS = "organizers";
     private static final String USERS = "users";
+    private static final String EVENT_IMAGES = "event-images";
     private static final String TAG = "FirebaseInterface";
 
     public FirebaseInterface(){}
@@ -67,6 +73,13 @@ public class FirebaseInterface implements DatabaseInterface {
             this.cachedFirestore = FirebaseFirestore.getInstance();
         }
         return this.cachedFirestore;
+    }
+
+    private FirebaseStorage getStorageInstance(boolean refresh) {
+        if(storage == null || refresh) {
+            storage = FirebaseStorage.getInstance();
+        }
+        return  storage;
     }
 
     @Override
@@ -264,4 +277,15 @@ public class FirebaseInterface implements DatabaseInterface {
                     })
                     .addOnFailureListener(e -> Log.w(TAG, "getDynamicLink:onFailure", e));
     }
+
+    @Override
+    public void uploadEventImage(String eventId, byte[] image) {
+        StorageReference imgRef = getStorageInstance(true).getReference().child(EVENT_IMAGES + "/" + eventId + ".jpg");
+        UploadTask uploadTask = imgRef.putBytes(image);
+        uploadTask.addOnSuccessListener(taskSnapshot ->
+                Log.d(TAG, "Image for the event " + eventId + " is successfully uploaded"))
+                .addOnFailureListener(e ->
+                        Log.w(TAG, "Error occurred during the upload of the image for the event " + eventId));
+    }
 }
+

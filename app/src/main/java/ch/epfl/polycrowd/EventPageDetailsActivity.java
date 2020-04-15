@@ -4,13 +4,14 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import ch.epfl.polycrowd.firebase.FirebaseInterface;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,22 +22,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.dynamiclinks.DynamicLink;
 import com.google.firebase.dynamiclinks.DynamicLink.SocialMetaTagParameters;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
+import java.io.ByteArrayOutputStream;
 import java.text.ParseException;
 import java.util.List;
 
 import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.logic.Event;
-import ch.epfl.polycrowd.logic.PolyContext;
-import ch.epfl.polycrowd.logic.User;
 import ch.epfl.polycrowd.organizerInvite.OrganizersAdapter;
 import ch.epfl.polycrowd.schedulePage.ScheduleActivity;
 
@@ -53,6 +49,8 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     private boolean currentUserIsOrganizer = false;
 
     public static final int PICK_IMAGE = 1;
+
+    private DatabaseInterface dbi;
 
     ImageView eventImg;
     ImageView editImg;
@@ -122,7 +120,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
             Log.e(TAG, "current event is null");
             return;
         }
-        DatabaseInterface dbi = PolyContext.getDatabaseInterface();
+        dbi = PolyContext.getDatabaseInterface();
         eventId = curEvent.getId();
         dbi.getEventById(eventId, event -> {
             initRecyclerView(event.getOrganizers());
@@ -171,6 +169,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
             if(requestCode == PICK_IMAGE) {
                 //data.getData returns the content URI for the selected Image
                 Uri selectedImage = data.getData();
+                Log.d(TAG, "selected image uri: " + selectedImage);
                 eventImg.setImageURI(selectedImage);
             }
     }
@@ -181,6 +180,11 @@ public class EventPageDetailsActivity extends AppCompatActivity {
 
     public void onSubmitChangesClicked(View view) {
         // TODO: update the db
+        Bitmap bitmap = ((BitmapDrawable) eventImg.getDrawable()).getBitmap();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] data = baos.toByteArray();
+        dbi.uploadEventImage(eventId, data);
         setEditing(false);
     }
 

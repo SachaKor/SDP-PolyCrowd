@@ -145,6 +145,11 @@ public class FirebaseMocker implements DatabaseInterface {
         }
     }
 
+    @Override
+    public void uploadEventImage(String eventId, byte[] image) {
+        // TODO
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     private Event findEventWithId(String eventId){
         boolean eventFound = false ;

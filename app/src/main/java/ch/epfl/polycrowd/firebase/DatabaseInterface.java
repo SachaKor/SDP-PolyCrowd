@@ -58,4 +58,6 @@ public interface DatabaseInterface {
     void resetPassword(String email, UserHandler successHandler, UserHandler failureHandler);
 
     void receiveDynamicLink(DynamicLinkHandler handler, Intent intent);
+
+    void uploadEventImage(String eventId, byte[] image);
 }
