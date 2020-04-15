@@ -41,9 +41,6 @@ public class EventPageDetailsActivityTest {
 
     private static final String TAG = "EventPageDetailsTest";
 
-    @Rule public GrantPermissionRule permissionRule = GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
-
-
     @Rule
     // https://stackoverflow.com/questions/31388847/how-to-get-the-activity-reference-before-its-oncreate-gets-called-during-testing
     public ActivityTestRule<EventPageDetailsActivity> mActivityRule =

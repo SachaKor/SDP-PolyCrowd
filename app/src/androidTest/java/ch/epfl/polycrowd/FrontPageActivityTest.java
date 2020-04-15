@@ -45,13 +45,17 @@ public class FrontPageActivityTest {
             new ActivityTestRule<>(FrontPageActivity.class, true, false);
 
     @Rule
+    public GrantPermissionRule grantCoarseLocation =
+            GrantPermissionRule.grant(Manifest.permission.ACCESS_COARSE_LOCATION);
+
+    @Rule
     public GrantPermissionRule grantFineLocation =
             GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION);
 
     @Before
     public void setUp() {
-        Date    sDate = new Date(2086903058204L),
-                eDate = new Date(2086903058204L);
+        Date    sDate = new Date(1586946985399L),
+                eDate = new Date(1586946985399L);
 
         // events setup
         Event ev = new Event("eventOwner", "DEBUG EVENT", true, Event.EventType.CONCERT,
@@ -71,7 +75,6 @@ public class FrontPageActivityTest {
         // launch the intent
         Intent intent = new Intent();
         frontPageActivityRule.launchActivity(intent);
-
     }
 
     @Test
