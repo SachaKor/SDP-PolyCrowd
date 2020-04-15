@@ -20,10 +20,8 @@ import com.google.firebase.dynamiclinks.DynamicLink;
 import com.google.firebase.dynamiclinks.DynamicLink.SocialMetaTagParameters;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
-import java.text.ParseException;
 import java.util.List;
 
-import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
@@ -45,11 +43,8 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_details_page);
-        try {
-            initEvent();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+
+        initEvent();
 
         final Button scheduleButton = findViewById(R.id.schedule);
         scheduleButton.setOnClickListener(v -> clickSchedule(v));
@@ -82,7 +77,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
 
     private void initRecyclerView(List<String> organizers) {
         RecyclerView recyclerView = findViewById(R.id.organizers_recycler_view);
-        OrganizersAdapter adapter = new OrganizersAdapter(organizers, this);
+        OrganizersAdapter adapter = new OrganizersAdapter(organizers);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
@@ -92,7 +87,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
      * Initializes the RecyclerView displaying the organizers
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void initEvent() throws ParseException {
+    private void initEvent() {
         Event curEvent = PolyContext.getCurrentEvent();
         if(curEvent == null) {
             Log.e(TAG, "current event is null");
