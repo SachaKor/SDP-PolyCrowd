@@ -44,9 +44,6 @@ public class FrontPageActivityTest {
     public final ActivityTestRule<FrontPageActivity> frontPageActivityRule =
             new ActivityTestRule<>(FrontPageActivity.class, true, false);
 
-    @Rule
-    public GrantPermissionRule grantCoarseLocation =
-            GrantPermissionRule.grant(Manifest.permission.ACCESS_COARSE_LOCATION);
 
     @Rule
     public GrantPermissionRule grantFineLocation =

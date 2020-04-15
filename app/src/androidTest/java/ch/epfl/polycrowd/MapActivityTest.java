@@ -1,9 +1,11 @@
 package ch.epfl.polycrowd;
 
+import android.Manifest;
 import android.content.Intent;
 
 import androidx.test.espresso.Espresso;
 import androidx.test.rule.ActivityTestRule;
+import androidx.test.rule.GrantPermissionRule;
 
 
 import org.junit.Before;
@@ -50,6 +52,10 @@ public class MapActivityTest {
     public final ActivityTestRule<MapActivity> mActivityRule =
             new ActivityTestRule<>(MapActivity.class);
 
+
+    @Rule
+    public GrantPermissionRule grantFineLocation =
+            GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION);
 
     @Before
     public void setUp() {

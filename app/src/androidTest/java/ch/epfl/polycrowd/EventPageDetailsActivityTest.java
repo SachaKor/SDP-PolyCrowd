@@ -1,5 +1,6 @@
 package ch.epfl.polycrowd;
 
+import android.Manifest;
 import android.content.Intent;
 
 import org.junit.Before;
@@ -46,6 +47,11 @@ public class EventPageDetailsActivityTest {
     public ActivityTestRule<EventPageDetailsActivity> mActivityRule =
             new ActivityTestRule<>(EventPageDetailsActivity.class, true /* Initial touch mode  */,
                     false /* Lazily launch activity */);
+
+
+    @Rule
+    public GrantPermissionRule grantFineLocation =
+            GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION);
 
     @Before
     public void startIntent() {
