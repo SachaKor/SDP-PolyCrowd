@@ -23,6 +23,7 @@ import ch.epfl.polycrowd.OrganizerInviteActivity;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
 import ch.epfl.polycrowd.firebase.handlers.DynamicLinkHandler;
+import ch.epfl.polycrowd.frontPage.userProfile.UserProfilePageActivity;
 import ch.epfl.polycrowd.logic.PolyContext;
 
 public class FrontPageActivity extends AppCompatActivity {
@@ -67,6 +68,9 @@ public class FrontPageActivity extends AppCompatActivity {
         if(PolyContext.getCurrentUser() != null){
             Button button = findViewById(R.id.button);
             button.setText("LOGOUT");
+            //Also show profile button
+            Button profileButton = findViewById(R.id.goToUserProfileButton) ;
+            profileButton.setVisibility(View.VISIBLE);
             button.setOnClickListener(v -> clickSignOut(v));
         }
     }
@@ -133,7 +137,7 @@ public class FrontPageActivity extends AppCompatActivity {
     }
 
     public void clickUserProfile(View view){
-        Intent intent = new Intent(this, ch.epfl.polycrowd.frontPage.UserProfilePageActivity.class) ;
+        Intent intent = new Intent(this, UserProfilePageActivity.class) ;
         startActivity(intent) ;
 
     }
