@@ -31,7 +31,6 @@ import static ch.epfl.polycrowd.logic.Event.stringToDate;
 public class EventEditActivity extends AppCompatActivity {
 
     private static final String TAG = "EventEditActivity";
-    private DatabaseInterface databaseInterface;
 
     private EditText eventName;
     private EditText startDate, endDate;
@@ -43,7 +42,6 @@ public class EventEditActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_edit);
-        this.databaseInterface = PolyContext.getDatabaseInterface();
         setUpViews();
     }
 
@@ -129,13 +127,13 @@ public class EventEditActivity extends AppCompatActivity {
         Event ev = new Event(user.getUid(), evName.getText().toString(), isPublic,
                 Event.EventType.valueOf(type.toUpperCase()),
                 startDate, endDate,
-                "url", "", organizers);
-//        Map<String, Object> event = ev.toHashMap();
+                calendarUrl.getText().toString(), "", organizers);
+        // Map<String, Object> event = ev.toHashMap();
         // add event to the database
         Context c = this ;
         EventHandler successHandler = e -> { PolyContext.setCurrentEvent(e); Toast.makeText(c, "Event added", Toast.LENGTH_LONG).show();};
         EventHandler failureHandler = e -> Toast.makeText(c, "Error occurred while adding the event", Toast.LENGTH_LONG).show();
-        databaseInterface.addEvent(ev,successHandler , failureHandler );
+        PolyContext.getDatabaseInterface().addEvent(ev,successHandler , failureHandler );
 
         Intent intent = new Intent(this, MapActivity.class);
         startActivity(intent);
