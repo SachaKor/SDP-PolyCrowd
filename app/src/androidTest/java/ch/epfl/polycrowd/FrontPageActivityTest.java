@@ -114,10 +114,10 @@ public class FrontPageActivityTest {
         onView(withId(R.id.map)).check(matches(isDisplayed()));
     }
 
-    @Test
+    /*@Test
     public void TestRestart(){
         sleep();
-    }
+    }*/
 
     @Test
     public void testClickSignInSignOut(){
