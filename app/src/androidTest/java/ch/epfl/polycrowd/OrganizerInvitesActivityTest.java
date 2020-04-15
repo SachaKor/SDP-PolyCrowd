@@ -1,27 +1,35 @@
 package ch.epfl.polycrowd;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import androidx.test.rule.ActivityTestRule;
+
 import ch.epfl.polycrowd.logic.PolyContext;
+import ch.epfl.polycrowd.organizerInvite.OrganizerInviteActivity;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.junit.Assert.assertEquals;
 
 public class OrganizerInvitesActivityTest {
+
+    @BeforeClass
+    public static void setUpBeforeActivityLaunch(){
+        PolyContext.reset();
+    }
+
     @Rule
     public final ActivityTestRule<OrganizerInviteActivity> mActivityRule =
             new ActivityTestRule<>(OrganizerInviteActivity.class);
 
     @Before
     public void setUp() {
-        PolyContext.setCurrentEvent(new Event());
+        AndroidTestHelper.SetupMockDBI();
     }
 
     @Test

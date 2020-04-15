@@ -17,21 +17,17 @@
         android:theme="@style/AppTheme">
         <activity android:name=".frontPage.userProfile.UserProfilePageActivity"></activity>
         <activity android:name=".frontPage.userProfile.UserEventListActivity"/>
-        <activity android:name=".ResetPasswordActivity" />
-        <activity android:name=".SignUpActivity" />
-        <activity
-            android:name=".EventPageActivity"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
-        <activity
-            android:name=".EventPageDetailsActivity"
-            android:parentActivityName=".EventPageActivity" />
-        <activity
-            android:name="com.google.firebase.auth.internal.FederatedSignInActivity"
+        <activity android:name=".authentification.ResetPasswordActivity" />
+        <activity android:name=".authentification.SignUpActivity" />
+        <activity android:name=".EventPageDetailsActivity" />
+        <activity android:name="com.google.firebase.auth.internal.FederatedSignInActivity"
             android:launchMode="standard"
             tools:replace="android:launchMode" />
-        <activity android:name=".LoginActivity" />
+        <activity android:name=".authentification.LoginActivity" />
         <activity android:name=".EventEditActivity" />
-        <activity android:name=".ScheduleActivity" />
+        <activity android:name=".schedulePage.ScheduleActivity" />
+
+>>>>>>> master
         <activity
             android:name=".frontPage.FrontPageActivity"
             android:label="@string/title_activity_main">
@@ -54,10 +50,10 @@
                     android:scheme="http" />
             </intent-filter>
         </activity>
-        <activity android:name=".OrganizerInviteActivity" />
-        <activity
-            android:name=".map.MapActivity"
+        <activity android:name=".organizerInvite.OrganizerInviteActivity" />
+        <activity android:name=".map.MapActivity"
             android:label="@string/title_activity_main" />
+        <activity android:name=".EmergencyActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").

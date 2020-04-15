@@ -1,4 +1,4 @@
-package ch.epfl.polycrowd;
+package ch.epfl.polycrowd.logic;
 
 import android.os.Build;
 
@@ -17,8 +17,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
-import ch.epfl.polycrowd.logic.Model;
-import ch.epfl.polycrowd.logic.Schedule;
+import ch.epfl.polycrowd.R;
+
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class Event {
@@ -29,7 +29,7 @@ public class Event {
         FESTIVAL, CONCERT, CONVENTION, OTHER
     }
 
-    static final SimpleDateFormat dtFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.ENGLISH);
+    public static final SimpleDateFormat dtFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.ENGLISH);
     private final String owner;
     private String name;
     private Boolean isPublic;
@@ -50,6 +50,7 @@ public class Event {
                  String calendar, String description){
         if(owner == null || name == null || type == null || start == null || end == null || calendar == null)
             throw new IllegalArgumentException("Invalid Argument for Event Constructor");
+
         this.owner = owner;
         this.name = name;
         this.isPublic = isPublic;
@@ -92,17 +93,16 @@ public class Event {
         this.isPublic = true;
         this.type = EventType.OTHER;
         try {
-            this.start = dtFormat.parse("01-08-2018 00:00");
-            this.end = dtFormat.parse("02-08-2018 01:00");
+            this.start = dtFormat.parse("01-08-2020 00:00");
+            this.end = dtFormat.parse("02-08-2020 01:00");
         } catch (ParseException e){
             this.start = null;
             this.end = null;
         }
-        this.calendar = "url";
+        this.calendar = "";
         this.description = "this is only a debug event ... ";
         this.image = R.drawable.balelec;
         this.organizers = new ArrayList<>();
-        organizers.add("fake@email.nu");
         this.schedule = new Schedule();
     }
 
@@ -116,9 +116,20 @@ public class Event {
     }*/
 
 
-    // ------------------------------------------------------------------------------------------
 
 
+
+
+    public List<Activity> getActivities() {
+        if(this.getSchedule() == null) return null;
+        return this.getSchedule().getActivities();
+    }
+
+    public Event setActivities(List<Activity> ac) {
+        if(this.getSchedule() == null) this.schedule = new Schedule();
+        this.schedule.setActivities(ac);
+        return this;
+    }
 
 
     private String getEventCalFilename(){
@@ -153,8 +164,6 @@ public class Event {
             this.description = description;
         }
     }
-
-
 
 
     public String getOwner() {
@@ -217,10 +226,8 @@ public class Event {
 
     // -------------------------------------------------------------------------------
 
-
     public Map<String, Object> toHashMap(){
         Map<String, Object> event = new HashMap<>();
-
         event.put("owner", this.owner);
         event.put("name", this.name);
         event.put("isPublic", this.isPublic.toString());
@@ -273,13 +280,7 @@ public class Event {
         return this.schedule;
     }
 
-    public Model getModel(){
-        Model m = new Model() ;
-        m.setTitle(getName());
-        m.setDescription(getDescription());
-        m.setId(this.getId());
-        return m;
-    }
+
     public static String dateToString(Date d, SimpleDateFormat dtf){
         return dtf.format(d);
     }
@@ -287,15 +288,9 @@ public class Event {
         try {
             return dtf.parse(s);
         } catch (ParseException ex) {
-            ex.printStackTrace();
+            // ...
         }
         return null;
     }
-    public static List<Model> toModels(List<Event> activities){
-        List<Model> models = new ArrayList<>();
-        for (Event e : activities){
-            models.add(e.getModel());
-        }
-        return models;
-    }
+
 }

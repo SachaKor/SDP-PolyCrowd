@@ -29,7 +29,7 @@ public class Schedule {
 
 
 
-    private final List<Activity> activities;
+    private List<Activity> activities;
     private String downloadPath;
 
     // ------- Schedule for Testing --------------------------------------
@@ -60,7 +60,7 @@ public class Schedule {
             return null;
         }
         else if ( !url.contains("://") ){
-            throw new IllegalArgumentException("This is not a url");
+            throw new IllegalArgumentException(url +" is not a url");
         }
         try {
             URL downloadUrl = new URL(url.replace("webcal://","https://"));
@@ -123,5 +123,7 @@ public class Schedule {
     public List<Activity> getActivities(){
         return this.activities;
     }
+
+    public void setActivities(List<Activity> a) { this.activities = a; }
 
 }

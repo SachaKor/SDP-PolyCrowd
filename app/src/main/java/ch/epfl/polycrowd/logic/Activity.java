@@ -16,6 +16,17 @@ public class Activity {
     private String location, uid, summary, description, organizer;
     private Date start,end;
 
+    public Activity(String location , String uid ,String summary ,
+                    String description , String organizer , Date start , Date end) {
+        this.location = location;
+        this.uid = uid;
+        this.summary = summary;
+        this.description = description;
+        this.organizer = organizer;
+        this.start = start;
+        this.end = end;
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Activity (Map<String,String> data)  {
         this.location = data.get("LOCATION");
@@ -59,14 +70,6 @@ public class Activity {
         return this.end;
     }
 
-
-    public Model getModel(){
-        Model m = new Model() ;
-        m.setTitle(getSummary());
-        m.setDescription(getStart()+"-"+getEnd()+'\n'+getLocation()+'\n'+getDescription());
-        m.setId("");
-        return m;
-    }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override

@@ -2,7 +2,6 @@ package ch.epfl.polycrowd.frontPage;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -11,19 +10,26 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+
+import androidx.annotation.NonNull;
+
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
+
+import java.util.Date;
+
 import java.util.List;
 
-import ch.epfl.polycrowd.Event;
-import ch.epfl.polycrowd.LoginActivity;
-import ch.epfl.polycrowd.OrganizerInviteActivity;
+import ch.epfl.polycrowd.authentification.LoginActivity;
+import ch.epfl.polycrowd.organizerInvite.OrganizerInviteActivity;
 import ch.epfl.polycrowd.R;
-import ch.epfl.polycrowd.firebase.FirebaseInterface;
-import ch.epfl.polycrowd.firebase.handlers.DynamicLinkHandler;
+
 import ch.epfl.polycrowd.frontPage.userProfile.UserProfilePageActivity;
+
+import ch.epfl.polycrowd.logic.Event;
+
 import ch.epfl.polycrowd.logic.PolyContext;
 
 public class FrontPageActivity extends AppCompatActivity {
@@ -33,7 +39,6 @@ public class FrontPageActivity extends AppCompatActivity {
     ViewPager viewPager;
     EventPagerAdaptor adapter;
 
-    private FirebaseInterface fbInterface;
 
     // ------------- ON CREATE ----------------------------------------------------------
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -41,7 +46,6 @@ public class FrontPageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_front_page);
-        this.fbInterface = new FirebaseInterface(this);
 
         setEventModels();
 
@@ -85,10 +89,12 @@ public class FrontPageActivity extends AppCompatActivity {
         //For Connection permissions
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
-        fbInterface.getAllEvents(this::setAdapter);
+        PolyContext.getDatabaseInterface().getAllEvents(v->setAdapter(v));
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
     void setAdapter(List<Event> events){
-        adapter = new EventPagerAdaptor(events, this);
+        adapter = new EventPagerAdaptor(orderEvents(trimFinishedEvents(trimHiddenEvents(events))), this);
         setViewPager(events);
     }
     // called by setAdapter()
@@ -100,7 +106,7 @@ public class FrontPageActivity extends AppCompatActivity {
         TextView description = findViewById(R.id.description);
         TextView eventTitle = findViewById(R.id.eventTitle);
 
-        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -121,7 +127,24 @@ public class FrontPageActivity extends AppCompatActivity {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private List<Event> orderEvents(@NonNull List<Event> es){
+        es.sort( (o1, o2) -> o1.getStart().compareTo(o2.getStart()));
+        return es;
+    }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private List<Event> trimFinishedEvents(@NonNull List<Event> es){
+        final Date now = new Date();
+        es.removeIf(e -> (e.getEnd().compareTo(now)<=0));
+        return es;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private List<Event> trimHiddenEvents(@NonNull List<Event> es){
+        es.removeIf(e -> (!e.getPublic()));
+        return es;
+    }
 
 
     // --------- Button Activity ----------------------------------------------------------
@@ -132,7 +155,8 @@ public class FrontPageActivity extends AppCompatActivity {
     }
 
     public void clickSignOut(View view) {
-        fbInterface.signOut();
+        PolyContext.getDatabaseInterface().signOut();
+        PolyContext.setCurrentUser(null);
         recreate();
     }
 
@@ -147,21 +171,18 @@ public class FrontPageActivity extends AppCompatActivity {
 
     private void receiveDynamicLink() {
         Context c = this;
-        fbInterface.receiveDynamicLink(new DynamicLinkHandler() {
-            @Override
-            public void handle(Uri deepLink) {
-                Log.d(TAG, "Deep link URL:\n" + deepLink.toString());
-                String lastPathSegment = deepLink.getLastPathSegment();
-                Log.d(TAG, " last segment: " + lastPathSegment);
-                if(lastPathSegment != null && lastPathSegment.equals("invite")) {
-                    String eventId = deepLink.getQueryParameter("eventId"),
-                            eventName = deepLink.getQueryParameter("eventName");
-                    if (eventId != null && eventName != null) {
-                        Intent intent = new Intent(c, OrganizerInviteActivity.class);
-                        intent.putExtra("eventId", eventId);
-                        intent.putExtra("eventName", eventName);
-                        startActivity(intent);
-                    }
+        PolyContext.getDatabaseInterface().receiveDynamicLink(deepLink -> {
+            Log.d(TAG, "Deep link URL:\n" + deepLink.toString());
+            String lastPathSegment = deepLink.getLastPathSegment();
+            Log.d(TAG, " last segment: " + lastPathSegment);
+            if(lastPathSegment != null && lastPathSegment.equals("invite")) {
+                String eventId = deepLink.getQueryParameter("eventId"),
+                        eventName = deepLink.getQueryParameter("eventName");
+                if (eventId != null && eventName != null) {
+                    Intent intent = new Intent(c, OrganizerInviteActivity.class);
+                    intent.putExtra("eventId", eventId);
+                    intent.putExtra("eventName", eventName);
+                    startActivity(intent);
                 }
             }
         }, getIntent());
