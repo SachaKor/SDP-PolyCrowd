@@ -28,7 +28,10 @@ public abstract class AndroidTestHelper {
 
     private static final String OwnerEmail = "OWNER@h.net";
     private static final String UserEmail = "USER@h.net";
+    private static final String NewUserEmail = "NEW_USER@h.net";
     private static final String OrganiserEmail = "ORGA@h.net";
+
+    private static final User newUser = new User(NewUserEmail, "1", "new_fakeUser", 20);
 
 
     private static final List<Event> ev = SetupEvents();
@@ -45,7 +48,7 @@ public abstract class AndroidTestHelper {
 
                         oldStartDate, oldEndDate, "https://thisIsAUrl", "old debug event ... "),
                 new Event(OwnerEmail, "DEBUG EVENT", true, FESTIVAL,
-                        newStartDate, newEndDate, "https://thisIsAUrl", "current debug event ... "),
+                        newStartDate, newEndDate, "https://thisIsAUrl", "this is only a debug event ... "),
                 new Event(OwnerEmail, "HIDDEN EVENT", false, FESTIVAL,
                         newStartDate, newEndDate, "https://thisIsAUrl", "hidden debug event ... ")};
 
@@ -89,6 +92,10 @@ public abstract class AndroidTestHelper {
 
     static User getUser(){
         return getUser(UserEmail);
+    }
+
+    static User getNewUser(){
+        return newUser;
     }
 
     static String getUserPass(){
