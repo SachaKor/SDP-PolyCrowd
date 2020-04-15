@@ -51,8 +51,8 @@ public class FrontPageActivityTest {
 
     @Before
     public void setUp() {
-        Date    sDate = new Date(1586946985399L),
-                eDate = new Date(1586946985399L);
+        Date    sDate = new Date(2586946985399L),
+                eDate = new Date(2586946985399L);
 
         // events setup
         Event ev = new Event("eventOwner", "DEBUG EVENT", true, Event.EventType.CONCERT,
