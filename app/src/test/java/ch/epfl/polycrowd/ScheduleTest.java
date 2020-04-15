@@ -1,17 +1,18 @@
 package ch.epfl.polycrowd;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
 
 import ch.epfl.polycrowd.logic.Schedule;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 
 
 public class ScheduleTest {
-    public static final String CalURL = "https://calendar.google.com/calendar/ical/816h2e8601aniprqniv7a8tn90%40group.calendar.google.com/public/basic.ics";
+    private static final String CalURL = "https://calendar.google.com/calendar/ical/816h2e8601aniprqniv7a8tn90%40group.calendar.google.com/public/basic.ics";
 
 
 
@@ -23,20 +24,15 @@ public class ScheduleTest {
     @Test
     public void testGetAndParse(){
         Schedule s = new Schedule(CalURL ,new File("calendars/test.ics"));
+        assertNotNull(s.getActivities());
+        assertEquals(s.getDownloadPath(), "calendars/test.ics");
+    }
 
-    }
-    @Test
-    public void testScheduleWithNullString(){
-        assertThrows(IllegalArgumentException.class, () -> new Schedule(null, new File("")));
-    }
     @Test
     public void testScheduleWithEmptyUrl(){
         new Schedule("", new File(""));
     }
-    @Test
-    public void testScheduleNullFile(){
-        assertThrows(IllegalArgumentException.class, () ->new Schedule("", null));
-    }
+
     @Test
     public void testScheduleWithNonUrlString(){
 //        PolyContext.setCurrentEvent( new Event(1,
