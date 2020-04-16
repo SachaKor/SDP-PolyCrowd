@@ -11,6 +11,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
@@ -42,8 +43,6 @@ public class EventPageDetailsActivity extends AppCompatActivity {
 
     private static final String TAG = "EventPageDetails";
 
-    private String eventId;
-
     private AlertDialog linkDialog;
 
     private boolean currentUserIsOrganizer = false;
@@ -51,6 +50,8 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     public static final int PICK_IMAGE = 1;
 
     private DatabaseInterface dbi;
+
+    private Event curEvent;
 
     ImageView eventImg;
     ImageView editImg;
@@ -89,13 +90,46 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         }
     }
 
+//    @RequiresApi(api = Build.VERSION_CODES.O)
+//    @Override
+//    public void onStart() {
+//        super.onStart();
+//        try {
+//            initEvent();
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        }
+//    }
+//
+//    @RequiresApi(api = Build.VERSION_CODES.O)
+//    @Override
+//    public void onRestart() {
+//        super.onRestart();
+//        try {
+//            initEvent();
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void setUpViews(String title, String description) {
         TextView eventTitle = findViewById(R.id.event_details_title);
         TextView eventDescription = findViewById(R.id.event_details_description);
         eventImg = findViewById(R.id.event_details_img);
         eventTitle.setText(title);
         eventDescription.setText(description);
-        eventImg.setImageResource(R.drawable.balelec);
+        String imgUri = curEvent.getImageUri();
+        Log.d(TAG, "event img uri: " + imgUri);
+        if(null != imgUri) {
+            dbi.downloadEventImage(curEvent, image -> {
+                Bitmap bmp = BitmapFactory.decodeByteArray(image, 0, image.length);
+                eventImg.setImageBitmap(Bitmap.createScaledBitmap(bmp, eventImg.getWidth(),
+                        eventImg.getHeight(), false));
+            });
+        } else {
+            eventImg.setImageResource(R.drawable.balelec);
+        }
         editImg = findViewById(R.id.event_details_edit_img);
         inviteOrganizerButton = findViewById(R.id.invite_organizer_button);
         submitChanges = findViewById(R.id.event_details_submit);
@@ -115,14 +149,15 @@ public class EventPageDetailsActivity extends AppCompatActivity {
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void initEvent() throws ParseException {
-        Event curEvent = PolyContext.getCurrentEvent();
+        curEvent = PolyContext.getCurrentEvent();
         if(curEvent == null) {
             Log.e(TAG, "current event is null");
             return;
         }
         dbi = PolyContext.getDatabaseInterface();
-        eventId = curEvent.getId();
+        String eventId = curEvent.getId();
         dbi.getEventById(eventId, event -> {
+            PolyContext.setCurrentEvent(event); // update the data
             initRecyclerView(event.getOrganizers());
             setUpViews(event.getName(), event.getDescription());
             eventName = event.getName();
@@ -178,14 +213,26 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         setEditing(true);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void onSubmitChangesClicked(View view) {
         // TODO: update the db
         Bitmap bitmap = ((BitmapDrawable) eventImg.getDrawable()).getBitmap();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] data = baos.toByteArray();
-        dbi.uploadEventImage(eventId, data);
-        setEditing(false);
+        // upload the image to the storage
+        // update the current event
+        // update the event in the database
+        dbi.uploadEventImage(curEvent, data, event -> {
+            dbi.updateEvent(curEvent, event1 -> {
+                try {
+                    initEvent();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                setEditing(false);
+            });
+        });
     }
 
 
@@ -194,11 +241,12 @@ public class EventPageDetailsActivity extends AppCompatActivity {
      * - Generates the dynamic link for the organizer invite
      * - Displays the link in the dialog
      */
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void inviteLinkClicked(View view) {
         // build the invite dynamic link
         // TODO: replace by short dynamic link
         DynamicLink inviteLink = FirebaseDynamicLinks.getInstance().createDynamicLink()
-                .setLink(Uri.parse("https://www.example.com/invite/?eventId=" + eventId
+                .setLink(Uri.parse("https://www.example.com/invite/?eventId=" + curEvent.getId()
                         + "&eventName=" + eventName))
                 .setDomainUriPrefix("https://polycrowd.page.link")
                 .setAndroidParameters(new DynamicLink.AndroidParameters.Builder().build())

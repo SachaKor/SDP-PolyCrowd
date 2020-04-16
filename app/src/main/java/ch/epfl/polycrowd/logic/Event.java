@@ -40,6 +40,7 @@ public class Event {
     private String description;
     private String id;
     private int image;
+    private String imageUri;
     private Schedule schedule;
     private List<String> organizers;
 
@@ -50,7 +51,6 @@ public class Event {
                  String calendar, String description){
         if(owner == null || name == null || type == null || start == null || end == null || calendar == null)
             throw new IllegalArgumentException("Invalid Argument for Event Constructor");
-
         this.owner = owner;
         this.name = name;
         this.isPublic = isPublic;
@@ -191,6 +191,14 @@ public class Event {
         this.calendar = calendar;
     }
 
+    public String getImageUri() {
+        return imageUri;
+    }
+
+    public void setImageUri(String imageUri) {
+        this.imageUri = imageUri;
+    }
+
 
     // -------------------------------------------------------------------------------
 
@@ -207,6 +215,7 @@ public class Event {
         event.put("calendar", this.calendar);
         event.put("description", this.description);
         event.put("organizers", organizers);
+        event.put("imageUri", imageUri);
         return event;
     }
 
@@ -225,7 +234,10 @@ public class Event {
         EventType type = EventType.valueOf(Objects.requireNonNull(data.get("type")).toString().toUpperCase());
         String desc = data.get("description").toString();
         List<String> organizers = new ArrayList<>((List<String>) Objects.requireNonNull(data.get("organizers")));
-        return new Event(owner, name, isPublic, type, start, end, calendar, desc, organizers);
+        String imageUri = (String) data.get("imageUri"); // can be null but this is ok
+        Event result = new Event(owner, name, isPublic, type, start, end, calendar, desc, organizers);
+        result.setImageUri(imageUri);
+        return result;
     }
 
     public void addOrganizer(String organizer) {

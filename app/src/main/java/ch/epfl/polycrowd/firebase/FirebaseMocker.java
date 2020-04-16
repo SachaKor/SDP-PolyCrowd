@@ -18,6 +18,7 @@ import java.util.Map;
 import ch.epfl.polycrowd.firebase.handlers.DynamicLinkHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
+import ch.epfl.polycrowd.firebase.handlers.ImageHandler;
 import ch.epfl.polycrowd.firebase.handlers.OrganizersHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
@@ -146,7 +147,17 @@ public class FirebaseMocker implements DatabaseInterface {
     }
 
     @Override
-    public void uploadEventImage(String eventId, byte[] image) {
+    public void uploadEventImage(Event event, byte[] image, EventHandler handler) {
+        // TODO
+    }
+
+    @Override
+    public void downloadEventImage(Event event, ImageHandler handler) {
+        // TODO
+    }
+
+    @Override
+    public void updateEvent(Event event, EventHandler eventHandler) {
         // TODO
     }
 

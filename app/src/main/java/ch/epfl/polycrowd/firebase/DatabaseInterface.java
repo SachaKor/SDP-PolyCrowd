@@ -8,6 +8,7 @@ import androidx.annotation.RequiresApi;
 
 import java.text.ParseException;
 
+import ch.epfl.polycrowd.firebase.handlers.ImageHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.firebase.handlers.DynamicLinkHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventHandler;
@@ -59,5 +60,9 @@ public interface DatabaseInterface {
 
     void receiveDynamicLink(DynamicLinkHandler handler, Intent intent);
 
-    void uploadEventImage(String eventId, byte[] image);
+    void uploadEventImage(Event event, byte[] image, EventHandler handler);
+
+    void downloadEventImage(Event event, ImageHandler handler);
+
+    void updateEvent(Event event, EventHandler eventHandler);
 }

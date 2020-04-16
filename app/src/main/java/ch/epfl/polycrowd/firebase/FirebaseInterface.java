@@ -33,6 +33,7 @@ import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.firebase.handlers.DynamicLinkHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
+import ch.epfl.polycrowd.firebase.handlers.ImageHandler;
 import ch.epfl.polycrowd.firebase.handlers.OrganizersHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
@@ -155,7 +156,7 @@ public class FirebaseInterface implements DatabaseInterface {
     @Override
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void addEvent(Event event, EventHandler successHandler, EventHandler failureHandler){
-            getFirestoreInstance(false).collection("polyevents")
+            getFirestoreInstance(false).collection(EVENTS)
                     .add(event.toHashMap())
                     .addOnSuccessListener(documentReference -> {
                         Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
@@ -169,7 +170,7 @@ public class FirebaseInterface implements DatabaseInterface {
 
     @Override
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public void getEventById(String eventId, EventHandler eventHandler) throws ParseException {
+    public void getEventById(String eventId, EventHandler eventHandler) {
         final String TAG1 = "getEventById";
             Log.d(TAG, TAG1 + " is not mocked");
             Log.d(TAG, TAG1 + " event id: " + eventId);
@@ -278,14 +279,55 @@ public class FirebaseInterface implements DatabaseInterface {
                     .addOnFailureListener(e -> Log.w(TAG, "getDynamicLink:onFailure", e));
     }
 
+    /**
+     * Uploads the image for the event to the firebase storage
+     * Conventions:
+     * - all images for the events are stored in the EVENT_IMAGES bucket
+     * - the name of the event image is the event id
+     */
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
-    public void uploadEventImage(String eventId, byte[] image) {
-        StorageReference imgRef = getStorageInstance(true).getReference().child(EVENT_IMAGES + "/" + eventId + ".jpg");
+    public void uploadEventImage(Event event, byte[] image, EventHandler handler) {
+        String imageUri = EVENT_IMAGES + "/" + event.getId() + ".jpg";
+        event.setImageUri(imageUri);
+        StorageReference imgRef = getStorageInstance(true).getReference().child(imageUri);
         UploadTask uploadTask = imgRef.putBytes(image);
-        uploadTask.addOnSuccessListener(taskSnapshot ->
-                Log.d(TAG, "Image for the event " + eventId + " is successfully uploaded"))
+        uploadTask
+                .addOnSuccessListener(taskSnapshot -> {
+                        Log.d(TAG, "Image for the event " + event.getId() + " is successfully uploaded");
+                        handler.handle(event);
+                })
                 .addOnFailureListener(e ->
-                        Log.w(TAG, "Error occurred during the upload of the image for the event " + eventId));
+                        Log.w(TAG, "Error occurred during the upload of the image for the event " + event.getId()));
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void downloadEventImage(Event event, ImageHandler handler) {
+        String eventId = event.getId();
+        String imageUri = event.getImageUri();
+        if(event.getImageUri() == null) {
+            Log.d(TAG, "image is not set for the event: " + eventId);
+            return;
+        }
+        // TODO: compress images before upload to limit their size
+        final long ONE_MEGABYTE = 1024 * 1024;
+        StorageReference eventImageRef = getStorageInstance(false).getReference().child(imageUri);
+        eventImageRef.getBytes(ONE_MEGABYTE)
+                .addOnSuccessListener(handler::handle)
+                .addOnFailureListener(e -> Log.w(TAG, "Error downloading image " + imageUri + " from firebase storage"));
+    }
+
+    /**
+     * Updates the Event in the Firestore.
+     * The data contained in the event will be merged with already existing data for this event
+     */
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    @Override
+    public void updateEvent(Event event, EventHandler eventHandler) {
+        getFirestoreInstance(false).collection(EVENTS).document(event.getId())
+                .set(event.toHashMap())
+                .addOnSuccessListener(aVoid -> eventHandler.handle(event))
+                .addOnFailureListener(e -> Log.w(TAG,"Error updating the event with id: " + event.getId()));
     }
 }
 
