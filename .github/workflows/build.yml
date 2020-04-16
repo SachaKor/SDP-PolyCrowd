@@ -80,3 +80,8 @@ jobs:
         with:
           coverageCommand: ./gradlew build jacocoTestReport
           coverageLocations: "app/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml:jacoco"
+      - name: Upload Jacoco Coverage
+        uses: actions/upload-artifact@v1
+        with:
+          name: jacoco_tests
+          path: app/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml
