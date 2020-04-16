@@ -26,8 +26,6 @@
         <activity android:name=".authentification.LoginActivity" />
         <activity android:name=".EventEditActivity" />
         <activity android:name=".schedulePage.ScheduleActivity" />
-
->>>>>>> master
         <activity
             android:name=".frontPage.FrontPageActivity"
             android:label="@string/title_activity_main">
