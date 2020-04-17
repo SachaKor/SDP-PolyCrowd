@@ -124,8 +124,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         if(null != imgUri) {
             dbi.downloadEventImage(curEvent, image -> {
                 Bitmap bmp = BitmapFactory.decodeByteArray(image, 0, image.length);
-                eventImg.setImageBitmap(Bitmap.createScaledBitmap(bmp, eventImg.getWidth(),
-                        eventImg.getHeight(), false));
+                eventImg.setImageBitmap(bmp);
             });
         } else {
             eventImg.setImageResource(R.drawable.balelec);

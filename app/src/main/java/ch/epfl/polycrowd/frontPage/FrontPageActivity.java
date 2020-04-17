@@ -42,24 +42,30 @@ public class FrontPageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_front_page);
         this.dbi = PolyContext.getDatabaseInterface();
 
-        setEventModels();
-
         // front page should dispatch the dynamic links
         receiveDynamicLink();
     }
     // --------------------------------------------------------------------------------
 
     // --------------------- ON START, ON RESTART -------------------------------------
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onStart() {
         super.onStart();
-        toggleLoginLogout();
+        setUp();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onRestart() {
         super.onRestart();
+        setUp();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void setUp() {
         toggleLoginLogout();
+        setEventModels();
     }
 
     private void toggleLoginLogout() {
