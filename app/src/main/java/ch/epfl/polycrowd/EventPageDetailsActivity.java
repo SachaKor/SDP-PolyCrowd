@@ -16,11 +16,13 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -29,6 +31,8 @@ import com.google.firebase.dynamiclinks.DynamicLink.SocialMetaTagParameters;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
 
@@ -52,6 +56,8 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     private DatabaseInterface dbi;
 
     private Event curEvent;
+
+    private byte[] imageInBytes;
 
     ImageView eventImg;
     ImageView editImg;
@@ -89,28 +95,6 @@ public class EventPageDetailsActivity extends AppCompatActivity {
             linkDialog.dismiss();
         }
     }
-
-//    @RequiresApi(api = Build.VERSION_CODES.O)
-//    @Override
-//    public void onStart() {
-//        super.onStart();
-//        try {
-//            initEvent();
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    @RequiresApi(api = Build.VERSION_CODES.O)
-//    @Override
-//    public void onRestart() {
-//        super.onRestart();
-//        try {
-//            initEvent();
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
-//    }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void setUpViews(String title, String description) {
@@ -203,7 +187,23 @@ public class EventPageDetailsActivity extends AppCompatActivity {
             if(requestCode == PICK_IMAGE) {
                 //data.getData returns the content URI for the selected Image
                 Uri selectedImage = data.getData();
-                Log.d(TAG, "selected image uri: " + selectedImage);
+                Log.d(TAG, "selected image uri: " + selectedImage.getEncodedPath());
+
+                // do not allow images with size > 1Mb
+                final int ONE_MEGABYTE = 1024*1024;
+                Bitmap bitmap = null;
+                try {
+                    bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                imageInBytes = stream.toByteArray();
+                if(imageInBytes.length > ONE_MEGABYTE) {
+                    Toast.makeText(this, "Image size should not exceed 1 megabyte", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 eventImg.setImageURI(selectedImage);
             }
     }
@@ -215,23 +215,21 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void onSubmitChangesClicked(View view) {
         // TODO: update the db
-        Bitmap bitmap = ((BitmapDrawable) eventImg.getDrawable()).getBitmap();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        byte[] data = baos.toByteArray();
         // upload the image to the storage
         // update the current event
         // update the event in the database
-        dbi.uploadEventImage(curEvent, data, event -> {
-            dbi.updateEvent(curEvent, event1 -> {
-                try {
-                    initEvent();
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                setEditing(false);
+        if(imageInBytes != null) {
+            dbi.uploadEventImage(curEvent, imageInBytes, event -> {
+                dbi.updateEvent(curEvent, event1 -> {
+                    try {
+                        initEvent();
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    setEditing(false);
+                });
             });
-        });
+        }
     }
 
 
