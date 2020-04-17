@@ -46,7 +46,6 @@ public abstract class AndroidTestHelper {
 
         Event[] ev = {
                 new Event(OwnerEmail, "OLD EVENT", true, CONCERT,
-
                         oldStartDate, oldEndDate, CalURL, "old debug event ... "),
                 new Event(OwnerEmail, "DEBUG EVENT", true, FESTIVAL,
                         newStartDate, newEndDate, CalURL, "this is only a debug event ... "),
