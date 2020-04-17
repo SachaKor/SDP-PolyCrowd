@@ -32,6 +32,10 @@ import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.User;
 
+/**
+ * @codeCoverageIgnore
+ * Excluded in build.gradle
+ */
 public class FirebaseInterface implements DatabaseInterface {
 
     private FirebaseAuth cachedAuth;
