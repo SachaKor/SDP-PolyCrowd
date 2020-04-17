@@ -3,6 +3,7 @@ name: APK
 on:
   push:
     branches:
+      - master
 jobs:
   BUILD_DBG_APK:
     name: Build Debug APK
