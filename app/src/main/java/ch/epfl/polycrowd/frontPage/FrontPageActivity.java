@@ -2,8 +2,6 @@ package ch.epfl.polycrowd.frontPage;
 
 import android.content.Context;
 import android.content.Intent;
-import android.icu.util.Calendar;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -12,23 +10,17 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.ListIterator;
 
 import ch.epfl.polycrowd.authentification.LoginActivity;
 import ch.epfl.polycrowd.organizerInvite.OrganizerInviteActivity;
 import ch.epfl.polycrowd.R;
-import ch.epfl.polycrowd.firebase.DatabaseInterface;
-import ch.epfl.polycrowd.firebase.handlers.DynamicLinkHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 
@@ -91,9 +83,7 @@ public class FrontPageActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     void setAdapter(List<Event> events){
-        orderEvents(events);
-        trimFinishedEvents(events);
-        adapter = new EventPagerAdaptor(events, this);
+        adapter = new EventPagerAdaptor(orderEvents(trimFinishedEvents(trimHiddenEvents(events))), this);
         setViewPager(events);
     }
     // called by setAdapter()
@@ -127,30 +117,22 @@ public class FrontPageActivity extends AppCompatActivity {
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private List<Event> orderEvents(List<Event> es){
-        sort(es, (o1, o2) -> o1.getStart().compareTo(o2.getStart()));
+    private List<Event> orderEvents(@NonNull List<Event> es){
+        es.sort( (o1, o2) -> o1.getStart().compareTo(o2.getStart()));
         return es;
     }
 
-    private void sort(List<Event> e,Comparator<Event> c) {
-        Object[] a = e.toArray();
-        Arrays.sort(a, (Comparator) c);
-        ListIterator<Event> i = e.listIterator();
-        for (Object ev : a) {
-            i.next();
-            i.set((Event) ev);
-        }
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private List<Event> trimFinishedEvents(@NonNull List<Event> es){
+        final Date now = new Date();
+        es.removeIf(e -> (e.getEnd().compareTo(now)<=0));
+        return es;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void trimFinishedEvents(List<Event> es){
-        Date now = new Date();
-        List<Event> es1 = new ArrayList<>(es);
-        for (Event e : es1){
-            if (e.getEnd().compareTo(now) <0){
-                es.remove(e);
-            }
-        }
+    private List<Event> trimHiddenEvents(@NonNull List<Event> es){
+        es.removeIf(e -> (!e.getPublic()));
+        return es;
     }
 
 

@@ -1,5 +1,6 @@
 package ch.epfl.polycrowd;
 
+import android.Manifest;
 import android.content.Intent;
 
 import org.junit.Before;
@@ -10,18 +11,9 @@ import org.junit.runner.RunWith;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
+import androidx.test.rule.GrantPermissionRule;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import ch.epfl.polycrowd.firebase.DatabaseInterface;
-import ch.epfl.polycrowd.firebase.FirebaseMocker;
-import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
-import ch.epfl.polycrowd.logic.User;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -30,6 +22,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.espresso.action.ViewActions.*;
+import static ch.epfl.polycrowd.AndroidTestHelper.sleep;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.StringContains.containsString;
 
@@ -45,28 +38,16 @@ public class EventEditActivityTest {
     public final ActivityTestRule<EventEditActivity> mActivityRule =
             new ActivityTestRule<>(EventEditActivity.class);
 
+    @Rule
+    public GrantPermissionRule grantFineLocation =
+            GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION);
+
     @Before
     public void setUp() {
-        Date sDate = new Date(1649430344),
-                eDate = new Date(1649516744);
+        AndroidTestHelper.SetupMockDBI();
 
-        // events setup
-        Event ev = new Event("eventOwner", "DEBUG EVENT", true, Event.EventType.CONCERT,
-                sDate, eDate, "testCalendar", "this is only a debug event ... ");
-        ev.setId("1");
-        List<Event> events = new ArrayList<>();
-        events.add(ev);
+        PolyContext.setCurrentUser(AndroidTestHelper.getUser());
 
-        // users setup
-        Map<User, String> usersAndPasswords = new HashMap<>();
-        usersAndPasswords.put(new User("fake@user", "1", "fakeUser", 3), "1234567");
-
-        // database interface setup
-        DatabaseInterface dbi = new FirebaseMocker(usersAndPasswords, events);
-        PolyContext.setDbInterface(dbi);
-        PolyContext.setCurrentUser(new User("fake@user", "1", "fakeUser", 3));
-
-        // launch the intent
         Intent intent = new Intent();
         mActivityRule.launchActivity(intent);
     }
@@ -135,13 +116,6 @@ public class EventEditActivityTest {
                 .check(matches(isDisplayed()));
     }
 
-    private void sleep(){
-        try{
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
 
 
 }

@@ -24,6 +24,15 @@ public class UserTest {
     }
 
     @Test
+    public void testGetName(){
+        assertEquals(testUser.getName(),"fakeUser");
+    }
+    @Test
+    public void testGetEmail(){
+        assertEquals(testUser.getEmail(),"fake@user");
+    }
+
+    @Test
     public void testGetUid(){
         assertEquals(testUser.getUid(),"1");
     }
