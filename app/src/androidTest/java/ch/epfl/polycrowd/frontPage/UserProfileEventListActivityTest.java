@@ -1,4 +1,4 @@
-package ch.epfl.polycrowd.frontPage;
+/*package ch.epfl.polycrowd.frontPage;
 
 
 import android.view.View;
@@ -357,4 +357,4 @@ public class UserProfileEventListActivityTest {
             }
         };
     }
-}
+}*/
