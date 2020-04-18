@@ -27,6 +27,7 @@ import java.util.List;
 
 import ch.epfl.polycrowd.Event;
 import ch.epfl.polycrowd.EventPageDetailsActivity;
+import ch.epfl.polycrowd.GroupPageActivity;
 import ch.epfl.polycrowd.LoginActivity;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
@@ -217,6 +218,12 @@ public class MapActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void clickGroup(View view){
+        Intent intent = new Intent(this, GroupPageActivity.class);
+        intent.putExtra("eventId", eventId);
+        startActivity(intent);
+    }
+
 
     void setGuestButtons(Button buttonLeft, Button buttonRight) {
         buttonRight.setText("EVENT DETAILS");
@@ -232,7 +239,7 @@ public class MapActivity extends AppCompatActivity {
         buttonLeft.setText("GROUPS");
 
         buttonRight.setOnClickListener(v -> clickEventDetails(v));
-        buttonLeft.setOnClickListener(v -> {});
+        buttonLeft.setOnClickListener(v -> clickGroup(v));
     }
 
     void setOrganiserButtons(Button buttonLeft, Button buttonRight) {

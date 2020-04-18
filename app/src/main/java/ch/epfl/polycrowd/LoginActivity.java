@@ -7,6 +7,7 @@ import ch.epfl.polycrowd.firebase.FirebaseInterface;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
+import ch.epfl.polycrowd.map.MapActivity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -28,6 +29,8 @@ public class LoginActivity extends AppCompatActivity {
     private static final String IS_ORGANIZER_INVITE = "isOrganizerInvite";
     private static final String EVENT_ID = "eventId";
 
+    private String inviteGroupId = null; // Not null -> a user logged in after group-invite link
+
     private FirebaseInterface fbInterface;
 
 
@@ -36,6 +39,9 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         fbInterface = new FirebaseInterface(this);
+
+        Intent intent = getIntent();
+        inviteGroupId = intent.getStringExtra("inviteGroupId");
     }
 
     private void toastPopup(String text) {
@@ -78,6 +84,7 @@ public class LoginActivity extends AppCompatActivity {
             if(PolyContext.getPreviousPage().equals("OrganizerInviteActivity")) {
                 String organizerEmail =
                         Objects.requireNonNull(fbInterface.getCurrentUser().getEmail());
+                // TODO : Cannot assume that CurrentEvent is the correct one. Please use intent extras as provided by the invite url
                 if(PolyContext.getCurrentEvent() == null) {
                     Log.e(TAG, "current event is null");
                     return;
@@ -87,6 +94,13 @@ public class LoginActivity extends AppCompatActivity {
                     Intent eventDetails = new Intent(c, EventPageDetailsActivity.class);
                     eventDetails.putExtra(EVENT_ID, event.getId());
                     startActivity(eventDetails);
+                });
+            }
+
+            if(inviteGroupId != null){
+                fbInterface.addUserToGroup(inviteGroupId, user.getUid(), () -> {
+                    Intent map = new Intent(c, MapActivity.class);
+                    startActivity(map);
                 });
             }
         });

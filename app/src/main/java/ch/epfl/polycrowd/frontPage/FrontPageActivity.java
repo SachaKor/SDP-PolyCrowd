@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.ListIterator;
 
 import ch.epfl.polycrowd.Event;
+import ch.epfl.polycrowd.GroupInviteActivity;
 import ch.epfl.polycrowd.LoginActivity;
 import ch.epfl.polycrowd.OrganizerInviteActivity;
 import ch.epfl.polycrowd.R;
@@ -187,6 +188,13 @@ public class FrontPageActivity extends AppCompatActivity {
                         Intent intent = new Intent(c, OrganizerInviteActivity.class);
                         intent.putExtra("eventId", eventId);
                         intent.putExtra("eventName", eventName);
+                        startActivity(intent);
+                    }
+                }else if(lastPathSegment != null && lastPathSegment.equals("inviteGroup")) {
+                    String groupId = deepLink.getQueryParameter("groupId");
+                    if (groupId != null) {
+                        Intent intent = new Intent(c, GroupInviteActivity.class);
+                        intent.putExtra("groupId", groupId);
                         startActivity(intent);
                     }
                 }

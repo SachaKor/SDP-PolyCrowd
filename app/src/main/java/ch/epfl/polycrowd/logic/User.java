@@ -9,7 +9,7 @@ public class User extends Storable {
     //TODO: add necessary attributes and methods
 
     //Sample attributes
-    private String name, email, uid;
+    private String name, email, uid, gid;
     private Integer age;
 
     //Sample constructor

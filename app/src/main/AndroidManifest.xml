@@ -31,6 +31,7 @@
         <activity android:name=".LoginActivity" />
         <activity android:name=".EventEditActivity" />
         <activity android:name=".ScheduleActivity" />
+        <activity android:name=".GroupPageActivity" />
 
         <activity
             android:name=".frontPage.FrontPageActivity"
