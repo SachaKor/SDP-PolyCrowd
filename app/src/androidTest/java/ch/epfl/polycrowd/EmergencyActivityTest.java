@@ -1,6 +1,5 @@
 package ch.epfl.polycrowd;
 
-
 import android.Manifest;
 import android.content.Intent;
 
@@ -11,44 +10,41 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+
 import ch.epfl.polycrowd.logic.PolyContext;
-import ch.epfl.polycrowd.schedulePage.ScheduleActivity;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static ch.epfl.polycrowd.AndroidTestHelper.sleep;
+import static org.hamcrest.core.StringContains.containsString;
 
-public class ScheduleActivityTest {
+public class EmergencyActivityTest {
 
     @Rule
-    public final ActivityTestRule<ScheduleActivity> mActivityRule =
-            new ActivityTestRule<>(ScheduleActivity.class, true, false);
+    public final ActivityTestRule<EmergencyActivity> mActivityRule =
+            new ActivityTestRule<>(EmergencyActivity.class);
 
     @Rule
     public GrantPermissionRule grantFineLocation =
             GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION);
 
-
     @Before
     public void setUp() {
-        PolyContext.reset();
-
         AndroidTestHelper.SetupMockDBI();
+
+        PolyContext.setCurrentUser(AndroidTestHelper.getUser());
 
         Intent intent = new Intent();
         mActivityRule.launchActivity(intent);
     }
 
 
+
     @Test
-    public void testScheduleLoading(){
-        ///PolyContext.getCurrentEvent().getActivities();
-        sleep();
-        onView(withText("thisActivityDoesNotExist")).check(doesNotExist());
-        onView(withText("summary")).check(matches(isDisplayed()));
-        sleep();
+    public void testEmergency() {
+        onView(withId(R.id.b0)).check(matches(withText(containsString("Accident"))));
+        onView(withId(R.id.b1)).check(matches(withText(containsString("Lost Minor"))));
+
     }
 }

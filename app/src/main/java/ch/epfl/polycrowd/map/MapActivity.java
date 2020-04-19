@@ -1,36 +1,35 @@
 package ch.epfl.polycrowd.map;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.content.Intent;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
-import java.text.ParseException;
 import java.util.List;
 
-import ch.epfl.polycrowd.Event;
+import ch.epfl.polycrowd.logic.Event;
+import ch.epfl.polycrowd.EmergencyActivity;
 import ch.epfl.polycrowd.EventPageDetailsActivity;
 import ch.epfl.polycrowd.GroupPageActivity;
-import ch.epfl.polycrowd.LoginActivity;
+import ch.epfl.polycrowd.authentification.LoginActivity;
 import ch.epfl.polycrowd.R;
-import ch.epfl.polycrowd.firebase.FirebaseInterface;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 
@@ -59,7 +58,6 @@ public class MapActivity extends AppCompatActivity {
     private LocationManager locationManager;
     private LocationListener locationListener;
 
-    private FirebaseInterface firebaseInterface;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -73,32 +71,25 @@ public class MapActivity extends AppCompatActivity {
 //        }
 
         Event event = PolyContext.getCurrentEvent();
-        if(event != null) {
+        if(event != null)
             eventId = event.getId();
-            Log.d(TAG, "event " + eventId);
-        } else {
-            Log.e(TAG, "current event is null");
-        }
 
-        // Check logged-in user
-        firebaseInterface = new FirebaseInterface(this);
+        Log.d(TAG, "event is : " + eventId);
 
-        try {
-            setStatusOfUser(firebaseInterface);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+
+        setStatusOfUser();
+
         createButtons();
         createMap();
         launchLocationRequest();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    void setStatusOfUser(FirebaseInterface firebaseInterface) throws ParseException {
+    void setStatusOfUser() {
         final String TAG1 = "setStatusOfUser";
         status = level.GUEST; // default status to debug
         User user = PolyContext.getCurrentUser();
-        Log.d("user_tag", TAG1 + " current user " + user);
+        Log.d(TAG, TAG1 + " current user " + user);
         if(user == null){
             status = level.GUEST;
         }else{
@@ -153,6 +144,7 @@ public class MapActivity extends AppCompatActivity {
     void createButtons() {
         Button buttonRight = findViewById(R.id.butRight);
         Button buttonLeft = findViewById(R.id.butLeft);
+        Button buttonSOS = findViewById(R.id.butSOS);
 
         Log.d(TAG, "user status: " + status);
 
@@ -162,6 +154,8 @@ public class MapActivity extends AppCompatActivity {
                 break;
             case VISITOR:
                 setVisitorButtons(buttonLeft, buttonRight);
+                buttonSOS.setVisibility(View.VISIBLE);
+                buttonSOS.setOnLongClickListener(v->clickSOS(v)); //TODO: hold for 5 seconds + animation ?
                 break;
             case ORGANISER:
                 setOrganiserButtons(buttonLeft, buttonRight);
@@ -184,10 +178,8 @@ public class MapActivity extends AppCompatActivity {
     private void startLocationRequests() {
         // first check for permissions
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.INTERNET}
-                        ,10);
-            }
+            requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.INTERNET}
+                    ,10);
             return;
         }
         // this code won't execute IF permissions are not allowed, because in the line above there is return statement.
@@ -218,10 +210,17 @@ public class MapActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void clickGroup(View view){
+
+    public void clickGroup(View view) {
         Intent intent = new Intent(this, GroupPageActivity.class);
         intent.putExtra("eventId", eventId);
         startActivity(intent);
+    }
+
+    public boolean clickSOS(View view) {
+        Intent intent = new Intent(this, EmergencyActivity.class);
+        startActivity(intent);
+        return true;
     }
 
 

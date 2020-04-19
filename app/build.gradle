@@ -16,7 +16,7 @@ android {
 
     defaultConfig {
         applicationId "ch.epfl.polycrowd"
-        minSdkVersion 21
+        minSdkVersion 26
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -45,8 +45,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = 1.8
-        targetCompatibility = 1.8
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
 }
@@ -68,24 +68,24 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
 
 
-    implementation 'com.google.firebase:firebase-analytics:17.2.3'
+    implementation 'com.google.firebase:firebase-analytics:17.3.0'
     implementation 'com.google.firebase:firebase-auth:19.3.0'
     implementation 'com.google.firebase:firebase-database:19.2.1'
-    implementation 'com.google.firebase:firebase-firestore:21.4.1'
+    implementation 'com.google.firebase:firebase-firestore:21.4.2'
 
     implementation 'com.google.android.material:material:1.1.0'
-    implementation 'com.google.maps.android:android-maps-utils:1.0.0'
+    implementation 'com.google.maps.android:android-maps-utils:1.0.2'
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
 
     implementation 'com.google.firebase:firebase-dynamic-links:19.1.0'
     implementation 'com.google.firebase:firebase-invites:17.0.0'
 
-    implementation 'org.mnode.ical4j:ical4j:3.0.15'
+    implementation 'org.mnode.ical4j:ical4j:3.0.18'
     implementation 'backport-util-concurrent:backport-util-concurrent:3.1'
-    implementation 'commons-codec:commons-codec:1.11'
+    implementation 'commons-codec:commons-codec:1.14'
     implementation 'commons-lang:commons-lang:2.6'
-    implementation 'org.slf4j:slf4j-nop:1.7.25'
-    implementation group: 'org.ehcache', name: 'jcache', version: '1.0.0'
+    implementation 'org.slf4j:slf4j-nop:1.7.30'
+    implementation group: 'org.ehcache', name: 'jcache', version: '1.0.1'
 }
 
 
@@ -95,15 +95,16 @@ tasks.withType(Test) {
     jacoco.excludes = ['jdk.internal.*']
 }
 
-task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest', 'createDebugCoverageReport']) {
+task jacocoTestReport(type: JacocoReport){//, dependsOn: ['testDebugUnitTest', 'createDebugCoverageReport']) {
 
     reports {
         xml.enabled = true
         html.enabled = true
     }
 
+    def mockedClasses = ['**/*FirebaseInterface.*']
     def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', '**/*Test*.*', 'android/**/*.*']
-    def debugTree = fileTree(dir: "$project.buildDir/intermediates/javac/debug/classes", excludes: fileFilter)
+    def debugTree = fileTree(dir: "$project.buildDir/intermediates/javac/debug/classes", excludes: fileFilter+mockedClasses)
     def mainSrc = "$project.projectDir/src/main/java"
 
     sourceDirectories.from = [mainSrc]

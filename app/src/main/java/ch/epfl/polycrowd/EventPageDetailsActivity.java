@@ -1,13 +1,5 @@
 package ch.epfl.polycrowd;
 
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import ch.epfl.polycrowd.firebase.FirebaseInterface;
-import ch.epfl.polycrowd.logic.PolyContext;
-import ch.epfl.polycrowd.logic.User;
-
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
@@ -19,12 +11,22 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.firebase.dynamiclinks.DynamicLink;
 import com.google.firebase.dynamiclinks.DynamicLink.SocialMetaTagParameters;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
-import java.text.ParseException;
 import java.util.List;
+
+import ch.epfl.polycrowd.logic.Event;
+import ch.epfl.polycrowd.logic.PolyContext;
+import ch.epfl.polycrowd.logic.User;
+import ch.epfl.polycrowd.organizerInvite.OrganizersAdapter;
+import ch.epfl.polycrowd.schedulePage.ScheduleActivity;
 
 public class EventPageDetailsActivity extends AppCompatActivity {
 
@@ -34,8 +36,6 @@ public class EventPageDetailsActivity extends AppCompatActivity {
 
     private String eventId;
 
-    private final FirebaseInterface fbi = new FirebaseInterface(this);
-
     private AlertDialog linkDialog;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -43,11 +43,8 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_details_page);
-        try {
-            initEvent();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+
+        initEvent();
 
         final Button scheduleButton = findViewById(R.id.schedule);
         scheduleButton.setOnClickListener(v -> clickSchedule(v));
@@ -80,7 +77,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
 
     private void initRecyclerView(List<String> organizers) {
         RecyclerView recyclerView = findViewById(R.id.organizers_recycler_view);
-        OrganizersAdapter adapter = new OrganizersAdapter(organizers, this);
+        OrganizersAdapter adapter = new OrganizersAdapter(organizers);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
@@ -90,26 +87,26 @@ public class EventPageDetailsActivity extends AppCompatActivity {
      * Initializes the RecyclerView displaying the organizers
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void initEvent() throws ParseException {
+    private void initEvent() {
         Event curEvent = PolyContext.getCurrentEvent();
         if(curEvent == null) {
             Log.e(TAG, "current event is null");
             return;
         }
-        FirebaseInterface fbi = new FirebaseInterface(this);
         eventId = curEvent.getId();
-        fbi.getEventById(eventId, event -> {
+        Event event = curEvent;
+       // PolyContext.getDatabaseInterface().getEventById(eventId, event -> {
             initRecyclerView(event.getOrganizers());
             setUpViews(event.getName(), event.getDescription());
             eventName = event.getName();
             // Check logged-in user => do not show invite button if user isn't organizer
-            User user = fbi.getCurrentUser();
+            User user = PolyContext.getCurrentUser();
             if(user == null || event.getOrganizers().indexOf(user.getEmail()) == -1) {
                 Log.d(TAG, "current user is not an organizer");
                 Button inviteButton = findViewById(R.id.invite_organizer_button);
                 inviteButton.setVisibility(View.GONE);
             }
-        });
+        //});
     }
 
     /**

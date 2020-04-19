@@ -15,6 +15,7 @@
         <item value="CONVENTION">Convention</item>
         <item value="OTHER">Other</item>
     </string-array>
+    <string name="event_details">Event Details</string>
     <string name="event_date_start">Start Date</string>
     <string name="event_date_end">End Date</string>
     <string name="event_add">Add Event</string>
@@ -33,8 +34,7 @@
     <string name="sign_in_failure">Incorrect email or password</string>
     <string name="email">email</string>
     <string name="date_format">dd-MM-yyyy</string>
-    <string name="event_details">Event Details</string>
-    <string name="forgot_password">Forgot password</string>
+    <string name="forgot_password">forgot password</string>
     <string name="reset_password">Reset password</string>
     <string name="send_reset_link">Send reset link</string>
     <string name="reset_link_sent">A reset link has been sent</string>
@@ -55,4 +55,12 @@
     <string name="leave_group">Leave group</string>
     <string name="group_invite_text">You are invited to a group.</string>
     <string name="create_group">Create group</string>
+    <string name="sos_main">Emergency</string>
+    <string name="sos_type">What is the reason for the emergency ??</string>
+    <string-array name="sos_type_list">
+        <item value="LOSTMINOR">Lost Minor</item>
+        <item value="ACCIDENT">Accident</item>
+        <item value="DRUNK">Drunk</item>
+        <item value="OTHER">Other</item>
+    </string-array>
 </resources>

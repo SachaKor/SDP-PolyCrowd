@@ -1,12 +1,11 @@
-package ch.epfl.polycrowd;
+package ch.epfl.polycrowd.logic;
 
 import android.os.Build;
 
-import com.google.firebase.Timestamp;
-
-
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.annotation.VisibleForTesting;
+
+import com.google.firebase.Timestamp;
 
 import java.io.File;
 import java.text.ParseException;
@@ -19,7 +18,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
-import ch.epfl.polycrowd.logic.Schedule;
+import ch.epfl.polycrowd.R;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class Event {
@@ -30,7 +29,7 @@ public class Event {
         FESTIVAL, CONCERT, CONVENTION, OTHER
     }
 
-    static final SimpleDateFormat dtFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.ENGLISH);
+    public static final SimpleDateFormat dtFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.ENGLISH);
     private final String owner;
     private String name;
     private Boolean isPublic;
@@ -46,11 +45,10 @@ public class Event {
 
 
     // ---------- Constructors ---------------------------------------------------------
-    public Event(String owner, String name, Boolean isPublic, EventType type,
-                 Date start, Date end,
-                 String calendar, String description){
-        if(owner == null || name == null || type == null || start == null || end == null || calendar == null)
-            throw new IllegalArgumentException("Invalid Argument for Event Constructor");
+    public Event(@NonNull String owner, @NonNull String name, Boolean isPublic, @NonNull EventType type,
+                 @NonNull Date start, @NonNull Date end,
+                 @NonNull String calendar, String description){
+
         this.owner = owner;
         this.name = name;
         this.isPublic = isPublic;
@@ -63,62 +61,29 @@ public class Event {
         setDescription(description);
     }
 
-    public Event(String owner, String name, Boolean isPublic, EventType type,
-                 Date start, Date end,
-                 String calendar, String description, File dir){
+    public Event(@NonNull String owner, @NonNull String name, Boolean isPublic, @NonNull EventType type,
+                 @NonNull Date start, @NonNull Date end,
+                 @NonNull String calendar, String description, @NonNull File dir){
         this(owner, name, isPublic, type, start, end, calendar, description);
         this.loadCalendar(dir);
     }
 
-    public Event(Event e, File dir){
+    public Event(Event e, @NonNull File dir){
         this(e.owner, e.name, e.isPublic, e.type, e.start, e.end, e.calendar, e.description);
         this.loadCalendar(dir);
     }
 
-    public Event(String owner, String name, Boolean isPublic, EventType type,
-                 Date start, Date end,
-                 String calendar, String description, List<String> organizers){
+    public Event(@NonNull String owner, @NonNull String name, Boolean isPublic, @NonNull EventType type,
+                 @NonNull Date start, @NonNull Date end,
+                 @NonNull String calendar, String description, @NonNull List<String> organizers){
         this(owner, name, isPublic, type, start, end, calendar, description);
-        if(organizers == null) {
-            throw new IllegalArgumentException("Invalid Argument for Event Constructor");
-        }
         this.organizers = organizers;
     }
 
-
-    // --------------------  FOR TESTING --------------------------------------------------
-    public Event()  {
-        this.owner = "debug owner";
-        this.name = "DEBUG EVENT";
-        this.isPublic = true;
-        this.type = EventType.OTHER;
-        try {
-            this.start = dtFormat.parse("01-08-2020 00:00");
-            this.end = dtFormat.parse("02-08-2020 01:00");
-        } catch (ParseException e){
-            this.start = null;
-            this.end = null;
-        }
-        this.calendar = "url";
-        this.description = "this is only a debug event ... ";
-        this.image = R.drawable.balelec;
-        this.organizers = new ArrayList<>();
-        organizers.add("fake@email.nu");
-        this.schedule = new Schedule();
+    public List<Activity> getActivities() {
+        if(this.getSchedule() == null) return null;
+        return this.getSchedule().getActivities();
     }
-
-    /*
-    static public Event fakeEvent(String url, File f) throws ParseException {return new Event ("1",
-            "fakeEvent", true,
-            Event.EventType.CONVENTION,
-            dtFormat.parse("01-08-2018 00:00"),
-            dtFormat.parse("02-08-2018 01:00"),
-            url, "description", f);
-    }*/
-
-
-    // ------------------------------------------------------------------------------------------
-
 
 
 
@@ -154,8 +119,6 @@ public class Event {
             this.description = description;
         }
     }
-
-
 
 
     public String getOwner() {
@@ -218,10 +181,8 @@ public class Event {
 
     // -------------------------------------------------------------------------------
 
-
     public Map<String, Object> toHashMap(){
         Map<String, Object> event = new HashMap<>();
-
         event.put("owner", this.owner);
         event.put("name", this.name);
         event.put("isPublic", this.isPublic.toString());
@@ -274,13 +235,7 @@ public class Event {
         return this.schedule;
     }
 
-    public Model getModel(){
-        Model m = new Model() ;
-        m.setTitle(getName());
-        m.setDescription(getDescription());
-        m.setId(this.getId());
-        return m;
-    }
+
     public static String dateToString(Date d, SimpleDateFormat dtf){
         return dtf.format(d);
     }
@@ -288,15 +243,9 @@ public class Event {
         try {
             return dtf.parse(s);
         } catch (ParseException ex) {
-            ex.printStackTrace();
+            // ...
         }
         return null;
     }
-    public static List<Model> toModels(List<Event> activities){
-        List<Model> models = new ArrayList<>();
-        for (Event e : activities){
-            models.add(e.getModel());
-        }
-        return models;
-    }
+
 }
