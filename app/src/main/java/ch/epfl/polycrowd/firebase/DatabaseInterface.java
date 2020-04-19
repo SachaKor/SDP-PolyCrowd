@@ -8,13 +8,14 @@ import androidx.annotation.RequiresApi;
 
 import java.text.ParseException;
 
-import ch.epfl.polycrowd.firebase.handlers.EmptyHandler;
-import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.firebase.handlers.DynamicLinkHandler;
+import ch.epfl.polycrowd.firebase.handlers.EmptyHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
+import ch.epfl.polycrowd.firebase.handlers.GroupHandler;
 import ch.epfl.polycrowd.firebase.handlers.OrganizersHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
+import ch.epfl.polycrowd.logic.Event;
 
 public interface DatabaseInterface {
 
@@ -63,4 +64,14 @@ public interface DatabaseInterface {
     void addSOS(String userId, String eventId, String reason);
 
     void addUserToGroup(String inviteGroupId, String uid, EmptyHandler emptyHandler);
+
+    void removeGroupIfEmpty(String gid, GroupHandler handler) ;
+
+    void removeUserFromGroup(String gid, String uid, EmptyHandler handler) ;
+
+    void getGroupByUserAndEvent(String eventId, String userId, GroupHandler groupHandler) ;
+
+    void createGroup(String eventId, GroupHandler handler) ;
+
+
 }
