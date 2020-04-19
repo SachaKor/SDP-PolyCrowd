@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -8,68 +8,137 @@
     tools:context=".frontPage.userProfile.UserProfilePageActivity"
     >
 
-
-    <LinearLayout
-        android:id="@+id/linearLayout"
+    <RelativeLayout
+        android:id = "@+id/rellay"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView5">
+        android:background="@drawable/grad"
+        android:paddingBottom="20dp"
+        android:layout_height="wrap_content">
 
 
-        <TextView
-            android:id="@+id/usernameField"
+        <RelativeLayout
+            android:id = "@+id/imgUser"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="@string/username" />
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            >
+            
+            <ImageView
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:adjustViewBounds="true"
+                android:layout_margin="9dp"
+                android:padding ="3dp"
+                android:layout_centerHorizontal="true"
+                android:scaleType="centerInside"
+                android:background="@drawable/circle"
+                android:src="@drawable/default_user_pic"/>
+            
+            <ImageView
+                android:layout_width="70dp"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="0dp"
+                android:layout_height="70dp"
+                android:onClick="OnUserProfileEditImgClick"
+                android:src="@drawable/ic_edit"
+                android:adjustViewBounds="true"
+                android:scaleType="centerInside"
+                />
 
+        </RelativeLayout>
+        
         <TextView
-            android:id="@+id/emailField"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="@string/email" />
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/imgUser"
+            android:layout_centerHorizontal="true"
+            android:text ="Nani Haha"
+            android:textSize="32sp"
+            android:fontFamily="sans-serif-light"
+            android:textColor="@color/white"
 
+            />
+
+
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_below="@+id/rellay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:id="@+id/userDetails"
+            android:layout_width="match_parent"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="5dp"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_marginBottom="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/userHeadings"
+                    android:textSize="13sp"
+                    android:text="Email"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#000000"
+                    android:fontFamily="sans-serif-light"
+                    android:textSize="18sp"
+                    android:text="nani@haha.com" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="15dp"
+                    android:background="@color/grey" />
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/userHeadings"
+                    android:textSize="13sp"
+                    android:text="Password"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#000000"
+                    android:fontFamily="sans-serif-light"
+                    android:textSize="18sp"
+                    android:text="########" />
+            </LinearLayout>
+        </LinearLayout>
+    <LinearLayout
+        android:layout_below="@+id/userDetails"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <Button
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="10dp"
+            android:layout_width="match_parent"
+            android:background="@color/grey"
+            android:onClick="onEventsListClick"
+            android:text="Events I Organize"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+
+        </Button>
     </LinearLayout>
 
-    <Button
-        android:id="@+id/goToFriendsListButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="36dp"
-        android:onClick="onFriendsListClick"
-        android:text="@string/goToUserFriendsList"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
-    <Button
-        android:id="@+id/goToUserEventsListButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:onClick="onEventsListClick"
-        android:text="@string/goToUserEventsList"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/goToFriendsListButton" />
+    </RelativeLayout>
 
-    <ImageView
-        android:id="@+id/imageView5"
-        android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:layout_gravity="center_vertical"
-        android:layout_marginTop="124dp"
-        android:src="@drawable/default_user_pic"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>

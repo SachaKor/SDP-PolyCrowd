@@ -25,22 +25,21 @@ public class UserProfilePageActivity extends AppCompatActivity {
 
         user = PolyContext.getCurrentUser() ;
 
-        TextView usernameField = view.findViewById(R.id.usernameField) ;
+        /*TextView usernameField = view.findViewById(R.id.usernameField) ;
         usernameField.setText(user.getName());
 
         TextView emailField = view.findViewById(R.id.emailField) ;
-        emailField.setText(user.getEmail());
+        emailField.setText(user.getEmail());*/
 
         setContentView(view);
-
-    }
-
-    public void onFriendsListClick(View view) {
 
     }
 
     public void onEventsListClick(View view) {
         Intent intent = new Intent(this, UserEventListActivity.class) ;
         startActivity(intent);
+    }
+
+    public void OnUserProfileEditImgClick(View view) {
     }
 }
