@@ -3,6 +3,8 @@ name: Dev_Build
 on:
   push:
     branches:
+      - '*'
+      - '*/*'  
       - '!master'
 jobs:
   ANDROID_BASE_CHECKS:
