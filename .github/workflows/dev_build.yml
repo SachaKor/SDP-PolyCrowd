@@ -3,7 +3,7 @@ name: Dev_Build
 on:
   push:
     branches:
-      - !master
+      - '!master'
 jobs:
   ANDROID_BASE_CHECKS:
     name: Base Checks
