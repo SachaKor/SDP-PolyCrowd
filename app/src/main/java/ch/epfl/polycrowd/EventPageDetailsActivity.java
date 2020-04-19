@@ -16,13 +16,11 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -31,7 +29,6 @@ import com.google.firebase.dynamiclinks.DynamicLink.SocialMetaTagParameters;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
@@ -42,8 +39,6 @@ import ch.epfl.polycrowd.organizerInvite.OrganizersAdapter;
 import ch.epfl.polycrowd.schedulePage.ScheduleActivity;
 
 public class EventPageDetailsActivity extends AppCompatActivity {
-
-    private String eventName = "";
 
     private static final String TAG = "EventPageDetails";
 
@@ -70,11 +65,9 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_details_page);
-        try {
-            initEvent();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+
+        dbi = PolyContext.getDatabaseInterface();
+        initEvent();
 
         final Button scheduleButton = findViewById(R.id.schedule);
         scheduleButton.setOnClickListener(v -> clickSchedule(v));
@@ -97,27 +90,34 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void setUpViews(String title, String description) {
+    private void setUpViews() {
         TextView eventTitle = findViewById(R.id.event_details_title);
         TextView eventDescription = findViewById(R.id.event_details_description);
         eventImg = findViewById(R.id.event_details_img);
-        eventTitle.setText(title);
-        eventDescription.setText(description);
-        String imgUri = curEvent.getImageUri();
-        Log.d(TAG, "event img uri: " + imgUri);
-        if(null != imgUri) {
-            dbi.downloadEventImage(curEvent, image -> {
-                Bitmap bmp = BitmapFactory.decodeByteArray(image, 0, image.length);
-                eventImg.setImageBitmap(bmp);
-            });
-        } else {
-            eventImg.setImageResource(R.drawable.balelec);
-        }
+        eventTitle.setText(curEvent.getName());
+        eventDescription.setText(curEvent.getDescription());
+        downloadEventImage();
         editImg = findViewById(R.id.event_details_edit_img);
         inviteOrganizerButton = findViewById(R.id.invite_organizer_button);
         submitChanges = findViewById(R.id.event_details_submit);
         editEventButton = findViewById(R.id.event_details_fab);
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void downloadEventImage() {
+        String imgUri = curEvent.getImageUri();
+        Log.d(TAG, "event img uri: " + imgUri);
+        if(null != imgUri) {
+            dbi.downloadEventImage(curEvent, image -> {
+                Bitmap bmp = BitmapFactory.decodeByteArray(image, 0, image.length);
+                imageInBytes = image;
+                eventImg.setImageBitmap(bmp);
+            });
+        } else {
+            eventImg.setImageResource(R.drawable.balelec);
+        }
+    }
+
 
     private void initRecyclerView(List<String> organizers) {
         RecyclerView recyclerView = findViewById(R.id.organizers_recycler_view);
@@ -131,29 +131,30 @@ public class EventPageDetailsActivity extends AppCompatActivity {
      * Initializes the RecyclerView displaying the organizers
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void initEvent() throws ParseException {
+    private void initEvent() {
         curEvent = PolyContext.getCurrentEvent();
         if(curEvent == null) {
             Log.e(TAG, "current event is null");
             return;
         }
-        dbi = PolyContext.getDatabaseInterface();
         String eventId = curEvent.getId();
-        dbi.getEventById(eventId, event -> {
-            PolyContext.setCurrentEvent(event); // update the data
-            initRecyclerView(event.getOrganizers());
-            setUpViews(event.getName(), event.getDescription());
-            eventName = event.getName();
-            // Check logged-in user => do not show invite button if user isn't organizer
-            User user = PolyContext.getCurrentUser();
-            if(user == null || event.getOrganizers().indexOf(user.getEmail()) == -1) {
-                Log.d(TAG, "current user is not an organizer");
-                currentUserIsOrganizer = false;
-            } else {
-                currentUserIsOrganizer = true;
-                setUpOrganizerPrivileges();
-            }
-        });
+        try {
+            dbi.getEventById(eventId, event -> {
+                initRecyclerView(event.getOrganizers());
+                setUpViews();
+                // Check logged-in user => do not show invite button if user isn't organizer
+                User user = PolyContext.getCurrentUser();
+                if(user == null || event.getOrganizers().indexOf(user.getEmail()) == -1) {
+                    Log.d(TAG, "current user is not an organizer");
+                    currentUserIsOrganizer = false;
+                } else {
+                    currentUserIsOrganizer = true;
+                    setUpOrganizerPrivileges();
+                }
+            });
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
     private void setUpOrganizerPrivileges() {
@@ -162,6 +163,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     }
 
     private void setEditing(boolean enable) {
+        Log.d(TAG, "setting editing mode to " + enable);
         int visibilityEdit = enable ? View.VISIBLE : View.INVISIBLE;
         int visibilityFab = enable ? View.INVISIBLE : View.VISIBLE;
         // set the "Organizer Invite" button visible
@@ -180,32 +182,47 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE);
     }
 
+    /**
+     * Handles the image picked from the gallery
+     */
     @Override
-    public void onActivityResult(int requestCode,int resultCode,Intent data) {
+    public void onActivityResult(int requestCode, int resultCode,Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK)
             if(requestCode == PICK_IMAGE) {
                 //data.getData returns the content URI for the selected Image
                 Uri selectedImage = data.getData();
-                Log.d(TAG, "selected image uri: " + selectedImage.getEncodedPath());
-
-                // do not allow images with size > 1Mb
-                final int ONE_MEGABYTE = 1024*1024;
-                Bitmap bitmap = null;
-                try {
-                    bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-                imageInBytes = stream.toByteArray();
-                if(imageInBytes.length > ONE_MEGABYTE) {
-                    Toast.makeText(this, "Image size should not exceed 1 megabyte", Toast.LENGTH_SHORT).show();
-                    return;
-                }
                 eventImg.setImageURI(selectedImage);
+                compressAndSetImage();
             }
+    }
+
+    /**
+     * - Compresses the image to <= 1Mb
+     * - Sets evenImg ImageView and imageInBytes attribute
+     */
+    private void compressAndSetImage() {
+        BitmapDrawable bitmapDrawable = ((BitmapDrawable) eventImg.getDrawable());
+        final int ONE_MEGABYTE = 1024*1024;
+        int streamLength = ONE_MEGABYTE;
+        int compressQuality = 105;
+        Bitmap bitmap = bitmapDrawable.getBitmap();
+        ByteArrayOutputStream bmpStream = new ByteArrayOutputStream();
+        while (streamLength >= ONE_MEGABYTE && compressQuality > 5) {
+            try {
+                bmpStream.flush();//to avoid out of memory error
+                bmpStream.reset();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            compressQuality -= 5;
+            bitmap.compress(Bitmap.CompressFormat.JPEG, compressQuality, bmpStream);
+            byte[] bmpPicByteArray = bmpStream.toByteArray();
+            streamLength = bmpPicByteArray.length;
+        }
+
+        imageInBytes = bmpStream.toByteArray();
+
     }
 
     public void onEditClicked(View view) {
@@ -214,22 +231,21 @@ public class EventPageDetailsActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void onSubmitChangesClicked(View view) {
-        // TODO: update the db
+        if(imageInBytes == null) {
+            compressAndSetImage();
+        }
         // upload the image to the storage
         // update the current event
         // update the event in the database
-        if(imageInBytes != null) {
-            dbi.uploadEventImage(curEvent, imageInBytes, event -> {
-                dbi.updateEvent(curEvent, event1 -> {
-                    try {
-                        initEvent();
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                    setEditing(false);
-                });
+        dbi.uploadEventImage(curEvent, imageInBytes, event -> {
+            Log.d(TAG, "event img uri after upload: " + event.getImageUri());
+            dbi.updateEvent(curEvent, event1 -> {
+                setEditing(false);
+                Log.d(TAG, "editing mode unset");
+                initEvent();
+                PolyContext.setCurrentEvent(event); // update the data
             });
-        }
+        });
     }
 
 
@@ -240,6 +256,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void inviteLinkClicked(View view) {
+        String eventName = curEvent.getName();
         // build the invite dynamic link
         // TODO: replace by short dynamic link
         DynamicLink inviteLink = FirebaseDynamicLinks.getInstance().createDynamicLink()

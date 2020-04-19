@@ -83,8 +83,21 @@ public class EventPageDetailsActivityTest {
 
     @Test
     public void editModeTurnsOffAfterChangesSubmitted() {
+        sleep();
         onView(withId(R.id.event_details_fab)).perform(click());
-        onView(withId(R.id.event_details_submit)).perform(click()).check(matches(not(isDisplayed())));
+        sleep();
+        onView(withId(R.id.event_details_submit)).perform(click());
+        sleep();
+        onView(withId(R.id.event_details_submit)).check(matches(not(isDisplayed())));
+        sleep();
+    }
+
+    private void sleep(){
+        try{
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
 

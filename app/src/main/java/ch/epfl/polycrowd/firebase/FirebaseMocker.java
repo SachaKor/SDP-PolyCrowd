@@ -27,20 +27,21 @@ import ch.epfl.polycrowd.logic.User;
 
 public class FirebaseMocker implements DatabaseInterface {
 
-    Map<User,String> usersAndPasswords ;
-    List<Event> events ;
+    private static final String TAG = "FirebaseMocker";
+
+    private Map<User,String> usersAndPasswords ;
+    private List<Event> events ;
+    private byte[] image;
 
     public FirebaseMocker(Map<User, String> defaultUsersAndPasswords, List<Event> defaultEvents){
-
+        Log.d(TAG, "Database mocker init");
         usersAndPasswords = new HashMap<>() ;
         for(Map.Entry<User, String> entry: defaultUsersAndPasswords.entrySet()){
             usersAndPasswords.put(entry.getKey(), entry.getValue()) ;
         }
 
         events = new ArrayList<>() ;
-        for(Event e: defaultEvents){
-            events.add(e) ;
-        }
+        events.addAll(defaultEvents);
     }
 
 
@@ -108,7 +109,7 @@ public class FirebaseMocker implements DatabaseInterface {
     @Override
     public void getEventById(String eventId, EventHandler eventHandler) throws ParseException {
         Event event = findEventWithId(eventId) ;
-        if(event !=null){
+        if(event != null){
            eventHandler.handle(event);
         }
     }
@@ -146,19 +147,42 @@ public class FirebaseMocker implements DatabaseInterface {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void uploadEventImage(Event event, byte[] image, EventHandler handler) {
-        // TODO
+        Log.d(TAG, "uploading the image");
+        // save the image
+        this.image = image;
+        // set the imageUri field of the event
+        event.setImageUri("testImageUri");
+        // handle the updated event
+        handler.handle(event);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void downloadEventImage(Event event, ImageHandler handler) {
-        // TODO
+        Log.d(TAG, "downloading the image");
+        // check if the imageUri isn't null
+        if(event.getImageUri() == null) {
+            Log.d(TAG, "image is not set for the event: " + event.getId());
+        }
+        // handle the image stored in the mocker
+        handler.handle(image);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void updateEvent(Event event, EventHandler eventHandler) {
-        // TODO
+        Log.d(TAG, "updating the event");
+        int i = 0;
+        for(Event e: events) {
+            if(e.getId().equals(event.getId())) {
+                events.set(i, event);
+            }
+            ++i;
+        }
+        eventHandler.handle(event);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
