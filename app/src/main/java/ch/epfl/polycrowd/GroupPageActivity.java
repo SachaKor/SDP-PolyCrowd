@@ -8,8 +8,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
@@ -24,9 +22,11 @@ import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import java.text.ParseException;
 import java.util.List;
 
-import ch.epfl.polycrowd.firebase.FirebaseInterface;
+import ch.epfl.polycrowd.firebase.DatabaseInterface;
+import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
+import ch.epfl.polycrowd.organizerInvite.OrganizersAdapter;
 
 public class GroupPageActivity extends AppCompatActivity {
 
@@ -68,7 +68,7 @@ public class GroupPageActivity extends AppCompatActivity {
 
     private void initRecyclerView(List<String> members) {
         RecyclerView recyclerView = findViewById(R.id.members_recycler_view);
-        OrganizersAdapter adapter = new OrganizersAdapter(members, this);
+        OrganizersAdapter adapter = new OrganizersAdapter(members);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
@@ -89,14 +89,14 @@ public class GroupPageActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void initGroup() {
-        FirebaseInterface fbi = new FirebaseInterface(this);
+        DatabaseInterface dbi = PolyContext.getDatabaseInterface();
         User user = PolyContext.getCurrentUser();
         if(user == null){
             Log.e(TAG, "initGroup : current user is null ?!");
             return;
         }
         userId = user.getUid();
-        fbi.getGroupByUserAndEvent(eventId, userId, group -> {
+        dbi.getGroupByUserAndEvent(eventId, userId, group -> {
             if(group == null){
                 findViewById(R.id.leave_group_button).setVisibility(View.GONE);
                 findViewById(R.id.invite_group_button).setVisibility(View.GONE);
@@ -143,9 +143,8 @@ public class GroupPageActivity extends AppCompatActivity {
 
     public void leaveLinkClicked(View view) {
         Context c = this;
-        FirebaseInterface fbi = new FirebaseInterface(this);
-        fbi.removeUserFromGroup(groupId, userId, () -> {
-            fbi.removeGroupIfEmpty(groupId, group -> {
+        PolyContext.getDatabaseInterface().removeUserFromGroup(groupId, userId, () -> {
+            PolyContext.getDatabaseInterface().removeGroupIfEmpty(groupId, group -> {
                 Intent map = new Intent(c, GroupPageActivity.class);
                 startActivity(map);
             });
@@ -154,10 +153,9 @@ public class GroupPageActivity extends AppCompatActivity {
 
     public void createLinkClicked(View view){
         Context c = this;
-        FirebaseInterface fbi = new FirebaseInterface(this);
-        fbi.createGroup(eventId, group -> {
+        PolyContext.getDatabaseInterface().createGroup(eventId, group -> {
             groupId = group.getGid();
-            fbi.addUserToGroup(groupId, userId, () -> {
+            PolyContext.getDatabaseInterface().addUserToGroup(groupId, userId, () -> {
                 Log.w("createLinkClicked", groupId + " " + userId + " " + eventId);
                 Intent map = new Intent(c, GroupPageActivity.class);
                 startActivity(map);
