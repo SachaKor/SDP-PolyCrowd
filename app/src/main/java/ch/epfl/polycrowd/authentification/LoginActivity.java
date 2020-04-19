@@ -1,5 +1,5 @@
-
 package ch.epfl.polycrowd.authentification;
+
 
 import android.content.Context;
 import android.content.Intent;
@@ -18,12 +18,10 @@ import java.util.Objects;
 
 import ch.epfl.polycrowd.EventPageDetailsActivity;
 import ch.epfl.polycrowd.R;
-import ch.epfl.polycrowd.authentification.ResetPasswordActivity;
-import ch.epfl.polycrowd.authentification.SignUpActivity;
-import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
+import ch.epfl.polycrowd.map.MapActivity;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -32,15 +30,15 @@ public class LoginActivity extends AppCompatActivity {
     /** Names of the extra parameters for the organizer invites **/
     private static final String IS_ORGANIZER_INVITE = "isOrganizerInvite";
     private static final String EVENT_ID = "eventId";
-
-    private DatabaseInterface dbi;
-
+    private String inviteGroupId = null; // Not null -> a user logged in after group-invite link
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        dbi = PolyContext.getDatabaseInterface();
+        Intent intent = getIntent();
+        inviteGroupId = intent.getStringExtra("inviteGroupId");
+
     }
 
     private void toastPopup(String text) {
@@ -73,7 +71,7 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        dbi.signInWithEmailAndPassword(email, password, successHandler(), failureHandler());
+        PolyContext.getDatabaseInterface().signInWithEmailAndPassword(email, password, successHandler(), failureHandler());
     }
 
 
@@ -100,17 +98,25 @@ public class LoginActivity extends AppCompatActivity {
                 Log.d(TAG, "previous page: " + PolyContext.getPreviousPage());
                 if(PolyContext.getPreviousPage()!= null && PolyContext.getPreviousPage().equals("OrganizerInviteActivity")) {
                     String organizerEmail = Objects.requireNonNull(PolyContext.getCurrentUser().getEmail());
+                    // TODO : Cannot assume that CurrentEvent is the correct one. Please use intent extras as provided by the invite url
                     if(PolyContext.getCurrentEvent() == null) {
                         Log.e(TAG, "current event is null");
                         return;
                     }
                     Event event = PolyContext.getCurrentEvent();
-                    dbi.addOrganizerToEvent(event.getId(), organizerEmail, () -> {
+                    PolyContext.getDatabaseInterface().addOrganizerToEvent(event.getId(), organizerEmail, () -> {
                         Intent eventDetails = new Intent(c, EventPageDetailsActivity.class);
                         eventDetails.putExtra(EVENT_ID, event.getId());
                         startActivity(eventDetails);
                     });
                 }
+
+                if(inviteGroupId != null){
+                    PolyContext.getDatabaseInterface().addUserToGroup(inviteGroupId, user.getUid(), () -> {
+                    Intent map = new Intent(c, MapActivity.class);
+                    startActivity(map);
+                });
+            }
         } ;
     }
 }

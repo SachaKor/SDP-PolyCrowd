@@ -27,9 +27,9 @@ import java.util.List;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.EmergencyActivity;
 import ch.epfl.polycrowd.EventPageDetailsActivity;
+import ch.epfl.polycrowd.GroupPageActivity;
 import ch.epfl.polycrowd.authentification.LoginActivity;
 import ch.epfl.polycrowd.R;
-import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 
@@ -58,7 +58,6 @@ public class MapActivity extends AppCompatActivity {
     private LocationManager locationManager;
     private LocationListener locationListener;
 
-    private DatabaseInterface dbi;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -77,10 +76,8 @@ public class MapActivity extends AppCompatActivity {
 
         Log.d(TAG, "event is : " + eventId);
 
-        // Check logged-in user
-        dbi = PolyContext.getDatabaseInterface() ;
 
-        setStatusOfUser(dbi);
+        setStatusOfUser();
 
         createButtons();
         createMap();
@@ -88,7 +85,7 @@ public class MapActivity extends AppCompatActivity {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    void setStatusOfUser(DatabaseInterface firebaseInterface) {
+    void setStatusOfUser() {
         final String TAG1 = "setStatusOfUser";
         status = level.GUEST; // default status to debug
         User user = PolyContext.getCurrentUser();
@@ -181,10 +178,8 @@ public class MapActivity extends AppCompatActivity {
     private void startLocationRequests() {
         // first check for permissions
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.INTERNET}
-                        ,10);
-            }
+            requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.INTERNET}
+                    ,10);
             return;
         }
         // this code won't execute IF permissions are not allowed, because in the line above there is return statement.
@@ -215,6 +210,13 @@ public class MapActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+
+    public void clickGroup(View view) {
+        Intent intent = new Intent(this, GroupPageActivity.class);
+        intent.putExtra("eventId", eventId);
+        startActivity(intent);
+    }
+
     public boolean clickSOS(View view) {
         Intent intent = new Intent(this, EmergencyActivity.class);
         startActivity(intent);
@@ -236,7 +238,7 @@ public class MapActivity extends AppCompatActivity {
         buttonLeft.setText("GROUPS");
 
         buttonRight.setOnClickListener(v -> clickEventDetails(v));
-        buttonLeft.setOnClickListener(v -> {});
+        buttonLeft.setOnClickListener(v -> clickGroup(v));
     }
 
     void setOrganiserButtons(Button buttonLeft, Button buttonRight) {

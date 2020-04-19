@@ -1,16 +1,6 @@
 package ch.epfl.polycrowd.logic;
 
 import android.content.Context;
-import android.os.Build;
-import android.util.Log;
-
-import androidx.annotation.RequiresApi;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
@@ -36,8 +26,8 @@ public abstract class PolyContext extends Context {
 
     public static void setCurrentEvent(Event ev){
         currentEvent = ev;
-        Log.d(TAG, "current event is set");
     }
+
     public static Event getCurrentEvent(){
         return currentEvent;
     }
@@ -72,7 +62,7 @@ public abstract class PolyContext extends Context {
 
     // ----------- Use isRunningTest() to check if u are doing a test ------------------------
     // https://stackoverflow.com/questions/28550370/how-to-detect-whether-android-app-is-running-ui-test-with-espresso
-    private static AtomicBoolean isRunningTest;
+    /*private static AtomicBoolean isRunningTest;
     public static synchronized boolean isRunningTest () {
         if (null == isRunningTest) {
             boolean istest;
@@ -88,7 +78,7 @@ public abstract class PolyContext extends Context {
         }
 
         return isRunningTest.get ();
-    }
+    }*/
 
     // --------------------------------------------------------------------------------------
 

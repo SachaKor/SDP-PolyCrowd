@@ -30,6 +30,7 @@ public abstract class AndroidTestHelper {
     private static final String UserEmail = "USER@h.net";
     private static final String NewUserEmail = "NEW_USER@h.net";
     private static final String OrganiserEmail = "ORGA@h.net";
+    private static final String CalURL = "https://calendar.google.com/calendar/ical/816h2e8601aniprqniv7a8tn90%40group.calendar.google.com/public/basic.ics";
 
     private static final User newUser = new User(NewUserEmail, "1", "new_fakeUser", 20);
 
@@ -45,12 +46,11 @@ public abstract class AndroidTestHelper {
 
         Event[] ev = {
                 new Event(OwnerEmail, "OLD EVENT", true, CONCERT,
-
-                        oldStartDate, oldEndDate, "https://thisIsAUrl", "old debug event ... "),
+                        oldStartDate, oldEndDate, CalURL, "old debug event ... "),
                 new Event(OwnerEmail, "DEBUG EVENT", true, FESTIVAL,
-                        newStartDate, newEndDate, "https://thisIsAUrl", "this is only a debug event ... "),
+                        newStartDate, newEndDate, CalURL, "this is only a debug event ... "),
                 new Event(OwnerEmail, "HIDDEN EVENT", false, FESTIVAL,
-                        newStartDate, newEndDate, "https://thisIsAUrl", "hidden debug event ... ")};
+                        newStartDate, newEndDate, CalURL, "hidden debug event ... ")};
 
         ev[0].setId("1");
         ev[1].setId("2");

@@ -8,10 +8,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -24,16 +22,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 
-//import static org.junit.Assert.assertThrows;
-//import static org.junit.jupiter.api.Assertions.*;
-//import org.junit.Before;
-//import org.junit.jupiter.api.BeforeAll;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
-//import org.junit.runner.RunWith;
-//import org.junit.Assert.assertThrows;
 
 public class EventTest {
+    public static final String CalURL = "https://calendar.google.com/calendar/ical/816h2e8601aniprqniv7a8tn90%40group.calendar.google.com/public/basic.ics";
     private static final SimpleDateFormat dtFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
     private static Event e = null;
     private static final String default_owner = "1";
@@ -45,6 +36,8 @@ public class EventTest {
 
     @Before
     public void initTest(){
+        assert default_s != null;
+        assert default_e != null;
         e = new Event(default_owner,default_name, false,
                 default_type, default_s, default_e, "None", default_desc);
 
@@ -58,34 +51,22 @@ public class EventTest {
 
         // events setup
         Event ev = new Event("eventOwner", "DEBUG EVENT", true, Event.EventType.CONCERT,
-                sDate, eDate, "testCalendar", "this is only a debug event ... ");
+                sDate, eDate, CalURL, "this is only a debug event ... ");
         ev.setId("1");
         assert(ev.getSchedule() == null); // TODO : this is so wrong
     }
 
     @Test
     public void testStringToDateFail(){
-        assertEquals(stringToDate("notadate" , Event.dtFormat ) , null);
+        assertNull(stringToDate("notadate", Event.dtFormat));
     }
 
     @Test
-    public void constructor() throws ParseException {
-        Assert.assertThrows(IllegalArgumentException.class, () -> new Event(null,default_name, false,
-                default_type, default_s, default_e,"None", default_desc));
-        Assert.assertThrows(IllegalArgumentException.class, () -> new Event(default_owner,null, false,
-                default_type, default_s, default_e,"None", default_desc));
-        Assert.assertThrows(IllegalArgumentException.class, () -> new Event(default_owner,default_name, false,
-                null, default_s, default_e,"None", default_desc));
-        Assert.assertThrows(IllegalArgumentException.class, () -> new Event(default_owner,default_name, false,
-                default_type, null, default_e, "None", default_desc));
-        Assert.assertThrows(IllegalArgumentException.class, () -> new Event(default_owner,default_name, false,
-                default_type, default_s, null, "None", default_desc));
-        Assert.assertThrows(IllegalArgumentException.class, () -> new Event(default_owner,default_name, false,
-                default_type, default_s, default_e,null, default_desc));
-        Assert.assertThrows(IllegalArgumentException.class, () -> new Event(default_owner,default_name, false,
-                default_type, default_s, default_e,"None", default_desc, (List)null));
+    public void constructor() {
+        assertNotNull(default_s);
+        assertNotNull(default_e);
         Event ne = new Event(default_owner,default_name, false,
-                default_type, default_s, default_e,"None", default_desc);
+                default_type, default_s, default_e,CalURL, default_desc);
 
         assert(default_owner.equals(ne.getOwner()));
         assertEquals(default_name, ne.getName());
@@ -93,10 +74,10 @@ public class EventTest {
         assertEquals(default_type, ne.getType());
         assertEquals(dateToString(default_s, dtFormat), dateToString(ne.getStart(), dtFormat));
         assertEquals(dateToString(default_e, dtFormat), dateToString(ne.getEnd(), dtFormat));
-        assertEquals("None", ne.getCalendar());
+        assertEquals(CalURL, ne.getCalendar());
 
         Event neb = new Event(default_owner,default_name, false,
-                default_type, default_s, default_e,"https://satellite.bar/agenda/ical.php", default_desc, new File("./"));
+                default_type, default_s, default_e,CalURL, default_desc, new File("./"));
 
         assert(default_owner.equals(neb.getOwner()));
         assertEquals(default_name, neb.getName());
@@ -104,7 +85,7 @@ public class EventTest {
         assertEquals(default_type, neb.getType());
         assertEquals(dateToString(default_s, dtFormat), dateToString(neb.getStart(), dtFormat));
         assertEquals(dateToString(default_e, dtFormat), dateToString(neb.getEnd(), dtFormat));
-        assertEquals("https://satellite.bar/agenda/ical.php", neb.getCalendar());
+        assertEquals(CalURL, neb.getCalendar());
 
         Event nec = new Event(neb, new File("./"));
 
@@ -114,13 +95,13 @@ public class EventTest {
         assertEquals(default_type, nec.getType());
         assertEquals(dateToString(default_s, dtFormat), dateToString(nec.getStart(), dtFormat));
         assertEquals(dateToString(default_e, dtFormat), dateToString(nec.getEnd(), dtFormat));
-        assertEquals("https://satellite.bar/agenda/ical.php", nec.getCalendar());
+        assertEquals(CalURL, nec.getCalendar());
 
         Date    sDate = new Date(1649430344),
                 eDate = new Date(1649516744);
         // events setup
         Event ned = new Event("eventOwner", "DEBUG EVENT", true, Event.EventType.OTHER,
-                sDate, eDate, "url", "this is only a debug event ... ");
+                sDate, eDate, CalURL, "this is only a debug event ... ");
         ned.setId("1");
 
         assertEquals(ned.getOwner() , "eventOwner");
@@ -129,7 +110,7 @@ public class EventTest {
         assertEquals(Event.EventType.OTHER, ned.getType());
         assertNotNull(ned.getStart());
         assertNotNull(ned.getEnd());
-        assertEquals("url", ned.getCalendar());
+        assertEquals(CalURL, ned.getCalendar());
         assertEquals("this is only a debug event ... ",ned.getDescription());
     }
 
@@ -145,17 +126,6 @@ public class EventTest {
         assert(default_owner.equals(e.getOwner()));
 
     }
-
-    /*
-    @Test
-    public void fakeConstructor(){
-        try {
-            Event.fakeEvent("url", new File("./"));
-        } catch (ParseException ex) {
-            assert(false);
-        }
-
-    }*/
 
     @Test
     public void getSetName() {
@@ -243,8 +213,11 @@ public class EventTest {
         assertEquals(Objects.requireNonNull(hm.get("owner")).toString(), default_owner);
         assertEquals(Event.EventType.valueOf(Objects.requireNonNull(hm.get("type")).toString()), default_type);
         assertEquals(Objects.requireNonNull(hm.get("name")).toString(), default_name);
-        assertEquals(Objects.requireNonNull(hm.get("start")).toString(), new Timestamp(default_s).toString());
-        assertEquals(Objects.requireNonNull(hm.get("end")).toString(), new Timestamp(default_e).toString());
+       assert default_s != null;
+       assertEquals(Objects.requireNonNull(hm.get("start")).toString(), new Timestamp(default_s).toString());
+       assert default_e != null;
+
+       assertEquals(Objects.requireNonNull(hm.get("end")).toString(), new Timestamp(default_e).toString());
         assertEquals(Objects.requireNonNull(hm.get("calendar")).toString(), "None");
 
         Event ne = Event.getFromDocument(hm);

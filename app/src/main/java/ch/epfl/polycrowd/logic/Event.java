@@ -2,6 +2,7 @@ package ch.epfl.polycrowd.logic;
 
 import android.os.Build;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
 import com.google.firebase.Timestamp;
@@ -45,11 +46,9 @@ public class Event {
 
 
     // ---------- Constructors ---------------------------------------------------------
-    public Event(String owner, String name, Boolean isPublic, EventType type,
-                 Date start, Date end,
-                 String calendar, String description){
-        if(owner == null || name == null || type == null || start == null || end == null || calendar == null)
-            throw new IllegalArgumentException("Invalid Argument for Event Constructor");
+    public Event(@NonNull String owner, @NonNull String name, Boolean isPublic, @NonNull EventType type,
+                 @NonNull Date start, @NonNull Date end,
+                 @NonNull String calendar, String description){
 
         this.owner = owner;
         this.name = name;
@@ -63,73 +62,30 @@ public class Event {
         setDescription(description);
     }
 
-    public Event(String owner, String name, Boolean isPublic, EventType type,
-                 Date start, Date end,
-                 String calendar, String description, File dir){
+    public Event(@NonNull String owner, @NonNull String name, Boolean isPublic, @NonNull EventType type,
+                 @NonNull Date start, @NonNull Date end,
+                 @NonNull String calendar, String description, @NonNull File dir){
         this(owner, name, isPublic, type, start, end, calendar, description);
         this.loadCalendar(dir);
     }
 
-    public Event(Event e, File dir){
+    public Event(Event e, @NonNull File dir){
         this(e.owner, e.name, e.isPublic, e.type, e.start, e.end, e.calendar, e.description);
         this.loadCalendar(dir);
     }
 
-    public Event(String owner, String name, Boolean isPublic, EventType type,
-                 Date start, Date end,
-                 String calendar, String description, List<String> organizers){
+    public Event(@NonNull String owner, @NonNull String name, Boolean isPublic, @NonNull EventType type,
+                 @NonNull Date start, @NonNull Date end,
+                 @NonNull String calendar, String description, @NonNull List<String> organizers){
         this(owner, name, isPublic, type, start, end, calendar, description);
-        if(organizers == null) {
-            throw new IllegalArgumentException("Invalid Argument for Event Constructor");
-        }
         this.organizers = organizers;
     }
-
-
-    // --------------------  FOR TESTING --------------------------------------------------
-    public Event()  {
-        this.owner = "debug owner";
-        this.name = "DEBUG EVENT";
-        this.isPublic = true;
-        this.type = EventType.OTHER;
-        try {
-            this.start = dtFormat.parse("01-08-2020 00:00");
-            this.end = dtFormat.parse("02-08-2020 01:00");
-        } catch (ParseException e){
-            this.start = null;
-            this.end = null;
-        }
-        this.calendar = "";
-        this.description = "this is only a debug event ... ";
-        this.image = R.drawable.balelec;
-        this.organizers = new ArrayList<>();
-        this.schedule = new Schedule();
-    }
-
-    /*
-    static public Event fakeEvent(String url, File f) throws ParseException {return new Event ("1",
-            "fakeEvent", true,
-            Event.EventType.CONVENTION,
-            dtFormat.parse("01-08-2018 00:00"),
-            dtFormat.parse("02-08-2018 01:00"),
-            url, "description", f);
-    }*/
-
-
-
-
-
 
     public List<Activity> getActivities() {
         if(this.getSchedule() == null) return null;
         return this.getSchedule().getActivities();
     }
 
-    public Event setActivities(List<Activity> ac) {
-        if(this.getSchedule() == null) this.schedule = new Schedule();
-        this.schedule.setActivities(ac);
-        return this;
-    }
 
 
     private String getEventCalFilename(){

@@ -1,14 +1,13 @@
 package ch.epfl.polycrowd;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
@@ -20,34 +19,35 @@ import com.google.firebase.dynamiclinks.DynamicLink;
 import com.google.firebase.dynamiclinks.DynamicLink.SocialMetaTagParameters;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
+import java.text.ParseException;
 import java.util.List;
 
+import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 import ch.epfl.polycrowd.organizerInvite.OrganizersAdapter;
-import ch.epfl.polycrowd.schedulePage.ScheduleActivity;
 
-public class EventPageDetailsActivity extends AppCompatActivity {
+public class GroupPageActivity extends AppCompatActivity {
 
-    private String eventName = "";
-
-    private static final String TAG = "EventPageDetails";
+    private static final String TAG = "GroupPageActivity";
 
     private String eventId;
-
+    private String userId;
+    private String groupId;
     private AlertDialog linkDialog;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_event_details_page);
-
-        initEvent();
-
-        final Button scheduleButton = findViewById(R.id.schedule);
-        scheduleButton.setOnClickListener(v -> clickSchedule(v));
+        setContentView(R.layout.activity_group_page);
+        try {
+            initEvent();
+            initGroup();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -66,18 +66,9 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         }
     }
 
-    private void setUpViews(String title, String description) {
-        TextView eventTitle = findViewById(R.id.event_details_title);
-        TextView eventDescription = findViewById(R.id.event_details_description);
-        ImageView eventImg = findViewById(R.id.event_details_img);
-        eventTitle.setText(title);
-        eventDescription.setText(description);
-        eventImg.setImageResource(R.drawable.balelec);
-    }
-
-    private void initRecyclerView(List<String> organizers) {
-        RecyclerView recyclerView = findViewById(R.id.organizers_recycler_view);
-        OrganizersAdapter adapter = new OrganizersAdapter(organizers);
+    private void initRecyclerView(List<String> members) {
+        RecyclerView recyclerView = findViewById(R.id.members_recycler_view);
+        OrganizersAdapter adapter = new OrganizersAdapter(members);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
@@ -87,45 +78,51 @@ public class EventPageDetailsActivity extends AppCompatActivity {
      * Initializes the RecyclerView displaying the organizers
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void initEvent() {
+    private void initEvent() throws ParseException {
         Event curEvent = PolyContext.getCurrentEvent();
         if(curEvent == null) {
             Log.e(TAG, "current event is null");
             return;
         }
         eventId = curEvent.getId();
-        Event event = curEvent;
-       // PolyContext.getDatabaseInterface().getEventById(eventId, event -> {
-            initRecyclerView(event.getOrganizers());
-            setUpViews(event.getName(), event.getDescription());
-            eventName = event.getName();
-            // Check logged-in user => do not show invite button if user isn't organizer
-            User user = PolyContext.getCurrentUser();
-            if(user == null || event.getOrganizers().indexOf(user.getEmail()) == -1) {
-                Log.d(TAG, "current user is not an organizer");
-                Button inviteButton = findViewById(R.id.invite_organizer_button);
-                inviteButton.setVisibility(View.GONE);
-            }
-        //});
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void initGroup() {
+        DatabaseInterface dbi = PolyContext.getDatabaseInterface();
+        User user = PolyContext.getCurrentUser();
+        if(user == null){
+            Log.e(TAG, "initGroup : current user is null ?!");
+            return;
+        }
+        userId = user.getUid();
+        dbi.getGroupByUserAndEvent(eventId, userId, group -> {
+            if(group == null){
+                findViewById(R.id.leave_group_button).setVisibility(View.GONE);
+                findViewById(R.id.invite_group_button).setVisibility(View.GONE);
+                return;
+            }
+
+            findViewById(R.id.create_group_button).setVisibility(View.GONE);
+            groupId = group.getGid();
+            initRecyclerView(group.getMembersNames());
+        });
+    }
     /**
-     * OnClick "INVITE ORGANIZER"
-     * - Generates the dynamic link for the organizer invite
+     * OnClick "INVITE TO GROUP"
+     * - Generates the dynamic link for the group invite
      * - Displays the link in the dialog
      */
     public void inviteLinkClicked(View view) {
         // build the invite dynamic link
-        // TODO: replace by short dynamic link
         DynamicLink inviteLink = FirebaseDynamicLinks.getInstance().createDynamicLink()
-                .setLink(Uri.parse("https://www.example.com/invite/?eventId=" + eventId
-                        + "&eventName=" + eventName))
+                .setLink(Uri.parse("https://www.example.com/inviteGroup/?groupId=" + groupId))
                 .setDomainUriPrefix("https://polycrowd.page.link")
                 .setAndroidParameters(new DynamicLink.AndroidParameters.Builder().build())
                 .setSocialMetaTagParameters(
                         new SocialMetaTagParameters.Builder()
-                                .setTitle("PolyCrowd Organizer Invite")
-                                .setDescription("You are invited to become an organizer of " + eventName)
+                                .setTitle("PolyCrowd Group Invite")
+                                .setDescription("You are invited to join a group")
                                 .build())
                 .buildDynamicLink();
 
@@ -143,8 +140,27 @@ public class EventPageDetailsActivity extends AppCompatActivity {
                 .setPositiveButton("OK", (dialog, which) -> dialog.cancel())
                 .show();
     }
-    public void clickSchedule(View view){
-        Intent intent = new Intent(this, ScheduleActivity.class);
-        startActivity(intent);
+
+    public void leaveLinkClicked(View view) {
+        Context c = this;
+        PolyContext.getDatabaseInterface().removeUserFromGroup(groupId, userId, () -> {
+            PolyContext.getDatabaseInterface().removeGroupIfEmpty(groupId, group -> {
+                Intent map = new Intent(c, GroupPageActivity.class);
+                startActivity(map);
+            });
+        });
     }
+
+    public void createLinkClicked(View view){
+        Context c = this;
+        PolyContext.getDatabaseInterface().createGroup(eventId, group -> {
+            groupId = group.getGid();
+            PolyContext.getDatabaseInterface().addUserToGroup(groupId, userId, () -> {
+                Log.w("createLinkClicked", groupId + " " + userId + " " + eventId);
+                Intent map = new Intent(c, GroupPageActivity.class);
+                startActivity(map);
+            });
+        });
+    }
+
 }

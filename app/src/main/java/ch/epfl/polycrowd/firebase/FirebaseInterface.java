@@ -1,6 +1,5 @@
 package ch.epfl.polycrowd.firebase;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -9,16 +8,15 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.SetOptions;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,22 +25,30 @@ import java.util.Objects;
 
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.firebase.handlers.DynamicLinkHandler;
+import ch.epfl.polycrowd.firebase.handlers.EmptyHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
+import ch.epfl.polycrowd.firebase.handlers.GroupHandler;
 import ch.epfl.polycrowd.firebase.handlers.OrganizersHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
+import ch.epfl.polycrowd.logic.Group;
 import ch.epfl.polycrowd.logic.User;
 
+/**
+ * @codeCoverageIgnore
+ * Excluded in build.gradle
+ */
 public class FirebaseInterface implements DatabaseInterface {
 
     private FirebaseAuth cachedAuth;
     private DatabaseReference cachedDbRef;
     private FirebaseFirestore cachedFirestore;
-    private Context c;
 
     private static final String EVENTS = "polyevents";
     private static final String ORGANIZERS = "organizers";
+    private static final String MEMBERS = "members";
+    private static final String GROUPS = "groups";
     private static final String USERS = "users";
     private static final String TAG = "FirebaseInterface";
 
@@ -156,7 +162,7 @@ public class FirebaseInterface implements DatabaseInterface {
 
     @Override
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public void getEventById(String eventId, EventHandler eventHandler) throws ParseException {
+    public void getEventById(String eventId, EventHandler eventHandler) {
         final String TAG1 = "getEventById";
             Log.d(TAG, TAG1 + " is not mocked");
             Log.d(TAG, TAG1 + " event id: " + eventId);
@@ -170,6 +176,142 @@ public class FirebaseInterface implements DatabaseInterface {
                     }).addOnFailureListener(e -> Log.e(TAG, "Error retrieving document with id " + eventId));
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void getGroupByUserAndEvent(String eventId, String userId, GroupHandler groupHandler) {
+        final String TAG1 = "getGroupByUserAndEvent";
+            Log.d(TAG, TAG1 + " is not mocked");
+            getFirestoreInstance(false).collection(GROUPS)
+                    .whereEqualTo("eventId", eventId)
+                    .whereArrayContains("members", userId)
+                    .get()
+                    .addOnSuccessListener(documentSnapshots -> {
+                        Log.d(TAG, TAG1 + " success");
+                        if(documentSnapshots.size() > 1){
+                            Log.e(TAG, TAG1 + ", more than one group containing a user given one event.");
+                            return;
+                        }
+                        if(documentSnapshots.size() < 1){
+                            // That user is in no group !
+                            Log.e(TAG, TAG1 + ", less than one group containing a user given one event.");
+                            groupHandler.handle(null);
+                            return;
+                        }
+
+                        DocumentSnapshot d = documentSnapshots.getDocuments().get(0);
+                        Map<String, Object> data = d.getData();
+                        List<String> members = new ArrayList<>((List<String>) data.get(MEMBERS));
+                        data.put(MEMBERS, new ArrayList<User>());
+
+                        for(String uid : members){
+                            getFirestoreInstance(false).collection(USERS)
+                                    .document(uid)
+                                    .get()
+                                    .addOnSuccessListener(documentSnapshot -> {
+                                        // the fuck, documentSnapshot.getData() is null
+                                        Log.e("BINGBONG", documentSnapshot.getId() + " " + documentSnapshot.getData());
+                                        User u = User.getFromDocument(documentSnapshot.getData());
+                                        ((List<User>) data.get(MEMBERS)).add(u);
+                                    });
+                        }
+                        data.put("gid", d.getId());
+                        Group group = Group.getFromDocument(data);
+                        groupHandler.handle(group);})
+                    .addOnFailureListener(e -> {
+                        // That user is in no group !
+                        groupHandler.handle(null);
+                    });
+    }
+
+    public void createGroup(String eventId, GroupHandler handler){
+        final String TAG1 = "createGroup";
+        if(eventId == null) {
+            Log.w(TAG, TAG1 + " eventId id is null");
+            return;
+        }
+            Group g = new Group("", eventId, new ArrayList<>());
+            getFirestoreInstance(false).collection(GROUPS)
+                    .add(g.getRawData())
+                    .addOnSuccessListener(documentReference -> {
+                        Log.e("CREATEGROUP", g.getGid());
+                        g.setGid(documentReference.getId());
+                        handler.handle(g);
+            }).addOnFailureListener(e -> Log.e(TAG, "Error adding new group : " + e));
+
+    }
+
+    public void addUserToGroup(String gid, String uid, EmptyHandler handler){
+        final String TAG1 = "addUserToGroup";
+        if(gid == null || uid == null) {
+            Log.w(TAG, TAG1 + " group id or user id is null");
+            return;
+        }
+            getFirestoreInstance(false).collection(GROUPS)
+                    .document(gid).get().addOnSuccessListener(documentSnapshot -> {
+                List<String> members = new ArrayList<>();
+                members.addAll((List<String>)documentSnapshot.get(MEMBERS));
+                // if user is not in the list, add
+                if(!members.contains(uid)) {
+                    Log.d(TAG, TAG1 + " adding member " + uid + " to the list");
+                    members.add(uid);
+                    Map<String, Object> data = new HashMap<>();
+                    data.put(MEMBERS, members);
+                    getFirestoreInstance(false).collection(GROUPS).document(gid)
+                            .set(data, SetOptions.merge())
+                            .addOnSuccessListener(aVoid -> handler.handle())
+                            .addOnFailureListener(e -> Log.w(TAG, "Error updating " + MEMBERS + " list"));
+                } else {
+                    Log.e(TAG, TAG1 + " member " + uid + " already in the list");
+                    handler.handle();
+                }
+            }).addOnFailureListener(e -> Log.w(TAG, "Error retrieving group with id" + gid));
+    }
+
+    public void removeUserFromGroup(String gid, String uid, EmptyHandler handler){
+        final String TAG1 = "removeUserFromGroup";
+        if(gid == null || uid == null) {
+            Log.w(TAG, TAG1 + " group id or user id is null");
+            return;
+        }
+            getFirestoreInstance(false).collection(GROUPS)
+                    .document(gid).get().addOnSuccessListener(documentSnapshot -> {
+                List<String> members = new ArrayList<>();
+                members.addAll((List<String>)documentSnapshot.get(MEMBERS));
+                // if user is not in the list, add
+                if(members.contains(uid)) {
+                    Log.d(TAG, TAG1 + " adding member " + uid + " to the list");
+                    members.remove(uid);
+                    Map<String, Object> data = new HashMap<>();
+                    data.put(MEMBERS, members);
+                    getFirestoreInstance(false).collection(GROUPS).document(gid)
+                            .set(data, SetOptions.merge())
+                            .addOnSuccessListener(aVoid -> handler.handle())
+                            .addOnFailureListener(e -> Log.w(TAG, "Error updating " + MEMBERS + " list"));
+                } else {
+                    Log.d(TAG, TAG1 + " member " + uid + " not in the list");
+                    handler.handle();
+                }
+            }).addOnFailureListener(e -> Log.w(TAG, "Error retrieving group with id" + gid));
+
+    }
+
+    public void removeGroupIfEmpty(String gid, GroupHandler handler){
+        final String TAG1 = "removeGroupIfEmpty";
+        if(gid == null) {
+            Log.w(TAG, TAG1 + " group id is null");
+            return;
+        }
+            getFirestoreInstance(false).collection(GROUPS)
+                    .document(gid).get().addOnSuccessListener(documentSnapshot -> {
+                List<String> members = (List<String>)documentSnapshot.get(MEMBERS);
+                if(members.isEmpty()) {
+                    getFirestoreInstance(false).collection(GROUPS).document(gid).delete();
+                    handler.handle(null);
+                } else {
+                    handler.handle(Group.getFromDocument(documentSnapshot.getData()));
+                }
+            }).addOnFailureListener(e -> Log.w(TAG, "Error retrieving group with id" + gid));
+    }
+
     @Override
     public void addOrganizerToEvent(@NonNull String eventId, String organizerEmail,
                                     OrganizersHandler handler) {
@@ -178,8 +320,7 @@ public class FirebaseInterface implements DatabaseInterface {
             // check if the organizer is already in the list
             getFirestoreInstance(false).collection(EVENTS)
                     .document(eventId).get().addOnSuccessListener(documentSnapshot -> {
-                List<String> organizers = new ArrayList<>();
-                organizers.addAll((List<String>)documentSnapshot.get(ORGANIZERS));
+                List<String> organizers = new ArrayList<>((List<String>) documentSnapshot.get(ORGANIZERS));
                 // if organizer is not in the list, add
                 if(!organizers.contains(organizerEmail)) {
                     Log.d(TAG, TAG1 + " adding organizer " + organizerEmail + " to the list");
@@ -188,12 +329,7 @@ public class FirebaseInterface implements DatabaseInterface {
                     data.put(ORGANIZERS, organizers);
                     getFirestoreInstance(false).collection(EVENTS).document(eventId)
                             .set(data, SetOptions.merge())
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    handler.handle();
-                                }
-                            })
+                            .addOnSuccessListener(e -> handler.handle())
                             .addOnFailureListener(e -> Log.w(TAG, "Error updating " + ORGANIZERS + " list"));
                 } else {
                     Log.d(TAG, TAG1 + " organizer " + organizerEmail + " already in the list");

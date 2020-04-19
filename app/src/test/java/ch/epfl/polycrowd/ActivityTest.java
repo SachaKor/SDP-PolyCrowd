@@ -1,12 +1,11 @@
 package ch.epfl.polycrowd;
 
 
+import net.fortuna.ical4j.model.Date;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,10 +16,13 @@ import static org.junit.Assert.assertEquals;
 
 
 public class ActivityTest {
-    Map<String, String> mockActivity;
+    public static final String CalURL = "https://calendar.google.com/calendar/ical/816h2e8601aniprqniv7a8tn90%40group.calendar.google.com/public/basic.ics";
+
+    private Map<String, String> mockActivity;
+
     @Before
     public void setupMap(){
-        this.mockActivity = new HashMap<String,String>();
+        this.mockActivity = new HashMap<>();
         this.mockActivity.put("LOCATION", "Location 1");
         this.mockActivity.put("UID", "id1");
         this.mockActivity.put("SUMMARY", "activity summary");
@@ -56,8 +58,8 @@ public class ActivityTest {
         assertEquals(a.getUid(),"id1");
         assertEquals(a.getSummary(),"activity summary");
         //TODO: Test these two fields in a localy independant manner
-        a.getStart();
-        a.getEnd();
+        //a.getStart();
+        //a.getEnd();
         assertEquals(a.getOrganizer(), "MAILTO:email@email.com");
     }
 }

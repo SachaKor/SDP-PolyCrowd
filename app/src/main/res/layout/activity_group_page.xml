@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="#fff"
+    tools:context=".GroupPageActivity">
+
+    <TextView
+        android:id="@+id/group_edit_title"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        android:text="@string/group"
+        android:padding="10dp"
+        android:ems="10"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/members_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/group_edit_title"/>
+
+    <Button
+        android:id="@+id/invite_group_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/members_recycler_view"
+        android:layout_marginTop="10dp"
+        android:text="@string/invite_group"
+        android:onClick="inviteLinkClicked"/>
+
+    <Button
+        android:id="@+id/leave_group_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/invite_group_button"
+        android:layout_marginTop="10dp"
+        android:text="@string/leave_group"
+        android:onClick="leaveLinkClicked"/>
+
+    <Button
+        android:id="@+id/create_group_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/members_recycler_view"
+        android:layout_marginTop="10dp"
+        android:text="@string/create_group"
+        android:onClick="createLinkClicked"/>
+
+</RelativeLayout>
+

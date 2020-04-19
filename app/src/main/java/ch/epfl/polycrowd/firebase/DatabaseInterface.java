@@ -8,20 +8,21 @@ import androidx.annotation.RequiresApi;
 
 import java.text.ParseException;
 
-import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.firebase.handlers.DynamicLinkHandler;
+import ch.epfl.polycrowd.firebase.handlers.EmptyHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
+import ch.epfl.polycrowd.firebase.handlers.GroupHandler;
 import ch.epfl.polycrowd.firebase.handlers.OrganizersHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
-import ch.epfl.polycrowd.logic.User;
+import ch.epfl.polycrowd.logic.Event;
 
 public interface DatabaseInterface {
 
     /***
      * Utility function to check arguments' integrity
      */
-    public default void checkArgs(String... args){
+    default void checkArgs(String... args){
         for (String arg : args){
             if (arg == null) throw new IllegalArgumentException("Firebase query cannot be null");
             if (arg.length() == 0) throw new IllegalArgumentException("Firebase query cannot be empty");
@@ -61,4 +62,16 @@ public interface DatabaseInterface {
     void receiveDynamicLink(DynamicLinkHandler handler, Intent intent);
 
     void addSOS(String userId, String eventId, String reason);
+
+    void addUserToGroup(String inviteGroupId, String uid, EmptyHandler emptyHandler);
+
+    void removeGroupIfEmpty(String gid, GroupHandler handler) ;
+
+    void removeUserFromGroup(String gid, String uid, EmptyHandler handler) ;
+
+    void getGroupByUserAndEvent(String eventId, String userId, GroupHandler groupHandler) ;
+
+    void createGroup(String eventId, GroupHandler handler) ;
+
+
 }
