@@ -121,22 +121,45 @@
                     android:text="########" />
             </LinearLayout>
         </LinearLayout>
-    <LinearLayout
+    <RelativeLayout
         android:layout_below="@+id/userDetails"
         android:layout_width="match_parent"
+        android:orientation="horizontal"
         android:layout_height="match_parent">
-        <Button
-            android:layout_gravity="bottom"
-            android:layout_marginBottom="10dp"
-            android:layout_width="match_parent"
-            android:background="@color/grey"
-            android:onClick="onEventsListClick"
-            android:text="Events I Organize"
+        <LinearLayout
+            android:layout_alignParentBottom="true"
+            android:gravity="bottom"
             android:orientation="vertical"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
-        </Button>
-    </LinearLayout>
+            <LinearLayout
+                android:layout_gravity="bottom"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <Button
+                    android:id="@+id/EventsOrganiseButton"
+                    android:layout_width="match_parent"
+                    android:onClick="onEventsListClick"
+                    android:text="Events I Organize"
+                    android:orientation="vertical"
+                    android:layout_height="wrap_content">
+                </Button>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_gravity="bottom"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <Button
+                    android:id="@+id/myGroupsButton"
+                    android:layout_width="match_parent"
+                    android:onClick="onMyGroupsButtonClick"
+                    android:text="MyGroups"
+                    android:orientation="vertical"
+                    android:layout_height="wrap_content">
+                </Button>
+            </LinearLayout>
+        </LinearLayout>
+    </RelativeLayout>
 
 
     </RelativeLayout>

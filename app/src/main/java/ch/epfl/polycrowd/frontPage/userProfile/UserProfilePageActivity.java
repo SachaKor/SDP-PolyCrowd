@@ -40,6 +40,10 @@ public class UserProfilePageActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void onMyGroupsButtonClick(View view) {
+    }
+
     public void OnUserProfileEditImgClick(View view) {
     }
+
 }
