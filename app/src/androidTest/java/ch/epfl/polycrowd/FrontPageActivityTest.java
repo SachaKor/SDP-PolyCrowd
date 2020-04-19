@@ -70,7 +70,11 @@ public class FrontPageActivityTest {
 
         // database interface setup
         DatabaseInterface dbi = new FirebaseMocker(usersAndPasswords, events);
+
         PolyContext.setDbInterface(dbi);
+
+        byte[] emptyImageInBytes = new byte[100*100];
+        dbi.uploadEventImage(ev, emptyImageInBytes, event -> { });
 
         // launch the intent
         Intent intent = new Intent();

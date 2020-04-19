@@ -19,6 +19,7 @@ import androidx.test.rule.ActivityTestRule;
 
 import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.firebase.FirebaseMocker;
+import ch.epfl.polycrowd.firebase.handlers.EventHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
@@ -56,6 +57,7 @@ public class EventPageDetailsActivityTest {
         Event ev = new Event("eventOwner", "testEvent", true, Event.EventType.CONCERT,
                 sDate, eDate, "testCalendar", "testDescription");
         ev.setId("1");
+
         User user = new User("organizer@op.com", "1", "organizer", 3L);
         ev.addOrganizer(user.getEmail());
         usersAndPasswords = new HashMap<>();
@@ -83,13 +85,9 @@ public class EventPageDetailsActivityTest {
 
     @Test
     public void editModeTurnsOffAfterChangesSubmitted() {
-        sleep();
         onView(withId(R.id.event_details_fab)).perform(click());
-        sleep();
         onView(withId(R.id.event_details_submit)).perform(click());
-        sleep();
         onView(withId(R.id.event_details_submit)).check(matches(not(isDisplayed())));
-        sleep();
     }
 
     private void sleep(){
