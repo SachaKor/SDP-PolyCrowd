@@ -25,11 +25,11 @@ public class UserProfilePageActivity extends AppCompatActivity {
 
         user = PolyContext.getCurrentUser() ;
 
-        /*TextView usernameField = view.findViewById(R.id.usernameField) ;
+        TextView usernameField = view.findViewById(R.id.profileUserName) ;
         usernameField.setText(user.getName());
 
-        TextView emailField = view.findViewById(R.id.emailField) ;
-        emailField.setText(user.getEmail());*/
+        TextView emailField = view.findViewById(R.id.profileEmail) ;
+        emailField.setText(user.getEmail());
 
         setContentView(view);
 

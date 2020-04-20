@@ -17,7 +17,7 @@
 
 
         <RelativeLayout
-            android:id = "@+id/imgUser"
+            android:id = "@+id/imgUserRellay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
@@ -25,6 +25,7 @@
             >
             
             <ImageView
+                android:id="@+id/imgUser"
                 android:layout_width="120dp"
                 android:layout_height="120dp"
                 android:adjustViewBounds="true"
@@ -36,6 +37,7 @@
                 android:src="@drawable/default_user_pic"/>
             
             <ImageView
+                android:id="@+id/profileEditButton"
                 android:layout_width="70dp"
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="15dp"
@@ -50,9 +52,10 @@
         </RelativeLayout>
         
         <TextView
+            android:id="@+id/profileUserName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/imgUser"
+            android:layout_below="@+id/imgUserRellay"
             android:layout_centerHorizontal="true"
             android:text ="Nani Haha"
             android:textSize="32sp"
@@ -87,6 +90,7 @@
                     android:textSize="13sp"
                     android:text="Email"/>
                 <TextView
+                    android:id="@+id/profileEmail"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#000000"
