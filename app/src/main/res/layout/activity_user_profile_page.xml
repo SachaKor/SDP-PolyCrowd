@@ -35,16 +35,16 @@
                 android:scaleType="centerInside"
                 android:background="@drawable/circle"
                 android:src="@drawable/default_user_pic"/>
-            
+
             <ImageView
                 android:id="@+id/profileEditButton"
                 android:layout_width="70dp"
                 android:layout_alignParentRight="true"
-                android:layout_marginRight="15dp"
+                android:layout_marginRight="5dp"
                 android:layout_marginTop="0dp"
                 android:layout_height="70dp"
                 android:onClick="OnUserProfileEditImgClick"
-                android:src="@drawable/ic_edit"
+                android:src="@drawable/ic_camera_alt_black"
                 android:adjustViewBounds="true"
                 android:scaleType="centerInside"
                 />
@@ -63,13 +63,11 @@
             android:textColor="@color/white"
 
             />
-
-
     </RelativeLayout>
     <RelativeLayout
         android:layout_below="@+id/rellay"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
         <LinearLayout
             android:id="@+id/userDetails"
             android:layout_width="match_parent"
@@ -78,51 +76,97 @@
             android:orientation="vertical"
             android:layout_height="wrap_content">
             <LinearLayout
-                android:layout_marginBottom="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
+                android:layout_weight="1"
+                android:orientation="horizontal">
+                <LinearLayout
+                    android:layout_marginBottom="10dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/userHeadings"
-                    android:textSize="13sp"
-                    android:text="Email"/>
-                <TextView
-                    android:id="@+id/profileEmail"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="#000000"
-                    android:fontFamily="sans-serif-light"
-                    android:textSize="18sp"
-                    android:text="nani@haha.com" />
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="15dp"
-                    android:background="@color/grey" />
+                    android:layout_gravity="center"
+                    android:orientation="vertical">
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/userHeadings"
+                        android:textSize="13sp"
+                        android:text="Email"/>
+                    <TextView
+                        android:id="@+id/profileEmail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#000000"
+                        android:fontFamily="sans-serif-light"
+                        android:textSize="18sp"
+                        android:text="nani@haha.com" />
+                </LinearLayout>
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <ImageView
+                        android:id="@+id/profileEditEmailButton"
+                        android:layout_width="50dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginTop="0dp"
+                        android:layout_marginLeft="0dp"
+                        android:layout_marginBottom="0dp"
+                        android:layout_height="50dp"
+                        android:onClick="OnUserProfileEditEmailButtonClick"
+                        android:src="@drawable/ic_edit"
+                        android:adjustViewBounds="true"
+                        android:scaleType="centerInside"
+                        />
+                </RelativeLayout>
             </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="15dp"
+                android:background="@color/grey" />
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
-                android:orientation="vertical">
-
-                <TextView
+                android:orientation="horizontal">
+                <LinearLayout
+                    android:layout_marginBottom="10dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/userHeadings"
-                    android:textSize="13sp"
-                    android:text="Password"/>
-                <TextView
+                    android:layout_gravity="center"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/userHeadings"
+                        android:textSize="13sp"
+                        android:text="Password"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#000000"
+                        android:fontFamily="sans-serif-light"
+                        android:textSize="18sp"
+                        android:text="########" />
+                </LinearLayout>
+                <RelativeLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="#000000"
-                    android:fontFamily="sans-serif-light"
-                    android:textSize="18sp"
-                    android:text="########" />
+                    android:layout_height="wrap_content">
+                    <ImageView
+                        android:id="@+id/profileEditPasswordButton"
+                        android:layout_width="50dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginTop="0dp"
+                        android:layout_marginLeft="0dp"
+                        android:layout_marginBottom="0dp"
+                        android:layout_height="50dp"
+                        android:onClick="OnUserProfileEditPasswordButtonClick"
+                        android:src="@drawable/ic_edit"
+                        android:adjustViewBounds="true"
+                        android:scaleType="centerInside"
+                        />
+                </RelativeLayout>
             </LinearLayout>
         </LinearLayout>
     <RelativeLayout
