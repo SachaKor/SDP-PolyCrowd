@@ -24,12 +24,11 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
 
-import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.EmergencyActivity;
 import ch.epfl.polycrowd.EventPageDetailsActivity;
-import ch.epfl.polycrowd.GroupPageActivity;
-import ch.epfl.polycrowd.authentification.LoginActivity;
 import ch.epfl.polycrowd.R;
+import ch.epfl.polycrowd.authentification.LoginActivity;
+import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 
@@ -64,11 +63,6 @@ public class MapActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        // TODO: replace this with the Context
-//        if(getIntent().hasExtra("eventId")) {
-//            eventId = getIntent().getStringExtra("eventId");
-//        }
 
         Event event = PolyContext.getCurrentEvent();
         if(event != null)
@@ -211,11 +205,11 @@ public class MapActivity extends AppCompatActivity {
     }
 
 
-    public void clickGroup(View view) {
+    /*public void clickGroup(View view) {
         Intent intent = new Intent(this, GroupPageActivity.class);
         intent.putExtra("eventId", eventId);
         startActivity(intent);
-    }
+    }*/
 
     public boolean clickSOS(View view) {
         Intent intent = new Intent(this, EmergencyActivity.class);
@@ -238,7 +232,7 @@ public class MapActivity extends AppCompatActivity {
         buttonLeft.setText("GROUPS");
 
         buttonRight.setOnClickListener(v -> clickEventDetails(v));
-        buttonLeft.setOnClickListener(v -> clickGroup(v));
+        //buttonLeft.setOnClickListener(v -> clickGroup(v));
     }
 
     void setOrganiserButtons(Button buttonLeft, Button buttonRight) {
