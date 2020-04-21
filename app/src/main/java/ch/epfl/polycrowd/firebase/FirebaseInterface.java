@@ -166,6 +166,7 @@ public class FirebaseInterface implements DatabaseInterface {
         final String TAG1 = "getEventById";
             Log.d(TAG, TAG1 + " is not mocked");
             Log.d(TAG, TAG1 + " event id: " + eventId);
+
             getFirestoreInstance(false).collection(EVENTS)
                     .document(eventId).get()
                     .addOnSuccessListener(documentSnapshot -> {

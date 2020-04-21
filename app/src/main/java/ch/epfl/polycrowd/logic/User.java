@@ -47,8 +47,8 @@ public class User extends Storable {
     public static User getFromDocument(Map<String, Object> data) {
         String username = Objects.requireNonNull(data.get("username")).toString();
         String email = Objects.requireNonNull(data.get("email")).toString();
-        Integer age = (Integer) Objects.requireNonNull(data.get("age"));
+        Integer age = Integer.parseInt(Objects.requireNonNull(data.get("age").toString()));
         String uid = Objects.requireNonNull(data.get("uid")).toString();
-        return new User(email, uid, username, age);
+        return new User(email, uid, username, age.intValue());
     }
 }
