@@ -14,6 +14,7 @@ public abstract class PolyContext extends Context {
     private static User currentUser;
     private static String previousPage = "";
     private static boolean mockDynamicLink = false; // for the FrontPage testing
+    private static Group group  ;
     private static DatabaseInterface dbInterface  = new FirebaseInterface();
 
     public static void reset(){
@@ -31,22 +32,26 @@ public abstract class PolyContext extends Context {
     public static Event getCurrentEvent(){
         return currentEvent;
     }
-    public static String getPreviousPage() {
-        return previousPage;
-    }
+
+    public static void setMockDynamicLink(boolean mock) { mockDynamicLink = mock; }
+
     public static boolean getMockDynamicLink() { return mockDynamicLink; }
 
     public static User getCurrentUser() {
         return currentUser;
     }
+
     public static void setCurrentUser(User u){
        currentUser= u;
     }
+
+    public static String getPreviousPage() {
+        return previousPage;
+    }
+
     public static void setPreviousPage(String previousPage) {
         PolyContext.previousPage = previousPage;
     }
-    public static void setMockDynamicLink(boolean mock) { mockDynamicLink = mock; }
-
 
     public static void setDbInterface(DatabaseInterface dbInterfaceInject){
         dbInterface = dbInterfaceInject ;
@@ -55,31 +60,5 @@ public abstract class PolyContext extends Context {
     public static DatabaseInterface getDatabaseInterface(){
         return dbInterface ;
     }
-
-
-
-
-
-    // ----------- Use isRunningTest() to check if u are doing a test ------------------------
-    // https://stackoverflow.com/questions/28550370/how-to-detect-whether-android-app-is-running-ui-test-with-espresso
-    /*private static AtomicBoolean isRunningTest;
-    public static synchronized boolean isRunningTest () {
-        if (null == isRunningTest) {
-            boolean istest;
-
-            try {
-                Class.forName("org.junit.Test");
-                istest = true;
-            } catch (ClassNotFoundException e) {
-                istest = false;
-            }
-
-            isRunningTest = new AtomicBoolean (istest);
-        }
-
-        return isRunningTest.get ();
-    }*/
-
-    // --------------------------------------------------------------------------------------
 
 }
