@@ -103,7 +103,6 @@ public class GroupPageActivity extends AppCompatActivity {
                 return;
             }
 
-            findViewById(R.id.create_group_button).setVisibility(View.GONE);
             groupId = group.getGid();
             initRecyclerView(group.getMembersNames());
         });
