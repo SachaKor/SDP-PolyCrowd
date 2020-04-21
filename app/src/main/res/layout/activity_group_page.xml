@@ -43,13 +43,12 @@
         android:onClick="leaveLinkClicked"/>
 
     <Button
-        android:id="@+id/create_group_button"
+        android:id="@+id/view_group_map_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/members_recycler_view"
+        android:layout_below="@+id/leave_group_button"
         android:layout_marginTop="10dp"
-        android:text="@string/create_group"
-        android:onClick="createLinkClicked"/>
+        android:text="Button" />
 
 </RelativeLayout>
 
