@@ -21,6 +21,7 @@
         android:theme="@style/AppTheme">
         <activity android:name=".userProfile.UserProfilePageActivity"></activity>
         <activity android:name=".userProfile.UserEventListActivity"/>
+        <activity android:name=".map.GroupMapActivity"/>
         <activity android:name=".authentification.ResetPasswordActivity" />
         <activity android:name=".authentification.SignUpActivity" />
         <activity android:name=".EventPageDetailsActivity" />
