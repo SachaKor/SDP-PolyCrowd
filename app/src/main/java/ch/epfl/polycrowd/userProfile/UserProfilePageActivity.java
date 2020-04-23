@@ -26,6 +26,7 @@ import com.google.firebase.auth.FirebaseUser;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
+import ch.epfl.polycrowd.map.GroupMapActivity;
 
 public class UserProfilePageActivity extends AppCompatActivity {
 
@@ -62,6 +63,8 @@ public class UserProfilePageActivity extends AppCompatActivity {
     }
 
     public void onMyGroupsButtonClick(View view) {
+        Intent intent = new Intent(this, GroupMapActivity.class) ;
+        startActivity(intent);
     }
 
     public void OnUserProfileEditImgClick(View view) {
