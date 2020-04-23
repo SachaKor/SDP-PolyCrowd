@@ -28,6 +28,6 @@ public class GroupMapActivity extends AppCompatActivity {
         viewPager.setAdapter(fragmentAdapter);
 
         tabLayout.setupWithViewPager(viewPager);
-
     }
+
 }

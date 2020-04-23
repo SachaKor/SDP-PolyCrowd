@@ -22,6 +22,7 @@
         <activity android:name=".userProfile.UserProfilePageActivity"></activity>
         <activity android:name=".userProfile.UserEventListActivity"/>
         <activity android:name=".map.GroupMapActivity"/>
+        <activity android:name=".GroupPageActivity" />
         <activity android:name=".authentification.ResetPasswordActivity" />
         <activity android:name=".authentification.SignUpActivity" />
         <activity android:name=".EventPageDetailsActivity" />
@@ -30,7 +31,6 @@
             tools:replace="android:launchMode" />
         <activity android:name=".authentification.LoginActivity" />
         <activity android:name=".EventEditActivity" />
-        <activity android:name=".GroupPageActivity" />
         <activity android:name=".schedulePage.ScheduleActivity" />
         <activity
             android:name=".frontPage.FrontPageActivity"

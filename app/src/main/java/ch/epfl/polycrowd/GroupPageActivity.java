@@ -68,6 +68,12 @@ public class GroupPageActivity extends AppCompatActivity {
 
     private void initRecyclerView(List<String> members) {
         RecyclerView recyclerView = findViewById(R.id.members_recycler_view);
+        //TODO remove hard-coded members later
+        members.add("Stupid 1") ;
+        members.add("Stupid 2") ;
+        members.add("Stupid 3") ;
+        members.add("Stupid 4") ;
+
         OrganizersAdapter adapter = new OrganizersAdapter(members);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));

@@ -12,11 +12,13 @@
         android:id="@+id/group_edit_title"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        android:text="@string/group"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="16dp"
+        android:ems="10"
         android:padding="10dp"
-        android:ems="10"/>
+        android:text="@string/group"
+        android:textAlignment="center"
+        android:textSize="20sp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/members_recycler_view"
@@ -41,14 +43,6 @@
         android:layout_marginTop="10dp"
         android:text="@string/leave_group"
         android:onClick="leaveLinkClicked"/>
-
-    <Button
-        android:id="@+id/view_group_map_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/leave_group_button"
-        android:layout_marginTop="10dp"
-        android:text="Button" />
 
 </RelativeLayout>
 
