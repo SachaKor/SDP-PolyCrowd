@@ -9,6 +9,8 @@
     <string name="event_submit">Save Changes</string>
     <string name="event_type_hint">Event Type</string>
     <string name="event_calendar_hint">Schedule calendar url</string>
+    <string name="event_is_emergency_enabled">Emergencies</string>
+    <string name="event_emergency_hint">If the event should use the emergency button feature</string>
     <string-array name="event_type_list">
         <item value="FESTIVAL">Festival</item>
         <item value="CONCERT">Concert</item>
