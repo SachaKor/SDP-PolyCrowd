@@ -1,4 +1,4 @@
-package ch.epfl.polycrowd.frontPage.userProfile;
+package ch.epfl.polycrowd.userProfile;
 
 import android.content.Context;
 import android.content.Intent;

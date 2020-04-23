@@ -13,21 +13,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import androidx.test.rule.ActivityTestRule;
 
-import net.sf.ehcache.search.expression.And;
-
-import java.security.acl.Owner;
-
-import ch.epfl.polycrowd.authentification.LoginActivity;
-import ch.epfl.polycrowd.frontPage.userProfile.UserProfilePageActivity;
+import ch.epfl.polycrowd.userProfile.UserProfilePageActivity;
 import ch.epfl.polycrowd.logic.PolyContext;
 
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
-import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -50,7 +42,7 @@ public class userProfileActivityTest {
     public void setUp() {
         AndroidTestHelper.SetupMockDBI();
 
-        PolyContext.setCurrentUser(AndroidTestHelper.getNewUser());
+        PolyContext.setCurrentUser(AndroidTestHelper.getOrganiser());
 
         Intent intent = new Intent();
         userProfileActivityRule.launchActivity(intent);
@@ -86,10 +78,10 @@ public class userProfileActivityTest {
     }
 
     @Test
-    public void myEventsButtonWorks(){
+    public void myEventsButtonsWorksAndDisplayEventsIamOrganiserOf(){
         onView(withId(R.id.EventsOrganiseButton)).perform(click());
         sleep();
-
-    }
+        onView(withId(R.id.titleTv)).check(matches(withText(containsString("DEBUG EVENT"))));
+}
 }
 

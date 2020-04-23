@@ -2,7 +2,6 @@ package ch.epfl.polycrowd.frontPage;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -25,9 +24,8 @@ import java.util.List;
 
 import ch.epfl.polycrowd.GroupInviteActivity;
 import ch.epfl.polycrowd.R;
-import ch.epfl.polycrowd.frontPage.userProfile.UserProfilePageActivity;
+import ch.epfl.polycrowd.userProfile.UserProfilePageActivity;
 import ch.epfl.polycrowd.authentification.LoginActivity;
-import ch.epfl.polycrowd.firebase.handlers.DynamicLinkHandler;
 import ch.epfl.polycrowd.logic.Event;
 
 import ch.epfl.polycrowd.logic.PolyContext;

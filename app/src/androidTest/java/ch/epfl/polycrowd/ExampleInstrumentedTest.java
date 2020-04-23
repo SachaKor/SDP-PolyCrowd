@@ -15,7 +15,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import ch.epfl.polycrowd.authentification.LoginActivity;
-import ch.epfl.polycrowd.frontPage.userProfile.UserProfilePageActivity;
+import ch.epfl.polycrowd.userProfile.UserProfilePageActivity;
 import ch.epfl.polycrowd.logic.PolyContext;
 
 import static androidx.test.espresso.Espresso.onView;
