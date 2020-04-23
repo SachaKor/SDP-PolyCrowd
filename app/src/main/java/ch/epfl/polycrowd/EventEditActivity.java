@@ -34,8 +34,9 @@ public class EventEditActivity extends AppCompatActivity {
 
     private EditText eventName;
     private EditText startDate, endDate;
-    private Switch isPublicSwitch;
+    private Switch isPublicSwitch, isEmergencyEnabled;
     private Spinner eventTypeSpinner;
+
 
 
     @Override
@@ -51,6 +52,7 @@ public class EventEditActivity extends AppCompatActivity {
         endDate = findViewById(R.id.EditEventEnd);
         isPublicSwitch = findViewById(R.id.EditEventPublic);
         eventTypeSpinner = findViewById(R.id.EditEventType);
+        isEmergencyEnabled = findViewById(R.id.EditEventEmergency);
     }
 
 
@@ -104,7 +106,7 @@ public class EventEditActivity extends AppCompatActivity {
         String sDate = startDate.getText().toString(),
                 eDate = endDate.getText().toString(),
                 type = eventTypeSpinner.getSelectedItem().toString();
-
+        Boolean hasEmergency = isEmergencyEnabled.isChecked();
         if(hasEmptyFields()) {
             return;
         }
@@ -122,12 +124,13 @@ public class EventEditActivity extends AppCompatActivity {
         organizers.add(user.getEmail());
         // Create the map containing the event info
         EditText calendarUrl = findViewById(R.id.EditEventCalendar);
+
         // Create the map containing the event info
 
         Event ev = new Event(user.getUid(), evName.getText().toString(), isPublic,
                 Event.EventType.valueOf(type.toUpperCase()),
                 startDate, endDate,
-                calendarUrl.getText().toString(), "", organizers);
+                calendarUrl.getText().toString(), "", hasEmergency, organizers);
         // Map<String, Object> event = ev.toHashMap();
         // add event to the database
         Context c = this ;

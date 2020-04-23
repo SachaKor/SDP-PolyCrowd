@@ -153,7 +153,8 @@ public class MapActivity extends AppCompatActivity {
                 break;
             case VISITOR:
                 setVisitorButtons(buttonLeft, buttonRight);
-                buttonSOS.setVisibility(View.VISIBLE);
+                if (PolyContext.getCurrentEvent().isEmergencyEnabled()) buttonSOS.setVisibility(View.VISIBLE);
+                else buttonSOS.setVisibility(View.INVISIBLE);
                 buttonSOS.setOnLongClickListener(v->clickSOS(v)); //TODO: hold for 5 seconds + animation ?
                 break;
             case ORGANISER:
