@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
+import android.util.Pair;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -70,20 +71,19 @@ public class EventPageDetailsGalleryTest {
     @Before
     public void startIntent() {
         List<Event> events;
-        Map<User, String> usersAndPasswords;
+        Map<String, Pair<User, String>> usersAndPasswords;
         Date sDate = new Date(1649430344),
                 eDate = new Date(1649516744);
         Event ev = new Event("eventOwner", "testEvent", true, Event.EventType.CONCERT,
-                sDate, eDate, "testCalendar", "testDescription");
+                sDate, eDate, "testCalendar", "testDescription", false);
         ev.setId("1");
-        User user = new User("organizer@op.com", "1", "organizer", 3L);
+        User user = new User("organizer@op.com", "1", "organizer", 3);
         ev.addOrganizer(user.getEmail());
         PolyContext.setCurrentEvent(ev);
         usersAndPasswords = new HashMap<>();
         events = new ArrayList<>();
         events.add(ev);
-        usersAndPasswords.put(user, "123456");
-
+        usersAndPasswords.put("organizer@op.com", new Pair(user, "123456"));
         // PolyContext setup
         DatabaseInterface dbi = new FirebaseMocker(usersAndPasswords, events);
         PolyContext.setDbInterface(dbi);
