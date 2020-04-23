@@ -136,11 +136,7 @@ public class EventEditActivityTest {
         mActivityRule.launchActivity(intent);
 
         sleep();
-        sleep();
-        sleep();
-        sleep();
-        sleep();
-        sleep();
+
 
         onView(withId(R.id.EditEventName)).check(matches(withText(containsString(e.getName()))));
         if (e.getPublic()) onView(withId(R.id.EditEventPublic)).check(matches(isChecked()));
@@ -154,11 +150,11 @@ public class EventEditActivityTest {
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
         onView(withId(R.id.EditEventStart)).check(matches(withText(sdf.format(e.getStart()))));
         onView(withId(R.id.EditEventEnd)).check(matches(withText(sdf.format(e.getEnd()))));
+        onView(withId(R.id.EditEventSubmit)).perform(scrollTo(),click());
         sleep();
-        sleep();
-        sleep();
-        sleep();
-        sleep();
+
+
+
     }
 
 

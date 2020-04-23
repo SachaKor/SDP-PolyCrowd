@@ -81,6 +81,11 @@ public class MapActivityTest {
     @Test
     public void setOrgainizerButtonsCorrectlyCreatesOrganizerButtons() {
 
+        Event e = new Event("Test Owner","Test Name", true, Event.EventType.CONVENTION,new Date(), new Date(),"url","Test Description");
+        e.setId("test id");
+        PolyContext.getDatabaseInterface().addEvent(e, ev->{}, ev->{});
+        PolyContext.setCurrentEvent(e);
+
         PolyContext.setCurrentUser(AndroidTestHelper.getOwner());
 
         Intent intent = new Intent();
@@ -99,8 +104,12 @@ public class MapActivityTest {
             sleep();
             Espresso.pressBack();
             sleep();
+
             onView(withId(R.id.butEdit)).check(matches(withText(containsString("EDIT"))));
-            //onView(withId(R.id.butEdit)).perform(click()); //TODO: butEdit.perform(click()) crashes on mocked context (but not on prod), seems to need more setup (tried setting up fake events without success)
+            onView(withId(R.id.butEdit)).perform(click());
+            sleep();
+            Espresso.pressBack();
+            sleep();
         }
     }
 
