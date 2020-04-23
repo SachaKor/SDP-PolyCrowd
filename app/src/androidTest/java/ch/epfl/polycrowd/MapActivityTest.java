@@ -118,6 +118,11 @@ public class MapActivityTest {
     @Test
     public void setOrgainizerButtonsCorrectlyCreatesOrganizerButtons() {
 
+        Event e = new Event("Test Owner","Test Name", true, Event.EventType.CONVENTION,new Date(), new Date(),"url","Test Description", false);
+        e.setId("test id");
+        PolyContext.getDatabaseInterface().addEvent(e, ev->{}, ev->{});
+        PolyContext.setCurrentEvent(e);
+
         PolyContext.setCurrentUser(AndroidTestHelper.getOwner());
 
         Intent intent = new Intent();
@@ -133,8 +138,16 @@ public class MapActivityTest {
             sleep();
             onView(withId(R.id.butLeft)).check(matches(withText(containsString("STAFF"))));
             onView(withId(R.id.butLeft)).perform(click());
+            sleep();
+            Espresso.pressBack();
+            sleep();
+
+            onView(withId(R.id.butEdit)).check(matches(withText(containsString("EDIT"))));
+            onView(withId(R.id.butEdit)).perform(click());
+            
         }
     }
+
 
     @Test
     public void setVisitorButtonsCorrectlyCreatesVisitorButtons() {
@@ -171,5 +184,7 @@ public class MapActivityTest {
             onView(withId(R.id.sign_in_logo)).check(matches(isDisplayed()));
         }
     }
+
+
 
 }

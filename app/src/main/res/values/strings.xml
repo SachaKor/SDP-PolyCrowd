@@ -43,6 +43,7 @@
     <string name="organizer_invite_text_1">"You are invited to become an organizer of the event</string>
     <string name="organizer_invite_text_2">Sign in to accept the invitation</string>
     <string name="sos_main">Emergency</string>
+    <string name="edit_main">Edit</string>
     <string name="sos_type">What is the reason for the emergency ??</string>
     <string-array name="sos_type_list">
         <item value="LOSTMINOR">Lost Minor</item>

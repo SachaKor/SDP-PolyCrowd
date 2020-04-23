@@ -157,6 +157,21 @@ public class FirebaseInterface implements DatabaseInterface {
 
     @Override
     @RequiresApi(api = Build.VERSION_CODES.O)
+    public void patchEventByID(String eventId, Event event, EventHandler successHandler, EventHandler failureHandler){
+        getFirestoreInstance(false).collection(EVENTS).document(eventId)
+                .update(event.toHashMap())
+                .addOnSuccessListener(documentReference -> {
+                    Log.d(TAG, "DocumentSnapshot added with ID: " + eventId);
+                    successHandler.handle(event);
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error adding document", e);
+                    failureHandler.handle(event);
+                });
+    }
+
+    @Override
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void getEventById(String eventId, EventHandler eventHandler) {
         final String TAG1 = "getEventById";
             Log.d(TAG, TAG1 + " is not mocked");
