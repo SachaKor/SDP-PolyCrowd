@@ -1,9 +1,11 @@
 package ch.epfl.polycrowd;
 
+import android.Manifest;
 import android.content.Intent;
 
 import androidx.test.espresso.Espresso;
 import androidx.test.rule.ActivityTestRule;
+import androidx.test.rule.GrantPermissionRule;
 
 
 import org.junit.Before;
@@ -11,19 +13,10 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
-
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-import ch.epfl.polycrowd.R;
-import ch.epfl.polycrowd.firebase.DatabaseInterface;
-import ch.epfl.polycrowd.firebase.FirebaseMocker;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
-import ch.epfl.polycrowd.logic.User;
 import ch.epfl.polycrowd.map.MapActivity;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -32,8 +25,9 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static ch.epfl.polycrowd.AndroidTestHelper.sleep;
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.Matchers.not;
 
 
 public class MapActivityTest {
@@ -43,39 +37,20 @@ public class MapActivityTest {
         PolyContext.reset();
     }
 
-    private User u1 = new User("fake@user", "1", "fakeUser", 3L);
-    private User u2 = new User("eventOwner@user", "1", "eventOwner", 3L);
-
     @Rule
     public final ActivityTestRule<MapActivity> mActivityRule =
             new ActivityTestRule<>(MapActivity.class);
 
+    @Rule
+    public GrantPermissionRule grantFineLocation =
+            GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION);
 
     @Before
     public void setUp() {
-        Date sDate = new Date(1649430344),
-                eDate = new Date(1649516744);
+        AndroidTestHelper.SetupMockDBI();
 
-        // events setup
-        Event ev = new Event("eventOwner@user", "DEBUG EVENT", true, Event.EventType.CONCERT,
-                sDate, eDate, "testCalendar", "this is only a debug event ... ");
-        ev.setId("1");
-        List<Event> events = new ArrayList<>();
-        events.add(ev);
+        PolyContext.setCurrentUser(null);
 
-        // users setup
-        Map<User, String> usersAndPasswords = new HashMap<>();
-        usersAndPasswords.put(u1, "1234567");
-        usersAndPasswords.put(u2, "1234567");
-
-        // database interface setup
-        DatabaseInterface dbi = new FirebaseMocker(usersAndPasswords, events);
-        PolyContext.setDbInterface(dbi);
-
-
-        PolyContext.setCurrentEvent(ev);
-
-        // launch the intent
         Intent intent = new Intent();
         mActivityRule.launchActivity(intent);
     }
@@ -84,15 +59,20 @@ public class MapActivityTest {
     public void setGuestButtonsCorrectlyCreatesGuestButtons() {
 
         PolyContext.setCurrentUser(null);
-        // launch the intent
+
         Intent intent = new Intent();
         mActivityRule.launchActivity(intent);
+
+        sleep();
 
         if(mActivityRule.getActivity().status == MapActivity.level.GUEST) {
             onView(withId(R.id.butRight)).check(matches(withText(containsString("EVENT DETAILS"))));
             onView(withId(R.id.butRight)).perform(click());
+
             sleep();
+
             Espresso.pressBack();
+
             sleep();
             onView(withId(R.id.butLeft)).check(matches(withText(containsString("LOGIN"))));
             onView(withId(R.id.butLeft)).perform(click());
@@ -100,13 +80,55 @@ public class MapActivityTest {
     }
 
     @Test
+    public void sosButtonDisplaysWhenEmergencyFeatureIsTrue(){
+        PolyContext.setCurrentEvent(new Event("","",true,
+                Event.EventType.FESTIVAL,new Date(), new Date(),"","",true));
+
+        PolyContext.setCurrentUser(null);
+
+        Intent intent = new Intent();
+        mActivityRule.launchActivity(intent);
+        if(mActivityRule.getActivity().status == MapActivity.level.VISITOR) {
+            onView(withId(R.id.butSOS)).check(matches(withText(containsString("EMERGENCY"))));
+            onView(withId(R.id.butSOS)).perform(click());
+
+            sleep();
+        }
+        else{
+            onView(withId(R.id.butSOS)).check(matches(not(isDisplayed())));
+        }
+    }
+
+    @Test
+    public void sosButtonHidesWhenEmergencyFeatureIsFalse(){
+        PolyContext.setCurrentEvent(new Event("","",true,
+                Event.EventType.FESTIVAL,new Date(), new Date(),"","",false));
+
+        PolyContext.setCurrentUser(null);
+
+        Intent intent = new Intent();
+        mActivityRule.launchActivity(intent);
+        onView(withId(R.id.butSOS)).check(matches(not(isDisplayed())));
+
+        sleep();
+
+    }
+
+
+    @Test
     public void setOrgainizerButtonsCorrectlyCreatesOrganizerButtons() {
 
-        PolyContext.setCurrentUser(u2);
-        // launch the intent
+        Event e = new Event("Test Owner","Test Name", true, Event.EventType.CONVENTION,new Date(), new Date(),"url","Test Description", false);
+        e.setId("test id");
+        PolyContext.getDatabaseInterface().addEvent(e, ev->{}, ev->{});
+        PolyContext.setCurrentEvent(e);
+
+        PolyContext.setCurrentUser(AndroidTestHelper.getOwner());
+
         Intent intent = new Intent();
         mActivityRule.launchActivity(intent);
 
+        sleep();
 
         if(mActivityRule.getActivity().status == MapActivity.level.ORGANISER) {
             onView(withId(R.id.butRight)).check(matches(withText(containsString("MANAGE"))));
@@ -116,17 +138,26 @@ public class MapActivityTest {
             sleep();
             onView(withId(R.id.butLeft)).check(matches(withText(containsString("STAFF"))));
             onView(withId(R.id.butLeft)).perform(click());
+            sleep();
+            Espresso.pressBack();
+            sleep();
+
+            onView(withId(R.id.butEdit)).check(matches(withText(containsString("EDIT"))));
+            onView(withId(R.id.butEdit)).perform(click());
+            
         }
     }
+
 
     @Test
     public void setVisitorButtonsCorrectlyCreatesVisitorButtons() {
 
-        PolyContext.setCurrentUser(u1);
-        // launch the intent
+        PolyContext.setCurrentUser(AndroidTestHelper.getUser());
+
         Intent intent = new Intent();
         mActivityRule.launchActivity(intent);
 
+        sleep();
 
         if(mActivityRule.getActivity().status == MapActivity.level.VISITOR) {
             onView(withId(R.id.butRight)).check(matches(withText(containsString("EVENT DETAILS"))));
@@ -141,7 +172,13 @@ public class MapActivityTest {
 
     @Test
     public void asGuestLoginButtonNavigatesToLoginPage() {
+
+        PolyContext.setCurrentUser(null);
+        Intent intent = new Intent();
+        mActivityRule.launchActivity(intent);
+
         sleep();
+
         if(mActivityRule.getActivity().status == MapActivity.level.GUEST) {
             onView(withId(R.id.butLeft)).perform(click());
             onView(withId(R.id.sign_in_logo)).check(matches(isDisplayed()));
@@ -149,19 +186,5 @@ public class MapActivityTest {
     }
 
 
-    /*@Test
-    public void asGuestLoginButtonNavigatesToEventDetailsPage() {
-        if(mActivityRule.getActivity().status == MapActivity.level.GUEST) {
-            onView(withId(R.id.butRight)).perform(click());
-            onView(withId(R.id.event_details_title)).check(matches(isDisplayed()));
-        }
-    }*/
 
-    private void sleep(){
-        try{
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
 }

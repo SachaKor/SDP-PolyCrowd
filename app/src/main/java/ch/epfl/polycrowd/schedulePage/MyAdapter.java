@@ -5,14 +5,11 @@ import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Filter;
-import android.widget.Filterable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import ch.epfl.polycrowd.R;
@@ -21,11 +18,9 @@ import ch.epfl.polycrowd.logic.Activity;
 public class MyAdapter extends RecyclerView.Adapter<MyHolder> {
 
     private List<Activity> models;
-    private List<Activity> modelsFull;
 
     public MyAdapter(Context c, List<Activity> models){
         this.models= models ;
-        modelsFull = new ArrayList<>(models);
     }
 
     @NonNull

@@ -21,7 +21,7 @@ public interface DatabaseInterface {
     /***
      * Utility function to check arguments' integrity
      */
-    public default void checkArgs(String... args){
+    default void checkArgs(String... args){
         for (String arg : args){
             if (arg == null) throw new IllegalArgumentException("Firebase query cannot be null");
             if (arg.length() == 0) throw new IllegalArgumentException("Firebase query cannot be empty");
@@ -48,13 +48,16 @@ public interface DatabaseInterface {
     void addEvent(Event event, EventHandler successHandler, EventHandler failureHandler);
 
     @RequiresApi(api = Build.VERSION_CODES.O)
+    void patchEventByID(String eventId, Event event, EventHandler successHandler, EventHandler failureHandler);
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
     void getEventById(String eventId, EventHandler eventHandler) throws ParseException;
 
     void addOrganizerToEvent(String eventId, String organizerEmail,
                              OrganizersHandler handler);
 
     //Checking for existing username or email not handled in signUp call, but via other async. requests
-    void signUp(String username, String firstPassword, String email, Long age, UserHandler successHandler, UserHandler failureHandler);
+    void signUp(String username, String firstPassword, String email, Integer age, UserHandler successHandler, UserHandler failureHandler);
 
     void resetPassword(String email, UserHandler successHandler, UserHandler failureHandler);
 
@@ -65,4 +68,5 @@ public interface DatabaseInterface {
     void downloadEventImage(Event event, ImageHandler handler);
 
     void updateEvent(Event event, EventHandler eventHandler);
+    void addSOS(String userId, String eventId, String reason);
 }

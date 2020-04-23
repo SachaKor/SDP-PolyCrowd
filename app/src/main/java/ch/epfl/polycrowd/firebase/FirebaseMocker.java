@@ -4,16 +4,17 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
+import android.util.Pair;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import ch.epfl.polycrowd.firebase.handlers.DynamicLinkHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventHandler;
@@ -33,14 +34,13 @@ public class FirebaseMocker implements DatabaseInterface {
     private List<Event> events ;
     private byte[] image;
 
-    public FirebaseMocker(Map<User, String> defaultUsersAndPasswords, List<Event> defaultEvents){
+    public FirebaseMocker(Map<String, Pair<User, String>> defaultMailAndUserPassPair, List<Event> defaultEvents){
         Log.d(TAG, "Database mocker init");
         usersAndPasswords = new HashMap<>() ;
-        for(Map.Entry<User, String> entry: defaultUsersAndPasswords.entrySet()){
-            usersAndPasswords.put(entry.getKey(), entry.getValue()) ;
+        for(Map.Entry<String, Pair<User, String>> entry: defaultMailAndUserPassPair.entrySet()) {
+            usersAndPasswords.put(entry.getValue().first, entry.getValue().second);
         }
-
-        events = new ArrayList<>() ;
+        events = new ArrayList<>();
         events.addAll(defaultEvents);
     }
 
@@ -48,17 +48,17 @@ public class FirebaseMocker implements DatabaseInterface {
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void signInWithEmailAndPassword(@NonNull String email, @NonNull String password, UserHandler successHandler, UserHandler failureHandler) {
-        boolean foundRegisteredUser = false  ;
-        Iterator<User> usersIterator = usersAndPasswords.keySet().iterator() ;
+        boolean foundRegisteredUser = false;
+        Iterator<User> usersIterator = usersAndPasswords.keySet().iterator();
         while(!foundRegisteredUser && usersIterator.hasNext() ){
-            User user = usersIterator.next() ;
+            User user = usersIterator.next();
             if(user.getEmail().equals(email)){
                 foundRegisteredUser = true ;
-                Log.d("MOCKER", "USER PASSWORD IS "+ usersAndPasswords.get(user)) ;
-                if(usersAndPasswords.get(user).equals(password)){
-                    successHandler.handle(user); ;
+                Log.d("MOCKER", "USER PASSWORD IS "+ usersAndPasswords.get(user));
+                if(Objects.equals(usersAndPasswords.get(user), password)){
+                    successHandler.handle(user);
                 } else{
-                   failureHandler.handle(null); ;
+                   failureHandler.handle(null);
                 }
             }
         }
@@ -96,20 +96,25 @@ public class FirebaseMocker implements DatabaseInterface {
 
     @Override
     public void getAllEvents(EventsHandler handler) {
-        handler.handle(events); ;
+        handler.handle(events);
     }
 
     @Override
     public void addEvent(Event event, EventHandler successHandler, EventHandler failureHandler) {
         events.add(event) ;
-        successHandler.handle(event); ;
+        successHandler.handle(event);
+    }
+
+    @Override
+    public void patchEventByID(String eventId, Event event, EventHandler successHandler, EventHandler failureHandler) {
+        this.addEvent(event, successHandler, failureHandler);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
-    public void getEventById(String eventId, EventHandler eventHandler) throws ParseException {
-        Event event = findEventWithId(eventId) ;
-        if(event != null){
+    public void getEventById(String eventId, EventHandler eventHandler){
+        Event event = findEventWithId(eventId);
+        if(event !=null){
            eventHandler.handle(event);
         }
     }
@@ -118,7 +123,7 @@ public class FirebaseMocker implements DatabaseInterface {
     @Override
     public void addOrganizerToEvent(String eventId, String organizerEmail, OrganizersHandler handler) {
         //getEventById(eventId, organizerEmail);
-        Event event = findEventWithId(eventId) ;
+        Event event = findEventWithId(eventId);
         if(event != null){
             event.addOrganizer(organizerEmail);
             handler.handle();
@@ -126,7 +131,7 @@ public class FirebaseMocker implements DatabaseInterface {
     }
 
     @Override
-    public void signUp(String username, String firstPassword, String email, Long age, UserHandler successHandler, UserHandler failureHandler) {
+    public void signUp(String username, String firstPassword, String email, Integer age, UserHandler successHandler, UserHandler failureHandler) {
         User newUser = new User(username, "1", email, age) ;
         //Search for existing user handled by calling class
         usersAndPasswords.put(newUser, firstPassword) ;
@@ -145,6 +150,11 @@ public class FirebaseMocker implements DatabaseInterface {
         if(PolyContext.getMockDynamicLink()) {
             handler.handle(link);
         }
+    }
+
+    @Override
+    public void addSOS(String userId, String eventId, String reason) {
+        //TODO ???
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)

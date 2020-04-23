@@ -4,6 +4,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 
@@ -33,7 +34,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
 
-import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.organizerInvite.OrganizersAdapter;
 import ch.epfl.polycrowd.schedulePage.ScheduleActivity;
@@ -121,7 +121,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
 
     private void initRecyclerView(List<String> organizers) {
         RecyclerView recyclerView = findViewById(R.id.organizers_recycler_view);
-        OrganizersAdapter adapter = new OrganizersAdapter(organizers, this);
+        OrganizersAdapter adapter = new OrganizersAdapter(organizers);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }

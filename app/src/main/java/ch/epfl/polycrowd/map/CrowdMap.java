@@ -2,7 +2,6 @@ package ch.epfl.polycrowd.map;
 
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.location.Location;
 import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -116,6 +115,7 @@ public class CrowdMap implements OnMapReadyCallback {
         } catch (XmlPullParserException | IOException e) {
             e.printStackTrace();
         }
+        assert layer != null;
         layer.addLayerToMap();
 
         //TODO get eventLocation from firebase

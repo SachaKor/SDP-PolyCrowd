@@ -18,10 +18,8 @@ import java.util.Objects;
 
 import ch.epfl.polycrowd.EventPageDetailsActivity;
 import ch.epfl.polycrowd.R;
-import ch.epfl.polycrowd.authentification.ResetPasswordActivity;
-import ch.epfl.polycrowd.authentification.SignUpActivity;
-import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
+import ch.epfl.polycrowd.frontPage.FrontPageActivity;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 
@@ -33,14 +31,11 @@ public class LoginActivity extends AppCompatActivity {
     private static final String IS_ORGANIZER_INVITE = "isOrganizerInvite";
     private static final String EVENT_ID = "eventId";
 
-    private DatabaseInterface dbi;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        dbi = PolyContext.getDatabaseInterface();
     }
 
     private void toastPopup(String text) {
@@ -73,7 +68,8 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        dbi.signInWithEmailAndPassword(email, password, successHandler(), failureHandler());
+        PolyContext.getDatabaseInterface().signInWithEmailAndPassword(email, password, successHandler(), failureHandler());
+
     }
 
 
@@ -94,22 +90,30 @@ public class LoginActivity extends AppCompatActivity {
                 //When would the currentUser be null if signin was successful?
             Context c = this;
             Toast.makeText(c, "Sign in success", Toast.LENGTH_SHORT).show();
+
+            //Successful login redirects to front page
+
+
             PolyContext.setCurrentUser(user);
             /* if the user logs in to accept the organizer invitation, add him/her to the
                 organizers list, then open the event details page for the preview */
                 Log.d(TAG, "previous page: " + PolyContext.getPreviousPage());
-                if(PolyContext.getPreviousPage().equals("OrganizerInviteActivity")) {
+                if(PolyContext.getPreviousPage()!= null && PolyContext.getPreviousPage().equals("OrganizerInviteActivity")) {
                     String organizerEmail = Objects.requireNonNull(PolyContext.getCurrentUser().getEmail());
                     if(PolyContext.getCurrentEvent() == null) {
                         Log.e(TAG, "current event is null");
                         return;
                     }
                     Event event = PolyContext.getCurrentEvent();
-                    dbi.addOrganizerToEvent(event.getId(), organizerEmail, () -> {
+                    PolyContext.getDatabaseInterface().addOrganizerToEvent(event.getId(), organizerEmail, () -> {
                         Intent eventDetails = new Intent(c, EventPageDetailsActivity.class);
                         eventDetails.putExtra(EVENT_ID, event.getId());
                         startActivity(eventDetails);
                     });
+                }
+                else{
+                    Intent intent = new Intent(this, FrontPageActivity.class);
+                    startActivity(intent);
                 }
         } ;
     }

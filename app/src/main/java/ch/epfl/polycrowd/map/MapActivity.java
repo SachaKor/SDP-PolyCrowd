@@ -24,11 +24,12 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
 
+import ch.epfl.polycrowd.EventEditActivity;
+import ch.epfl.polycrowd.logic.Event;
+import ch.epfl.polycrowd.EmergencyActivity;
 import ch.epfl.polycrowd.EventPageDetailsActivity;
 import ch.epfl.polycrowd.authentification.LoginActivity;
 import ch.epfl.polycrowd.R;
-import ch.epfl.polycrowd.firebase.DatabaseInterface;
-import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 
@@ -57,7 +58,6 @@ public class MapActivity extends AppCompatActivity {
     private LocationManager locationManager;
     private LocationListener locationListener;
 
-    private DatabaseInterface dbi;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -76,10 +76,8 @@ public class MapActivity extends AppCompatActivity {
 
         Log.d(TAG, "event is : " + eventId);
 
-        // Check logged-in user
-        dbi = PolyContext.getDatabaseInterface() ;
 
-        setStatusOfUser(dbi);
+        setStatusOfUser();
 
         createButtons();
         createMap();
@@ -87,7 +85,7 @@ public class MapActivity extends AppCompatActivity {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    void setStatusOfUser(DatabaseInterface firebaseInterface) {
+    void setStatusOfUser() {
         final String TAG1 = "setStatusOfUser";
         status = level.GUEST; // default status to debug
         User user = PolyContext.getCurrentUser();
@@ -95,7 +93,7 @@ public class MapActivity extends AppCompatActivity {
         if(user == null){
             status = level.GUEST;
         }else{
-            Log.d(TAG, TAG1 + " user email: " + user.getEmail());
+            Log.d("user_email_tag", TAG1 + " user email: " + user.getEmail());
             Event event = PolyContext.getCurrentEvent();
             List<String> organizerEmails = event.getOrganizers();
             if(organizerEmails.indexOf(user.getEmail()) == -1){
@@ -146,6 +144,8 @@ public class MapActivity extends AppCompatActivity {
     void createButtons() {
         Button buttonRight = findViewById(R.id.butRight);
         Button buttonLeft = findViewById(R.id.butLeft);
+        Button buttonSOS = findViewById(R.id.butSOS);
+        Button buttonEdit = findViewById(R.id.butEdit);
 
         Log.d(TAG, "user status: " + status);
 
@@ -155,9 +155,14 @@ public class MapActivity extends AppCompatActivity {
                 break;
             case VISITOR:
                 setVisitorButtons(buttonLeft, buttonRight);
+                if (PolyContext.getCurrentEvent().isEmergencyEnabled()) buttonSOS.setVisibility(View.VISIBLE);
+                else buttonSOS.setVisibility(View.INVISIBLE);
+                buttonSOS.setOnLongClickListener(v->clickSOS(v)); //TODO: hold for 5 seconds + animation ?
                 break;
             case ORGANISER:
                 setOrganiserButtons(buttonLeft, buttonRight);
+                buttonEdit.setVisibility(View.VISIBLE);
+                buttonEdit.setOnClickListener(v->clickEventEdit(v));
                 break;
 
         }
@@ -177,10 +182,8 @@ public class MapActivity extends AppCompatActivity {
     private void startLocationRequests() {
         // first check for permissions
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.INTERNET}
-                        ,10);
-            }
+            requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.INTERNET}
+                    ,10);
             return;
         }
         // this code won't execute IF permissions are not allowed, because in the line above there is return statement.
@@ -209,6 +212,18 @@ public class MapActivity extends AppCompatActivity {
         Intent intent = new Intent(this, EventPageDetailsActivity.class);
         intent.putExtra("eventId", eventId);
         startActivity(intent);
+    }
+
+    public void clickEventEdit(View view){
+        Intent intent = new Intent(this, EventEditActivity.class);
+        intent.putExtra("eventId", eventId);
+        startActivity(intent);
+    }
+
+    public boolean clickSOS(View view) {
+        Intent intent = new Intent(this, EmergencyActivity.class);
+        startActivity(intent);
+        return true;
     }
 
 

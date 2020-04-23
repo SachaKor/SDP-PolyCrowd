@@ -1,8 +1,8 @@
 package ch.epfl.polycrowd.logic;
 
 import android.os.Build;
-import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
 import com.google.firebase.Timestamp;
@@ -18,8 +18,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
-import ch.epfl.polycrowd.R;
-
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class Event {
 
@@ -32,7 +30,7 @@ public class Event {
     public static final SimpleDateFormat dtFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.ENGLISH);
     private final String owner;
     private String name;
-    private Boolean isPublic;
+    private Boolean isPublic, isEmergencyEnabled;
     private EventType type;
     private Date start;
     private Date end;
@@ -46,11 +44,9 @@ public class Event {
 
 
     // ---------- Constructors ---------------------------------------------------------
-    public Event(String owner, String name, Boolean isPublic, EventType type,
-                 Date start, Date end,
-                 String calendar, String description){
-        if(owner == null || name == null || type == null || start == null || end == null || calendar == null)
-            throw new IllegalArgumentException("Invalid Argument for Event Constructor");
+    public Event(@NonNull String owner, @NonNull String name, Boolean isPublic, @NonNull EventType type,
+                 @NonNull Date start, @NonNull Date end,
+                 @NonNull String calendar, String description, Boolean hasEmergencyFeature){
         this.owner = owner;
         this.name = name;
         this.isPublic = isPublic;
@@ -61,44 +57,33 @@ public class Event {
         organizers = new ArrayList<>();
         organizers.add(owner); // TODO: this is wrong, organizers must contain the emails
         setDescription(description);
+        this.isEmergencyEnabled = hasEmergencyFeature;
     }
 
-    public Event(String owner, String name, Boolean isPublic, EventType type,
-                 Date start, Date end,
-                 String calendar, String description, File dir){
-        this(owner, name, isPublic, type, start, end, calendar, description);
+    public Event(@NonNull String owner, @NonNull String name, Boolean isPublic, @NonNull EventType type,
+                 @NonNull Date start, @NonNull Date end,
+                 @NonNull String calendar, String description, Boolean hasEmergencyFeature, @NonNull File dir){
+        this(owner, name, isPublic, type, start, end, calendar, description, hasEmergencyFeature);
         this.loadCalendar(dir);
     }
 
-    public Event(Event e, File dir){
-        this(e.owner, e.name, e.isPublic, e.type, e.start, e.end, e.calendar, e.description);
+    public Event(Event e, @NonNull File dir){
+        this(e.owner, e.name, e.isPublic, e.type, e.start, e.end, e.calendar, e.description, e.isEmergencyEnabled);
         this.loadCalendar(dir);
     }
 
-    public Event(String owner, String name, Boolean isPublic, EventType type,
-                 Date start, Date end,
-                 String calendar, String description, List<String> organizers){
-        this(owner, name, isPublic, type, start, end, calendar, description);
-        if(organizers == null) {
-            throw new IllegalArgumentException("Invalid Argument for Event Constructor");
-        }
+    public Event(@NonNull String owner, @NonNull String name, Boolean isPublic, @NonNull EventType type,
+                 @NonNull Date start, @NonNull Date end,
+                 @NonNull String calendar, String description, Boolean hasEmergencyFeature,@NonNull List<String> organizers){
+        this(owner, name, isPublic, type, start, end, calendar, description, hasEmergencyFeature);
         this.organizers = organizers;
     }
-
-
-    // ---------------------------------------------------------------------------------
-
 
     public List<Activity> getActivities() {
         if(this.getSchedule() == null) return null;
         return this.getSchedule().getActivities();
     }
 
-    public Event setActivities(List<Activity> ac) {
-        if(this.getSchedule() == null) this.schedule = new Schedule();
-        this.schedule.setActivities(ac);
-        return this;
-    }
 
 
     private String getEventCalFilename(){
@@ -199,6 +184,10 @@ public class Event {
         this.imageUri = imageUri;
     }
 
+    public boolean isEmergencyEnabled(){ return this.isEmergencyEnabled; }
+    public void setEmergencyEnabled(boolean b){
+        this.isEmergencyEnabled = b;
+    }
 
     // -------------------------------------------------------------------------------
 
@@ -214,6 +203,7 @@ public class Event {
         event.put("type", this.type.toString());
         event.put("calendar", this.calendar);
         event.put("description", this.description);
+        event.put("isEmergencyEnabled", this.isEmergencyEnabled.toString());
         event.put("organizers", organizers);
         event.put("imageUri", imageUri);
         return event;
@@ -233,9 +223,10 @@ public class Event {
         Date end = eStamp.toDate();
         EventType type = EventType.valueOf(Objects.requireNonNull(data.get("type")).toString().toUpperCase());
         String desc = data.get("description").toString();
+        Boolean emergency = data.containsKey("isEmergencyEnabled")? Boolean.valueOf(Objects.requireNonNull(data.get("isEmergencyEnabled")).toString()): false;
         List<String> organizers = new ArrayList<>((List<String>) Objects.requireNonNull(data.get("organizers")));
         String imageUri = (String) data.get("imageUri"); // can be null but this is ok
-        Event result = new Event(owner, name, isPublic, type, start, end, calendar, desc, organizers);
+        Event result = new Event(owner, name, isPublic, type, start, end, calendar, desc, emergency, organizers);
         result.setImageUri(imageUri);
         return result;
     }

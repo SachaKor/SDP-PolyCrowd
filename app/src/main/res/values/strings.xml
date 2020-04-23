@@ -9,12 +9,15 @@
     <string name="event_submit">Save Changes</string>
     <string name="event_type_hint">Event Type</string>
     <string name="event_calendar_hint">Schedule calendar url</string>
+    <string name="event_is_emergency_enabled">Emergencies</string>
+    <string name="event_emergency_hint">If the event should use the emergency button feature</string>
     <string-array name="event_type_list">
         <item value="FESTIVAL">Festival</item>
         <item value="CONCERT">Concert</item>
         <item value="CONVENTION">Convention</item>
         <item value="OTHER">Other</item>
     </string-array>
+    <string name="event_details">Event Details</string>
     <string name="event_date_start">Start Date</string>
     <string name="event_date_end">End Date</string>
     <string name="event_add">Add Event</string>
@@ -28,7 +31,6 @@
     <string name="sign_in">Sign in</string>
     <string name="email">email</string>
     <string name="date_format">dd-MM-yyyy</string>
-    <string name="event_details">Event Details</string>
     <string name="forgot_password">forgot password</string>
     <string name="reset_password">Reset password</string>
     <string name="send_reset_link">Send reset link</string>
@@ -40,4 +42,13 @@
     <string name="organizer_invite_text">Log in to view the invite</string>
     <string name="organizer_invite_text_1">"You are invited to become an organizer of the event</string>
     <string name="organizer_invite_text_2">Sign in to accept the invitation</string>
+    <string name="sos_main">Emergency</string>
+    <string name="edit_main">Edit</string>
+    <string name="sos_type">What is the reason for the emergency ??</string>
+    <string-array name="sos_type_list">
+        <item value="LOSTMINOR">Lost Minor</item>
+        <item value="ACCIDENT">Accident</item>
+        <item value="DRUNK">Drunk</item>
+        <item value="OTHER">Other</item>
+    </string-array>
 </resources>

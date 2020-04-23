@@ -1,6 +1,5 @@
 package ch.epfl.polycrowd.firebase;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -9,8 +8,6 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
@@ -22,7 +19,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,13 +35,16 @@ import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.User;
 
+/**
+ * @codeCoverageIgnore
+ * Excluded in build.gradle
+ */
 public class FirebaseInterface implements DatabaseInterface {
 
     private FirebaseAuth cachedAuth;
     private DatabaseReference cachedDbRef;
     private FirebaseFirestore cachedFirestore;
     private FirebaseStorage storage;
-    private Context c;
 
     private static final String EVENTS = "polyevents";
     private static final String ORGANIZERS = "organizers";
@@ -91,7 +90,7 @@ public class FirebaseInterface implements DatabaseInterface {
                     .addOnCompleteListener(taskc -> {
                         if(taskc.isSuccessful()) {
                             // TODO: use getUserByEmail, clean up firestore first
-                            User user = new User(email, taskc.getResult().getUser().getUid(), "username", 3L);
+                            User user = new User(email, taskc.getResult().getUser().getUid(), "username", 3);
                             successHandler.handle(user);
                         } else {
                             failureHandler.handle(null);
@@ -170,6 +169,21 @@ public class FirebaseInterface implements DatabaseInterface {
 
     @Override
     @RequiresApi(api = Build.VERSION_CODES.O)
+    public void patchEventByID(String eventId, Event event, EventHandler successHandler, EventHandler failureHandler){
+        getFirestoreInstance(false).collection(EVENTS).document(eventId)
+                .update(event.toHashMap())
+                .addOnSuccessListener(documentReference -> {
+                    Log.d(TAG, "DocumentSnapshot added with ID: " + eventId);
+                    successHandler.handle(event);
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error adding document", e);
+                    failureHandler.handle(event);
+                });
+    }
+
+    @Override
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void getEventById(String eventId, EventHandler eventHandler) {
         final String TAG1 = "getEventById";
             Log.d(TAG, TAG1 + " is not mocked");
@@ -192,8 +206,7 @@ public class FirebaseInterface implements DatabaseInterface {
             // check if the organizer is already in the list
             getFirestoreInstance(false).collection(EVENTS)
                     .document(eventId).get().addOnSuccessListener(documentSnapshot -> {
-                List<String> organizers = new ArrayList<>();
-                organizers.addAll((List<String>)documentSnapshot.get(ORGANIZERS));
+                List<String> organizers = new ArrayList<>((List<String>) documentSnapshot.get(ORGANIZERS));
                 // if organizer is not in the list, add
                 if(!organizers.contains(organizerEmail)) {
                     Log.d(TAG, TAG1 + " adding organizer " + organizerEmail + " to the list");
@@ -202,12 +215,7 @@ public class FirebaseInterface implements DatabaseInterface {
                     data.put(ORGANIZERS, organizers);
                     getFirestoreInstance(false).collection(EVENTS).document(eventId)
                             .set(data, SetOptions.merge())
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    handler.handle();
-                                }
-                            })
+                            .addOnSuccessListener(e -> handler.handle())
                             .addOnFailureListener(e -> Log.w(TAG, "Error updating " + ORGANIZERS + " list"));
                 } else {
                     Log.d(TAG, TAG1 + " organizer " + organizerEmail + " already in the list");
@@ -217,7 +225,7 @@ public class FirebaseInterface implements DatabaseInterface {
     }
 
     @Override
-    public void signUp(String username, String firstPassword, String email, Long age, UserHandler successHandler, UserHandler failureHandler) {
+    public void signUp(String username, String firstPassword, String email, Integer age, UserHandler successHandler, UserHandler failureHandler) {
             CollectionReference usersRef = getFirestoreInstance(false).collection("users");
             Query queryUsernames = usersRef.whereEqualTo("username", username);
             Query queryEmails = usersRef.whereEqualTo("email", email);
@@ -232,7 +240,7 @@ public class FirebaseInterface implements DatabaseInterface {
             );
     }
 
-    private void addUserToDatabase(String email, String firstPassword, String username, Long age, UserHandler successHandler, UserHandler failureHandler){
+    private void addUserToDatabase(String email, String firstPassword, String username, Integer age, UserHandler successHandler, UserHandler failureHandler){
         getAuthInstance(false).createUserWithEmailAndPassword(email, firstPassword) ;
         Map<String, Object> user = new HashMap<>();
         user.put("username", username);
@@ -327,7 +335,13 @@ public class FirebaseInterface implements DatabaseInterface {
         getFirestoreInstance(false).collection(EVENTS).document(event.getId())
                 .set(event.toHashMap())
                 .addOnSuccessListener(aVoid -> eventHandler.handle(event))
-                .addOnFailureListener(e -> Log.w(TAG,"Error updating the event with id: " + event.getId()));
+                .addOnFailureListener(e -> Log.w(TAG, "Error updating the event with id: " + event.getId()));
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    @Override
+    public void addSOS(@NonNull String userId, @NonNull String eventId, @NonNull String reason) {
+        getFirestoreInstance(false).collection(EVENTS).document(eventId).update("sos."+userId,reason).addOnFailureListener(e-> Log.w(TAG, "addSOS:onFailure",e));
     }
 }
 

@@ -14,12 +14,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="start|top"
-        android:text="@string/event_details"
-        android:padding="10dp"
-        android:layout_marginTop="20dp"
         android:layout_marginStart="25dp"
-        android:paddingRight="10dp"
-        android:onClick="clickEventDetails"/>
+        android:layout_marginTop="20dp"
+        android:onClick="clickEventDetails"
+        android:padding="10dp"
+        android:text="@string/event_details" />
 
 
     <Button
@@ -27,12 +26,32 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|top"
-        android:text="@string/sign_in"
-        android:padding="10dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="25dp"
-        android:paddingRight="10dp"/>
+        android:padding="10dp"
+        android:text="@string/sign_in" />
 
+    <Button
+        android:id="@+id/butSOS"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start|bottom"
+        android:layout_marginStart="25dp"
+        android:layout_marginBottom="20dp"
+        android:padding="10dp"
+        android:text="@string/sos_main"
+        android:visibility="invisible" />
+
+    <Button
+        android:id="@+id/butEdit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|top"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="20dp"
+        android:padding="10dp"
+        android:text="@string/edit_main"
+        android:visibility="invisible" />
 
 
     <androidx.constraintlayout.widget.Guideline
