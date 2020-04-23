@@ -107,9 +107,7 @@ public class MapActivityTest {
 
             onView(withId(R.id.butEdit)).check(matches(withText(containsString("EDIT"))));
             onView(withId(R.id.butEdit)).perform(click());
-            sleep();
-            Espresso.pressBack();
-            sleep();
+            
         }
     }
 
