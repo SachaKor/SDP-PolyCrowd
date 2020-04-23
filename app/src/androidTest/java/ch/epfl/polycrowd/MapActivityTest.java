@@ -13,6 +13,9 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.util.Date;
+
+import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.map.MapActivity;
 
@@ -93,8 +96,14 @@ public class MapActivityTest {
             sleep();
             onView(withId(R.id.butLeft)).check(matches(withText(containsString("STAFF"))));
             onView(withId(R.id.butLeft)).perform(click());
+            sleep();
+            Espresso.pressBack();
+            sleep();
+            onView(withId(R.id.butEdit)).check(matches(withText(containsString("EDIT"))));
+            //onView(withId(R.id.butEdit)).perform(click()); //TODO: butEdit.perform(click()) crashes on mocked context (but not on prod), seems to need more setup (tried setting up fake events without success)
         }
     }
+
 
     @Test
     public void setVisitorButtonsCorrectlyCreatesVisitorButtons() {
@@ -131,5 +140,7 @@ public class MapActivityTest {
             onView(withId(R.id.sign_in_logo)).check(matches(isDisplayed()));
         }
     }
+
+
 
 }

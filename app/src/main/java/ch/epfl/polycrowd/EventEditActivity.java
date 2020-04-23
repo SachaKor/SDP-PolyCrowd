@@ -14,9 +14,13 @@ import android.widget.Toast;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.firebase.handlers.EventHandler;
@@ -32,10 +36,11 @@ public class EventEditActivity extends AppCompatActivity {
 
     private static final String TAG = "EventEditActivity";
 
-    private EditText eventName;
+    private EditText eventName, scheduleUrl;
     private EditText startDate, endDate;
     private Switch isPublicSwitch;
     private Spinner eventTypeSpinner;
+    private String eventId;
 
 
     @Override
@@ -43,6 +48,7 @@ public class EventEditActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_edit);
         setUpViews();
+
     }
 
     private void setUpViews() {
@@ -51,6 +57,29 @@ public class EventEditActivity extends AppCompatActivity {
         endDate = findViewById(R.id.EditEventEnd);
         isPublicSwitch = findViewById(R.id.EditEventPublic);
         eventTypeSpinner = findViewById(R.id.EditEventType);
+        scheduleUrl = findViewById(R.id.EditEventCalendar);
+
+        if (getIntent().hasExtra("eventId")){
+            this.eventId = getIntent().getStringExtra("eventId");
+
+            EventHandler eventHandler = ev -> {
+                eventName.setText(ev.getName());
+                SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+                startDate.setText(sdf.format(ev.getStart()));
+                endDate.setText(sdf.format(ev.getEnd()));
+                isPublicSwitch.setChecked(ev.getPublic());
+                eventTypeSpinner.setSelection(ev.getType().ordinal());
+                scheduleUrl.setText(ev.getCalendar());
+            };
+            try {
+                System.out.println("############ retreiving event:" + eventId);
+                PolyContext.getDatabaseInterface().getEventById(eventId, eventHandler);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+        }else this.eventId = null;
+
     }
 
 
@@ -131,10 +160,16 @@ public class EventEditActivity extends AppCompatActivity {
         // Map<String, Object> event = ev.toHashMap();
         // add event to the database
         Context c = this ;
-        EventHandler successHandler = e -> { PolyContext.setCurrentEvent(e); Toast.makeText(c, "Event added", Toast.LENGTH_LONG).show();};
+        EventHandler successHandler = e -> {
+            PolyContext.setCurrentEvent(e);
+            Toast.makeText(c, "Event added", Toast.LENGTH_LONG).show();
+        };
         EventHandler failureHandler = e -> Toast.makeText(c, "Error occurred while adding the event", Toast.LENGTH_LONG).show();
-        PolyContext.getDatabaseInterface().addEvent(ev,successHandler , failureHandler );
-
+        if( this.eventId == null) {
+            PolyContext.getDatabaseInterface().addEvent(ev, successHandler, failureHandler);
+        }else {
+            PolyContext.getDatabaseInterface().patchEventByID(this.eventId, ev, successHandler, failureHandler);
+        }
         Intent intent = new Intent(this, MapActivity.class);
         startActivity(intent);
     }

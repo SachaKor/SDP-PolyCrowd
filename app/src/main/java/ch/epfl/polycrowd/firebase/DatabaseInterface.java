@@ -47,6 +47,9 @@ public interface DatabaseInterface {
     void addEvent(Event event, EventHandler successHandler, EventHandler failureHandler);
 
     @RequiresApi(api = Build.VERSION_CODES.O)
+    void patchEventByID(String eventId, Event event, EventHandler successHandler, EventHandler failureHandler);
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
     void getEventById(String eventId, EventHandler eventHandler) throws ParseException;
 
     void addOrganizerToEvent(String eventId, String organizerEmail,

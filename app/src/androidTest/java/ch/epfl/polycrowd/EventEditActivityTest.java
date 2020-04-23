@@ -13,13 +13,21 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import ch.epfl.polycrowd.firebase.handlers.EventHandler;
+import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
+import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isNotChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withSpinnerText;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.espresso.action.ViewActions.*;
 import static ch.epfl.polycrowd.AndroidTestHelper.sleep;
@@ -114,6 +122,43 @@ public class EventEditActivityTest {
         onView(withText("Enter the ending date"))
                 .inRoot(withDecorView(not(mActivityRule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void fillsWithGivenEventId(){
+        Event e = new Event("Test Owner","Test Name", true, Event.EventType.CONVENTION,new Date(), new Date(),"url","Test Description");
+        e.setId("test id");
+        PolyContext.getDatabaseInterface().addEvent(e, ev->{}, ev->{});
+        PolyContext.setCurrentUser(AndroidTestHelper.getUser());
+
+        Intent intent = new Intent();
+        intent.putExtra("eventId","test id");
+        mActivityRule.launchActivity(intent);
+
+        sleep();
+        sleep();
+        sleep();
+        sleep();
+        sleep();
+        sleep();
+
+        onView(withId(R.id.EditEventName)).check(matches(withText(containsString(e.getName()))));
+        if (e.getPublic()) onView(withId(R.id.EditEventPublic)).check(matches(isChecked()));
+        else onView(withId(R.id.EditEventPublic)).check(matches(isNotChecked()));
+
+        //Capitalizing only the first letter of the event type name, as the default to string is all in upper case
+        String et = e.getType().toString();
+        String eventTypeName = et.substring(0,1).toUpperCase()+ et.substring(1).toLowerCase();
+
+        onView(withId(R.id.EditEventType)).check(matches(withSpinnerText(containsString(eventTypeName))));
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+        onView(withId(R.id.EditEventStart)).check(matches(withText(sdf.format(e.getStart()))));
+        onView(withId(R.id.EditEventEnd)).check(matches(withText(sdf.format(e.getEnd()))));
+        sleep();
+        sleep();
+        sleep();
+        sleep();
+        sleep();
     }
 
 
