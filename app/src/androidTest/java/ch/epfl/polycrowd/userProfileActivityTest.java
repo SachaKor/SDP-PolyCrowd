@@ -65,9 +65,11 @@ public class userProfileActivityTest {
 
     @Test
     public void testCorrectlyLoadsDataFromUser(){
-       /* onView(withId(R.id.profileEditPasswordButton)).perform(click());
+        onView(withId(R.id.profileUserName)).check(matches(withText
+                (containsString(PolyContext.getCurrentUser().getName()))));
+        onView(withId(R.id.profileEmail)).check(matches
+                (withText(containsString(PolyContext.getCurrentUser().getEmail()))));
         sleep();
-        onView(withId(0)).check(matches(isDisplayed()));*/
     }
 
     @Test
