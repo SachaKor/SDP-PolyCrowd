@@ -27,6 +27,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static ch.epfl.polycrowd.AndroidTestHelper.sleep;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 
 
 public class MapActivityTest {
@@ -79,9 +80,45 @@ public class MapActivityTest {
     }
 
     @Test
+    public void sosButtonDisplaysWhenEmergencyFeatureIsTrue(){
+        PolyContext.setCurrentEvent(new Event("","",true,
+                Event.EventType.FESTIVAL,new Date(), new Date(),"","",true));
+
+        PolyContext.setCurrentUser(null);
+
+        Intent intent = new Intent();
+        mActivityRule.launchActivity(intent);
+        if(mActivityRule.getActivity().status == MapActivity.level.VISITOR) {
+            onView(withId(R.id.butSOS)).check(matches(withText(containsString("EMERGENCY"))));
+            onView(withId(R.id.butSOS)).perform(click());
+
+            sleep();
+        }
+        else{
+            onView(withId(R.id.butSOS)).check(matches(not(isDisplayed())));
+        }
+    }
+
+    @Test
+    public void sosButtonHidesWhenEmergencyFeatureIsFalse(){
+        PolyContext.setCurrentEvent(new Event("","",true,
+                Event.EventType.FESTIVAL,new Date(), new Date(),"","",false));
+
+        PolyContext.setCurrentUser(null);
+
+        Intent intent = new Intent();
+        mActivityRule.launchActivity(intent);
+        onView(withId(R.id.butSOS)).check(matches(not(isDisplayed())));
+
+        sleep();
+
+    }
+
+
+    @Test
     public void setOrgainizerButtonsCorrectlyCreatesOrganizerButtons() {
 
-        Event e = new Event("Test Owner","Test Name", true, Event.EventType.CONVENTION,new Date(), new Date(),"url","Test Description");
+        Event e = new Event("Test Owner","Test Name", true, Event.EventType.CONVENTION,new Date(), new Date(),"url","Test Description", false);
         e.setId("test id");
         PolyContext.getDatabaseInterface().addEvent(e, ev->{}, ev->{});
         PolyContext.setCurrentEvent(e);

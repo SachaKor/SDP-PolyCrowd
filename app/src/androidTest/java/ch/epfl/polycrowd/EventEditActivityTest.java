@@ -126,7 +126,7 @@ public class EventEditActivityTest {
 
     @Test
     public void fillsWithGivenEventId(){
-        Event e = new Event("Test Owner","Test Name", true, Event.EventType.CONVENTION,new Date(), new Date(),"url","Test Description");
+        Event e = new Event("Test Owner","Test Name", true, Event.EventType.CONVENTION,new Date(), new Date(),"url","Test Description", false);
         e.setId("test id");
         PolyContext.getDatabaseInterface().addEvent(e, ev->{}, ev->{});
         PolyContext.setCurrentUser(AndroidTestHelper.getUser());

@@ -46,11 +46,11 @@ public abstract class AndroidTestHelper {
 
         Event[] ev = {
                 new Event(OwnerEmail, "OLD EVENT", true, CONCERT,
-                        oldStartDate, oldEndDate, CalURL, "old debug event ... "),
+                        oldStartDate, oldEndDate, CalURL, "old debug event ... ", false),
                 new Event(OwnerEmail, "DEBUG EVENT", true, FESTIVAL,
-                        newStartDate, newEndDate, CalURL, "this is only a debug event ... "),
+                        newStartDate, newEndDate, CalURL, "this is only a debug event ... ", false),
                 new Event(OwnerEmail, "HIDDEN EVENT", false, FESTIVAL,
-                        newStartDate, newEndDate, CalURL, "hidden debug event ... ")};
+                        newStartDate, newEndDate, CalURL, "hidden debug event ... ", false)};
 
         ev[0].setId("1");
         ev[1].setId("2");
