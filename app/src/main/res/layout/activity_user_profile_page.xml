@@ -104,7 +104,9 @@
                         android:text="nani@haha.com" />
                 </LinearLayout>
 
+                <!--invisible for now, TODO change if implement email change-->
                 <ImageView
+                    android:visibility="invisible"
                     android:id="@+id/profileEditEmailButton"
                     android:layout_weight="0"
                     android:clickable="true"
