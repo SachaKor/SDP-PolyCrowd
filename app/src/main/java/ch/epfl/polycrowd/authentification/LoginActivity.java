@@ -112,7 +112,6 @@ public class LoginActivity extends AppCompatActivity {
                     });
                 }
                 else{
-
                     Intent intent = new Intent(this, FrontPageActivity.class);
                     startActivity(intent);
                 }
