@@ -83,8 +83,11 @@ public class FirebaseInterface implements DatabaseInterface {
                     .addOnCompleteListener(taskc -> {
                         if(taskc.isSuccessful()) {
                             // TODO: use getUserByEmail, clean up firestore first
-                            User user = new User(email, taskc.getResult().getUser().getUid(), "username", 3);
-                            successHandler.handle(user);
+                            String username;
+                            getUserByEmail(email, u-> {
+                                User user = new User(email, taskc.getResult().getUser().getUid(), u.getName(), u.getAge());
+                                successHandler.handle(user);
+                            }, u->{failureHandler.handle(null);});
                         } else {
                             failureHandler.handle(null);
                         }
