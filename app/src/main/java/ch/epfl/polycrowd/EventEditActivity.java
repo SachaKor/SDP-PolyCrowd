@@ -59,6 +59,7 @@ public class EventEditActivity extends AppCompatActivity {
         isPublicSwitch = findViewById(R.id.EditEventPublic);
         eventTypeSpinner = findViewById(R.id.EditEventType);
         scheduleUrl = findViewById(R.id.EditEventCalendar);
+        isEmergencyEnabled = findViewById(R.id.EditEventEmergency);
 
         if (getIntent().hasExtra("eventId")){
             this.eventId = getIntent().getStringExtra("eventId");
@@ -69,6 +70,7 @@ public class EventEditActivity extends AppCompatActivity {
                 startDate.setText(sdf.format(ev.getStart()));
                 endDate.setText(sdf.format(ev.getEnd()));
                 isPublicSwitch.setChecked(ev.getPublic());
+                isEmergencyEnabled.setChecked(ev.isEmergencyEnabled());
                 eventTypeSpinner.setSelection(ev.getType().ordinal());
                 scheduleUrl.setText(ev.getCalendar());
             };
@@ -81,7 +83,7 @@ public class EventEditActivity extends AppCompatActivity {
 
         }else this.eventId = null;
 
-        isEmergencyEnabled = findViewById(R.id.EditEventEmergency);
+
     }
 
 
