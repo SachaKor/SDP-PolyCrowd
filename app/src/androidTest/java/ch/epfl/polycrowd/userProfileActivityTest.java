@@ -69,7 +69,6 @@ public class userProfileActivityTest {
                 (containsString(PolyContext.getCurrentUser().getName()))));
         onView(withId(R.id.profileEmail)).check(matches
                 (withText(containsString(PolyContext.getCurrentUser().getEmail()))));
-        sleep();
     }
 
     @Test
@@ -88,9 +87,9 @@ public class userProfileActivityTest {
 
     @Test
     public void myEventsButtonWorks(){
-       /* onView(withId(R.id.profileEditPasswordButton)).perform(click());
+        onView(withId(R.id.EventsOrganiseButton)).perform(click());
         sleep();
-        onView(withId(0)).check(matches(isDisplayed()));*/
+
     }
 }
 
