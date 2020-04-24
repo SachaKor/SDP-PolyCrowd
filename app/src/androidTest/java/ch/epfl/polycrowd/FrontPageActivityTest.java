@@ -53,7 +53,6 @@ public class FrontPageActivityTest {
     @Before
     public void setUp() {
         AndroidTestHelper.SetupMockDBI();
-
         PolyContext.setCurrentUser(AndroidTestHelper.getUser());
 
         // launch the intent
