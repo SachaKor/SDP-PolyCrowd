@@ -28,6 +28,7 @@ import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class FirebaseMocker implements DatabaseInterface {
 
     private static final String TAG = "FirebaseMocker";
@@ -47,7 +48,6 @@ public class FirebaseMocker implements DatabaseInterface {
     }
 
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void signInWithEmailAndPassword(@NonNull String email, @NonNull String password, UserHandler successHandler, UserHandler failureHandler) {
         boolean foundRegisteredUser = false;
@@ -149,9 +149,7 @@ public class FirebaseMocker implements DatabaseInterface {
     @Override
     public void receiveDynamicLink(DynamicLinkHandler handler, Intent intent) {
         Uri link = Uri.parse("https://www.example.com/invite/?eventId=K3Zy20id3fUgjDFaRqYA&eventName=testaze");
-        if(PolyContext.getMockDynamicLink()) {
-            handler.handle(link);
-        }
+        handler.handle(link);
     }
 
     @Override

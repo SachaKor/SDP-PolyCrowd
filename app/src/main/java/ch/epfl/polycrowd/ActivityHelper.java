@@ -21,7 +21,7 @@ public abstract class ActivityHelper {
 
 
     public static void toastPopup(Context context, String text){
-        toastPopup(context, text, Toast.LENGTH_LONG);
+        toastPopup(context, text, Toast.LENGTH_SHORT);
     }
 
 

@@ -29,7 +29,6 @@ public abstract class PolyContext extends Context {
     private static User currentUser;
     private static String currentGroup;
     private static Class<? extends AppCompatActivity> previousPage = null;
-    private static boolean mockDynamicLink = false; // for the FrontPage testing
     private static DatabaseInterface dbInterface  = new FirebaseInterface();
 
 
@@ -37,7 +36,6 @@ public abstract class PolyContext extends Context {
         currentEvent = null;
         currentUser = null;
         previousPage = null;
-        mockDynamicLink = false;
         dbInterface = null;
     }
 
@@ -90,7 +88,6 @@ public abstract class PolyContext extends Context {
     public static Class<? extends AppCompatActivity> getPreviousPage() {
         return previousPage;
     }
-    public static boolean getMockDynamicLink() { return mockDynamicLink; }
 
     public static User getCurrentUser() {
         return currentUser;
@@ -101,7 +98,6 @@ public abstract class PolyContext extends Context {
     public static void setPreviousPage(Class<? extends AppCompatActivity> previousPage) {
         PolyContext.previousPage = previousPage;
     }
-    public static void setMockDynamicLink(boolean mock) { mockDynamicLink = mock; }
 
 
     public static void setDBI(DatabaseInterface dbInterfaceInject){

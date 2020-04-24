@@ -1,7 +1,8 @@
 package ch.epfl.polycrowd;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import android.content.Intent;
+
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -18,26 +19,19 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 /* Test the dynamic link handling on the FrontPage */
 public class ReceiveDynamicLinkTest {
 
-
-    @BeforeClass
-    public static void setUpBeforeActivityLaunch(){
-        PolyContext.reset();
-
-        AndroidTestHelper.SetupMockDBI();
-    }
-
     @Rule
-    public final ActivityTestRule<FrontPageActivity> frontPageActivityRule =
-            new ActivityTestRule<FrontPageActivity>(FrontPageActivity.class) {
-                @Override
-                public void beforeActivityLaunched() {
-                    PolyContext.setMockDynamicLink(true);
-                }
-            };
+    public final ActivityTestRule<FrontPageActivity> mActivityRule =
+            new ActivityTestRule<>(FrontPageActivity.class);
 
-    @AfterClass
-    public static void disableDynamicLinkMock() {
-        PolyContext.setMockDynamicLink(false);
+
+
+    @Before
+    public void setUp(){
+        PolyContext.reset();
+        AndroidTestHelper.SetupMockDBI();
+
+        Intent intent = new Intent();
+        mActivityRule.launchActivity(intent);
     }
 
     @Test

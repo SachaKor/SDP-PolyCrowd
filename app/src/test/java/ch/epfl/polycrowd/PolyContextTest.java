@@ -34,15 +34,6 @@ public class PolyContextTest {
     }
 
     @Test
-    public void testDynamicLinkMocking(){
-        PolyContext.setMockDynamicLink(true);
-        assertTrue(PolyContext.getMockDynamicLink());
-        PolyContext.setMockDynamicLink(false);
-        assertFalse(PolyContext.getMockDynamicLink());
-        //TODO: Check Mocking
-    }
-
-    @Test
     public void testDatabaseInterface(){
         Map<String, Pair<User,String>>  mailAndUserPassPair= new HashMap<>();
         List<Event> evl = new ArrayList<>();
@@ -74,6 +65,6 @@ public class PolyContextTest {
     @Test
     public void testPreviousPageSetAndGet(){
         PolyContext.setPreviousPage(FrontPageActivity.class);
-        assert(PolyContext.getPreviousPage() ==  FrontPageActivity.class);
+        assertEquals(PolyContext.getPreviousPage().getSimpleName(),FrontPageActivity.class.getSimpleName());
     }
 }

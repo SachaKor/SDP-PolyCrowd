@@ -42,6 +42,6 @@ public class OrganizerInvitesActivityTest {
     @Test
     public void previousPageSetWhenLogInClicked() {
         onView(withId(R.id.invite_sign_in_button)).perform(click());
-        assertEquals(PolyContext.getPreviousPage(), "OrganizerInviteActivity");
+        assertEquals(PolyContext.getPreviousPage().getSimpleName(), OrganizerInviteActivity.class.getSimpleName());
     }
 }
