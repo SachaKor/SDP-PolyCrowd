@@ -42,7 +42,7 @@ public class GroupInviteActivity extends AppCompatActivity {
     }
 
     public void logInClicked(View view) {
-        PolyContext.setPreviousPage(TAG);
+        PolyContext.setPreviousPage(this.getClass());
         Intent intent = new Intent(this, LoginActivity.class);
         intent.putExtra("inviteGroupId", groupId);
         startActivity(intent);

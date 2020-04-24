@@ -40,7 +40,7 @@ public class OrganizerInviteActivity extends AppCompatActivity {
     }
 
     public void logInClicked(View view) {
-        PolyContext.setPreviousPage(TAG);
+        PolyContext.setPreviousPage(this.getClass());
         ActivityHelper.eventIntentHandler(this,LoginActivity.class);
     }
 }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
 
 import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
@@ -21,12 +22,12 @@ public abstract class PolyContext extends Context {
         return currentGroup;
     }
 
-    public enum Role {ORGANIZER, STAFF, SECURITY, VISITOR, GUEST, UNKNOWN };
+    public enum Role {ORGANIZER, STAFF, SECURITY, VISITOR, GUEST, UNKNOWN }
 
     private static Event currentEvent;
     private static User currentUser;
     private static String currentGroup;
-    private static String previousPage = "";
+    private static Class<? extends AppCompatActivity> previousPage = null;
     private static boolean mockDynamicLink = false; // for the FrontPage testing
     private static DatabaseInterface dbInterface  = new FirebaseInterface();
 
@@ -70,7 +71,7 @@ public abstract class PolyContext extends Context {
     public static Event getCurrentEvent(){
         return currentEvent;
     }
-    public static String getPreviousPage() {
+    public static Class<? extends AppCompatActivity> getPreviousPage() {
         return previousPage;
     }
     public static boolean getMockDynamicLink() { return mockDynamicLink; }
@@ -81,7 +82,7 @@ public abstract class PolyContext extends Context {
     public static void setCurrentUser(User u){
         currentUser= u;
     }
-    public static void setPreviousPage(String previousPage) {
+    public static void setPreviousPage(Class<? extends AppCompatActivity> previousPage) {
         PolyContext.previousPage = previousPage;
     }
     public static void setMockDynamicLink(boolean mock) { mockDynamicLink = mock; }

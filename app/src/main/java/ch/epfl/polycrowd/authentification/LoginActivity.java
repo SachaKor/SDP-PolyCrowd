@@ -11,12 +11,11 @@ import android.widget.Toast;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.Objects;
-
 import ch.epfl.polycrowd.ActivityHelper;
 import ch.epfl.polycrowd.EventPageDetailsActivity;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
+import ch.epfl.polycrowd.frontPage.FrontPageActivity;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.map.MapActivity;
 
@@ -80,13 +79,13 @@ public class LoginActivity extends AppCompatActivity {
                 organizers list, then open the event details page for the preview */
             Log.d(TAG, "previous page: " + PolyContext.getPreviousPage());
             if(PolyContext.getPreviousPage()!= null) {
-                switch (PolyContext.getPreviousPage()) {
+                switch (PolyContext.getPreviousPage().getSimpleName()) {
                     case "OrganizerInviteActivity":
-                        String organizerEmail = Objects.requireNonNull(PolyContext.getCurrentUser().getEmail());
                         if (PolyContext.getCurrentEvent() == null) {
                             Log.e(TAG, "current event is null");
                             return;
                         }
+                        String organizerEmail = PolyContext.getCurrentUser().getEmail();
                         PolyContext.getDBI().addOrganizerToEvent(PolyContext.getCurrentEvent().getId(), organizerEmail,
                                 () -> ActivityHelper.eventIntentHandler(this, EventPageDetailsActivity.class));
                         break;
@@ -96,8 +95,13 @@ public class LoginActivity extends AppCompatActivity {
                                     () -> ActivityHelper.eventIntentHandler(this, MapActivity.class));
                         }
                         break;
-
+                    default:
+                        ActivityHelper.eventIntentHandler(this,PolyContext.getPreviousPage());
                 }
+
+
+            }else{
+                ActivityHelper.eventIntentHandler(this, FrontPageActivity.class);
             }
         };
     }
