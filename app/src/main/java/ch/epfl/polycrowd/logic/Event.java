@@ -32,7 +32,7 @@ public class Event {
     public static final SimpleDateFormat dtFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.ENGLISH);
     private final String owner;
     private String name;
-    private Boolean isPublic;
+    private Boolean isPublic, isEmergencyEnabled;
     private EventType type;
     private Date start;
     private Date end;
@@ -47,7 +47,7 @@ public class Event {
     // ---------- Constructors ---------------------------------------------------------
     public Event(@NonNull String owner, @NonNull String name, Boolean isPublic, @NonNull EventType type,
                  @NonNull Date start, @NonNull Date end,
-                 @NonNull String calendar, String description){
+                 @NonNull String calendar, String description, Boolean hasEmergencyFeature){
 
         this.owner = owner;
         this.name = name;
@@ -59,24 +59,25 @@ public class Event {
         organizers = new ArrayList<>();
         organizers.add(owner); // TODO: this is wrong, organizers must contain the emails
         setDescription(description);
+        this.isEmergencyEnabled = hasEmergencyFeature;
     }
 
     public Event(@NonNull String owner, @NonNull String name, Boolean isPublic, @NonNull EventType type,
                  @NonNull Date start, @NonNull Date end,
-                 @NonNull String calendar, String description, @NonNull File dir){
-        this(owner, name, isPublic, type, start, end, calendar, description);
+                 @NonNull String calendar, String description, Boolean hasEmergencyFeature, @NonNull File dir){
+        this(owner, name, isPublic, type, start, end, calendar, description, hasEmergencyFeature);
         this.loadCalendar(dir);
     }
 
     public Event(Event e, @NonNull File dir){
-        this(e.owner, e.name, e.isPublic, e.type, e.start, e.end, e.calendar, e.description);
+        this(e.owner, e.name, e.isPublic, e.type, e.start, e.end, e.calendar, e.description, e.isEmergencyEnabled);
         this.loadCalendar(dir);
     }
 
     public Event(@NonNull String owner, @NonNull String name, Boolean isPublic, @NonNull EventType type,
                  @NonNull Date start, @NonNull Date end,
-                 @NonNull String calendar, String description, @NonNull List<String> organizers){
-        this(owner, name, isPublic, type, start, end, calendar, description);
+                 @NonNull String calendar, String description, Boolean hasEmergencyFeature,@NonNull List<String> organizers){
+        this(owner, name, isPublic, type, start, end, calendar, description, hasEmergencyFeature);
         this.organizers = organizers;
     }
 
@@ -178,6 +179,10 @@ public class Event {
         this.calendar = calendar;
     }
 
+    public boolean isEmergencyEnabled(){ return this.isEmergencyEnabled; }
+    public void setEmergencyEnabled(boolean b){
+        this.isEmergencyEnabled = b;
+    }
 
     // -------------------------------------------------------------------------------
 
@@ -193,6 +198,7 @@ public class Event {
         event.put("type", this.type.toString());
         event.put("calendar", this.calendar);
         event.put("description", this.description);
+        event.put("isEmergencyEnabled", this.isEmergencyEnabled.toString());
         event.put("organizers", organizers);
         return event;
     }
@@ -211,8 +217,9 @@ public class Event {
         Date end = eStamp.toDate();
         EventType type = EventType.valueOf(Objects.requireNonNull(data.get("type")).toString().toUpperCase());
         String desc = data.get("description").toString();
+        Boolean emergency = data.containsKey("isEmergencyEnabled")? Boolean.valueOf(Objects.requireNonNull(data.get("isEmergencyEnabled")).toString()): false;
         List<String> organizers = new ArrayList<>((List<String>) Objects.requireNonNull(data.get("organizers")));
-        return new Event(owner, name, isPublic, type, start, end, calendar, desc, organizers);
+        return new Event(owner, name, isPublic, type, start, end, calendar, desc, emergency, organizers);
     }
 
     public void addOrganizer(String organizer) {

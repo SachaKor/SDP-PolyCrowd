@@ -39,7 +39,7 @@ public class EventTest {
         assert default_s != null;
         assert default_e != null;
         e = new Event(default_owner,default_name, false,
-                default_type, default_s, default_e, "None", default_desc);
+                default_type, default_s, default_e, "None", default_desc, false);
 
     }
 
@@ -51,7 +51,7 @@ public class EventTest {
 
         // events setup
         Event ev = new Event("eventOwner", "DEBUG EVENT", true, Event.EventType.CONCERT,
-                sDate, eDate, CalURL, "this is only a debug event ... ");
+                sDate, eDate, CalURL, "this is only a debug event ... ", false);
         ev.setId("1");
         assert(ev.getSchedule() == null); // TODO : this is so wrong
     }
@@ -66,7 +66,7 @@ public class EventTest {
         assertNotNull(default_s);
         assertNotNull(default_e);
         Event ne = new Event(default_owner,default_name, false,
-                default_type, default_s, default_e,CalURL, default_desc);
+                default_type, default_s, default_e,CalURL, default_desc, false);
 
         assert(default_owner.equals(ne.getOwner()));
         assertEquals(default_name, ne.getName());
@@ -77,7 +77,7 @@ public class EventTest {
         assertEquals(CalURL, ne.getCalendar());
 
         Event neb = new Event(default_owner,default_name, false,
-                default_type, default_s, default_e,CalURL, default_desc, new File("./"));
+                default_type, default_s, default_e,CalURL, default_desc, false, new File("./"));
 
         assert(default_owner.equals(neb.getOwner()));
         assertEquals(default_name, neb.getName());
@@ -101,7 +101,7 @@ public class EventTest {
                 eDate = new Date(1649516744);
         // events setup
         Event ned = new Event("eventOwner", "DEBUG EVENT", true, Event.EventType.OTHER,
-                sDate, eDate, CalURL, "this is only a debug event ... ");
+                sDate, eDate, CalURL, "this is only a debug event ... ", false);
         ned.setId("1");
 
         assertEquals(ned.getOwner() , "eventOwner");

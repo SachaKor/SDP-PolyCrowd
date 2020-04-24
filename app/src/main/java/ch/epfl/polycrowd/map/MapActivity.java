@@ -24,6 +24,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
 
+import ch.epfl.polycrowd.EventEditActivity;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.EmergencyActivity;
 import ch.epfl.polycrowd.EventPageDetailsActivity;
@@ -145,6 +146,7 @@ public class MapActivity extends AppCompatActivity {
         Button buttonRight = findViewById(R.id.butRight);
         Button buttonLeft = findViewById(R.id.butLeft);
         Button buttonSOS = findViewById(R.id.butSOS);
+        Button buttonEdit = findViewById(R.id.butEdit);
 
         Log.d(TAG, "user status: " + status);
 
@@ -154,11 +156,14 @@ public class MapActivity extends AppCompatActivity {
                 break;
             case VISITOR:
                 setVisitorButtons(buttonLeft, buttonRight);
-                buttonSOS.setVisibility(View.VISIBLE);
+                if (PolyContext.getCurrentEvent().isEmergencyEnabled()) buttonSOS.setVisibility(View.VISIBLE);
+                else buttonSOS.setVisibility(View.INVISIBLE);
                 buttonSOS.setOnLongClickListener(v->clickSOS(v)); //TODO: hold for 5 seconds + animation ?
                 break;
             case ORGANISER:
                 setOrganiserButtons(buttonLeft, buttonRight);
+                buttonEdit.setVisibility(View.VISIBLE);
+                buttonEdit.setOnClickListener(v->clickEventEdit(v));
                 break;
 
         }
@@ -210,6 +215,11 @@ public class MapActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void clickEventEdit(View view){
+        Intent intent = new Intent(this, EventEditActivity.class);
+        intent.putExtra("eventId", eventId);
+        startActivity(intent);
+    }
 
     public void clickGroup(View view) {
         Intent intent = new Intent(this, GroupPageActivity.class);
