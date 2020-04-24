@@ -12,12 +12,14 @@ import java.util.Map;
 
 import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.firebase.FirebaseMocker;
+import ch.epfl.polycrowd.frontPage.FrontPageActivity;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -48,6 +50,7 @@ public class PolyContextTest {
         FirebaseMocker fbm = new FirebaseMocker(mailAndUserPassPair,evl);
         PolyContext.setDBI(fbm);
         DatabaseInterface dbi = PolyContext.getDBI();
+        assertNotNull(dbi);
         //TODO: Check dbi
     }
 
@@ -70,7 +73,7 @@ public class PolyContextTest {
 
     @Test
     public void testPreviousPageSetAndGet(){
-        PolyContext.setPreviousPage("TestPage");
-        assertEquals(PolyContext.getPreviousPage(),"TestPage");
+        PolyContext.setPreviousPage(FrontPageActivity.class);
+        assert(PolyContext.getPreviousPage() ==  FrontPageActivity.class);
     }
 }
