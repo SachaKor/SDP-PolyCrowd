@@ -20,16 +20,14 @@ public abstract class ActivityHelper {
     }
 
 
-    /**
-     * Makes appear a toast in the bottom of the screen
-     * @param context the android context
-     * @param text the text in the toast
-     */
     public static void toastPopup(Context context, String text){
-        int duration = Toast.LENGTH_SHORT;
+        toastPopup(context, text, Toast.LENGTH_LONG);
+    }
+
+
+    public static void toastPopup(Context context, String text, Integer duration ){
         Toast toast = Toast.makeText(context, text, duration);
         toast.setGravity(Gravity.BOTTOM, 0, 16);
         toast.show();
     }
-
 }

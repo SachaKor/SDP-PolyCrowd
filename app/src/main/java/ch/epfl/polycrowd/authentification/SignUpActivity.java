@@ -1,24 +1,19 @@
 package ch.epfl.polycrowd.authentification;
 
-import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import ch.epfl.polycrowd.ActivityHelper;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.PolyContext;
 
-/**
- * TODO: refactor if possible
- */
-
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class SignUpActivity extends AppCompatActivity {
 
 
@@ -41,18 +36,6 @@ public class SignUpActivity extends AppCompatActivity {
         return first.equals(second);
     }
 
-    /**p
-     * Makes appear a toast in the bottom of the screen
-     * @param text the text in the toast
-     */
-
-    private void toastPopup(String text) {
-        Context context = getApplicationContext();
-        int duration = Toast.LENGTH_SHORT;
-        Toast toast = Toast.makeText(context, text, duration);
-        toast.setGravity(Gravity.BOTTOM, 0, 16);
-        toast.show();
-    }
 
     private boolean emailAddressCheck(String email) {
         if(email == null || email.isEmpty()) {
@@ -62,7 +45,6 @@ public class SignUpActivity extends AppCompatActivity {
                 dotIndex = email.lastIndexOf('.');
         return atIndex != -1 && dotIndex != -1 && atIndex <= dotIndex;
     }
-
 
     private Boolean registrationFieldsValid(EditText firstPassword, EditText secondPassword,
                                             EditText username, EditText email){
@@ -74,15 +56,15 @@ public class SignUpActivity extends AppCompatActivity {
         boolean pwsNotMatch = !passwordsMatch(firstPassword.getText().toString(), secondPassword.getText().toString()) ;
 
         if(emailInvalid) {
-            toastPopup("Incorrect email");
+            ActivityHelper.toastPopup(this, "Incorrect email");
         }else if(emptyUsername) {
-            toastPopup("Enter your username");
+            ActivityHelper.toastPopup(this, "Enter your username");
         } else if(pwNotLongEnough) {
-            toastPopup("Password must contain at least 6 characters");
+            ActivityHelper.toastPopup(this, "Password must contain at least 6 characters");
         } else if(pwNotConfirmed) {
-            toastPopup("Confirm your password");
+            ActivityHelper.toastPopup(this, "Confirm your password");
         } else if(pwsNotMatch) {
-            toastPopup("Different passwords");
+            ActivityHelper.toastPopup(this, "Different passwords");
         }
 
         return !(emailInvalid|emptyUsername|pwNotLongEnough|pwNotConfirmed|pwsNotMatch) ;
@@ -94,7 +76,6 @@ public class SignUpActivity extends AppCompatActivity {
      * - Checks all the Sign Up fields
      * - Adds a user to the database if the checks pass
      */
-    @RequiresApi(api = Build.VERSION_CODES.N)
     public void registerClicked(View view) {
 
         firstPassword = findViewById(R.id.sign_up_pswd) ;
@@ -105,11 +86,11 @@ public class SignUpActivity extends AppCompatActivity {
 
         if(registrationFieldsValid(firstPassword, secondPassword, username, email)){
             // check if the user with a given username exists already
-            UserHandler userExistsHandler = user -> Toast.makeText(this, "User already exists", Toast.LENGTH_SHORT).show();
+            UserHandler userExistsHandler = user -> ActivityHelper.toastPopup(this, "User already exists");
             UserHandler userDoesNotExistHandler = user -> PolyContext.getDBI().signUp(username.getText().toString(),
                     firstPassword.getText().toString(), email.getText().toString(), 100,
-                    u ->Toast.makeText(this, "Sign up successful", Toast.LENGTH_SHORT).show() ,
-                    u ->Toast.makeText(this, "Error registering user", Toast.LENGTH_SHORT).show() );
+                    u ->ActivityHelper.toastPopup(this, "Sign up successful") ,
+                    u ->ActivityHelper.toastPopup(this, "Error registering user") );
             //Finally, query database
             //Note that even though user in the second handler will be null, it is not actually referenced anywhere in the lambda expression
             //For now, we use the same type of success and failure handlers

@@ -19,7 +19,6 @@ import ch.epfl.polycrowd.logic.PolyContext;
 public class OrganizerInviteActivity extends AppCompatActivity {
     private static final String TAG = OrganizerInviteActivity.class.getSimpleName();
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,13 +29,12 @@ public class OrganizerInviteActivity extends AppCompatActivity {
     }
 
     private void setInviteText() {
-        Event curEvent = PolyContext.getCurrentEvent();
-        if(curEvent == null) {
+        if(PolyContext.getCurrentEvent() == null) {
             Log.e(TAG, "current event is null");
             return;
         }
         TextView previewText = findViewById(R.id.organizer_invite_text);
-        String toDisplay = "You are invited to become an organizer of \"" + curEvent.getName()
+        String toDisplay = "You are invited to become an organizer of \"" + PolyContext.getCurrentEvent().getName()
                 + "\"\nLog in to accept the invitation";
         previewText.setText(toDisplay);
     }

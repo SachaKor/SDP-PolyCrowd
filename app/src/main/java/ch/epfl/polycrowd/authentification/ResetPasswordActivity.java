@@ -5,7 +5,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,7 +27,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
     public void sendResetLinkClicked(View view) {
         String email = ((EditText) findViewById(R.id.reset_email)).getText().toString();
         if (email.isEmpty()) {
-            Toast.makeText(ResetPasswordActivity.this, "Please enter an email", Toast.LENGTH_SHORT).show();
+            ActivityHelper.toastPopup(this,"Please enter an email");
         } else{
             //First need to query the database to exclude that this email is not registered
             UserHandler pwResetSuccess = user -> ActivityHelper.toastPopup(this, "A reset link has been sent to your email") ;
