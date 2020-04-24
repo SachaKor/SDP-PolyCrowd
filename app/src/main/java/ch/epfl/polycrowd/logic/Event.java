@@ -41,6 +41,8 @@ public class Event {
     private String imageUri;
     private Schedule schedule;
     private List<String> organizers;
+    private List<String> staff;
+    private List<String> security;
 
 
     // ---------- Constructors ---------------------------------------------------------
@@ -55,7 +57,7 @@ public class Event {
         this.end = end;
         this.calendar = calendar;
         organizers = new ArrayList<>();
-        organizers.add(owner); // TODO: this is wrong, organizers must contain the emails
+        organizers.add(owner);
         setDescription(description);
         this.isEmergencyEnabled = hasEmergencyFeature;
     }
@@ -231,16 +233,31 @@ public class Event {
         return result;
     }
 
-    public void addOrganizer(String organizer) {
-        if(organizer != null)
-            organizers.add(organizer);
+    public void addOrganizer(String id) {
+        if(id != null)
+            organizers.add(id);
     }
 
     public List<String> getOrganizers() {
         return organizers;
-
     }
 
+    public void addStaff(String id){
+        if(id != null)
+            staff.add(id);
+    }
+
+    public List<String> getStaff() {
+        return staff;
+    }
+
+    public void addSecurity(String id){
+        if(id != null)
+            security.add(id);
+    }
+    public List<String> getSecurity() {
+        return security;
+    }
 
     public void loadCalendar(File dir){
         if (dir == null) throw new IllegalArgumentException();
