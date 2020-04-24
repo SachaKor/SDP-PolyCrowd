@@ -1,6 +1,9 @@
 package ch.epfl.polycrowd.logic;
 
 import android.content.Context;
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
 
 import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
@@ -10,11 +13,14 @@ public abstract class PolyContext extends Context {
 
     private static final String TAG = "PolyContext";
 
+    public enum Role {ORGANIZER, STAFF, SECURITY, VISITOR, GUEST, UNKNOWN };
+
     private static Event currentEvent;
     private static User currentUser;
     private static String previousPage = "";
     private static boolean mockDynamicLink = false; // for the FrontPage testing
     private static DatabaseInterface dbInterface  = new FirebaseInterface();
+
 
     public static void reset(){
         currentEvent = null;
@@ -22,6 +28,30 @@ public abstract class PolyContext extends Context {
         previousPage = null;
         mockDynamicLink = false;
         dbInterface = null;
+    }
+
+    public static boolean isLoggedIn(){
+        return currentUser!=null;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static Role getRole(){
+        if(currentEvent == null)
+            return Role.UNKNOWN;
+
+        if(currentUser==null)
+            return Role.GUEST;
+
+        if(currentEvent.getOrganizers().contains(currentUser.getUid()))
+            return Role.ORGANIZER;
+
+        if(currentEvent.getStaff().contains(currentUser.getUid()))
+            return Role.STAFF;
+
+        if(currentEvent.getSecurity().contains(currentUser.getUid()))
+            return Role.SECURITY;
+
+        return Role.VISITOR;
     }
 
     public static void setCurrentEvent(Event ev){
@@ -40,7 +70,7 @@ public abstract class PolyContext extends Context {
         return currentUser;
     }
     public static void setCurrentUser(User u){
-       currentUser= u;
+        currentUser= u;
     }
     public static void setPreviousPage(String previousPage) {
         PolyContext.previousPage = previousPage;
