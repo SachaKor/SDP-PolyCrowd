@@ -30,10 +30,8 @@ import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.List;
 
-import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.organizerInvite.OrganizersAdapter;
 import ch.epfl.polycrowd.schedulePage.ScheduleActivity;
 
@@ -45,8 +43,6 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     private AlertDialog linkDialog;
 
     public static final int PICK_IMAGE = 1;
-
-    private Event curEvent;
 
     private byte[] imageInBytes;
 
@@ -89,8 +85,8 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         TextView eventTitle = findViewById(R.id.event_details_title);
         TextView eventDescription = findViewById(R.id.event_details_description);
         eventImg = findViewById(R.id.event_details_img);
-        eventTitle.setText(curEvent.getName());
-        eventDescription.setText(curEvent.getDescription());
+        eventTitle.setText(PolyContext.getCurrentEvent().getName());
+        eventDescription.setText(PolyContext.getCurrentEvent().getDescription());
         downloadEventImage();
         editImg = findViewById(R.id.event_details_edit_img);
         inviteOrganizerButton = findViewById(R.id.invite_organizer_button);
@@ -100,10 +96,10 @@ public class EventPageDetailsActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void downloadEventImage() {
-        String imgUri = curEvent.getImageUri();
+        String imgUri = PolyContext.getCurrentEvent().getImageUri();
         Log.d(TAG, "event img uri: " + imgUri);
         if(null != imgUri) {
-            PolyContext.getDBI().downloadEventImage(curEvent, image -> {
+            PolyContext.getDBI().downloadEventImage(PolyContext.getCurrentEvent(), image -> {
                 Bitmap bmp = BitmapFactory.decodeByteArray(image, 0, image.length);
                 imageInBytes = image;
                 eventImg.setImageBitmap(bmp);
@@ -220,9 +216,9 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         // upload the image to the storage
         // update the current event
         // update the event in the database
-        PolyContext.getDBI().uploadEventImage(curEvent, imageInBytes, event -> {
+        PolyContext.getDBI().uploadEventImage(PolyContext.getCurrentEvent(), imageInBytes, event -> {
             Log.d(TAG, "event img uri after upload: " + event.getImageUri());
-            PolyContext.getDBI().updateEvent(curEvent, event1 -> {
+            PolyContext.getDBI().updateEvent(PolyContext.getCurrentEvent(), event1 -> {
                 setEditing(false);
                 Log.d(TAG, "editing mode unset");
                 initEvent();
@@ -239,11 +235,11 @@ public class EventPageDetailsActivity extends AppCompatActivity {
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void inviteLinkClicked(View view) {
-        String eventName = curEvent.getName();
+        String eventName = PolyContext.getCurrentEvent().getName();
         // build the invite dynamic link
         // TODO: replace by short dynamic link
         DynamicLink inviteLink = FirebaseDynamicLinks.getInstance().createDynamicLink()
-                .setLink(Uri.parse("https://www.example.com/invite/?eventId=" + curEvent.getId()
+                .setLink(Uri.parse("https://www.example.com/invite/?eventId=" + PolyContext.getCurrentEvent().getId()
                         + "&eventName=" + eventName))
                 .setDomainUriPrefix("https://polycrowd.page.link")
                 .setAndroidParameters(new DynamicLink.AndroidParameters.Builder().build())

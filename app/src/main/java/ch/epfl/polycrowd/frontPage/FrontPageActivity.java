@@ -1,5 +1,7 @@
 package ch.epfl.polycrowd.frontPage;
 
+import android.content.Context;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -148,27 +150,35 @@ public class FrontPageActivity extends AppCompatActivity {
             switch(lastPathSegment){
                 case "invite":
                 case "inviteOrganizer":
-                    String eventId = deepLink.getQueryParameter("eventId"),
-                            eventName = deepLink.getQueryParameter("eventName");
-                    if (eventId != null && eventName != null) {
-                        PolyContext.getDBI().getEventById(eventId, event -> {
-                            PolyContext.setCurrentEvent(event);
-                            ActivityHelper.eventIntentHandler(this, OrganizerInviteActivity.class);
-                        });
-                    }
+                    inviteOrganizerDynamicLink(this,deepLink);
                     break;
                 case "inviteStaff":
                 case "inviteSecurity":
                     break;
                 case "inviteGroup":
-                    String groupId = deepLink.getQueryParameter("groupId");
-                    if (groupId != null) {
-                        PolyContext.setCurrentGroup(groupId);
-                        ActivityHelper.eventIntentHandler(this, GroupInviteActivity.class);
-                    }
+                    inviteGroupDynamicLink(this, deepLink);
                     break;
             }
         }, getIntent());
+    }
+
+    private static void inviteOrganizerDynamicLink(Context c, Uri deepLink){
+        String eventId = deepLink.getQueryParameter("eventId"),
+                eventName = deepLink.getQueryParameter("eventName");
+        if (eventId != null && eventName != null) {
+            PolyContext.getDBI().getEventById(eventId, event -> {
+                PolyContext.setCurrentEvent(event);
+                ActivityHelper.eventIntentHandler(c, OrganizerInviteActivity.class);
+            });
+        }
+    }
+
+    private static void inviteGroupDynamicLink(Context c, Uri deepLink){
+        String groupId = deepLink.getQueryParameter("groupId");
+        if (groupId != null) {
+            PolyContext.setCurrentGroup(groupId);
+            ActivityHelper.eventIntentHandler(c, GroupInviteActivity.class);
+        }
     }
 
 }

@@ -10,6 +10,7 @@ import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
 
 
+@RequiresApi(api = Build.VERSION_CODES.O)
 public abstract class PolyContext extends Context {
 
     private static final String TAG = PolyContext.class.getSimpleName();
@@ -44,22 +45,38 @@ public abstract class PolyContext extends Context {
         return currentUser!=null;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    private static boolean isOrganizer(){
+        return currentEvent!=null && isLoggedIn() &&
+                currentEvent.getOrganizers()!=null &&
+                currentEvent.getOrganizers().contains(currentUser.getEmail());
+    }
+
+    private static boolean isStaff(){
+        return currentEvent!=null && isLoggedIn() &&
+                currentEvent.getStaff()!=null &&
+                currentEvent.getStaff().contains(currentUser.getEmail());
+    }
+
+    private static boolean isSecurity(){
+        return currentEvent!=null &&
+                currentEvent.getSecurity()!=null &&
+                currentEvent.getSecurity().contains(currentUser.getEmail());
+    }
+
     public static Role getRole() {
-        Role r = Role.UNKNOWN;
-        if (currentEvent != null) {
-            r = Role.GUEST;
-            if (currentUser != null) {
-                if (currentEvent.getOrganizers()!=null && currentEvent.getOrganizers().contains(currentUser.getUid()))
-                    r = Role.ORGANIZER;
-                else if (currentEvent.getStaff()!=null && currentEvent.getStaff().contains(currentUser.getUid()))
-                    r = Role.STAFF;
-                else if (currentEvent.getSecurity()!=null && currentEvent.getSecurity().contains(currentUser.getUid()))
-                    r = Role.SECURITY;
-                else
-                    r = Role.VISITOR;
-            }
-        }
+        if (currentEvent == null)
+            return Role.UNKNOWN;
+        if (currentUser == null)
+            return Role.GUEST;
+
+        Role r = Role.VISITOR;
+        if (isOrganizer())
+            r = Role.ORGANIZER;
+        else if (isSecurity())
+            r = Role.SECURITY;
+        else if (isStaff())
+            r = Role.STAFF;
+
         return r;
     }
 
