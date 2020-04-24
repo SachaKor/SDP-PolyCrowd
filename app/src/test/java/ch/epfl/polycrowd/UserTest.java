@@ -42,10 +42,13 @@ public class UserTest {
         Map<String, Object> data = new HashMap<>();
         data.put("username", "test");
         data.put("email" , "test@test");
-        data.put("age" , 3L);
+        data.put("age" , 3);
         data.put("uid" , "1");
 
         assertEquals(User.getFromDocument(data).getUid() , "1" );
+        assertEquals(User.getFromDocument(data).getEmail() , "test@test" );
+        assertEquals((User.getFromDocument(data).getAge()), new Integer(3));
+        assertEquals((User.getFromDocument(data).getName()), "test");
 
 
     }

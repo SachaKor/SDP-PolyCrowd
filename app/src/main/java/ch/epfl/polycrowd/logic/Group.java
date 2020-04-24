@@ -23,13 +23,6 @@ public class Group extends Storable {
         this.members = members;
     }
 
-    // Testing constructor
-    public Group()  {
-        this.eventId = "DEBUGEVENTIDWHAT";
-        this.members = new ArrayList<>();
-        members.add(new User("fake@fake.com", "FAKEFAKEFAKEFAKE", "Fake John", 1));
-    }
-
     @Override
     public Map<String, Object> getRawData() {
         Map<String,Object> m = new HashMap<>();
@@ -60,8 +53,7 @@ public class Group extends Storable {
         String gid = Objects.requireNonNull(data.get("gid")).toString();
         String eventId = Objects.requireNonNull(data.get("eventId")).toString();
 
-        Group ret = new Group(gid, eventId, members);
-        return ret;
+        return new Group(gid, eventId, members);
     }
 
     public void setGid(String gid) {

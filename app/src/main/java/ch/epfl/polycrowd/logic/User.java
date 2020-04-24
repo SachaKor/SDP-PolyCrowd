@@ -8,8 +8,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static java.lang.Math.toIntExact;
-
 public class User extends Storable {
 
     //TODO: add necessary attributes and methods
@@ -55,10 +53,8 @@ public class User extends Storable {
         String username = Objects.requireNonNull(data.get("username")).toString();
         String email = Objects.requireNonNull(data.get("email")).toString();
 
-        Object age = Objects.requireNonNull(data.get("age"));
-        Integer real_age = toIntExact((Long)age);
-
+        Integer age = (Integer) Objects.requireNonNull(data.get("age"));
         String uid = Objects.requireNonNull(data.get("uid")).toString();
-        return new User(email, uid, username, real_age);
+        return new User(email, uid, username, age);
     }
 }
