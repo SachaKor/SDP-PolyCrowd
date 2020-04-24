@@ -65,7 +65,7 @@ public class MapActivityTest {
 
         sleep();
 
-        if(mActivityRule.getActivity().status == MapActivity.level.GUEST) {
+        if(PolyContext.getRole() == PolyContext.Role.GUEST) {
             onView(withId(R.id.butRight)).check(matches(withText(containsString("EVENT DETAILS"))));
             onView(withId(R.id.butRight)).perform(click());
 
@@ -88,7 +88,7 @@ public class MapActivityTest {
 
         Intent intent = new Intent();
         mActivityRule.launchActivity(intent);
-        if(mActivityRule.getActivity().status == MapActivity.level.VISITOR) {
+        if(PolyContext.getRole() == PolyContext.Role.VISITOR) {
             onView(withId(R.id.butSOS)).check(matches(withText(containsString("EMERGENCY"))));
             onView(withId(R.id.butSOS)).perform(click());
 
@@ -130,7 +130,7 @@ public class MapActivityTest {
 
         sleep();
 
-        if(mActivityRule.getActivity().status == MapActivity.level.ORGANISER) {
+        if(PolyContext.getRole() == PolyContext.Role.ORGANIZER) {
             onView(withId(R.id.butRight)).check(matches(withText(containsString("MANAGE"))));
             onView(withId(R.id.butRight)).perform(click());
             sleep();
@@ -159,7 +159,7 @@ public class MapActivityTest {
 
         sleep();
 
-        if(mActivityRule.getActivity().status == MapActivity.level.VISITOR) {
+        if(PolyContext.getRole() == PolyContext.Role.VISITOR) {
             onView(withId(R.id.butRight)).check(matches(withText(containsString("EVENT DETAILS"))));
             onView(withId(R.id.butRight)).perform(click());
             sleep();
@@ -179,7 +179,7 @@ public class MapActivityTest {
 
         sleep();
 
-        if(mActivityRule.getActivity().status == MapActivity.level.GUEST) {
+        if(PolyContext.getRole() == PolyContext.Role.GUEST) {
             onView(withId(R.id.butLeft)).perform(click());
             onView(withId(R.id.sign_in_logo)).check(matches(isDisplayed()));
         }
