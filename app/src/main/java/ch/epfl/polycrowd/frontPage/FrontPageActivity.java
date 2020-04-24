@@ -46,24 +46,30 @@ public class FrontPageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_front_page);
 
-        setEventModels();
-
         // front page should dispatch the dynamic links
         receiveDynamicLink();
     }
     // --------------------------------------------------------------------------------
 
     // --------------------- ON START, ON RESTART -------------------------------------
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onStart() {
         super.onStart();
-        toggleLoginLogout();
+        setUp();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onRestart() {
         super.onRestart();
+        setUp();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void setUp() {
         toggleLoginLogout();
+        setEventModels();
     }
 
     private void toggleLoginLogout() {
@@ -115,7 +121,7 @@ public class FrontPageActivity extends AppCompatActivity {
                     eventTitle.setText(pointedEvent.getName() );
                 } else {
                     eventTitle.setText("Create an EVENT");
-                    description.setText("your journey starts now !");
+                    description.setText("your journey starts now ! \n sky is the limit");
                 }
             }
             @Override

@@ -3,7 +3,10 @@ package ch.epfl.polycrowd.frontPage;
 import android.content.Context;
 import android.content.Intent;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +18,7 @@ import androidx.viewpager.widget.PagerAdapter;
 
 import java.util.List;
 
+import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.EventEditActivity;
 import ch.epfl.polycrowd.R;
@@ -23,14 +27,18 @@ import ch.epfl.polycrowd.map.MapActivity;
 
 public class EventPagerAdaptor extends PagerAdapter {
 
+    private static final String TAG = "EventPagerAdaptor";
+
     private List<Event> events;
     private LayoutInflater layoutInflater;
     private Context context;
+    private DatabaseInterface dbi;
 
     // ----------- Constructor ---------------------------------------------------
     public EventPagerAdaptor(List<Event> models, Context context) {
         this.events = models;
         this.context = context;
+        dbi = PolyContext.getDatabaseInterface();
     }
 
     // ----------- Create View from a given position in the ViewPager ------------
@@ -53,8 +61,8 @@ public class EventPagerAdaptor extends PagerAdapter {
         } else {
             view = layoutInflater.inflate(R.layout.event_card, container, false);
             ImageView imageView = view.findViewById(R.id.image);
-            imageView.setImageResource(events.get(position-1).getImage());
-
+            Event event = events.get(position-1);
+            setImage(event, imageView);
             view.setOnClickListener(v -> {
                 Intent intent = new Intent(context, MapActivity.class);
                 PolyContext.setCurrentEvent(events.get(position-1));
@@ -64,6 +72,19 @@ public class EventPagerAdaptor extends PagerAdapter {
 
         container.addView(view);
         return view;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void setImage(Event event, ImageView imageView) {
+        if(event.getImageUri() == null) {
+            imageView.setImageResource(R.drawable.balelec); // default image
+        } else {
+            Log.d(TAG, "event " + event.getName() + " image uri: " + event.getImageUri());
+            dbi.downloadEventImage(event, image -> {
+                Bitmap bmp = BitmapFactory.decodeByteArray(image, 0, image.length);
+                imageView.setImageBitmap(bmp);
+            });
+        }
     }
 
     @Override
