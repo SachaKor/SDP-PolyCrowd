@@ -20,8 +20,8 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static ch.epfl.polycrowd.AndroidTestHelper.sleep;
+import static org.hamcrest.Matchers.not;
 
 @RunWith(AndroidJUnit4.class)
 public class EventPageDetailsActivityTest {
@@ -47,9 +47,7 @@ public class EventPageDetailsActivityTest {
     @Before
     public void startIntent() {
         AndroidTestHelper.SetupMockDBI();
-
         PolyContext.setCurrentUser(AndroidTestHelper.getOrganiser());
-
         Intent intent = new Intent();
         mActivityRule.launchActivity(intent);
     }
@@ -60,5 +58,13 @@ public class EventPageDetailsActivityTest {
         //onView(withId(R.id.invite_organizer_button)).perform(click()); //TODO: FIX NOT MOCKED BEHAVIOUR
         //onView(withText(R.string.invite_link_dialog_title)).check(matches(isDisplayed()));
     }
+
+    @Test
+    public void editModeTurnsOffAfterChangesSubmitted() {
+//        onView(withId(R.id.event_details_fab)).perform(click());
+//        onView(withId(R.id.event_details_submit)).perform(click());
+//        onView(withId(R.id.event_details_submit)).check(matches(not(isDisplayed())));
+    }
+
 }
 

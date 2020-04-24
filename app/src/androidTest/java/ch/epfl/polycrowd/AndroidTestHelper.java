@@ -2,6 +2,7 @@ package ch.epfl.polycrowd;
 
 import android.util.Pair;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -76,6 +77,16 @@ public abstract class AndroidTestHelper {
         PolyContext.setDbInterface(dbi);
 
         PolyContext.setCurrentEvent(ev.get(1));
+    }
+
+    private static Event getEvent(String id){
+        List<Event> nev = new ArrayList<>(ev);
+        nev.removeIf(e->!e.getId().equals(id));
+        return nev.get(0);
+    }
+
+    public static Event getDebugEvent(){
+        return getEvent("2");
     }
 
     private static User getUser(String mail){

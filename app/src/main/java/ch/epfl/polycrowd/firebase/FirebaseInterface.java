@@ -1,6 +1,5 @@
 package ch.epfl.polycrowd.firebase;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -16,6 +15,9 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,6 +29,7 @@ import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.firebase.handlers.DynamicLinkHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
+import ch.epfl.polycrowd.firebase.handlers.ImageHandler;
 import ch.epfl.polycrowd.firebase.handlers.OrganizersHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
@@ -41,10 +44,12 @@ public class FirebaseInterface implements DatabaseInterface {
     private FirebaseAuth cachedAuth;
     private DatabaseReference cachedDbRef;
     private FirebaseFirestore cachedFirestore;
+    private FirebaseStorage storage;
 
     private static final String EVENTS = "polyevents";
     private static final String ORGANIZERS = "organizers";
     private static final String USERS = "users";
+    private static final String EVENT_IMAGES = "event-images";
     private static final String TAG = "FirebaseInterface";
 
     public FirebaseInterface(){}
@@ -68,6 +73,13 @@ public class FirebaseInterface implements DatabaseInterface {
             this.cachedFirestore = FirebaseFirestore.getInstance();
         }
         return this.cachedFirestore;
+    }
+
+    private FirebaseStorage getStorageInstance(boolean refresh) {
+        if(storage == null || refresh) {
+            storage = FirebaseStorage.getInstance();
+        }
+        return  storage;
     }
 
     @Override
@@ -143,7 +155,7 @@ public class FirebaseInterface implements DatabaseInterface {
     @Override
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void addEvent(Event event, EventHandler successHandler, EventHandler failureHandler){
-            getFirestoreInstance(false).collection("polyevents")
+            getFirestoreInstance(false).collection(EVENTS)
                     .add(event.toHashMap())
                     .addOnSuccessListener(documentReference -> {
                         Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
@@ -275,9 +287,61 @@ public class FirebaseInterface implements DatabaseInterface {
                     .addOnFailureListener(e -> Log.w(TAG, "getDynamicLink:onFailure", e));
     }
 
+    /**
+     * Uploads the image for the event to the firebase storage
+     * Conventions:
+     * - all images for the events are stored in the EVENT_IMAGES bucket
+     * - the name of the event image is the event id
+     */
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    @Override
+    public void uploadEventImage(Event event, byte[] image, EventHandler handler) {
+        String imageUri = EVENT_IMAGES + "/" + event.getId() + ".jpg";
+        event.setImageUri(imageUri);
+        StorageReference imgRef = getStorageInstance(true).getReference().child(imageUri);
+        UploadTask uploadTask = imgRef.putBytes(image);
+        uploadTask
+                .addOnSuccessListener(taskSnapshot -> {
+                        Log.d(TAG, "Image for the event " + event.getId() + " is successfully uploaded");
+                        handler.handle(event);
+                })
+                .addOnFailureListener(e ->
+                        Log.w(TAG, "Error occurred during the upload of the image for the event " + event.getId()));
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void downloadEventImage(Event event, ImageHandler handler) {
+        String eventId = event.getId();
+        String imageUri = event.getImageUri();
+        if(event.getImageUri() == null) {
+            Log.d(TAG, "image is not set for the event: " + eventId);
+            return;
+        }
+        // TODO: compress images before upload to limit their size
+        final long ONE_MEGABYTE = 1024 * 1024;
+        StorageReference eventImageRef = getStorageInstance(false).getReference().child(imageUri);
+        eventImageRef.getBytes(ONE_MEGABYTE)
+                .addOnSuccessListener(handler::handle)
+                .addOnFailureListener(e -> Log.w(TAG, "Error downloading image " + imageUri + " from firebase storage"));
+    }
+
+    /**
+     * Updates the Event in the Firestore.
+     * The data contained in the event will be merged with already existing data for this event
+     */
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    @Override
+    public void updateEvent(Event event, EventHandler eventHandler) {
+        getFirestoreInstance(false).collection(EVENTS).document(event.getId())
+                .set(event.toHashMap())
+                .addOnSuccessListener(aVoid -> eventHandler.handle(event))
+                .addOnFailureListener(e -> Log.w(TAG, "Error updating the event with id: " + event.getId()));
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void addSOS(@NonNull String userId, @NonNull String eventId, @NonNull String reason) {
         getFirestoreInstance(false).collection(EVENTS).document(eventId).update("sos."+userId,reason).addOnFailureListener(e-> Log.w(TAG, "addSOS:onFailure",e));
     }
 }
+

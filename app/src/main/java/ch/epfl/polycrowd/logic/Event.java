@@ -18,8 +18,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
-import ch.epfl.polycrowd.R;
-
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class Event {
 
@@ -40,6 +38,7 @@ public class Event {
     private String description;
     private String id;
     private int image;
+    private String imageUri;
     private Schedule schedule;
     private List<String> organizers;
 
@@ -48,7 +47,6 @@ public class Event {
     public Event(@NonNull String owner, @NonNull String name, Boolean isPublic, @NonNull EventType type,
                  @NonNull Date start, @NonNull Date end,
                  @NonNull String calendar, String description, Boolean hasEmergencyFeature){
-
         this.owner = owner;
         this.name = name;
         this.isPublic = isPublic;
@@ -114,11 +112,10 @@ public class Event {
         return description;
     }
     public void setDescription(String description) {
-        if(description == null) {
+        if(description == null)
             this.description = "";
-        } else {
-            this.description = description;
-        }
+        else
+            this.description = description.replaceAll("\\\\n", "\n" );
     }
 
 
@@ -179,6 +176,14 @@ public class Event {
         this.calendar = calendar;
     }
 
+    public String getImageUri() {
+        return imageUri;
+    }
+
+    public void setImageUri(String imageUri) {
+        this.imageUri = imageUri;
+    }
+
     public boolean isEmergencyEnabled(){ return this.isEmergencyEnabled; }
     public void setEmergencyEnabled(boolean b){
         this.isEmergencyEnabled = b;
@@ -200,6 +205,7 @@ public class Event {
         event.put("description", this.description);
         event.put("isEmergencyEnabled", this.isEmergencyEnabled.toString());
         event.put("organizers", organizers);
+        event.put("imageUri", imageUri);
         return event;
     }
 
@@ -219,7 +225,10 @@ public class Event {
         String desc = data.get("description").toString();
         Boolean emergency = data.containsKey("isEmergencyEnabled")? Boolean.valueOf(Objects.requireNonNull(data.get("isEmergencyEnabled")).toString()): false;
         List<String> organizers = new ArrayList<>((List<String>) Objects.requireNonNull(data.get("organizers")));
-        return new Event(owner, name, isPublic, type, start, end, calendar, desc, emergency, organizers);
+        String imageUri = (String) data.get("imageUri"); // can be null but this is ok
+        Event result = new Event(owner, name, isPublic, type, start, end, calendar, desc, emergency, organizers);
+        result.setImageUri(imageUri);
+        return result;
     }
 
     public void addOrganizer(String organizer) {
