@@ -112,7 +112,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
 
                 if(inviteGroupId != null){
-                    PolyContext.getDatabaseInterface().addUserToGroup(inviteGroupId, user.getUid(), () -> {
+                    PolyContext.getDatabaseInterface().addUserToGroup(inviteGroupId, user.getEmail(), () -> {
                     Intent map = new Intent(c, MapActivity.class);
                     startActivity(map);
                 });

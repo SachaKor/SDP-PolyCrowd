@@ -33,7 +33,6 @@ public class GroupPageActivity extends AppCompatActivity {
     private static final String TAG = "GroupPageActivity";
 
     private String eventId;
-    private String userId;
     private String groupId;
     private AlertDialog linkDialog;
 
@@ -95,13 +94,13 @@ public class GroupPageActivity extends AppCompatActivity {
             Log.e(TAG, "initGroup : current user is null ?!");
             return;
         }
-        userId = user.getUid();
-        dbi.getGroupByUserAndEvent(eventId, userId, group -> {
+        dbi.getGroupByUserAndEvent(eventId, user.getEmail(), group -> {
             if(group == null){
                 findViewById(R.id.leave_group_button).setVisibility(View.GONE);
                 findViewById(R.id.invite_group_button).setVisibility(View.GONE);
                 return;
             }
+
 
             findViewById(R.id.create_group_button).setVisibility(View.GONE);
             groupId = group.getGid();
@@ -143,7 +142,8 @@ public class GroupPageActivity extends AppCompatActivity {
 
     public void leaveLinkClicked(View view) {
         Context c = this;
-        PolyContext.getDatabaseInterface().removeUserFromGroup(groupId, userId, () -> {
+        User user = PolyContext.getCurrentUser();
+        PolyContext.getDatabaseInterface().removeUserFromGroup(groupId, user.getEmail(), () -> {
             PolyContext.getDatabaseInterface().removeGroupIfEmpty(groupId, group -> {
                 Intent map = new Intent(c, GroupPageActivity.class);
                 startActivity(map);
@@ -153,10 +153,11 @@ public class GroupPageActivity extends AppCompatActivity {
 
     public void createLinkClicked(View view){
         Context c = this;
+        User user = PolyContext.getCurrentUser();
         PolyContext.getDatabaseInterface().createGroup(eventId, group -> {
             groupId = group.getGid();
-            PolyContext.getDatabaseInterface().addUserToGroup(groupId, userId, () -> {
-                Log.w("createLinkClicked", groupId + " " + userId + " " + eventId);
+            PolyContext.getDatabaseInterface().addUserToGroup(groupId, user.getEmail(), () -> {
+                Log.w("createLinkClicked", "group " + groupId + " user " + user.getEmail() + " event " + eventId);
                 Intent map = new Intent(c, GroupPageActivity.class);
                 startActivity(map);
             });

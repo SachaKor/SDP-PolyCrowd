@@ -1,8 +1,14 @@
 package ch.epfl.polycrowd.logic;
 
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+
+import static java.lang.Math.toIntExact;
 
 public class User extends Storable {
 
@@ -44,11 +50,15 @@ public class User extends Storable {
         return uid;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public static User getFromDocument(Map<String, Object> data) {
         String username = Objects.requireNonNull(data.get("username")).toString();
         String email = Objects.requireNonNull(data.get("email")).toString();
-        Integer age = (Integer) Objects.requireNonNull(data.get("age"));
+
+        Object age = Objects.requireNonNull(data.get("age"));
+        Integer real_age = toIntExact((Long)age);
+
         String uid = Objects.requireNonNull(data.get("uid")).toString();
-        return new User(email, uid, username, age);
+        return new User(email, uid, username, real_age);
     }
 }

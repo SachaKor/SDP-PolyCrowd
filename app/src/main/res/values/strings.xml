@@ -50,7 +50,7 @@
     <string name="organizer_invite_text_2">Sign in to accept the invitation</string>
     <string name="event_add_success">Event added</string>
     <string name="event_add_failure">Error occurred while adding the event</string>
-    <string name="group">Group</string>
+    <string name="group">Your group</string>
     <string name="invite_group">Invite someone to group</string>
     <string name="leave_group">Leave group</string>
     <string name="group_invite_text">You are invited to a group.</string>
