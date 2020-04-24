@@ -126,26 +126,21 @@ public class EventPageDetailsActivity extends AppCompatActivity {
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void initEvent() {
-        curEvent = PolyContext.getCurrentEvent();
-        if(curEvent == null) {
+
+        if(PolyContext.getCurrentEvent() == null) {
             Log.e(TAG, "current event is null");
             return;
         }
-        String eventId = curEvent.getId();
-        try {
-            PolyContext.getDBI().getEventById(eventId, event -> {
-                initRecyclerView(event.getOrganizers());
-                setUpViews();
-                // Check logged-in user => do not show invite button if user isn't organizer
-                if(PolyContext.getCurrentUser() == null || PolyContext.getRole() != PolyContext.Role.ORGANIZER) {
-                    Log.d(TAG, "current user is not an organizer");
-                } else {
-                    findViewById(R.id.event_details_fab).setVisibility(View.VISIBLE);
-                }
-            });
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        PolyContext.getDBI().getEventById(PolyContext.getCurrentEvent().getId(), event -> {
+            initRecyclerView(event.getOrganizers());
+            setUpViews();
+            // Check logged-in user => do not show invite button if user isn't organizer
+            if(PolyContext.getCurrentUser() == null || PolyContext.getRole() != PolyContext.Role.ORGANIZER) {
+                Log.d(TAG, "current user is not an organizer");
+            } else {
+                findViewById(R.id.event_details_fab).setVisibility(View.VISIBLE);
+            }
+        });
     }
 
 

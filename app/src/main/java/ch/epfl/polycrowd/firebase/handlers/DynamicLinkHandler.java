@@ -6,5 +6,5 @@ import java.text.ParseException;
 
 
 public interface DynamicLinkHandler {
-    void handle(Uri deepLink) throws ParseException;
+    void handle(Uri deepLink);
 }

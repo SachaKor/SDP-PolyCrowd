@@ -20,15 +20,13 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.lang.reflect.Array;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.atomic.AtomicReferenceArray;
 
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.firebase.handlers.DynamicLinkHandler;
@@ -60,7 +58,7 @@ public class FirebaseInterface implements DatabaseInterface {
     private static final String GROUPS = "groups";
     private static final String USERS = "users";
     private static final String EVENT_IMAGES = "event-images";
-    private static final String TAG = "FirebaseInterface";
+    private static final String TAG = FirebaseInterface.class.getSimpleName();
 
     public FirebaseInterface(){}
 
@@ -252,7 +250,6 @@ public class FirebaseInterface implements DatabaseInterface {
                                 data.put("gid", d.getId());
                                 Group group = Group.getFromDocument(data);
                                 groupHandler.handle(group);
-                                return;
                             }
                         }, user -> {
                             Log.e(TAG1, "Failure handler called. User with email " + mail + " could not be retrieved");
@@ -262,7 +259,6 @@ public class FirebaseInterface implements DatabaseInterface {
                 .addOnFailureListener(e -> {
                     // That user is in no group !
                     groupHandler.handle(null);
-                    return;
                 });
     }
 
@@ -292,6 +288,7 @@ public class FirebaseInterface implements DatabaseInterface {
             getFirestoreInstance(false).collection(GROUPS)
                     .document(gid).get().addOnSuccessListener(documentSnapshot -> {
                 List<String> members = new ArrayList<>();
+
                 members.addAll((List<String>)documentSnapshot.get(MEMBERS));
                 // if user is not in the list, add
                 if(!members.contains(userEmail)) {
@@ -429,7 +426,6 @@ public class FirebaseInterface implements DatabaseInterface {
 
     @Override
     public void receiveDynamicLink(DynamicLinkHandler handler, Intent intent) {
-        final String TAG1 = "receiveDynamicLink";
             FirebaseDynamicLinks.getInstance()
                     .getDynamicLink(intent)
                     .addOnSuccessListener(pendingDynamicLinkData -> {

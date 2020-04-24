@@ -71,12 +71,8 @@ public class EventEditActivity extends AppCompatActivity {
                 eventTypeSpinner.setSelection(ev.getType().ordinal());
                 scheduleUrl.setText(ev.getCalendar());
             };
-            try {
-                System.out.println("############ retreiving event:" + eventId);
-                PolyContext.getDBI().getEventById(eventId, eventHandler);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+            System.out.println("############ retreiving event:" + eventId);
+            PolyContext.getDBI().getEventById(eventId, eventHandler);
 
         }else this.eventId = null;
 
