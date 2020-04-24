@@ -1,13 +1,9 @@
 package ch.epfl.polycrowd.frontPage;
 
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -19,17 +15,17 @@ import androidx.viewpager.widget.ViewPager;
 import java.util.Date;
 import java.util.List;
 
+import ch.epfl.polycrowd.ActivityHelper;
 import ch.epfl.polycrowd.GroupInviteActivity;
 import ch.epfl.polycrowd.R;
-import ch.epfl.polycrowd.authentification.LoginActivity;
-import ch.epfl.polycrowd.firebase.handlers.DynamicLinkHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
+import ch.epfl.polycrowd.logic.User;
 import ch.epfl.polycrowd.organizerInvite.OrganizerInviteActivity;
 
 public class FrontPageActivity extends AppCompatActivity {
 
-    private static final String TAG = "FrontPageActivity";
+    private static final String TAG = FrontPageActivity.class.getSimpleName();
 
     ViewPager viewPager;
     EventPagerAdaptor adapter;
@@ -68,12 +64,13 @@ public class FrontPageActivity extends AppCompatActivity {
         setEventModels();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void toggleLoginLogout() {
         // Toggle login/logout button
-        if(PolyContext.getCurrentUser() != null){
+        if(PolyContext.isLoggedIn()){
             Button button = findViewById(R.id.button);
             button.setText("LOGOUT");
-            button.setOnClickListener(v -> clickSignOut(v));
+            button.setOnClickListener(v -> ActivityHelper.eventIntentHandler(this,FrontPageActivity.class));
         }
     }
 
@@ -87,7 +84,7 @@ public class FrontPageActivity extends AppCompatActivity {
         //For Connection permissions
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
-        PolyContext.getDatabaseInterface().getAllEvents(v->setAdapter(v));
+        PolyContext.getDBI().getAllEvents(v->setAdapter(v));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -140,49 +137,45 @@ public class FrontPageActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private List<Event> trimHiddenEvents(@NonNull List<Event> es){
+        User cu= PolyContext.getCurrentUser();
         es.removeIf(e -> (!e.getPublic()));
+        es.removeIf(e -> !(cu == null || !e.getOrganizers().contains(cu.getUid())));
         return es;
     }
 
 
-    // --------- Button Activity ----------------------------------------------------------
-
-    public void clickSignIn(View view) {
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
-    }
-
-    public void clickSignOut(View view) {
-        PolyContext.getDatabaseInterface().signOut();
-        PolyContext.setCurrentUser(null);
-        recreate();
-    }
-
 
     // --------- Link --------------------------------------------------------------------
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void receiveDynamicLink() {
-        Context c = this;
-        PolyContext.getDatabaseInterface().receiveDynamicLink(deepLink -> {
+        PolyContext.getDBI().receiveDynamicLink(deepLink -> {
             Log.d(TAG, "Deep link URL:\n" + deepLink.toString());
             String lastPathSegment = deepLink.getLastPathSegment();
-            Log.d(TAG, " last segment: " + lastPathSegment);
-            if(lastPathSegment != null && lastPathSegment.equals("invite")) {
-                String eventId = deepLink.getQueryParameter("eventId"),
-                        eventName = deepLink.getQueryParameter("eventName");
-                if (eventId != null && eventName != null) {
-                    Intent intent = new Intent(c, OrganizerInviteActivity.class);
-                    intent.putExtra("eventId", eventId);
-                    intent.putExtra("eventName", eventName);
-                    startActivity(intent);
-                }
-            } else if(lastPathSegment != null && lastPathSegment.equals("inviteGroup")) {
-                String groupId = deepLink.getQueryParameter("groupId");
-                if (groupId != null) {
-                    Intent intent = new Intent(c, GroupInviteActivity.class);
-                    intent.putExtra("groupId", groupId);
-                    startActivity(intent);
-                }
+            if(lastPathSegment == null)
+                return;
+            switch(lastPathSegment){
+                case "invite":
+                case "inviteOrganizer":
+                    String eventId = deepLink.getQueryParameter("eventId"),
+                            eventName = deepLink.getQueryParameter("eventName");
+                    if (eventId != null && eventName != null) {
+                        PolyContext.getDBI().getEventById(eventId, event -> {
+                            PolyContext.setCurrentEvent(event);
+                            ActivityHelper.eventIntentHandler(this, OrganizerInviteActivity.class);
+                        });
+                    }
+                    break;
+                case "inviteStaff":
+                case "inviteSecurity":
+                    break;
+                case "inviteGroup":
+                    String groupId = deepLink.getQueryParameter("groupId");
+                    if (groupId != null) {
+                        PolyContext.setCurrentGroup(groupId);
+                        ActivityHelper.eventIntentHandler(this, GroupInviteActivity.class);
+                    }
+                    break;
             }
         }, getIntent());
     }

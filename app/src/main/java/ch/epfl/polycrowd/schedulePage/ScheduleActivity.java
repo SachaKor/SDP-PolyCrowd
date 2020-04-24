@@ -15,12 +15,11 @@ import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.logic.Activity;
 import ch.epfl.polycrowd.logic.PolyContext;
 
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class ScheduleActivity extends AppCompatActivity {
 
     RecyclerView mRecyclerView ;
-    MyAdapter myAdapter ;
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -36,8 +35,7 @@ public class ScheduleActivity extends AppCompatActivity {
                 PolyContext.getCurrentEvent().loadCalendar(getApplicationContext().getFilesDir());
                 List<Activity> activities = PolyContext.getCurrentEvent().getActivities();
                 if (activities != null) {
-                    myAdapter = new MyAdapter(this, activities);
-                    mRecyclerView.setAdapter(myAdapter);
+                    mRecyclerView.setAdapter( new MyAdapter(this, activities));
                 }
             }
     }

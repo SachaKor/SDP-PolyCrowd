@@ -120,7 +120,7 @@ public class MapActivityTest {
 
         Event e = new Event("Test Owner","Test Name", true, Event.EventType.CONVENTION,new Date(), new Date(),"url","Test Description", false);
         e.setId("test id");
-        PolyContext.getDatabaseInterface().addEvent(e, ev->{}, ev->{});
+        PolyContext.getDBI().addEvent(e, ev->{}, ev->{});
         PolyContext.setCurrentEvent(e);
 
         PolyContext.setCurrentUser(AndroidTestHelper.getOwner());

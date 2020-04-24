@@ -18,11 +18,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Locale;
 
-import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.firebase.handlers.EventHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
@@ -32,17 +30,16 @@ import ch.epfl.polycrowd.map.MapActivity;
 import static ch.epfl.polycrowd.logic.Event.dtFormat;
 import static ch.epfl.polycrowd.logic.Event.stringToDate;
 
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class EventEditActivity extends AppCompatActivity {
 
-    private static final String TAG = "EventEditActivity";
+    private static final String TAG = EventEditActivity.class.getSimpleName();
 
     private EditText eventName, scheduleUrl;
     private EditText startDate, endDate;
     private Switch isPublicSwitch, isEmergencyEnabled;
     private Spinner eventTypeSpinner;
     private String eventId;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +63,7 @@ public class EventEditActivity extends AppCompatActivity {
 
             EventHandler eventHandler = ev -> {
                 eventName.setText(ev.getName());
-                SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+                SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
                 startDate.setText(sdf.format(ev.getStart()));
                 endDate.setText(sdf.format(ev.getEnd()));
                 isPublicSwitch.setChecked(ev.getPublic());
@@ -76,7 +73,7 @@ public class EventEditActivity extends AppCompatActivity {
             };
             try {
                 System.out.println("############ retreiving event:" + eventId);
-                PolyContext.getDatabaseInterface().getEventById(eventId, eventHandler);
+                PolyContext.getDBI().getEventById(eventId, eventHandler);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -125,7 +122,6 @@ public class EventEditActivity extends AppCompatActivity {
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public void sendEventSubmit(View view) {
         final EditText evName = findViewById(R.id.EditEventName);
 
@@ -133,6 +129,7 @@ public class EventEditActivity extends AppCompatActivity {
         // Add the event
         // Add an Event to the firestore
         // Retrieve the field values from the Edit Event layout
+
         Boolean isPublic = isPublicSwitch.isChecked();
         String sDate = startDate.getText().toString(),
                 eDate = endDate.getText().toString(),
@@ -171,9 +168,9 @@ public class EventEditActivity extends AppCompatActivity {
         };
         EventHandler failureHandler = e -> Toast.makeText(c, "Error occurred while adding the event", Toast.LENGTH_LONG).show();
         if( this.eventId == null) {
-            PolyContext.getDatabaseInterface().addEvent(ev, successHandler, failureHandler);
+            PolyContext.getDBI().addEvent(ev, successHandler, failureHandler);
         }else {
-            PolyContext.getDatabaseInterface().patchEventByID(this.eventId, ev, successHandler, failureHandler);
+            PolyContext.getDBI().patchEventByID(this.eventId, ev, successHandler, failureHandler);
         }
         Intent intent = new Intent(this, MapActivity.class);
         startActivity(intent);

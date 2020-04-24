@@ -1,7 +1,6 @@
 package ch.epfl.polycrowd;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -19,34 +18,27 @@ import com.google.firebase.dynamiclinks.DynamicLink;
 import com.google.firebase.dynamiclinks.DynamicLink.SocialMetaTagParameters;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
-import java.text.ParseException;
 import java.util.List;
 
-import ch.epfl.polycrowd.firebase.DatabaseInterface;
-import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
-import ch.epfl.polycrowd.logic.User;
 import ch.epfl.polycrowd.organizerInvite.OrganizersAdapter;
 
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class GroupPageActivity extends AppCompatActivity {
 
-    private static final String TAG = "GroupPageActivity";
+    private static final String TAG = GroupPageActivity.class.getSimpleName();
 
-    private String eventId;
     private String groupId;
     private AlertDialog linkDialog;
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_page);
-        try {
-            initEvent();
-            initGroup();
-        } catch (ParseException e) {
-            e.printStackTrace();
+        if(!PolyContext.isLoggedIn()){
+            //TODO: Return to main?
         }
+        initGroup();
     }
 
     @Override
@@ -72,29 +64,13 @@ public class GroupPageActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
-    /**
-     * Fetches the organizers of the event from the database
-     * Initializes the RecyclerView displaying the organizers
-     */
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void initEvent() throws ParseException {
-        Event curEvent = PolyContext.getCurrentEvent();
-        if(curEvent == null) {
-            Log.e(TAG, "current event is null");
-            return;
-        }
-        eventId = curEvent.getId();
-    }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void initGroup() {
-        DatabaseInterface dbi = PolyContext.getDatabaseInterface();
-        User user = PolyContext.getCurrentUser();
-        if(user == null){
+        if(!PolyContext.isLoggedIn()){
             Log.e(TAG, "initGroup : current user is null ?!");
             return;
         }
-        dbi.getGroupByUserAndEvent(eventId, user.getEmail(), group -> {
+        PolyContext.getDBI().getGroupByUserAndEvent(PolyContext.getCurrentEvent().getId(), PolyContext.getCurrentUser().getEmail(), group -> {
             if(group == null){
                 findViewById(R.id.leave_group_button).setVisibility(View.GONE);
                 findViewById(R.id.invite_group_button).setVisibility(View.GONE);
@@ -141,25 +117,20 @@ public class GroupPageActivity extends AppCompatActivity {
     }
 
     public void leaveLinkClicked(View view) {
-        Context c = this;
-        User user = PolyContext.getCurrentUser();
-        PolyContext.getDatabaseInterface().removeUserFromGroup(groupId, user.getEmail(), () -> {
-            PolyContext.getDatabaseInterface().removeGroupIfEmpty(groupId, group -> {
-                Intent map = new Intent(c, GroupPageActivity.class);
+        PolyContext.getDBI().removeUserFromGroup(groupId, PolyContext.getCurrentUser().getEmail(), () ->
+            PolyContext.getDBI().removeGroupIfEmpty(groupId, group -> {
+                Intent map = new Intent(this, GroupPageActivity.class);
                 startActivity(map);
-            });
-        });
+            }
+        ));
     }
 
     public void createLinkClicked(View view){
-        Context c = this;
-        User user = PolyContext.getCurrentUser();
-        PolyContext.getDatabaseInterface().createGroup(eventId, group -> {
+        PolyContext.getDBI().createGroup(PolyContext.getCurrentEvent().getId(), group -> {
             groupId = group.getGid();
-            PolyContext.getDatabaseInterface().addUserToGroup(groupId, user.getEmail(), () -> {
-                Log.w("createLinkClicked", "group " + groupId + " user " + user.getEmail() + " event " + eventId);
-                Intent map = new Intent(c, GroupPageActivity.class);
-                startActivity(map);
+            PolyContext.getDBI().addUserToGroup(groupId, PolyContext.getCurrentUser().getEmail(), () -> {
+                Log.w("createLinkClicked", "group " + groupId + " user " + PolyContext.getCurrentUser().getEmail() + " event " + PolyContext.getCurrentEvent().getId());
+                ActivityHelper.eventIntentHandler(this,GroupPageActivity.class);
             });
         });
     }

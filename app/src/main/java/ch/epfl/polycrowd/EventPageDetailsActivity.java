@@ -4,9 +4,8 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import ch.epfl.polycrowd.firebase.DatabaseInterface;
+
 import ch.epfl.polycrowd.logic.PolyContext;
-import ch.epfl.polycrowd.logic.User;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -38,17 +37,14 @@ import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.organizerInvite.OrganizersAdapter;
 import ch.epfl.polycrowd.schedulePage.ScheduleActivity;
 
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class EventPageDetailsActivity extends AppCompatActivity {
 
     private static final String TAG = "EventPageDetails";
 
     private AlertDialog linkDialog;
 
-    private boolean currentUserIsOrganizer = false;
-
     public static final int PICK_IMAGE = 1;
-
-    private DatabaseInterface dbi;
 
     private Event curEvent;
 
@@ -60,13 +56,11 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     Button submitChanges;
     FloatingActionButton editEventButton;
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_details_page);
 
-        dbi = PolyContext.getDatabaseInterface();
         initEvent();
 
         final Button scheduleButton = findViewById(R.id.schedule);
@@ -108,7 +102,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         String imgUri = curEvent.getImageUri();
         Log.d(TAG, "event img uri: " + imgUri);
         if(null != imgUri) {
-            dbi.downloadEventImage(curEvent, image -> {
+            PolyContext.getDBI().downloadEventImage(curEvent, image -> {
                 Bitmap bmp = BitmapFactory.decodeByteArray(image, 0, image.length);
                 imageInBytes = image;
                 eventImg.setImageBitmap(bmp);
@@ -139,17 +133,14 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         }
         String eventId = curEvent.getId();
         try {
-            dbi.getEventById(eventId, event -> {
+            PolyContext.getDBI().getEventById(eventId, event -> {
                 initRecyclerView(event.getOrganizers());
                 setUpViews();
                 // Check logged-in user => do not show invite button if user isn't organizer
-                User user = PolyContext.getCurrentUser();
-                if(user == null || event.getOrganizers().indexOf(user.getEmail()) == -1) {
+                if(PolyContext.getCurrentUser() == null || PolyContext.getRole() != PolyContext.Role.ORGANIZER) {
                     Log.d(TAG, "current user is not an organizer");
-                    currentUserIsOrganizer = false;
                 } else {
-                    currentUserIsOrganizer = true;
-                    setUpOrganizerPrivileges();
+                    findViewById(R.id.event_details_fab).setVisibility(View.VISIBLE);
                 }
             });
         } catch (ParseException e) {
@@ -157,10 +148,6 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         }
     }
 
-    private void setUpOrganizerPrivileges() {
-        FloatingActionButton editButton = findViewById(R.id.event_details_fab);
-        editButton.setVisibility(View.VISIBLE);
-    }
 
     private void setEditing(boolean enable) {
         Log.d(TAG, "setting editing mode to " + enable);
@@ -237,9 +224,9 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         // upload the image to the storage
         // update the current event
         // update the event in the database
-        dbi.uploadEventImage(curEvent, imageInBytes, event -> {
+        PolyContext.getDBI().uploadEventImage(curEvent, imageInBytes, event -> {
             Log.d(TAG, "event img uri after upload: " + event.getImageUri());
-            dbi.updateEvent(curEvent, event1 -> {
+            PolyContext.getDBI().updateEvent(curEvent, event1 -> {
                 setEditing(false);
                 Log.d(TAG, "editing mode unset");
                 initEvent();

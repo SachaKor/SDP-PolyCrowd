@@ -11,7 +11,6 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import ch.epfl.polycrowd.R;
-import ch.epfl.polycrowd.Utils;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.PolyContext;
 
@@ -33,10 +32,10 @@ public class ResetPasswordActivity extends AppCompatActivity {
             //First need to query the database to exclude that this email is not registered
             UserHandler pwResetSuccess = user -> Utils.toastPopup(this, "A reset link has been sent to your email") ;
             UserHandler pwResetFailure = user -> Utils.toastPopup(this, "Connection error, please try again later") ;
-            UserHandler emailFoundHandler = user -> PolyContext.getDatabaseInterface().resetPassword(email, pwResetSuccess, pwResetFailure);
+            UserHandler emailFoundHandler = user -> PolyContext.getDBI().resetPassword(email, pwResetSuccess, pwResetFailure);
             UserHandler emailNotFoundHandler = u -> Utils.toastPopup(this, "Email not found, please sign up") ;
             //Finally put everything together
-            PolyContext.getDatabaseInterface().getUserByEmail(email, emailFoundHandler, emailNotFoundHandler);
+            PolyContext.getDBI().getUserByEmail(email, emailFoundHandler, emailNotFoundHandler);
         }
     }
 }

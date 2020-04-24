@@ -2,7 +2,10 @@ package ch.epfl.polycrowd.map;
 
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.os.Build;
 import android.util.Log;
+
+import androidx.annotation.RequiresApi;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -26,8 +29,7 @@ import java.util.List;
 
 
 import ch.epfl.polycrowd.R;
-
-
+import ch.epfl.polycrowd.logic.PolyContext;
 
 
 public class CrowdMap implements OnMapReadyCallback {
@@ -45,7 +47,7 @@ public class CrowdMap implements OnMapReadyCallback {
     }
 
     // DEBUG
-    private static final String TAG = "CrowdMap";
+    private static final String TAG = CrowdMap.class.getSimpleName();
 
 
 
@@ -64,6 +66,7 @@ public class CrowdMap implements OnMapReadyCallback {
     // tile overlay
     private TileOverlay TOverlay;
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
@@ -89,15 +92,18 @@ public class CrowdMap implements OnMapReadyCallback {
         }
 
         // --- HeatMap -------------------------------------------------------------
-        switch(act.status) {
+        switch(PolyContext.getRole()) {
             case GUEST:
             case VISITOR:
+            case UNKNOWN:
                 HmTP = new HeatmapTileProvider.Builder()
                         .data(getEventGoersPositions())
                         .gradient(gradientGrey)
                         .build();
                 break;
-            case ORGANISER:
+            case ORGANIZER:
+            case SECURITY:
+            case STAFF:
                 HmTP = new HeatmapTileProvider.Builder()
                         .data(getEventGoersPositions())
                         .gradient(gradientGreenRed)

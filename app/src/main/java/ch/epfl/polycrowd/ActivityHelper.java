@@ -1,11 +1,24 @@
 package ch.epfl.polycrowd;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Build;
 import android.view.Gravity;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
 
-public class Utils {
+
+@RequiresApi(api = Build.VERSION_CODES.O)
+public abstract class ActivityHelper {
+
+
+    public static void eventIntentHandler(Context currentAct, Class<? extends AppCompatActivity> targetAct) {
+        Intent intent = new Intent(currentAct,targetAct);
+        currentAct.startActivity(intent);
+    }
+
 
     /**
      * Makes appear a toast in the bottom of the screen
@@ -18,6 +31,5 @@ public class Utils {
         toast.setGravity(Gravity.BOTTOM, 0, 16);
         toast.show();
     }
-
 
 }

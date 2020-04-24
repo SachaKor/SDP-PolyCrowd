@@ -12,11 +12,10 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import ch.epfl.polycrowd.EventPageDetailsActivity;
 import ch.epfl.polycrowd.R;
 
 public class OrganizersAdapter extends RecyclerView.Adapter<OrganizersAdapter.ViewHolder>{
-    private static final String LOG_TAG = "OrganizersAdapter";
+    private static final String LOG_TAG = OrganizersAdapter.class.getSimpleName();
 
     private final List<String> organizers;
 

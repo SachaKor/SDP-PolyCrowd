@@ -2,7 +2,6 @@ package ch.epfl.polycrowd;
 
 import android.util.Pair;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -47,8 +46,8 @@ public class PolyContextTest {
         List<Event> evl = new ArrayList<>();
 
         FirebaseMocker fbm = new FirebaseMocker(mailAndUserPassPair,evl);
-        PolyContext.setDbInterface(fbm);
-        DatabaseInterface dbi = PolyContext.getDatabaseInterface();
+        PolyContext.setDBI(fbm);
+        DatabaseInterface dbi = PolyContext.getDBI();
         //TODO: Check dbi
     }
 
@@ -65,7 +64,7 @@ public class PolyContextTest {
         PolyContext.reset();
         assertNull(PolyContext.getCurrentEvent());
         assertNull(PolyContext.getCurrentUser());
-        assertNull(PolyContext.getDatabaseInterface());
+        assertNull(PolyContext.getDBI());
         assertNull(PolyContext.getPreviousPage());
     }
 

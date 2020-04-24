@@ -11,12 +11,21 @@ import ch.epfl.polycrowd.firebase.FirebaseInterface;
 
 public abstract class PolyContext extends Context {
 
-    private static final String TAG = "PolyContext";
+    private static final String TAG = PolyContext.class.getSimpleName();
+
+    public static void setCurrentGroup(String groupId) {
+        currentGroup = groupId;
+    }
+
+    public static String getCurrentGroup() {
+        return currentGroup;
+    }
 
     public enum Role {ORGANIZER, STAFF, SECURITY, VISITOR, GUEST, UNKNOWN };
 
     private static Event currentEvent;
     private static User currentUser;
+    private static String currentGroup;
     private static String previousPage = "";
     private static boolean mockDynamicLink = false; // for the FrontPage testing
     private static DatabaseInterface dbInterface  = new FirebaseInterface();
@@ -78,11 +87,11 @@ public abstract class PolyContext extends Context {
     public static void setMockDynamicLink(boolean mock) { mockDynamicLink = mock; }
 
 
-    public static void setDbInterface(DatabaseInterface dbInterfaceInject){
+    public static void setDBI(DatabaseInterface dbInterfaceInject){
         dbInterface = dbInterfaceInject ;
     }
 
-    public static DatabaseInterface getDatabaseInterface(){
+    public static DatabaseInterface getDBI(){
         return dbInterface ;
     }
 

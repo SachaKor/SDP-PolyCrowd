@@ -105,16 +105,16 @@ public class SignUpActivity extends AppCompatActivity {
 
         if(registrationFieldsValid(firstPassword, secondPassword, username, email)){
             // check if the user with a given username exists already
-            Context c = this ;
-            UserHandler userExistsHandler = user -> Toast.makeText(c, "User already exists", Toast.LENGTH_SHORT).show();
-            UserHandler userDoesNotExistHandler = user -> PolyContext.getDatabaseInterface().signUp(username.getText().toString(),
+            UserHandler userExistsHandler = user -> Toast.makeText(this, "User already exists", Toast.LENGTH_SHORT).show();
+            UserHandler userDoesNotExistHandler = user -> PolyContext.getDBI().signUp(username.getText().toString(),
                     firstPassword.getText().toString(), email.getText().toString(), 100,
-                    u ->Toast.makeText(c, "Sign up successful", Toast.LENGTH_SHORT).show() ,
-                    u ->Toast.makeText(c, "Error registering user", Toast.LENGTH_SHORT).show() );
+                    u ->Toast.makeText(this, "Sign up successful", Toast.LENGTH_SHORT).show() ,
+                    u ->Toast.makeText(this, "Error registering user", Toast.LENGTH_SHORT).show() );
             //Finally, query database
             //Note that even though user in the second handler will be null, it is not actually referenced anywhere in the lambda expression
             //For now, we use the same type of success and failure handlers
-            PolyContext.getDatabaseInterface().getUserByEmail(email.getText().toString(), userExistsHandler, user -> PolyContext.getDatabaseInterface().getUserByUsername(username.getText().toString(), userExistsHandler, userDoesNotExistHandler));
+            PolyContext.getDBI().getUserByEmail(email.getText().toString(), userExistsHandler,
+                    user -> PolyContext.getDBI().getUserByUsername(username.getText().toString(), userExistsHandler, userDoesNotExistHandler));
 
         }
 

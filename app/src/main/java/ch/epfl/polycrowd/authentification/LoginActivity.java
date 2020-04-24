@@ -2,7 +2,6 @@ package ch.epfl.polycrowd.authentification;
 
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,29 +15,27 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.Objects;
 
+import ch.epfl.polycrowd.ActivityHelper;
 import ch.epfl.polycrowd.EventPageDetailsActivity;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.frontPage.FrontPageActivity;
-import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.map.MapActivity;
 
+
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class LoginActivity extends AppCompatActivity {
 
-    private static final String TAG = "LoginActivity";
+    private static final String TAG = LoginActivity.class.getSimpleName();
 
     /** Names of the extra parameters for the organizer invites **/
     private static final String IS_ORGANIZER_INVITE = "isOrganizerInvite";
-    private static final String EVENT_ID = "eventId";
-    private String inviteGroupId = null; // Not null -> a user logged in after group-invite link
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        Intent intent = getIntent();
-        inviteGroupId = intent.getStringExtra("inviteGroupId");
 
     }
 
@@ -51,8 +48,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void signUpButtonClicked(View view) {
-        Intent intent = new Intent(this, SignUpActivity.class);
-        startActivity(intent);
+        ActivityHelper.eventIntentHandler(this,SignUpActivity.class);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -72,31 +68,26 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        PolyContext.getDatabaseInterface().signInWithEmailAndPassword(email, password, successHandler(), failureHandler());
+        PolyContext.getDBI().signInWithEmailAndPassword(email, password, successHandler(), failureHandler());
 
     }
 
 
     public void forgotPasswordButtonClicked(View view){
-        Intent intent = new Intent(this, ResetPasswordActivity.class) ;
-        startActivity(intent);
+        ActivityHelper.eventIntentHandler(this,ResetPasswordActivity.class);
     }
 
     private UserHandler failureHandler(){
-        Context c = this ;
-        return user ->Toast.makeText(c, "Incorrect email or password", Toast.LENGTH_SHORT).show();
+        return user ->Toast.makeText(this, "Incorrect email or password", Toast.LENGTH_SHORT).show();
     }
 
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private UserHandler successHandler(){
         return user->{
-                //When would the currentUser be null if signin was successful?
-            Context c = this;
-            Toast.makeText(c, "Sign in success", Toast.LENGTH_SHORT).show();
+               //When would the currentUser be null if signin was successful?
+            Toast.makeText(this, "Sign in success", Toast.LENGTH_SHORT).show();
 
             //Successful login redirects to front page
-
 
             PolyContext.setCurrentUser(user);
             /* if the user logs in to accept the organizer invitation, add him/her to the
@@ -109,23 +100,16 @@ public class LoginActivity extends AppCompatActivity {
                         Log.e(TAG, "current event is null");
                         return;
                     }
-                    Event event = PolyContext.getCurrentEvent();
-                    PolyContext.getDatabaseInterface().addOrganizerToEvent(event.getId(), organizerEmail, () -> {
-                        Intent eventDetails = new Intent(c, EventPageDetailsActivity.class);
-                        eventDetails.putExtra(EVENT_ID, event.getId());
-                        startActivity(eventDetails);
-                    });
+                    PolyContext.getDBI().addOrganizerToEvent(PolyContext.getCurrentEvent().getId(), organizerEmail,
+                            () -> ActivityHelper.eventIntentHandler(this,EventPageDetailsActivity.class));
                 }
                 else{
-                    Intent intent = new Intent(this, FrontPageActivity.class);
-                    startActivity(intent);
+                    ActivityHelper.eventIntentHandler(this,FrontPageActivity.class);
                 }
 
-                if(inviteGroupId != null){
-                    PolyContext.getDatabaseInterface().addUserToGroup(inviteGroupId, user.getEmail(), () -> {
-                    Intent map = new Intent(c, MapActivity.class);
-                    startActivity(map);
-                });
+                if(PolyContext.getCurrentGroup() != null){
+                    PolyContext.getDBI().addUserToGroup(PolyContext.getCurrentGroup(), user.getEmail(),
+                            () -> ActivityHelper.eventIntentHandler(this,MapActivity.class));
             }
         } ;
     }

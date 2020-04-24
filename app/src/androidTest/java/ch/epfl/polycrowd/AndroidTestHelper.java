@@ -74,7 +74,7 @@ public abstract class AndroidTestHelper {
         ev.get(1).addOrganizer(OrganiserEmail);
 
         DatabaseInterface dbi = new FirebaseMocker(mailAndUsersPassPair, ev);
-        PolyContext.setDbInterface(dbi);
+        PolyContext.setDBI(dbi);
 
         PolyContext.setCurrentEvent(ev.get(1));
     }
