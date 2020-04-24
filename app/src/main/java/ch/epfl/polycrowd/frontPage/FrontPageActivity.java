@@ -4,6 +4,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -18,11 +19,13 @@ import java.util.List;
 import ch.epfl.polycrowd.ActivityHelper;
 import ch.epfl.polycrowd.GroupInviteActivity;
 import ch.epfl.polycrowd.R;
+import ch.epfl.polycrowd.authentification.LoginActivity;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 import ch.epfl.polycrowd.organizerInvite.OrganizerInviteActivity;
 
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class FrontPageActivity extends AppCompatActivity {
 
     private static final String TAG = FrontPageActivity.class.getSimpleName();
@@ -32,7 +35,6 @@ public class FrontPageActivity extends AppCompatActivity {
 
 
     // ------------- ON CREATE ----------------------------------------------------------
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,27 +46,23 @@ public class FrontPageActivity extends AppCompatActivity {
     // --------------------------------------------------------------------------------
 
     // --------------------- ON START, ON RESTART -------------------------------------
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onStart() {
         super.onStart();
         setUp();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onRestart() {
         super.onRestart();
         setUp();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void setUp() {
         toggleLoginLogout();
         setEventModels();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void toggleLoginLogout() {
         // Toggle login/logout button
         if(PolyContext.isLoggedIn()){
@@ -74,12 +72,13 @@ public class FrontPageActivity extends AppCompatActivity {
         }
     }
 
+    public void clickLogin(View v){
+        ActivityHelper.eventIntentHandler(this, LoginActivity.class);
+    }
 
 
 
     // --------- Create the event List and Create event button -----------------------
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
     void setEventModels()  {
         //For Connection permissions
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -87,7 +86,6 @@ public class FrontPageActivity extends AppCompatActivity {
         PolyContext.getDBI().getAllEvents(v->setAdapter(v));
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     void setAdapter(List<Event> events){
         adapter = new EventPagerAdaptor(orderEvents(trimFinishedEvents(trimHiddenEvents(events))), this);
         setViewPager(events);
@@ -102,7 +100,6 @@ public class FrontPageActivity extends AppCompatActivity {
         TextView eventTitle = findViewById(R.id.eventTitle);
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 if(position != 0){
@@ -121,21 +118,17 @@ public class FrontPageActivity extends AppCompatActivity {
         } );
     }
 
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private List<Event> orderEvents(@NonNull List<Event> es){
         es.sort( (o1, o2) -> o1.getStart().compareTo(o2.getStart()));
         return es;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private List<Event> trimFinishedEvents(@NonNull List<Event> es){
         final Date now = new Date();
         es.removeIf(e -> (e.getEnd().compareTo(now)<=0));
         return es;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private List<Event> trimHiddenEvents(@NonNull List<Event> es){
         User cu= PolyContext.getCurrentUser();
         es.removeIf(e -> (!e.getPublic()));
@@ -146,8 +139,6 @@ public class FrontPageActivity extends AppCompatActivity {
 
 
     // --------- Link --------------------------------------------------------------------
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void receiveDynamicLink() {
         PolyContext.getDBI().receiveDynamicLink(deepLink -> {
             Log.d(TAG, "Deep link URL:\n" + deepLink.toString());

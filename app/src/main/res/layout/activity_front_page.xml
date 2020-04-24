@@ -49,8 +49,8 @@
         android:layout_alignParentBottom="true"
         android:layout_marginEnd="23dp"
         android:layout_marginBottom="18dp"
-        android:text="LOGIN"
-        android:onClick="clickSignIn"/>
+        android:onClick="clickLogin"
+        android:text="LOGIN" />
 
     <TextView
         android:id="@+id/eventTitle"

@@ -65,6 +65,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
 
         final Button scheduleButton = findViewById(R.id.schedule);
         scheduleButton.setOnClickListener(v -> clickSchedule(v));
+
     }
 
     @Override
