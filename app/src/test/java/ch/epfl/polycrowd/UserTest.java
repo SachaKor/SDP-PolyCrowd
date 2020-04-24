@@ -20,7 +20,7 @@ public class UserTest {
 
     @Test
     public void testGetAge(){
-        assert(testUser.getAge() ==  3);
+        assert(testUser.getAge() == 3);
     }
 
     @Test
@@ -42,7 +42,7 @@ public class UserTest {
         Map<String, Object> data = new HashMap<>();
         data.put("username", "test");
         data.put("email" , "test@test");
-        data.put("age" , 3);
+        data.put("age" , 3L);
         data.put("uid" , "1");
 
         assertEquals(User.getFromDocument(data).getUid() , "1" );
