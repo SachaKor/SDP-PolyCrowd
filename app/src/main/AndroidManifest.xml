@@ -31,6 +31,7 @@
             tools:replace="android:launchMode" />
         <activity android:name=".authentification.LoginActivity" />
         <activity android:name=".EventEditActivity" />
+        <activity android:name=".GroupInviteActivity" />
         <activity android:name=".schedulePage.ScheduleActivity" />
         <activity
             android:name=".frontPage.FrontPageActivity"

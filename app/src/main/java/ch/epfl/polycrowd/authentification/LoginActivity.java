@@ -19,6 +19,7 @@ import java.util.Objects;
 import ch.epfl.polycrowd.EventPageDetailsActivity;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
+import ch.epfl.polycrowd.frontPage.FrontPageActivity;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.map.MapActivity;
@@ -72,6 +73,7 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         PolyContext.getDatabaseInterface().signInWithEmailAndPassword(email, password, successHandler(), failureHandler());
+
     }
 
 
@@ -92,6 +94,10 @@ public class LoginActivity extends AppCompatActivity {
                 //When would the currentUser be null if signin was successful?
             Context c = this;
             Toast.makeText(c, "Sign in success", Toast.LENGTH_SHORT).show();
+
+            //Successful login redirects to front page
+
+
             PolyContext.setCurrentUser(user);
             /* if the user logs in to accept the organizer invitation, add him/her to the
                 organizers list, then open the event details page for the preview */
@@ -110,9 +116,13 @@ public class LoginActivity extends AppCompatActivity {
                         startActivity(eventDetails);
                     });
                 }
+                else{
+                    Intent intent = new Intent(this, FrontPageActivity.class);
+                    startActivity(intent);
+                }
 
                 if(inviteGroupId != null){
-                    PolyContext.getDatabaseInterface().addUserToGroup(inviteGroupId, user.getUid(), () -> {
+                    PolyContext.getDatabaseInterface().addUserToGroup(inviteGroupId, user.getEmail(), () -> {
                     Intent map = new Intent(c, MapActivity.class);
                     startActivity(map);
                 });

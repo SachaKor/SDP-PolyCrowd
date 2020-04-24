@@ -55,7 +55,7 @@ public class PolyContextTest {
     @Test
     public void testEventSetAndGet(){
         Event e = new Event("eventOwner", "DEBUG EVENT", true, Event.EventType.CONCERT,
-                new Date(1649430344), new Date(1649440344), "url", "this is only a debug event ... ");
+                new Date(1649430344), new Date(1649440344), "url", "this is only a debug event ... ", false);
         PolyContext.setCurrentEvent(e);
         assertEquals(PolyContext.getCurrentEvent(),e);
     }

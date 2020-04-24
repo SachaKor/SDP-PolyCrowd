@@ -44,9 +44,7 @@ public class Group extends Storable {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public List<String> getMembersNames() {
-        return getMembers().stream().map(user -> {
-            return user.getName();
-        }).collect(Collectors.toList());
+        return getMembers().stream().map(User::getName).collect(Collectors.toList());
     }
 
     public String getGid() { return gid; }

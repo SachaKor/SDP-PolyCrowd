@@ -42,6 +42,16 @@
         android:text="@string/sos_main"
         android:visibility="invisible" />
 
+    <Button
+        android:id="@+id/butEdit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|top"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="20dp"
+        android:padding="10dp"
+        android:text="@string/edit_main"
+        android:visibility="invisible" />
 
 
     <androidx.constraintlayout.widget.Guideline
