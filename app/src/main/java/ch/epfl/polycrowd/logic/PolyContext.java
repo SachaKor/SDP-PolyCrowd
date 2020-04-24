@@ -45,23 +45,22 @@ public abstract class PolyContext extends Context {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public static Role getRole(){
-        if(currentEvent == null)
-            return Role.UNKNOWN;
-
-        if(currentUser==null)
-            return Role.GUEST;
-
-        if(currentEvent.getOrganizers().contains(currentUser.getUid()))
-            return Role.ORGANIZER;
-
-        if(currentEvent.getStaff().contains(currentUser.getUid()))
-            return Role.STAFF;
-
-        if(currentEvent.getSecurity().contains(currentUser.getUid()))
-            return Role.SECURITY;
-
-        return Role.VISITOR;
+    public static Role getRole() {
+        Role r = Role.UNKNOWN;
+        if (currentEvent != null) {
+            r = Role.GUEST;
+            if (currentUser != null) {
+                if (currentEvent.getOrganizers()!=null && currentEvent.getOrganizers().contains(currentUser.getUid()))
+                    r = Role.ORGANIZER;
+                else if (currentEvent.getStaff()!=null && currentEvent.getStaff().contains(currentUser.getUid()))
+                    r = Role.STAFF;
+                else if (currentEvent.getSecurity()!=null && currentEvent.getSecurity().contains(currentUser.getUid()))
+                    r = Role.SECURITY;
+                else
+                    r = Role.VISITOR;
+            }
+        }
+        return r;
     }
 
     public static void setCurrentEvent(Event ev){
