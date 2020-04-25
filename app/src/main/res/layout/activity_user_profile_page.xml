@@ -44,7 +44,7 @@
                 android:layout_marginTop="0dp"
                 android:layout_height="70dp"
                 android:onClick="OnUserProfileEditImgClick"
-                android:src="@drawable/ic_camera_alt_black"
+                android:src="@drawable/ic_camera_alt_light_grey"
                 android:adjustViewBounds="true"
                 android:scaleType="centerInside"
                 />
@@ -72,7 +72,7 @@
             android:layout_marginRight="0dp"
             android:layout_height="50dp"
             android:onClick="OnUserProfileEditUsernameButtonClick"
-            android:src="@drawable/ic_edit"
+            android:src="@drawable/ic_edit_white"
             android:adjustViewBounds="true"
             android:scaleType="centerInside"
             android:layout_marginLeft="0dp"
