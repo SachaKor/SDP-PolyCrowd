@@ -34,6 +34,7 @@ public class FirebaseMocker implements DatabaseInterface {
     private static final String TAG = "FirebaseMocker";
 
     private Map<User,String> usersAndPasswords ;
+    private String uriString = null;
     private List<Event> events ;
     private byte[] image;
 
@@ -45,6 +46,11 @@ public class FirebaseMocker implements DatabaseInterface {
         }
         events = new ArrayList<>();
         events.addAll(defaultEvents);
+    }
+
+    public FirebaseMocker(Map<String, Pair<User, String>> defaultMailAndUserPassPair, List<Event> defaultEvents, String uriString) {
+        this(defaultMailAndUserPassPair,defaultEvents);
+        this.uriString = uriString;
     }
 
 
@@ -148,8 +154,10 @@ public class FirebaseMocker implements DatabaseInterface {
 
     @Override
     public void receiveDynamicLink(DynamicLinkHandler handler, Intent intent) {
-        Uri link = Uri.parse("https://www.example.com/invite/?eventId="+events.get(2).getId()+"&eventName="+events.get(2).getName());
-        handler.handle(link);
+        if(uriString != null) {
+            Uri uri = Uri.parse(uriString);
+            handler.handle(uri);
+        }
     }
 
     @Override

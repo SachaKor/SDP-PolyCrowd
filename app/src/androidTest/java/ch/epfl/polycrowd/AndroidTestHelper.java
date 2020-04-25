@@ -1,5 +1,6 @@
 package ch.epfl.polycrowd;
 
+import android.net.Uri;
 import android.util.Pair;
 
 import java.util.ArrayList;
@@ -78,6 +79,18 @@ public abstract class AndroidTestHelper {
 
         PolyContext.setCurrentEvent(ev.get(1));
     }
+
+    static void SetupMockDBI(String uriString) {
+
+        ev.get(1).addOrganizer(OrganiserEmail);
+
+        DatabaseInterface dbi = new FirebaseMocker(mailAndUsersPassPair, ev, uriString);
+        PolyContext.setDBI(dbi);
+
+        PolyContext.setCurrentEvent(ev.get(1));
+    }
+
+
 
     private static Event getEvent(String id){
         List<Event> nev = new ArrayList<>(ev);

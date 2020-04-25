@@ -29,7 +29,7 @@ public class ReceiveDynamicLinkTest {
     @Before
     public void setUp(){
         PolyContext.reset();
-        AndroidTestHelper.SetupMockDBI();
+        AndroidTestHelper.SetupMockDBI("https://www.example.com/invite/?eventId="+"2"+"&eventName="+"DEBUG_EVENT");
 
         Intent intent = new Intent();
         mActivityRule.launchActivity(intent);
