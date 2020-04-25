@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -116,6 +117,9 @@ public class UserProfilePageActivity extends AppCompatActivity {
         EditText newPasswordText = new EditText(this);
         newPasswordText.setTransformationMethod(PasswordTransformationMethod.getInstance());
         newPasswordText.setHint("enter new password");
+        EditText newPasswordText2 = new EditText(this);
+        newPasswordText2.setTransformationMethod(PasswordTransformationMethod.getInstance());
+        newPasswordText2.setHint("enter new password");
         editText = new EditText(this);
         AuthCredential credential =  EmailAuthProvider
                 .getCredential("doesnt matter", "wont work by default");
@@ -126,16 +130,22 @@ public class UserProfilePageActivity extends AppCompatActivity {
         layout.addView(emailText);
         layout.addView(oldPasswordText);
         layout.addView(newPasswordText);
+        layout.addView(newPasswordText2);
         dialog.setView(layout); // Again this is a set method, not add
         dialog.setTitle("Change password");
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Change password",
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        PolyContext.getDatabaseInterface().reauthenticateAndChangePassword(emailText.getText().toString(),
-                                oldPasswordText.getText().toString(),
-                                newPasswordText.getText().toString(),
-                                getApplicationContext());
+                        if(newPasswordText.toString() == newPasswordText2.toString()) {
+                            PolyContext.getDatabaseInterface().reauthenticateAndChangePassword(emailText.getText().toString(),
+                                    oldPasswordText.getText().toString(),
+                                    newPasswordText.getText().toString(),
+                                    getApplicationContext());
+                        } else {
+                            Toast.makeText(getApplicationContext(), "two new passwords did not match",
+                                    Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
 
