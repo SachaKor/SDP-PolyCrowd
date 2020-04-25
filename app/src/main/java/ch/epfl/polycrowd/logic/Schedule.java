@@ -9,8 +9,6 @@ import androidx.annotation.RequiresApi;
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.Calendar;
-import net.fortuna.ical4j.model.Property;
-import net.fortuna.ical4j.model.component.CalendarComponent;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -47,12 +45,10 @@ public class Schedule {
     @RequiresApi(api = Build.VERSION_CODES.O)
     private static String downloadIcsFile(String url, File f){
 
-        if (url.equals("url") || url.length() == 0){
+        if (url == null || url.length() == 0 || !url.contains("://")){
             return null;
         }
-        else if ( !url.contains("://") ){
-            throw new IllegalArgumentException(url +" is not a url");
-        }
+
         try {
             URL downloadUrl = new URL(url.replace("webcal://","https://"));
             HttpURLConnection c = (HttpURLConnection) downloadUrl.openConnection();
@@ -79,39 +75,29 @@ public class Schedule {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private List<Activity> loadIcs(File path) {
-        if ( downloadPath == null){
-            return  null;
-        }
-        List<Activity> activities = new ArrayList<>();
-
         System.setProperty("net.fortuna.ical4j.timezone.cache.impl", "net.fortuna.ical4j.util.MapTimeZoneCache");
-        CalendarBuilder builder = new CalendarBuilder();
 
-        try{
-            FileInputStream fin = new FileInputStream(path);
-            Calendar calendar = builder.build(fin);
-            if(calendar == null)
-                throw new IOException("Null Calendar");
-            for (CalendarComponent cc : calendar.getComponents()) {
+        Calendar calendar;
+        FileInputStream fin;
+        try {
+            fin = new FileInputStream(path);
+            calendar = new CalendarBuilder().build(fin);
+
+            List<Activity> activities = new ArrayList<>();
+            calendar.getComponents().forEach(cc->{
                 try {
                     if (cc.getName().equalsIgnoreCase("VEVENT")) {
                         Map<String, String> calendarEntry = new HashMap<>();
-                        for (Property property : cc.getProperties()) {
-                            calendarEntry.put(property.getName(), property.getValue());
-                        }
-
+                        cc.getProperties().forEach(p -> calendarEntry.put(p.getName(), p.getValue()));
                         activities.add(new Activity(calendarEntry));
                     }
-                }catch (ParseException e) {
-                    //Wont add it to list
-                }
-            }
-        } catch (IOException | ParserException e) {
-            e.printStackTrace();
+                }catch (ParseException ignored) {}
+            });
+            fin.close();
+            return activities;
+        } catch (IOException | ParserException ex) {
             return null;
         }
-
-        return activities;
     }
 
     public List<Activity> getActivities(){
