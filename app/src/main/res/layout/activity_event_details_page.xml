@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
-    android:background="#fff"
     tools:context=".EventPageDetailsActivity">
 
     <RelativeLayout
@@ -23,13 +22,14 @@
                 android:src="@mipmap/ic_launcher"
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:layout_centerHorizontal="true"
-                tools:ignore="MissingConstraints" />
+                tools:ignore="MissingConstraints"
+                android:contentDescription="Event Image" />
 
             <ImageView
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:layout_toRightOf="@id/event_details_img"
-                android:src="@drawable/ic_edit_black_24dp"
+                android:layout_toEndOf="@id/event_details_img"
+                android:src="@drawable/ic_edit_black"
                 app:layout_constraintBottom_toBottomOf="@+id/event_details_img"
                 app:layout_constraintRight_toRightOf="parent"
                 tools:ignore="PrivateResource"
@@ -38,7 +38,8 @@
                 android:layout_marginHorizontal="5dp"
                 android:visibility="invisible"
                 android:id="@+id/event_details_edit_img"
-                android:onClick="onEditImageClicked"/>
+                android:onClick="onEditImageClicked"
+                android:contentDescription="Edit Button" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
@@ -108,7 +109,7 @@
             android:padding="10dp"
             android:layout_marginTop="20dp"
             android:layout_marginStart="25dp"
-            android:paddingRight="10dp"/>
+            android:layout_marginEnd="10dp"/>
     </RelativeLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -116,7 +117,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
         android:layout_margin="16dp"
-        android:src="@drawable/ic_edit_white_24dp"
+        android:src="@drawable/ic_edit_white"
         tools:ignore="PrivateResource"
         app:fabSize="normal"
         app:backgroundTint="@color/color2"

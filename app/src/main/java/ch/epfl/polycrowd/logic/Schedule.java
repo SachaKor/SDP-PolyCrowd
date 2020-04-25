@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,7 +59,7 @@ public class Schedule {
             c.setRequestMethod("GET");
             c.connect();
 
-            if (!f.exists() && (!f.getParentFile().mkdirs() && !f.createNewFile())){
+            if (!f.exists() && (f.getParentFile()!= null &&!f.getParentFile().mkdirs() && !f.createNewFile())){
                 throw new IOException("File does not exist and can't be created");
             }
             FileOutputStream fos = new FileOutputStream(f);
@@ -86,19 +87,23 @@ public class Schedule {
         System.setProperty("net.fortuna.ical4j.timezone.cache.impl", "net.fortuna.ical4j.util.MapTimeZoneCache");
         CalendarBuilder builder = new CalendarBuilder();
 
-        try {
+        try{
             FileInputStream fin = new FileInputStream(path);
             Calendar calendar = builder.build(fin);
             if(calendar == null)
                 throw new IOException("Null Calendar");
             for (CalendarComponent cc : calendar.getComponents()) {
-                if (cc.getName().equalsIgnoreCase("VEVENT")) {
-                    Map<String, String> calendarEntry = new HashMap<>();
-                    for (Property property : cc.getProperties()) {
-                        calendarEntry.put(property.getName(), property.getValue());
-                    }
+                try {
+                    if (cc.getName().equalsIgnoreCase("VEVENT")) {
+                        Map<String, String> calendarEntry = new HashMap<>();
+                        for (Property property : cc.getProperties()) {
+                            calendarEntry.put(property.getName(), property.getValue());
+                        }
 
-                    activities.add(new Activity(calendarEntry));
+                        activities.add(new Activity(calendarEntry));
+                    }
+                }catch (ParseException e) {
+                    //Wont add it to list
                 }
             }
         } catch (IOException | ParserException e) {

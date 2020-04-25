@@ -13,7 +13,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.hamcrest.Description;
 import org.junit.Before;
 import org.junit.Rule;
@@ -57,7 +56,7 @@ public class EventPageDetailsGalleryTest {
             GrantPermissionRule.grant(Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
     @Rule
-    public IntentsTestRule<EventPageDetailsActivity> mActivityTestRule =
+    public final IntentsTestRule<EventPageDetailsActivity> mActivityTestRule =
             new IntentsTestRule<>(EventPageDetailsActivity.class, true, false);
 
     @Before
@@ -83,7 +82,7 @@ public class EventPageDetailsGalleryTest {
     }
 
     private void savePickedImage(Context context) {
-        Bitmap bm = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher1);
+        Bitmap bm = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher);
         File dir = context.getExternalCacheDir(); // /storage/sdcard/Android/data/ch.epfl.polycrowd/cache
         Log.d(TAG, "save image, cache dir: " + dir.getPath());
         File file = new File(dir.getPath(), "pickImageResult.jpeg");
@@ -110,7 +109,7 @@ public class EventPageDetailsGalleryTest {
         Log.d(TAG, "create stub : external cache path: " + dir.getPath());
         File file = new File(dir.getPath(), "pickImageResult.jpeg");
         Uri uri = Uri.fromFile(file);
-        parcels.add((Parcelable) uri);
+        parcels.add(uri);
         bundle.putParcelableArrayList(Intent.EXTRA_STREAM, parcels);
         resultData.putExtras(bundle);
         // Activity.RESULT_OK const value i -1

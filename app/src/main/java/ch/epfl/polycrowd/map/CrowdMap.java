@@ -36,7 +36,7 @@ public class CrowdMap implements OnMapReadyCallback {
 
     // map displayed
     private GoogleMap mMap;
-    private MapActivity act;
+    private final MapActivity act;
     private LatLng currentLocation;
     private Marker currentLocationMarker;
     //TODO make is a param in the firebase so if user is not at event he can still know where the event is
@@ -53,11 +53,11 @@ public class CrowdMap implements OnMapReadyCallback {
 
     // ---- HEATMAP -------------------------------------------------
     // Heatmap gradients
-    private Gradient gradientGreenRed = new Gradient(
+    private final Gradient gradientGreenRed = new Gradient(
             new int[] {Color.rgb(102, 225, 0), Color.rgb(255, 0, 0)} ,
             new float[] {0.2f, 1f} );
 
-    private Gradient gradientGrey = new Gradient(
+    private final Gradient gradientGrey = new Gradient(
             new int[] {Color.rgb(200, 200, 200), Color.rgb(150, 150, 150)} ,
             new float[] {0.2f, 1f} );
 

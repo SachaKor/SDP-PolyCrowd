@@ -75,7 +75,7 @@ public class MapActivity extends AppCompatActivity {
             @Override
             @SuppressLint("deprecation")
             public void onStatusChanged(String provider, int status, Bundle extras) {
-                return;//This function is deprecated !
+                //This function is deprecated !
             }
 
             @Override

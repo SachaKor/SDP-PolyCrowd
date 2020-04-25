@@ -1,6 +1,5 @@
 package ch.epfl.polycrowd;
 
-import android.net.Uri;
 import android.util.Pair;
 
 import java.util.ArrayList;

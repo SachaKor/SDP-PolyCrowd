@@ -44,6 +44,7 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="@string/email"
+                android:autofillHints="me@example.net"
                 android:inputType="textEmailAddress" />
 
             <EditText
@@ -52,7 +53,8 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="@string/password"
-                android:inputType="textPassword" />
+                android:inputType="textPassword"
+                android:autofillHints="password" />
 
             <Button
                 android:id="@+id/sign_in_button"

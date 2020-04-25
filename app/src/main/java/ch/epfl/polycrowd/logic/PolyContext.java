@@ -6,6 +6,9 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.Arrays;
+import java.util.List;
+
 import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
 
@@ -108,30 +111,12 @@ public abstract class PolyContext extends Context {
         return dbInterface ;
     }
 
-
-
-
-
-    // ----------- Use isRunningTest() to check if u are doing a test ------------------------
-    // https://stackoverflow.com/questions/28550370/how-to-detect-whether-android-app-is-running-ui-test-with-espresso
-    /*private static AtomicBoolean isRunningTest;
-    public static synchronized boolean isRunningTest () {
-        if (null == isRunningTest) {
-            boolean istest;
-
-            try {
-                Class.forName("org.junit.Test");
-                istest = true;
-            } catch (ClassNotFoundException e) {
-                istest = false;
-            }
-
-            isRunningTest = new AtomicBoolean (istest);
+    public static List<String> convertObjectToList(Object obj) {
+        List<String> list = null;
+        if (obj != null && obj.getClass().isArray()) {
+            list = Arrays.asList((String[])obj);
         }
-
-        return isRunningTest.get ();
-    }*/
-
-    // --------------------------------------------------------------------------------------
+        return list;
+    }
 
 }

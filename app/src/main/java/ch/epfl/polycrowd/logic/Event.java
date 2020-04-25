@@ -16,10 +16,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
+
+import static ch.epfl.polycrowd.logic.PolyContext.convertObjectToList;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
-public class Event {
+public class Event extends Storable{
 
     private static final String TAG = Event.class.toString();
 
@@ -64,7 +65,7 @@ public class Event {
 
     public Event(@NonNull String owner, @NonNull String name, Boolean isPublic, @NonNull EventType type,
                  @NonNull Date start, @NonNull Date end,
-                 @NonNull String calendar, String description, Boolean hasEmergencyFeature, @NonNull File dir){
+                 String calendar, String description, Boolean hasEmergencyFeature, @NonNull File dir){
         this(owner, name, isPublic, type, start, end, calendar, description, hasEmergencyFeature);
         this.loadCalendar(dir);
     }
@@ -76,7 +77,7 @@ public class Event {
 
     public Event(@NonNull String owner, @NonNull String name, Boolean isPublic, @NonNull EventType type,
                  @NonNull Date start, @NonNull Date end,
-                 @NonNull String calendar, String description, Boolean hasEmergencyFeature,@NonNull List<String> organizers){
+                 String calendar, String description, Boolean hasEmergencyFeature,@NonNull List<String> organizers){
         this(owner, name, isPublic, type, start, end, calendar, description, hasEmergencyFeature);
         this.organizers = organizers;
     }
@@ -193,7 +194,7 @@ public class Event {
 
     // -------------------------------------------------------------------------------
 
-    public Map<String, Object> toHashMap(){
+    public Map<String, Object> getRawData(){
         Map<String, Object> event = new HashMap<>();
         event.put("owner", this.owner);
         event.put("name", this.name);
@@ -212,22 +213,24 @@ public class Event {
     }
 
     public static Event getFromDocument(Map<String, Object> data){
-        //Log.d(LOG_TAG,"converting Firebase data to Event");
-        String owner = Objects.requireNonNull(data.get("owner")).toString();
-        String name = Objects.requireNonNull(data.get("name")).toString();
-        Boolean isPublic = Boolean.valueOf((Objects.requireNonNull(data.get("isPublic"))).toString());
-        String calendar = Objects.requireNonNull(data.get("calendar")).toString();
-        // convert firebase timestamps to LocalDateTime
+        String owner = (String) data.get("owner");
+        String name = (String) data.get("name");
+        Boolean isPublic = Boolean.parseBoolean((String) data.get("isPublic"));
+        String calendar = (String) data.get("calendar");
 
-        Timestamp sStamp = Objects.requireNonNull((Timestamp) data.get("start")),
-                eStamp = Objects.requireNonNull((Timestamp) data.get("end"));
+        Timestamp sStamp = (Timestamp) data.get("start"),
+                eStamp = (Timestamp) data.get("end");
+
+
+        EventType type = EventType.valueOf(((String) data.get("type")));
+        String desc = (String) data.get("description");
+        Boolean emergency = Boolean.parseBoolean((String) data.get("isEmergencyEnabled"));
+        List<String> organizers = convertObjectToList(data.get("organizers"));
+        String imageUri = (String) data.get("imageUri"); // can be null but this is ok
+        if(owner == null || name == null || sStamp == null || eStamp == null)
+            return null;
         Date start = sStamp.toDate();
         Date end = eStamp.toDate();
-        EventType type = EventType.valueOf(Objects.requireNonNull(data.get("type")).toString().toUpperCase());
-        String desc = data.get("description").toString();
-        Boolean emergency = data.containsKey("isEmergencyEnabled")? Boolean.valueOf(Objects.requireNonNull(data.get("isEmergencyEnabled")).toString()): false;
-        List<String> organizers = new ArrayList<>((List<String>) Objects.requireNonNull(data.get("organizers")));
-        String imageUri = (String) data.get("imageUri"); // can be null but this is ok
         Event result = new Event(owner, name, isPublic, type, start, end, calendar, desc, emergency, organizers);
         result.setImageUri(imageUri);
         return result;

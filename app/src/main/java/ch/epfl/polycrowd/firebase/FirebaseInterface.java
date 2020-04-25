@@ -41,6 +41,8 @@ import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
 import ch.epfl.polycrowd.logic.User;
 
+import static ch.epfl.polycrowd.logic.PolyContext.convertObjectToList;
+
 /**
  * @codeCoverageIgnore
  * Excluded in build.gradle
@@ -164,7 +166,7 @@ public class FirebaseInterface implements DatabaseInterface {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void addEvent(Event event, EventHandler successHandler, EventHandler failureHandler){
             getFirestoreInstance(false).collection(EVENTS)
-                    .add(event.toHashMap())
+                    .add(event.getRawData())
                     .addOnSuccessListener(documentReference -> {
                         Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
                         successHandler.handle(event);
@@ -179,7 +181,7 @@ public class FirebaseInterface implements DatabaseInterface {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void patchEventByID(String eventId, Event event, EventHandler successHandler, EventHandler failureHandler){
         getFirestoreInstance(false).collection(EVENTS).document(eventId)
-                .update(event.toHashMap())
+                .update(event.getRawData())
                 .addOnSuccessListener(documentReference -> {
                     Log.d(TAG, "DocumentSnapshot added with ID: " + eventId);
                     successHandler.handle(event);
@@ -385,7 +387,7 @@ public class FirebaseInterface implements DatabaseInterface {
     public void signUp(String username, String firstPassword, String email, Integer age, UserHandler successHandler, UserHandler failureHandler) {
             CollectionReference usersRef = getFirestoreInstance(false).collection("users");
             Query queryUsernames = usersRef.whereEqualTo("username", username);
-            Query queryEmails = usersRef.whereEqualTo("email", email);
+            //Query queryEmails = usersRef.whereEqualTo("email", email);
             queryUsernames.get().addOnCompleteListener(
                     task ->{
                         if(task.isSuccessful()){
@@ -489,7 +491,7 @@ public class FirebaseInterface implements DatabaseInterface {
     @Override
     public void updateEvent(Event event, EventHandler eventHandler) {
         getFirestoreInstance(false).collection(EVENTS).document(event.getId())
-                .set(event.toHashMap())
+                .set(event.getRawData())
                 .addOnSuccessListener(aVoid -> eventHandler.handle(event))
                 .addOnFailureListener(e -> Log.w(TAG, "Error updating the event with id: " + event.getId()));
     }
