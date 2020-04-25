@@ -15,13 +15,14 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static ch.epfl.polycrowd.AndroidTestHelper.sleep;
 
 /* Test the dynamic link handling on the FrontPage */
 public class ReceiveDynamicLinkTest {
 
     @Rule
     public final ActivityTestRule<FrontPageActivity> mActivityRule =
-            new ActivityTestRule<>(FrontPageActivity.class);
+            new ActivityTestRule<>(FrontPageActivity.class, true,false);
 
 
 
@@ -35,7 +36,7 @@ public class ReceiveDynamicLinkTest {
     }
 
     @Test
-    public  void testOpensOrganizerInvitePageWhenDynamicLinkReceived() {
+    public void testOpensOrganizerInvitePageWhenDynamicLinkReceived() {
         onView(withId(R.id.organizer_invite_text)).check(matches(isDisplayed()));
     }
 }
