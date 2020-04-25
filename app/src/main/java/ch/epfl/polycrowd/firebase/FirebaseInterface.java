@@ -1,14 +1,23 @@
 package ch.epfl.polycrowd.firebase;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.firestore.CollectionReference;
@@ -43,6 +52,7 @@ import ch.epfl.polycrowd.firebase.handlers.OrganizersHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
+import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 
 /**
@@ -103,7 +113,7 @@ public class FirebaseInterface implements DatabaseInterface {
                         if(taskc.isSuccessful()) {
                             // TODO: use getUserByEmail, clean up firestore first
                             getUserByEmail(email, u-> {
-                                User user = new User(email, taskc.getResult().getUser().getUid(), u.getName(), u.getAge());
+                                User user = new User(email, u.getUid(), u.getName(), u.getAge());
                                 successHandler.handle(user);
                             }, u->{failureHandler.handle(null);});
                         } else {
@@ -507,6 +517,102 @@ public class FirebaseInterface implements DatabaseInterface {
     @Override
     public void addSOS(@NonNull String userId, @NonNull String eventId, @NonNull String reason) {
         getFirestoreInstance(false).collection(EVENTS).document(eventId).update("sos."+userId,reason).addOnFailureListener(e-> Log.w(TAG, "addSOS:onFailure",e));
+    }
+
+    public void reauthenticateAndChangePassword(String email, String curPassword, String newPassword, Context appContext) {
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            AuthCredential credential = EmailAuthProvider
+                    .getCredential(email, curPassword);
+            user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        user.updatePassword(newPassword).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    Toast.makeText(appContext, "Successfully changed password",
+                                            Toast.LENGTH_SHORT).show();
+                                    Log.d("resetpassTag", "Password updated");
+                                } else {
+                                    Log.d("resetpassTag", "Error password not updated");
+                                }
+                            }
+                        });
+                    } else {
+                        Toast.makeText(appContext, "Email or password incorrect",
+                                Toast.LENGTH_SHORT).show();
+                        Log.d("resetpassTag", "Error auth failed");
+                    }
+                }
+            });
+
+    }
+
+    public void updateCurrentUserUsername(String newUserName, EmptyHandler updateUserFields) {
+        FirebaseFirestore.getInstance().collection("users")
+                .document(PolyContext.getCurrentUser().getUid()).update("username", newUserName)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("changeUsername", "DocumentSnapshot successfully updated!");
+                        //update username
+                        PolyContext.getCurrentUser().setUsername(newUserName);
+                        updateUserFields.handle();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure( Exception e) {
+                        Log.w("changeUsername", "Error updating document", e);
+                    }
+                });
+    }
+
+    public void reauthenticateAndChangeEmail(String email, String curPassword, String newEmail,
+                                             EmptyHandler updateUserFields, Context appContext) {
+        FirebaseUser authUser = FirebaseAuth.getInstance().getCurrentUser();
+        AuthCredential credential = EmailAuthProvider
+                .getCredential(email, curPassword);
+        authUser.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(Task<Void> task) {
+                if (task.isSuccessful()) {
+                    authUser.updateEmail(newEmail).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Toast.makeText(appContext, "Successfully changed email",
+                                        Toast.LENGTH_SHORT).show();
+                                FirebaseFirestore.getInstance().collection("users")
+                                        .document(PolyContext.getCurrentUser().getUid()).update("email", newEmail)
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                Log.d("changeEmail", "DocumentSnapshot successfully updated!");
+                                                PolyContext.getCurrentUser().setEmail(newEmail);
+                                                updateUserFields.handle();
+                                            }
+                                        })
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure( Exception e) {
+                                                Log.w("changeEmail", "Error updating document", e);
+                                            }
+                                        });
+                                Log.d("resetpassTag", "Email updated");
+                            } else {
+                                Log.d("resetpassTag", "Error email not updated");
+                            }
+                        }
+                    });
+                } else {
+                    Toast.makeText(appContext, "Email or password incorrect",
+                            Toast.LENGTH_SHORT).show();
+                    Log.d("resetpassTag", "Error auth failed");
+                }
+            }
+        });
     }
 }
 

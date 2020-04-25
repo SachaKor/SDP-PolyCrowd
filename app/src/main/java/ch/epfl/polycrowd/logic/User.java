@@ -50,6 +50,15 @@ public class User extends Storable {
         return uid;
     }
 
+
+    public void setUsername(String username) {
+        this.name = username;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.N)
     public static User getFromDocument(Map<String, Object> data) {
         String username = Objects.requireNonNull(data.get("username")).toString();

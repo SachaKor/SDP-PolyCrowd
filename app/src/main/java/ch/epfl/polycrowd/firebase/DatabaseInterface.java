@@ -1,5 +1,6 @@
 package ch.epfl.polycrowd.firebase;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 
@@ -85,5 +86,10 @@ public interface DatabaseInterface {
 
     void createGroup(String eventId, GroupHandler handler) ;
 
+    void reauthenticateAndChangePassword(String email, String curPassword, String newPassword, Context appContext);
 
+    void updateCurrentUserUsername(String newUserName, EmptyHandler emptyHandler);
+
+    void reauthenticateAndChangeEmail(String email, String curPassword, String newEmail,
+                                      EmptyHandler emptyHandler, Context appContext);
 }

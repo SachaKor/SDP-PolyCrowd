@@ -58,11 +58,26 @@
             android:layout_below="@+id/imgUserRellay"
             android:layout_centerHorizontal="true"
             android:text ="Nani Haha"
+            android:height="50dp"
             android:textSize="32sp"
             android:fontFamily="sans-serif-light"
             android:textColor="@color/white"
 
             />
+        <ImageView
+            android:id="@+id/usernameEditButton"
+            android:layout_below="@id/imgUserRellay"
+            android:layout_width="50dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="0dp"
+            android:layout_height="50dp"
+            android:onClick="OnUserProfileEditUsernameButtonClick"
+            android:src="@drawable/ic_edit"
+            android:adjustViewBounds="true"
+            android:scaleType="centerInside"
+            android:layout_marginLeft="0dp"
+            />
+
     </RelativeLayout>
     <RelativeLayout
         android:layout_below="@+id/rellay"
@@ -104,9 +119,7 @@
                         android:text="nani@haha.com" />
                 </LinearLayout>
 
-                <!--invisible for now, TODO change if implement email change-->
                 <ImageView
-                    android:visibility="invisible"
                     android:id="@+id/profileEditEmailButton"
                     android:layout_weight="0"
                     android:clickable="true"
