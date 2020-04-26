@@ -17,9 +17,13 @@ import ch.epfl.polycrowd.userProfile.UserProfilePageActivity;
 import ch.epfl.polycrowd.logic.PolyContext;
 
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
+import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -52,7 +56,7 @@ public class userProfileActivityTest {
     public void testChangePasswordClickOpensDialog(){
         onView(withId(R.id.profileEditPasswordButton)).perform(click());
         sleep();
-        onView(withId(0)).check(matches(isDisplayed()));
+        onView(withId(R.id.editTextChangePassEmail)).check(matches(isDisplayed()));
     }
 
     @Test
@@ -64,11 +68,76 @@ public class userProfileActivityTest {
     }
 
     @Test
-    public void changesPasswordSuccefully(){
-       /* onView(withId(R.id.profileEditPasswordButton)).perform(click());
+    public void changesPasswordSuccessfully(){
+        onView(withId(R.id.profileEditPasswordButton)).perform(click());
         sleep();
-        onView(withId(0)).check(matches(isDisplayed()));*/
+        onView(withId(R.id.editTextChangePassEmail)).perform(typeText(AndroidTestHelper.getUser().getEmail()), closeSoftKeyboard());
+        onView(withId(R.id.editTextChangePassCurPass)).perform(typeText(AndroidTestHelper.getUserPass()), closeSoftKeyboard());
+        onView(withId(R.id.editTextChangePassNewPass1)).perform(typeText("newpass"), closeSoftKeyboard());
+        onView(withId(R.id.editTextChangePassNewPass2)).perform(typeText("newpass"), closeSoftKeyboard());
+        onView(withText("Save"))
+                .inRoot(isDialog()) // <---
+                .check(matches(isDisplayed()))
+                .perform(click());
+        sleep();
+        onView(withText("Successfully changed password"))
+                .inRoot(withDecorView(not(userProfileActivityRule.getActivity().getWindow().getDecorView())))
+                .check(matches(isDisplayed()));
     }
+
+    @Test
+    public void passwordDidNotChangeBecauseNewPassDoesntMatch(){
+        onView(withId(R.id.profileEditPasswordButton)).perform(click());
+        sleep();
+        onView(withId(R.id.editTextChangePassEmail)).perform(typeText(AndroidTestHelper.getUser().getEmail()), closeSoftKeyboard());
+        onView(withId(R.id.editTextChangePassCurPass)).perform(typeText(AndroidTestHelper.getUserPass()), closeSoftKeyboard());
+        onView(withId(R.id.editTextChangePassNewPass1)).perform(typeText("APass"), closeSoftKeyboard());
+        onView(withId(R.id.editTextChangePassNewPass2)).perform(typeText("NotTheSamePass"), closeSoftKeyboard());
+        onView(withText("Save"))
+                .inRoot(isDialog()) // <---
+                .check(matches(isDisplayed()))
+                .perform(click());
+        sleep();
+        onView(withText("two new passwords did not match"))
+                .inRoot(withDecorView(not(userProfileActivityRule.getActivity().getWindow().getDecorView())))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void changeEmailTest(){
+        onView(withId(R.id.profileEditEmailButton)).perform(click());
+        sleep();
+        onView(withId(R.id.editTextChangeEmailEmail)).perform(typeText(AndroidTestHelper.getUser().getEmail()), closeSoftKeyboard());
+        onView(withId(R.id.editTextChangeEmailCurPassword)).perform(typeText(AndroidTestHelper.getUserPass()), closeSoftKeyboard());
+        onView(withId(R.id.editTextChangeEmailNewEmail)).perform(typeText("newEmail@haha.com"), closeSoftKeyboard());
+        onView(withText("Save"))
+                .inRoot(isDialog()) // <---
+                .check(matches(isDisplayed()))
+                .perform(click());
+        sleep();
+        onView(withText("Successfully changed email"))
+                .inRoot(withDecorView(not(userProfileActivityRule.getActivity().getWindow().getDecorView())))
+                .check(matches(isDisplayed()));
+        onView(withId(R.id.profileEmail)).check(matches(withText(containsString("newEmail@haha.com"))));
+        sleep();
+        sleep();
+        sleep();
+
+    }
+
+    @Test
+    public void changesUsernameSuccefully(){
+        onView(withId(R.id.usernameEditButton)).perform(click());
+        onView(withId(R.id.editTextChangeUsernameUsername)).perform(typeText("newUsername"), closeSoftKeyboard());
+        onView(withText("Save"))
+                .inRoot(isDialog()) // <---
+                .check(matches(isDisplayed()))
+                .perform(click());
+        sleep();
+        onView(withId(R.id.profileUserName)).check(matches(withText(containsString("newUsername"))));
+    }
+
+
 
     @Test
     public void failsToChangePassword(){

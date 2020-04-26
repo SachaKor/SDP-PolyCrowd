@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -32,6 +33,9 @@ public class UserProfilePageActivity extends AppCompatActivity {
 
 
     @Override
+
+
+
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
@@ -62,8 +66,6 @@ public class UserProfilePageActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-
-
     public void OnUserProfileEditPasswordButtonClick(View view) {
         TextView textView = (TextView) findViewById(R.id.profilePassword);
         setupDialogForPasswordChangeCredentials(textView);
@@ -77,7 +79,7 @@ public class UserProfilePageActivity extends AppCompatActivity {
     public void OnUserProfileEditUsernameButtonClick(View view) {
         dialog = new AlertDialog.Builder(this).create();
         EditText newUsernameText = new EditText(this);
-        //newUsernameText.setId(5);
+        newUsernameText.setId(R.id.editTextChangeUsernameUsername);
         //TODO make it so no one can have the same username!!!
         newUsernameText.setHint("Enter new Username");
         TextView textView = (TextView) findViewById(R.id.profilePassword);
@@ -87,7 +89,7 @@ public class UserProfilePageActivity extends AppCompatActivity {
         layout.addView(newUsernameText);
         dialog.setView(layout); // Again this is a set method, not add
         dialog.setTitle("Change username");
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Change username",
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Save",
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -96,7 +98,6 @@ public class UserProfilePageActivity extends AppCompatActivity {
                                 ()->{setUpTextFields();}  );
                     }
                 });
-
         dialog.show();
     }
 
@@ -109,17 +110,24 @@ public class UserProfilePageActivity extends AppCompatActivity {
         //TODO ask to enter new password twice
         dialog = new AlertDialog.Builder(this).create();
         EditText emailText = new EditText(this);
-        emailText.setId(0);
+        emailText.setId(R.id.editTextChangePassEmail);
         emailText.setHint("Enter email");
+
         EditText oldPasswordText= new EditText(this);
+        oldPasswordText.setId(R.id.editTextChangePassCurPass);
         oldPasswordText.setHint("enter current password");
         oldPasswordText.setTransformationMethod(PasswordTransformationMethod.getInstance());
+
         EditText newPasswordText = new EditText(this);
+        newPasswordText.setId(R.id.editTextChangePassNewPass1);
         newPasswordText.setTransformationMethod(PasswordTransformationMethod.getInstance());
         newPasswordText.setHint("enter new password");
+
         EditText newPasswordText2 = new EditText(this);
+        newPasswordText2.setId(R.id.editTextChangePassNewPass2);
         newPasswordText2.setTransformationMethod(PasswordTransformationMethod.getInstance());
         newPasswordText2.setHint("enter new password");
+
         editText = new EditText(this);
         AuthCredential credential =  EmailAuthProvider
                 .getCredential("doesnt matter", "wont work by default");
@@ -133,11 +141,13 @@ public class UserProfilePageActivity extends AppCompatActivity {
         layout.addView(newPasswordText2);
         dialog.setView(layout); // Again this is a set method, not add
         dialog.setTitle("Change password");
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Change password",
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Save",
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if(newPasswordText.toString() == newPasswordText2.toString()) {
+                        Log.d("changePass" , newPasswordText.getText().toString());
+                        Log.d("changePass" , newPasswordText2.getText().toString());
+                        if(newPasswordText.getText().toString().equals(newPasswordText2.getText().toString())) {
                             PolyContext.getDatabaseInterface().reauthenticateAndChangePassword(emailText.getText().toString(),
                                     oldPasswordText.getText().toString(),
                                     newPasswordText.getText().toString(),
@@ -148,18 +158,20 @@ public class UserProfilePageActivity extends AppCompatActivity {
                         }
                     }
                 });
-
         dialog.show();
     }
 
     private void setupDialogForEmailChangeCredentials(TextView textView) {
         dialog = new AlertDialog.Builder(this).create();
         EditText emailText = new EditText(this);
+        emailText.setId(R.id.editTextChangeEmailEmail);
         emailText.setHint("Enter email");
         EditText passwordText= new EditText(this);
+        passwordText.setId(R.id.editTextChangeEmailCurPassword);
         passwordText.setHint("enter current password");
         passwordText.setTransformationMethod(PasswordTransformationMethod.getInstance());
         EditText newEmailText = new EditText(this);
+        newEmailText.setId(R.id.editTextChangeEmailNewEmail);
         newEmailText.setHint("enter new email");
         editText = new EditText(this);
         AuthCredential credential =  EmailAuthProvider
@@ -173,7 +185,7 @@ public class UserProfilePageActivity extends AppCompatActivity {
         layout.addView(newEmailText);
         dialog.setView(layout); // Again this is a set method, not add
         dialog.setTitle("Change Email");
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Change email",
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Save",
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {

@@ -288,7 +288,7 @@ public class FirebaseMocker implements DatabaseInterface {
 
     public void reauthenticateAndChangeEmail(String email, String curPassword, String newEmail,
                                       EmptyHandler emptyHandler, Context appContext) {
-        PolyContext.getCurrentUser().setEmail(email);
+        PolyContext.getCurrentUser().setEmail(newEmail);
         Toast.makeText(appContext, "Successfully changed email",
                 Toast.LENGTH_SHORT).show();
         emptyHandler.handle();
