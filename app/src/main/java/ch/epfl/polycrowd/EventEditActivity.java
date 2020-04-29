@@ -9,14 +9,17 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +47,7 @@ public class EventEditActivity extends AppCompatActivity {
 
 
 
+    // -------- ON CREATE ----------------------------------------------------------
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,7 +56,18 @@ public class EventEditActivity extends AppCompatActivity {
 
     }
 
+    // -----------------------------------------------------------------------------
+
+
+
+    // ----- Setup input fields (if modifying an existing event) ------------------
     private void setUpViews() {
+        // show which event is beeing modified
+        TextView titleActivity = findViewById(R.id.event_name);
+        if(PolyContext.getCurrentEvent() == null) titleActivity.setText("new Event");
+        else titleActivity.setText(PolyContext.getCurrentEvent().getName());
+
+
         eventName = findViewById(R.id.EditEventName);
         startDate = findViewById(R.id.EditEventStart);
         endDate = findViewById(R.id.EditEventEnd);
@@ -61,6 +76,7 @@ public class EventEditActivity extends AppCompatActivity {
         scheduleUrl = findViewById(R.id.EditEventCalendar);
         isEmergencyEnabled = findViewById(R.id.EditEventEmergency);
 
+        // TODO : souldn t we use PolyContext.getCurrentEvent instead of Extras ?
         if (getIntent().hasExtra("eventId")){
             this.eventId = getIntent().getStringExtra("eventId");
 
@@ -81,28 +97,11 @@ public class EventEditActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-        }else this.eventId = null;
-
-
+        } else this.eventId = null;
     }
 
 
-    /*
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private LocalDateTime parseDate(String dateStr) {
-        String dateWithTime = dateStr + " 00:00";
-        LocalDateTime date;
-        try {
-            date = dtFormat.parse(dateWithTime).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-        } catch (DateTimeParseException | ParseException e) {
-            Toast.makeText(getApplicationContext(), "Date " + dateStr + " is incorrect", Toast.LENGTH_SHORT).show();
-            return null;
-        }
-
-        return date;
-
-    }*/
-
+    // ----- Check input --------------------------------------------------------
     private boolean hasEmptyFields() {
         Log.d(TAG, "fieldsNotEmpty");
         String eventNameText = eventName.getText().toString();
@@ -122,60 +121,73 @@ public class EventEditActivity extends AppCompatActivity {
         }
 
         return false;
-
     }
 
+
+    // ---- SUBMIT BUTTON ACTION -----------------------------------------------
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void sendEventSubmit(View view) {
-        final EditText evName = findViewById(R.id.EditEventName);
 
-        Log.d(TAG, "Send Event Button Clicked");
-        // Add the event
-        // Add an Event to the firestore
+        // check if the user is logged in
+        User user = PolyContext.getCurrentUser();
+        if(user == null) {
+            Utils.toastPopup(getApplicationContext(), "please Login first") ;
+            return;
+        }
+
+
         // Retrieve the field values from the Edit Event layout
         Boolean isPublic = isPublicSwitch.isChecked();
         String sDate = startDate.getText().toString(),
                 eDate = endDate.getText().toString(),
                 type = eventTypeSpinner.getSelectedItem().toString();
         Boolean hasEmergency = isEmergencyEnabled.isChecked();
+
+
         if(hasEmptyFields()) {
+            Utils.toastPopup(getApplicationContext(), "fill empty fields") ;
             return;
         }
+
+
         Date startDate = stringToDate(sDate+" 00:00", dtFormat),
                 endDate = stringToDate(eDate+" 00:00", dtFormat);
-
         if(startDate == null || endDate == null) {
+            Utils.toastPopup(getApplicationContext(), "wrong date format") ;
             return;
         }
 
-        // check if the user is logged in
-        User user = PolyContext.getCurrentUser();
 
-        List<String> organizers = new ArrayList<>();
-        organizers.add(user.getEmail());
-        // Create the map containing the event info
-        EditText calendarUrl = findViewById(R.id.EditEventCalendar);
 
-        // Create the map containing the event info
+        // TODO : you should consider old organizers
+        List<String> organizers = Arrays.asList( user.getEmail() );
 
-        Event ev = new Event(user.getUid(), evName.getText().toString(), isPublic,
+
+
+        // Create the Event
+        Event ev = new Event(user.getUid(), eventName.getText().toString(), isPublic,
                 Event.EventType.valueOf(type.toUpperCase()),
                 startDate, endDate,
-                calendarUrl.getText().toString(), "", hasEmergency, organizers);
-        // Map<String, Object> event = ev.toHashMap();
-        // add event to the database
-        Context c = this ;
+                scheduleUrl.getText().toString(), "", hasEmergency, organizers);
+
+
+
+        // upload the Event to Firebase
         EventHandler successHandler = e -> {
             PolyContext.setCurrentEvent(e);
-            Toast.makeText(c, "Event added", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Event added", Toast.LENGTH_LONG).show();
+            // start map ACTIVITY
+            Intent intent = new Intent(this, MapActivity.class);
+            startActivity(intent);
         };
-        EventHandler failureHandler = e -> Toast.makeText(c, "Error occurred while adding the event", Toast.LENGTH_LONG).show();
+        EventHandler failureHandler = e -> {
+            Toast.makeText(this, "Error occurred while adding the event", Toast.LENGTH_LONG).show();
+        };
         if( this.eventId == null) {
             PolyContext.getDatabaseInterface().addEvent(ev, successHandler, failureHandler);
         }else {
             PolyContext.getDatabaseInterface().patchEventByID(this.eventId, ev, successHandler, failureHandler);
         }
-        Intent intent = new Intent(this, MapActivity.class);
-        startActivity(intent);
+
     }
 }

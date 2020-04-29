@@ -124,7 +124,8 @@
                         android:autofillHints=""
                         android:ems="10"
                         android:hint="@string/date_format"
-                        android:inputType="date" />
+                        android:digits="1234567890-"
+                        android:inputType="number" />
 
                 </TableRow>
 
@@ -145,7 +146,8 @@
                         android:autofillHints=""
                         android:ems="10"
                         android:hint="@string/date_format"
-                        android:inputType="date" />
+                        android:digits="1234567890-"
+                        android:inputType="number" />
 
                 </TableRow>
                 <TableRow

@@ -40,6 +40,7 @@ public class FrontPageActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_front_page);
 
         // front page should dispatch the dynamic links
@@ -64,6 +65,7 @@ public class FrontPageActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void setUp() {
+        PolyContext.setCurrentEvent(null);
         toggleLoginLogout();
         setEventModels();
     }
