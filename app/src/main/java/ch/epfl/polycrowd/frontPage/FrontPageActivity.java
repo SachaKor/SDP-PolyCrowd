@@ -2,6 +2,7 @@ package ch.epfl.polycrowd.frontPage;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -10,26 +11,22 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-
 import androidx.annotation.NonNull;
-
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
-
+import java.io.File;
 import java.util.Date;
-
 import java.util.List;
 
-import ch.epfl.polycrowd.GroupInviteActivity;
 import ch.epfl.polycrowd.R;
-import ch.epfl.polycrowd.userProfile.UserProfilePageActivity;
 import ch.epfl.polycrowd.authentification.LoginActivity;
+import ch.epfl.polycrowd.groupPage.GroupInviteActivity;
 import ch.epfl.polycrowd.logic.Event;
-
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.organizerInvite.OrganizerInviteActivity;
+import ch.epfl.polycrowd.userProfile.UserProfilePageActivity;
 
 public class FrontPageActivity extends AppCompatActivity {
 
@@ -38,12 +35,21 @@ public class FrontPageActivity extends AppCompatActivity {
     ViewPager viewPager;
     EventPagerAdaptor adapter;
 
+    private void fixGoogleMapBug() {
+        SharedPreferences googleBug = getSharedPreferences("google_bug", Context.MODE_PRIVATE);
+        if (!googleBug.contains("fixed")) {
+            File corruptedZoomTables = new File(getFilesDir(), "ZoomTables.data");
+            corruptedZoomTables.delete();
+            googleBug.edit().putBoolean("fixed", true).apply();
+        }
+    }
 
     // ------------- ON CREATE ----------------------------------------------------------
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        fixGoogleMapBug();
         setContentView(R.layout.activity_front_page);
 
         // front page should dispatch the dynamic links
