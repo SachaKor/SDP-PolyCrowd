@@ -76,7 +76,7 @@ public class GroupsListActivity extends AppCompatActivity {
             String groupId = groups.get(position).getGid() ;
             holder.groupIdTv.setText(groupId);
             holder.itemClickListener = (v,p) -> {
-                Intent intent = new Intent(c, GroupMapActivity.class) ;
+                Intent intent = new Intent(c, GroupPageActivity.class) ;
                 PolyContext.setCurrentGroup(groups.get(p)) ;
                 c.startActivity(intent);
             } ;
