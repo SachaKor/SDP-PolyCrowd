@@ -152,10 +152,8 @@ public class EventEditActivity extends AppCompatActivity {
         }
 
 
-
-        // TODO : you should consider old organizers
         List<String> organizers = Arrays.asList( user.getEmail() );
-
+        if(PolyContext.getCurrentEvent() != null) organizers = PolyContext.getCurrentEvent().getOrganizers();
 
 
         // Create the Event
@@ -164,7 +162,9 @@ public class EventEditActivity extends AppCompatActivity {
                 startDate, endDate,
                 scheduleUrl.getText().toString(),
                 "TODO : implement description", hasEmergency, organizers);
-
+        if(PolyContext.getCurrentEvent() != null) {
+            ev.setImageUri(PolyContext.getCurrentEvent().getImageUri());
+        }
 
 
         // upload the Event to Firebase

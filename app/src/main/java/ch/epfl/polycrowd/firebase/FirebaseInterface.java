@@ -154,8 +154,6 @@ public class FirebaseInterface implements DatabaseInterface {
                 queryDocumentSnapshots.forEach(queryDocumentSnapshot -> {
                     Event e = Event.getFromDocument(queryDocumentSnapshot.getData());
                     e.setId(queryDocumentSnapshot.getId());
-                    e.setImage(R.drawable.balelec);
-                    e.setDescription("default description");
                     events.add(e);
                 });
                 handler.handle(events);

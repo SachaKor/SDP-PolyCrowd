@@ -101,13 +101,6 @@ public class Event {
     }
 
 
-    public int getImage(){
-        return image;
-    }
-    public  void setImage( int im ){
-        image = im;
-    }
-
     public String getDescription(){
         return description;
     }
@@ -180,10 +173,10 @@ public class Event {
     public String getImageUri() {
         return imageUri;
     }
-
     public void setImageUri(String imageUri) {
         this.imageUri = imageUri;
     }
+
 
     public boolean isEmergencyEnabled(){ return this.isEmergencyEnabled; }
     public void setEmergencyEnabled(boolean b){
