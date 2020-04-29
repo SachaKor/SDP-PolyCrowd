@@ -2,7 +2,6 @@ package ch.epfl.polycrowd.logic;
 
 import android.location.Location;
 import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -104,9 +103,6 @@ public class User extends Storable implements LocationListener {
     }
 
     public LatLng getLocation(){
-        LocationManager mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-
-        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
-                LOCATION_REFRESH_DISTANCE, mLocationListener);
+        return location ; 
     }
 }
