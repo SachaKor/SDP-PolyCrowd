@@ -64,4 +64,8 @@ public abstract class PolyContext extends Context {
     public static void setCurrentGroup(Group gr) {
        group = gr;
     }
+
+    public static Group getCurrentGroup() {
+        return group ;
+    }
 }
