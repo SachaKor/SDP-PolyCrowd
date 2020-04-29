@@ -103,6 +103,8 @@ public class User extends Storable implements LocationListener {
     }
 
     public LatLng getLocation(){
-        return location ; 
+        //return location ;
+        //TODO remove hard-coded location
+        return new LatLng(46.5183369,6.565701) ;
     }
 }
