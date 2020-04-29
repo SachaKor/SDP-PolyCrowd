@@ -197,6 +197,25 @@
 
 
                 </TableRow>
+
+
+                <TableRow>
+
+                    <TextView
+                        android:id="@+id/KMLfileHint"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="KML file" />
+
+
+                    <Button
+                        android:text="Chose File"
+                        android:id="@+id/chose_file" />
+
+
+
+
+                </TableRow>
             </TableLayout>
 
             <Button

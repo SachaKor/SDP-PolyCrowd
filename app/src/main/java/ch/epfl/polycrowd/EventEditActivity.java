@@ -6,12 +6,14 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -45,6 +47,9 @@ public class EventEditActivity extends AppCompatActivity {
     private Spinner eventTypeSpinner;
 
 
+    Button filePicker;
+
+
 
     // -------- ON CREATE ----------------------------------------------------------
     @Override
@@ -58,7 +63,20 @@ public class EventEditActivity extends AppCompatActivity {
     // -----------------------------------------------------------------------------
 
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case 10:
+                if (resultCode == RESULT_OK) {
+                    String path = data.getData().getPath();
+                    Utils.toastPopup(getApplicationContext(), "File Selected");
+                }
+                break;
+        }
+    }
 
+    Intent myFileIntent;
     // ----- Setup input fields (if modifying an existing event) ------------------
     private void setUpViews() {
         // show which event is beeing modified
@@ -74,6 +92,13 @@ public class EventEditActivity extends AppCompatActivity {
         eventTypeSpinner = findViewById(R.id.EditEventType);
         scheduleUrl = findViewById(R.id.EditEventCalendar);
         isEmergencyEnabled = findViewById(R.id.EditEventEmergency);
+
+        filePicker = findViewById(R.id.chose_file);
+        filePicker.setOnClickListener( v -> {
+            myFileIntent = new Intent(Intent.ACTION_GET_CONTENT);
+            myFileIntent.setType("*/*");
+            startActivityForResult(myFileIntent,10);
+        });
 
 
         if (PolyContext.getCurrentEvent() != null){
@@ -139,7 +164,7 @@ public class EventEditActivity extends AppCompatActivity {
 
 
         if(hasEmptyFields()) {
-            Utils.toastPopup(getApplicationContext(), "fill empty fields") ;
+            //Utils.toastPopup(getApplicationContext(), "fill empty fields") ;
             return;
         }
 
