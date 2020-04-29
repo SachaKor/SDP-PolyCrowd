@@ -14,7 +14,9 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.dynamiclinks.DynamicLink;
 import com.google.firebase.dynamiclinks.DynamicLink.SocialMetaTagParameters;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
@@ -37,11 +39,25 @@ public class GroupPageActivity extends AppCompatActivity {
     private String groupId;
     private AlertDialog linkDialog;
 
+    ViewPager viewPager ;
+    TabLayout tabLayout ;
+
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_group_page);
+
+        viewPager = findViewById(R.id.viewPager) ;
+        tabLayout = findViewById(R.id.tabLayout) ;
+
+        FragmentAdapter fragmentAdapter = new FragmentAdapter(getSupportFragmentManager(), this) ;
+        viewPager.setAdapter(fragmentAdapter);
+
+        tabLayout.setupWithViewPager(viewPager);
+
         try {
             initEvent();
             initGroup();
@@ -97,8 +113,8 @@ public class GroupPageActivity extends AppCompatActivity {
         }
         dbi.getGroupByUserAndEvent(eventId, user.getEmail(), group -> {
             if(group == null){
-                findViewById(R.id.leave_group_button).setVisibility(View.GONE);
-                findViewById(R.id.invite_group_button).setVisibility(View.GONE);
+                //findViewById(R.id.leave_group_button).setVisibility(View.GONE);
+                //findViewById(R.id.invite_group_button).setVisibility(View.GONE);
                 return;
             }
 
