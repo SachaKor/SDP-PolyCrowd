@@ -34,7 +34,6 @@ public class GroupMapFragment extends Fragment implements OnMapReadyCallback {
     private static GroupMapFragment INSTANCE = null ;
     private GoogleMap googleMap ;
     private MapView mapView ;
-    private GroupMap groupMap ;
 
     View view ;
 
