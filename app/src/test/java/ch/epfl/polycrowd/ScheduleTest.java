@@ -28,6 +28,7 @@ public class ScheduleTest {
     }
     @Test
     public void testGetAndParse(){
+        // WARNING : this test needs an Internet Connection
         Schedule s = new Schedule(CalURL ,new File("calendars/test.ics"));
         assertNotNull(s.getActivities());
         assertEquals(s.getDownloadPath(), new File("calendars/test.ics").getAbsolutePath());

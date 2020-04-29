@@ -168,7 +168,8 @@ public class EventEditActivity extends AppCompatActivity {
         Event ev = new Event(user.getUid(), eventName.getText().toString(), isPublic,
                 Event.EventType.valueOf(type.toUpperCase()),
                 startDate, endDate,
-                scheduleUrl.getText().toString(), "", hasEmergency, organizers);
+                scheduleUrl.getText().toString(),
+                "TODO : implement description", hasEmergency, organizers);
 
 
 

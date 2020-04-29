@@ -64,7 +64,7 @@ public class EventEditActivityTest {
 
     @Test
     public void testDisplaysEventTitle() {
-        onView(withId(R.id.event_name)).check(matches(withText(containsString("*event_title*"))));
+        onView(withId(R.id.event_name)).check(matches(withText(containsString("DEBUG EVENT"))));
     }
 
     @Test
@@ -97,7 +97,7 @@ public class EventEditActivityTest {
         sleep();
         onView(withId(R.id.EditEventSubmit)).perform(click());
         sleep();
-        onView(withText("Enter the name of the event"))
+        onView(withText("fill empty fields"))
                 .inRoot(withDecorView(not(mActivityRule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));
     }
@@ -108,7 +108,7 @@ public class EventEditActivityTest {
         onView(withId(R.id.EditEventName)).perform(typeText("Test Name"), closeSoftKeyboard());
         sleep();
         onView(withId(R.id.EditEventSubmit)).perform(click());
-        onView(withText("Enter the starting date"))
+        onView(withText("fill empty fields"))
                 .inRoot(withDecorView(not(mActivityRule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));
     }
@@ -119,7 +119,7 @@ public class EventEditActivityTest {
         onView(withId(R.id.EditEventStart)).perform(typeText("21-01-2022"), closeSoftKeyboard());
         onView(withId(R.id.EditEventSubmit)).perform(click());
         sleep();
-        onView(withText("Enter the ending date"))
+        onView(withText("fill empty fields"))
                 .inRoot(withDecorView(not(mActivityRule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));
     }
