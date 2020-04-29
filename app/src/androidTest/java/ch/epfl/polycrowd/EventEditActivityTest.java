@@ -89,6 +89,7 @@ public class EventEditActivityTest {
         onView(withId(R.id.EditEventStart)).perform(typeText("30-12-1971"),closeSoftKeyboard());
         onView(withId(R.id.EditEventEnd)).perform(typeText("31-12-1971"),closeSoftKeyboard());
         onView(withId(R.id.EditEventCalendar)).perform(typeText("https://satellite.bar/agenda/ical.php"), closeSoftKeyboard());
+        sleep();
         onView(withId(R.id.EditEventSubmit)).perform(scrollTo(),click());
         sleep();
     }
@@ -98,7 +99,7 @@ public class EventEditActivityTest {
         closeSoftKeyboard();
         onView(withId(R.id.EditEventSubmit)).perform(click());
         sleep();
-        onView(withText("fill empty fields"))
+        onView(withText("Enter the name of the event"))
                 .inRoot(withDecorView(not(mActivityRule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));
     }
