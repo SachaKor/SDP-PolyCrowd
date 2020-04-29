@@ -13,7 +13,6 @@
         android:layout_gravity="left"
         android:textSize="20dp"/>
 
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/members_recycler_view"
         android:layout_width="match_parent"
@@ -22,5 +21,24 @@
         android:layout_alignParentStart="true"
         android:layout_marginStart="4dp"
         android:layout_marginTop="26dp" />
+
+    <Button
+        android:id="@+id/invite_group_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/members_recycler_view"
+        android:layout_marginTop="10dp"
+        android:text="@string/invite_group"
+        android:onClick="inviteLinkClicked"/>
+
+    <Button
+        android:id="@+id/leave_group_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/invite_group_button"
+        android:layout_marginTop="10dp"
+        android:text="@string/leave_group"
+        android:onClick="leaveLinkClicked"/>
+
 
 </LinearLayout>
