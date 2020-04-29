@@ -93,9 +93,7 @@ public class EventEditActivityTest {
     }
 
     @Test
-    public void testEmptyEventName() {
-        onView(withId(R.id.EditEventName)).perform(typeText(""),closeSoftKeyboard());
-        sleep();
+    public void testEmptyFields() {
         onView(withId(R.id.EditEventSubmit)).perform(click());
         sleep();
         onView(withText("fill empty fields"))
@@ -103,28 +101,6 @@ public class EventEditActivityTest {
                 .check(matches(isDisplayed()));
     }
 
-    @Test
-    public void testEmptyStartDate() {
-
-        sleep();
-        onView(withId(R.id.EditEventName)).perform(typeText("Test Name"), closeSoftKeyboard());
-        sleep();
-        onView(withId(R.id.EditEventSubmit)).perform(click());
-        onView(withText("fill empty fields"))
-                .inRoot(withDecorView(not(mActivityRule.getActivity().getWindow().getDecorView())))
-                .check(matches(isDisplayed()));
-    }
-
-    @Test
-    public void testEmptyEndDate() {
-        onView(withId(R.id.EditEventName)).perform(typeText("Test Name"), closeSoftKeyboard());
-        onView(withId(R.id.EditEventStart)).perform(typeText("21-01-2022"), closeSoftKeyboard());
-        onView(withId(R.id.EditEventSubmit)).perform(click());
-        sleep();
-        onView(withText("fill empty fields"))
-                .inRoot(withDecorView(not(mActivityRule.getActivity().getWindow().getDecorView())))
-                .check(matches(isDisplayed()));
-    }
 
     @Test
     public void fillsWithGivenEventId(){
