@@ -1,8 +1,14 @@
 package ch.epfl.polycrowd.logic;
 
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Build;
+import android.os.Bundle;
 
 import androidx.annotation.RequiresApi;
+
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,13 +16,18 @@ import java.util.Objects;
 
 import static java.lang.Math.toIntExact;
 
-public class User extends Storable {
+
+public class User extends Storable implements LocationListener {
 
     //TODO: add necessary attributes and methods
 
     //Sample attributes
     private String name, email, uid, gid;
     private Integer age;
+
+    private LatLng location ;
+
+    //https://stackoverflow.com/questions/17591147/how-to-get-current-location-in-android
 
     //Sample constructor
     public User(String email, String uid, String name, Integer age){
@@ -69,5 +80,33 @@ public class User extends Storable {
 
         String uid = Objects.requireNonNull(data.get("uid")).toString();
         return new User(email, uid, username, real_age);
+    }
+
+
+    @Override
+    public void onLocationChanged(Location location) {
+       this.location = new LatLng(location.getLongitude(), location.getLatitude()) ;
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
+    }
+
+    public LatLng getLocation(){
+        LocationManager mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
+                LOCATION_REFRESH_DISTANCE, mLocationListener);
     }
 }
