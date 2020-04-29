@@ -1,4 +1,4 @@
-package ch.epfl.polycrowd;
+package ch.epfl.polycrowd.groupPage;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -22,6 +22,7 @@ import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import java.text.ParseException;
 import java.util.List;
 
+import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
