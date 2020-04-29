@@ -21,6 +21,7 @@ import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
@@ -81,7 +82,7 @@ public class EventEditActivityTest {
 
     @Test
     public void testInteractFields() {
-
+        closeSoftKeyboard();
         onView(withId(R.id.EditEventName)).perform(typeText("PolySushi"),closeSoftKeyboard());
         //onView(withId(R.id.EditEventPublic)).perform(); //What action ?
         //onView(withId(R.id.EditEventType)).perform(); //What action ?
@@ -94,6 +95,7 @@ public class EventEditActivityTest {
 
     @Test
     public void testEmptyFields() {
+        closeSoftKeyboard();
         onView(withId(R.id.EditEventSubmit)).perform(click());
         sleep();
         onView(withText("fill empty fields"))
