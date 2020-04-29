@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:padding="16dp"
     android:background="#fff"
-    tools:context=".GroupPageActivity">
+    tools:context=".groupPage.GroupPageActivity">
 
     <TextView
         android:id="@+id/group_edit_title"

@@ -4,14 +4,10 @@
     package="ch.epfl.polycrowd">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -21,19 +17,21 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".userProfile.UserProfilePageActivity"></activity>
-        <activity android:name=".userProfile.UserEventListActivity"/>
-        <activity android:name=".map.GroupMapActivity"/>
-        <activity android:name=".GroupPageActivity" />
+        <activity android:name=".groupPage.GroupsListActivity"></activity>
+        <activity android:name=".userProfile.UserProfilePageActivity" />
+        <activity android:name=".userProfile.UserEventListActivity" />
+        <activity android:name=".groupPage.GroupMapActivity" />
+        <activity android:name=".groupPage.GroupPageActivity" />
         <activity android:name=".authentification.ResetPasswordActivity" />
         <activity android:name=".authentification.SignUpActivity" />
         <activity android:name=".EventPageDetailsActivity" />
-        <activity android:name="com.google.firebase.auth.internal.FederatedSignInActivity"
+        <activity
+            android:name="com.google.firebase.auth.internal.FederatedSignInActivity"
             android:launchMode="standard"
             tools:replace="android:launchMode" />
         <activity android:name=".authentification.LoginActivity" />
         <activity android:name=".EventEditActivity" />
-        <activity android:name=".GroupInviteActivity" />
+        <activity android:name=".groupPage.GroupInviteActivity" />
         <activity android:name=".schedulePage.ScheduleActivity" />
         <activity
             android:name=".frontPage.FrontPageActivity"
@@ -58,7 +56,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".organizerInvite.OrganizerInviteActivity" />
-        <activity android:name=".map.MapActivity"
+        <activity
+            android:name=".map.MapActivity"
             android:label="@string/title_activity_main" />
         <activity android:name=".EmergencyActivity" />
         <!--

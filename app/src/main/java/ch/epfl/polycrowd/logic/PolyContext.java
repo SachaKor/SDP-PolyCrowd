@@ -61,4 +61,7 @@ public abstract class PolyContext extends Context {
         return dbInterface ;
     }
 
+    public static void setCurrentGroup(Group gr) {
+       group = gr;
+    }
 }

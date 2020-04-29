@@ -3,12 +3,15 @@
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:orientation="vertical"
     android:layout_height="match_parent">
-    
+
     <TextView
-    android:id="@+id/groupNameTv"
-    android:text="Second Fragment"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"/>
+        android:id="@+id/groupNameTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Members in this group"
+        android:padding="8dp"
+        android:layout_gravity="left"
+        android:textSize="20dp"/>
 
 
     <androidx.recyclerview.widget.RecyclerView

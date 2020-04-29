@@ -63,6 +63,7 @@
     <string name="sos_main">Emergency</string>
     <string name="edit_main">Edit</string>
     <string name="sos_type">What is the reason for the emergency ??</string>
+    <string name="my_groups">MyGroups</string>
     <string-array name="sos_type_list">
         <item value="LOSTMINOR">Lost Minor</item>
         <item value="ACCIDENT">Accident</item>

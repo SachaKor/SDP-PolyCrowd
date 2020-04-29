@@ -1,6 +1,7 @@
 package ch.epfl.polycrowd.groupPage;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,6 +57,7 @@ public class GroupMapFragment extends Fragment implements OnMapReadyCallback {
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        Log.d("GroupMapFragment", "RIGHT BEFORE CALL TO MapsInitializer.initialize") ;
         MapsInitializer.initialize(getContext()) ;
         this.googleMap = googleMap ;
     }
