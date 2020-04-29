@@ -115,6 +115,7 @@ public class Event {
         if(description == null)
             this.description = "";
         else
+            // I do this because firebase may append \\\ to a \n
             this.description = description.replaceAll("\\\\n", "\n" );
     }
 

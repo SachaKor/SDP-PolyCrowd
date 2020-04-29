@@ -113,7 +113,7 @@ public class FrontPageActivity extends AppCompatActivity {
                 if(position != 0){
                     Event pointedEvent = events.get(position - 1 );
                     description.setText( pointedEvent.getDescription() );
-                    eventTitle.setText(pointedEvent.getName() );
+                    eventTitle.setText( pointedEvent.getName() );
                 } else {
                     eventTitle.setText("Create an EVENT");
                     description.setText("your journey starts now ! \n sky is the limit");
