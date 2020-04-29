@@ -20,7 +20,6 @@
         <activity android:name=".groupPage.GroupsListActivity"></activity>
         <activity android:name=".userProfile.UserProfilePageActivity" />
         <activity android:name=".userProfile.UserEventListActivity" />
-        <activity android:name=".groupPage.GroupMapActivity" />
         <activity android:name=".groupPage.GroupPageActivity" />
         <activity android:name=".authentification.ResetPasswordActivity" />
         <activity android:name=".authentification.SignUpActivity" />
