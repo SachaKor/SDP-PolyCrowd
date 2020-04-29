@@ -17,6 +17,7 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -24,6 +25,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import ch.epfl.polycrowd.R;
+import ch.epfl.polycrowd.logic.Group;
+import ch.epfl.polycrowd.logic.PolyContext;
+import ch.epfl.polycrowd.logic.User;
 
 public class GroupMapFragment extends Fragment implements OnMapReadyCallback {
 
@@ -69,10 +73,14 @@ public class GroupMapFragment extends Fragment implements OnMapReadyCallback {
         Log.d("GroupMapFragment", "RIGHT BEFORE CALL TO MapsInitializer.initialize") ;
         MapsInitializer.initialize(getContext()) ;
         this.googleMap = googleMap ;
-        List<LatLng> memberLocations = getEventGoersPositions() ;
+        List<LatLng> memberLocations = getGroupMemberPositions() ;
 
-        for(LatLng location: memberLocations)
+        LatLngBounds.Builder boundsBuilder  = LatLngBounds.builder() ;
+
+        for(LatLng location: memberLocations) {
             googleMap.addMarker(new MarkerOptions().position(location).title("a friend is here"));
+            boundsBuilder.include(location) ;
+        }
 
         List<Marker> locationMarkers = new LinkedList<>() ;
         for(int i = 0 ; i < locationMarkers.size() ; ++i) {
@@ -80,16 +88,22 @@ public class GroupMapFragment extends Fragment implements OnMapReadyCallback {
             locationMarkers.set(i, googleMap.addMarker(currentLocationMarkerOptions));
         }
 
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(memberLocations.get(0) , 17.8f));
+        LatLngBounds bounds = boundsBuilder.build() ;
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bounds.getCenter(), 20));
+        //googleMap.fitBounds(bounds) ;
 
     }
 
-    private List<LatLng> getEventGoersPositions(){
+    private List<LatLng> getGroupMemberPositions(){
         List<LatLng> l = new LinkedList<>();
-        l.add(new LatLng(46.518033, 6.566919));l.add(new LatLng(46.518933, 6.566819));l.add(new LatLng(46.518533, 6.566719));
+        /*l.add(new LatLng(46.518033, 6.566919));l.add(new LatLng(46.518933, 6.566819));l.add(new LatLng(46.518533, 6.566719));
         l.add(new LatLng(46.518333, 6.566119));l.add(new LatLng(46.518033, 6.566319));l.add(new LatLng(46.518933, 6.566419));
         l.add(new LatLng(46.518733, 6.566519));l.add(new LatLng(46.518033, 6.566619));l.add(new LatLng(46.518633, 6.566719));
-        l.add(new LatLng(46.518533, 6.566819));l.add(new LatLng(46.518333, 6.566319));l.add(new LatLng(46.518233, 6.566419));
+        l.add(new LatLng(46.518533, 6.566819));l.add(new LatLng(46.518333, 6.566319));l.add(new LatLng(46.518233, 6.566419));*/
+        Group gr = PolyContext.getCurrentGroup() ;
+        for(User u: gr.getMembers()){
+            l.add(u.getLocation()) ;
+        }
         return l;
     }
 }
