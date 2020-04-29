@@ -43,7 +43,6 @@ public class EventEditActivity extends AppCompatActivity {
     private EditText startDate, endDate;
     private Switch isPublicSwitch, isEmergencyEnabled;
     private Spinner eventTypeSpinner;
-    private String eventId;
 
 
 
@@ -76,9 +75,8 @@ public class EventEditActivity extends AppCompatActivity {
         scheduleUrl = findViewById(R.id.EditEventCalendar);
         isEmergencyEnabled = findViewById(R.id.EditEventEmergency);
 
-        // TODO : souldn t we use PolyContext.getCurrentEvent instead of Extras ?
-        if (getIntent().hasExtra("eventId")){
-            this.eventId = getIntent().getStringExtra("eventId");
+
+        if (PolyContext.getCurrentEvent() != null){
 
             EventHandler eventHandler = ev -> {
                 eventName.setText(ev.getName());
@@ -90,14 +88,10 @@ public class EventEditActivity extends AppCompatActivity {
                 eventTypeSpinner.setSelection(ev.getType().ordinal());
                 scheduleUrl.setText(ev.getCalendar());
             };
-            try {
-                System.out.println("############ retreiving event:" + eventId);
-                PolyContext.getDatabaseInterface().getEventById(eventId, eventHandler);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
 
-        } else this.eventId = null;
+            eventHandler.handle(PolyContext.getCurrentEvent());
+
+        }
     }
 
 
@@ -184,10 +178,12 @@ public class EventEditActivity extends AppCompatActivity {
         EventHandler failureHandler = e -> {
             Toast.makeText(this, "Error occurred while adding the event", Toast.LENGTH_LONG).show();
         };
-        if( this.eventId == null) {
+        if( PolyContext.getCurrentEvent() == null) {
             PolyContext.getDatabaseInterface().addEvent(ev, successHandler, failureHandler);
         }else {
-            PolyContext.getDatabaseInterface().patchEventByID(this.eventId, ev, successHandler, failureHandler);
+            PolyContext.getDatabaseInterface().patchEventByID(
+                    PolyContext.getCurrentEvent().getId(),
+                    ev, successHandler, failureHandler);
         }
 
     }

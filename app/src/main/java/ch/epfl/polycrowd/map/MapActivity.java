@@ -66,10 +66,6 @@ public class MapActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // TODO: replace this with the Context
-//        if(getIntent().hasExtra("eventId")) {
-//            eventId = getIntent().getStringExtra("eventId");
-//        }
 
         Event event = PolyContext.getCurrentEvent();
         if(event != null)
@@ -211,19 +207,16 @@ public class MapActivity extends AppCompatActivity {
 
     public void clickEventDetails(View view) {
         Intent intent = new Intent(this, EventPageDetailsActivity.class);
-        intent.putExtra("eventId", eventId);
         startActivity(intent);
     }
 
     public void clickEventEdit(View view){
         Intent intent = new Intent(this, EventEditActivity.class);
-        intent.putExtra("eventId", eventId);
         startActivity(intent);
     }
 
     public void clickGroup(View view) {
         Intent intent = new Intent(this, GroupPageActivity.class);
-        intent.putExtra("eventId", eventId);
         startActivity(intent);
     }
 

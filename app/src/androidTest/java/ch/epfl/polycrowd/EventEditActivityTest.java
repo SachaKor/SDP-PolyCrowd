@@ -55,6 +55,7 @@ public class EventEditActivityTest {
         AndroidTestHelper.SetupMockDBI();
 
         PolyContext.setCurrentUser(AndroidTestHelper.getUser());
+        PolyContext.setCurrentEvent(null);
 
         Intent intent = new Intent();
         mActivityRule.launchActivity(intent);
@@ -64,7 +65,7 @@ public class EventEditActivityTest {
 
     @Test
     public void testDisplaysEventTitle() {
-        onView(withId(R.id.event_name)).check(matches(withText(containsString("DEBUG EVENT"))));
+        onView(withId(R.id.event_name)).check(matches(withText(containsString("new Event"))));
     }
 
     @Test
@@ -104,6 +105,7 @@ public class EventEditActivityTest {
 
     @Test
     public void testEmptyStartDate() {
+
         sleep();
         onView(withId(R.id.EditEventName)).perform(typeText("Test Name"), closeSoftKeyboard());
         sleep();
@@ -127,12 +129,11 @@ public class EventEditActivityTest {
     @Test
     public void fillsWithGivenEventId(){
         Event e = new Event("Test Owner","Test Name", true, Event.EventType.CONVENTION,new Date(), new Date(),"url","Test Description", false);
-        e.setId("test id");
+        PolyContext.setCurrentEvent(e);
         PolyContext.getDatabaseInterface().addEvent(e, ev->{}, ev->{});
         PolyContext.setCurrentUser(AndroidTestHelper.getUser());
 
         Intent intent = new Intent();
-        intent.putExtra("eventId","test id");
         mActivityRule.launchActivity(intent);
 
         sleep();

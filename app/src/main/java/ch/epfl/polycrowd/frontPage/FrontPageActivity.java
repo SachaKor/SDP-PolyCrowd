@@ -174,8 +174,6 @@ public class FrontPageActivity extends AppCompatActivity {
                         eventName = deepLink.getQueryParameter("eventName");
                 if (eventId != null && eventName != null) {
                     Intent intent = new Intent(c, OrganizerInviteActivity.class);
-                    intent.putExtra("eventId", eventId);
-                    intent.putExtra("eventName", eventName);
                     startActivity(intent);
                 }
             } else if(lastPathSegment != null && lastPathSegment.equals("inviteGroup")) {
