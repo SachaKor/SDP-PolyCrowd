@@ -70,11 +70,23 @@
                         android:layout_height="wrap_content"
                         android:text="@string/event_is_public" />
 
-                    <Switch
-                        android:id="@+id/EditEventPublic"
-                        android:layout_width="1dp"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/event_public_hint" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:orientation="horizontal"
+                        android:paddingTop="10dp"
+                        android:paddingBottom="10dp"
+                        android:layout_height="wrap_content">
+                        <Switch
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/EditEventPublic" />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:text="@string/event_public_hint"
+                            android:layout_height="wrap_content" />
+                    </LinearLayout>
+
+
                 </TableRow>
 
                 <TableRow
@@ -165,11 +177,23 @@
                         android:layout_height="wrap_content"
                         android:text="@string/event_is_emergency_enabled" />
 
-                    <Switch
-                        android:id="@+id/EditEventEmergency"
-                        android:layout_width="1dp"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/event_emergency_hint" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:orientation="horizontal"
+                        android:paddingTop="10dp"
+                        android:paddingBottom="10dp"
+                        android:layout_height="wrap_content">
+                        <Switch
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/EditEventEmergency" />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:text="@string/event_emergency_hint"
+                            android:layout_height="wrap_content" />
+                    </LinearLayout>
+
+
                 </TableRow>
             </TableLayout>
 
