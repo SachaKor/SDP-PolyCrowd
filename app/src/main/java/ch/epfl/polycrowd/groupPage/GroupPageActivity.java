@@ -74,11 +74,10 @@ public class GroupPageActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        LocationManager mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        group = PolyContext.getCurrentGroup() ;
         List<User> members = group.getMembers();
+        LocationManager mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         for (User u : members) {
-            //TODO use PASSIVE_PROVIDER instead?
-            //TODO what time and distance are suitable ?
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling ActivityCompat#requestPermissions
                 // here to request the missing permissions, and then overriding
@@ -88,10 +87,12 @@ public class GroupPageActivity extends AppCompatActivity {
                 // for ActivityCompat#requestPermissions for more details.
                 return;
             }
+            //TODO use PASSIVE_PROVIDER instead?
+            //TODO what time and distance are suitable ?
+            //https://stackoverflow.com/questions/17591147/how-to-get-current-location-in-android
             mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
                     LOCATION_REFRESH_DISTANCE, u);
         }
-
 
     }
 
