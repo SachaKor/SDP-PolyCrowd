@@ -1,48 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
     android:background="#fff"
-    tools:context=".groupPage.GroupPageActivity">
+    tools:context=".groupPage.GroupPageActivity"
+    android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/group_edit_title"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="16dp"
-        android:ems="10"
-        android:padding="10dp"
-        android:text="@string/group"
-        android:textAlignment="center"
-        android:textSize="20sp" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/members_recycler_view"
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/group_edit_title"/>
+        android:layout_height="wrap_content"/>
 
-    <Button
-        android:id="@+id/invite_group_button"
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/viewPager"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/members_recycler_view"
-        android:layout_marginTop="10dp"
-        android:text="@string/invite_group"
-        android:onClick="inviteLinkClicked"/>
+        android:layout_height="match_parent"/>
 
-    <Button
-        android:id="@+id/leave_group_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/invite_group_button"
-        android:layout_marginTop="10dp"
-        android:text="@string/leave_group"
-        android:onClick="leaveLinkClicked"/>
-
-</RelativeLayout>
+</LinearLayout>
 
