@@ -90,6 +90,8 @@ public class EventEditActivityTest {
         onView(withId(R.id.EditEventEnd)).perform(typeText("31-12-1971"),closeSoftKeyboard());
         onView(withId(R.id.EditEventCalendar)).perform(typeText("https://satellite.bar/agenda/ical.php"), closeSoftKeyboard());
         sleep();
+        onView(withId(R.id.EditEventSubmit)).check(matches(isDisplayed()));
+        sleep();
         onView(withId(R.id.EditEventSubmit)).perform(scrollTo(),click());
         sleep();
     }
