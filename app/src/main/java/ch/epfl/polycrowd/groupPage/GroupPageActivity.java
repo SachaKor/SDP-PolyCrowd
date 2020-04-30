@@ -36,7 +36,7 @@ import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 import ch.epfl.polycrowd.organizerInvite.OrganizersAdapter;
 
-public class GroupPageActivity extends AppCompatActivity {
+public class GroupPageActivity extends AppCompatActivity implements TabLayout.OnTabSelectedListener {
 
     private static final String TAG = "GroupPageActivity";
     private static final long LOCATION_REFRESH_TIME = 5000; //5s
@@ -50,6 +50,7 @@ public class GroupPageActivity extends AppCompatActivity {
 
     ViewPager viewPager;
     TabLayout tabLayout;
+    private FragmentAdapter fragmentAdapter;
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -62,10 +63,11 @@ public class GroupPageActivity extends AppCompatActivity {
         viewPager = findViewById(R.id.viewPager);
         tabLayout = findViewById(R.id.tabLayout);
 
-        FragmentAdapter fragmentAdapter = new FragmentAdapter(getSupportFragmentManager(), this);
+        fragmentAdapter = new FragmentAdapter(getSupportFragmentManager(), this);
         viewPager.setAdapter(fragmentAdapter);
 
         tabLayout.setupWithViewPager(viewPager);
+        tabLayout.addOnTabSelectedListener(this);
 
         try {
             initEvent();
@@ -209,14 +211,41 @@ public class GroupPageActivity extends AppCompatActivity {
         });
     }
 
-    public void selectViewPagerIndex(int index){
+    @Override
+    public void onTabSelected(TabLayout.Tab tab) {
+        int index = tab.getPosition() ;
+        if(index == 0){
+            Log.d(TAG, "TAB SELECTED FOR MAPS") ;
+            //TODO Move the showUserOnMap call here?
+            //Or drawMap has condition on which user to highlight?
+            //((GroupMapFragment)fragmentAdapter.getItem(index)).drawMap() ;
+        }
+    }
+
+    @Override
+    public void onTabUnselected(TabLayout.Tab tab) {
+        int index = tab.getPosition() ;
+        if(index == 0){
+            Log.d(TAG, "TAB UN-SELECTED FOR MAPS") ;
+            ((GroupMapFragment)fragmentAdapter.getItem(index)).resetMap() ;
+        }
+    }
+
+    @Override
+    public void onTabReselected(TabLayout.Tab tab) {
+        int index = tab.getPosition() ;
+        if(index == 0){
+            Log.d(TAG, "TAB RE-SELECTED FOR MAPS") ;
+            ((GroupMapFragment)fragmentAdapter.getItem(index)).resetMap() ;
+        }
+    }
+
+    private void selectViewPagerIndex(int index){
         viewPager.setCurrentItem(index);
     }
 
     public void showUserOnMap(User user){
-        //
+        ((GroupMapFragment)fragmentAdapter.getItem(0)).highlightUserMarker(user);
+        selectViewPagerIndex(0);
     }
-
-
-
 }
