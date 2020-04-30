@@ -4,6 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="ch.epfl.polycrowd">
 
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
@@ -26,8 +30,9 @@
             tools:replace="android:launchMode" />
         <activity android:name=".authentification.LoginActivity" />
         <activity android:name=".EventEditActivity" />
+        <activity android:name=".GroupPageActivity" />
+        <activity android:name=".GroupInviteActivity" />
         <activity android:name=".schedulePage.ScheduleActivity" />
-
         <activity
             android:name=".frontPage.FrontPageActivity"
             android:label="@string/title_activity_main">

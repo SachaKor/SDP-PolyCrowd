@@ -20,7 +20,7 @@ public class UserTest {
 
     @Test
     public void testGetAge(){
-        assert(testUser.getAge() ==  3);
+        assert(testUser.getAge() == 3);
     }
 
     @Test
@@ -46,6 +46,9 @@ public class UserTest {
         data.put("uid" , "1");
 
         assertEquals(User.getFromDocument(data).getUid() , "1" );
+        assertEquals(User.getFromDocument(data).getEmail() , "test@test" );
+        assertEquals((User.getFromDocument(data).getAge()), new Integer(3));
+        assertEquals((User.getFromDocument(data).getName()), "test");
 
 
     }

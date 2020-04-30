@@ -1,5 +1,5 @@
-
 package ch.epfl.polycrowd.authentification;
+
 
 import android.content.Context;
 import android.content.Intent;
@@ -22,6 +22,7 @@ import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.frontPage.FrontPageActivity;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
+import ch.epfl.polycrowd.map.MapActivity;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -30,12 +31,15 @@ public class LoginActivity extends AppCompatActivity {
     /** Names of the extra parameters for the organizer invites **/
     private static final String IS_ORGANIZER_INVITE = "isOrganizerInvite";
     private static final String EVENT_ID = "eventId";
-
+    private String inviteGroupId = null; // Not null -> a user logged in after group-invite link
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        Intent intent = getIntent();
+        inviteGroupId = intent.getStringExtra("inviteGroupId");
+
     }
 
     private void toastPopup(String text) {
@@ -100,6 +104,7 @@ public class LoginActivity extends AppCompatActivity {
                 Log.d(TAG, "previous page: " + PolyContext.getPreviousPage());
                 if(PolyContext.getPreviousPage()!= null && PolyContext.getPreviousPage().equals("OrganizerInviteActivity")) {
                     String organizerEmail = Objects.requireNonNull(PolyContext.getCurrentUser().getEmail());
+                    // TODO : Cannot assume that CurrentEvent is the correct one. Please use intent extras as provided by the invite url
                     if(PolyContext.getCurrentEvent() == null) {
                         Log.e(TAG, "current event is null");
                         return;
@@ -115,6 +120,13 @@ public class LoginActivity extends AppCompatActivity {
                     Intent intent = new Intent(this, FrontPageActivity.class);
                     startActivity(intent);
                 }
+
+                if(inviteGroupId != null){
+                    PolyContext.getDatabaseInterface().addUserToGroup(inviteGroupId, user.getEmail(), () -> {
+                    Intent map = new Intent(c, MapActivity.class);
+                    startActivity(map);
+                });
+            }
         } ;
     }
 }

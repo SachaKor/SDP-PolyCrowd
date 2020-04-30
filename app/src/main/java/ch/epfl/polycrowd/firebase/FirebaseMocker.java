@@ -17,8 +17,10 @@ import java.util.Map;
 import java.util.Objects;
 
 import ch.epfl.polycrowd.firebase.handlers.DynamicLinkHandler;
+import ch.epfl.polycrowd.firebase.handlers.EmptyHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
+import ch.epfl.polycrowd.firebase.handlers.GroupHandler;
 import ch.epfl.polycrowd.firebase.handlers.ImageHandler;
 import ch.epfl.polycrowd.firebase.handlers.OrganizersHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
@@ -155,6 +157,31 @@ public class FirebaseMocker implements DatabaseInterface {
     @Override
     public void addSOS(String userId, String eventId, String reason) {
         //TODO ???
+    }
+
+    @Override
+    public void addUserToGroup(String inviteGroupId, String uid, EmptyHandler emptyHandler) {
+
+    }
+
+    @Override
+    public void removeGroupIfEmpty(String gid, GroupHandler handler) {
+
+    }
+
+    @Override
+    public void removeUserFromGroup(String gid, String uid, EmptyHandler handler) {
+
+    }
+
+    @Override
+    public void getGroupByUserAndEvent(String eventId, String userId, GroupHandler groupHandler) {
+
+    }
+
+    @Override
+    public void createGroup(String eventId, GroupHandler handler) {
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)

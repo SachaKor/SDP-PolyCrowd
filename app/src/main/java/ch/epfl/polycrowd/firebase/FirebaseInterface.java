@@ -12,6 +12,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.SetOptions;
@@ -19,20 +20,27 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicReferenceArray;
 
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.firebase.handlers.DynamicLinkHandler;
+import ch.epfl.polycrowd.firebase.handlers.EmptyHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
+import ch.epfl.polycrowd.firebase.handlers.GroupHandler;
 import ch.epfl.polycrowd.firebase.handlers.ImageHandler;
 import ch.epfl.polycrowd.firebase.handlers.OrganizersHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
+import ch.epfl.polycrowd.logic.Group;
 import ch.epfl.polycrowd.logic.User;
 
 /**
@@ -48,6 +56,8 @@ public class FirebaseInterface implements DatabaseInterface {
 
     private static final String EVENTS = "polyevents";
     private static final String ORGANIZERS = "organizers";
+    private static final String MEMBERS = "members";
+    private static final String GROUPS = "groups";
     private static final String USERS = "users";
     private static final String EVENT_IMAGES = "event-images";
     private static final String TAG = "FirebaseInterface";
@@ -196,6 +206,156 @@ public class FirebaseInterface implements DatabaseInterface {
                         event.setId(eventId);
                         eventHandler.handle(event);
                     }).addOnFailureListener(e -> Log.e(TAG, "Error retrieving document with id " + eventId));
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void getGroupByUserAndEvent(String eventId, String userEmail, GroupHandler groupHandler) {
+        final String TAG1 = "getGroupByUserAndEvent";
+        Log.d(TAG, TAG1 + " is not mocked");
+        getFirestoreInstance(false).collection(GROUPS)
+                .whereEqualTo("eventId", eventId)
+                .whereArrayContains("members", userEmail)
+                .get()
+                .addOnSuccessListener(documentSnapshots -> {
+                    Log.d(TAG, TAG1 + " success");
+                    if(documentSnapshots.size() > 1){
+                        Log.e(TAG, TAG1 + ", more than one group containing a user given one event.");
+                        groupHandler.handle(null);
+                        return;
+                    }
+                    if(documentSnapshots.size() < 1){
+                        // That user is in no group !
+                        Log.e(TAG, TAG1 + ", less than one group containing a user given one event.");
+                        groupHandler.handle(null);
+                        return;
+                    }
+
+                    // Replace stored list of emails with actual User objects.
+                    // Doing many requests like that seems to be the correct Firebase join meta.
+                    DocumentSnapshot d = documentSnapshots.getDocuments().get(0);
+                    Map<String, Object> data = d.getData();
+                    List<String> emails = new ArrayList<>((List<String>) data.get(MEMBERS));
+
+                    ArrayList<User> collected_users = new ArrayList<>(emails.size());
+                    AtomicInteger index = new AtomicInteger(0);
+
+                    for(String mail : emails){
+                        getUserByEmail(mail, user -> {
+                            int this_index = index.getAndIncrement();
+                            collected_users.add(user);
+                            Log.w(TAG, "get user number " + this_index + ": " + user.getEmail());
+
+                            // Done. Only one thread continues here.
+                            if(this_index == emails.size()-1){
+                                Log.w(TAG, "done collecting users");
+                                data.put(MEMBERS, collected_users);
+                                data.put("gid", d.getId());
+                                Group group = Group.getFromDocument(data);
+                                groupHandler.handle(group);
+                                return;
+                            }
+                        }, user -> {
+                            Log.e(TAG1, "Failure handler called. User with email " + mail + " could not be retrieved");
+                        });
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    // That user is in no group !
+                    groupHandler.handle(null);
+                    return;
+                });
+    }
+
+    public void createGroup(String eventId, GroupHandler handler){
+        final String TAG1 = "createGroup";
+        if(eventId == null) {
+            Log.w(TAG, TAG1 + " eventId id is null");
+            return;
+        }
+            Group g = new Group("", eventId, new ArrayList<>());
+            getFirestoreInstance(false).collection(GROUPS)
+                    .add(g.getRawData())
+                    .addOnSuccessListener(documentReference -> {
+                        Log.e("CREATEGROUP", g.getGid());
+                        g.setGid(documentReference.getId());
+                        handler.handle(g);
+            }).addOnFailureListener(e -> Log.e(TAG, "Error adding new group : " + e));
+
+    }
+
+    public void addUserToGroup(String gid, String userEmail, EmptyHandler handler){
+        final String TAG1 = "addUserToGroup";
+        if(gid == null || userEmail == null) {
+            Log.w(TAG, TAG1 + " group id or user email is null");
+            return;
+        }
+            getFirestoreInstance(false).collection(GROUPS)
+                    .document(gid).get().addOnSuccessListener(documentSnapshot -> {
+                List<String> members = new ArrayList<>();
+                members.addAll((List<String>)documentSnapshot.get(MEMBERS));
+                // if user is not in the list, add
+                if(!members.contains(userEmail)) {
+                    Log.d(TAG, TAG1 + " adding member " + userEmail + " to the list");
+                    members.add(userEmail);
+                    Map<String, Object> data = new HashMap<>();
+                    data.put(MEMBERS, members);
+                    getFirestoreInstance(false).collection(GROUPS).document(gid)
+                            .set(data, SetOptions.merge())
+                            .addOnSuccessListener(aVoid -> handler.handle())
+                            .addOnFailureListener(e -> Log.w(TAG, "Error updating " + MEMBERS + " list"));
+                } else {
+                    Log.e(TAG, TAG1 + " member " + userEmail + " already in the list");
+                    handler.handle();
+                }
+            }).addOnFailureListener(e -> Log.w(TAG, "Error retrieving group with id" + gid));
+    }
+
+    public void removeUserFromGroup(String gid, String userEmail, EmptyHandler handler){
+        final String TAG1 = "removeUserFromGroup";
+        if(gid == null || userEmail == null) {
+            Log.w(TAG, TAG1 + " group id or user email is null");
+            return;
+        }
+            getFirestoreInstance(false).collection(GROUPS)
+                    .document(gid).get().addOnSuccessListener(documentSnapshot -> {
+                List<String> members = new ArrayList<>();
+                members.addAll((List<String>)documentSnapshot.get(MEMBERS));
+                // if user is not in the list, add
+                if(members.contains(userEmail)) {
+                    Log.d(TAG, TAG1 + " removing member " + userEmail + " from the list");
+                    members.remove(userEmail);
+                    Map<String, Object> data = new HashMap<>();
+                    data.put(MEMBERS, members);
+                    getFirestoreInstance(false).collection(GROUPS).document(gid)
+                            .set(data, SetOptions.merge())
+                            .addOnSuccessListener(aVoid -> handler.handle())
+                            .addOnFailureListener(e -> Log.w(TAG, "Error updating " + MEMBERS + " list"));
+                } else {
+                    Log.d(TAG, TAG1 + " member " + userEmail + " not in the list");
+                    handler.handle();
+                }
+            }).addOnFailureListener(e -> Log.w(TAG, "Error retrieving group with id" + gid));
+
+    }
+
+    public void removeGroupIfEmpty(String gid, GroupHandler handler){
+        final String TAG1 = "removeGroupIfEmpty";
+        if(gid == null) {
+            Log.w(TAG, TAG1 + " group id is null");
+            return;
+        }
+            getFirestoreInstance(false).collection(GROUPS)
+                    .document(gid).get().addOnSuccessListener(documentSnapshot -> {
+                List<String> members = (List<String>)documentSnapshot.get(MEMBERS);
+                if(members.isEmpty()) {
+                    getFirestoreInstance(false).collection(GROUPS).document(gid).delete();
+                    handler.handle(null);
+                } else {
+                    Map<String, Object> data = documentSnapshot.getData();
+                    data.put("gid", gid);
+                    handler.handle(Group.getFromDocument(data));
+                }
+            }).addOnFailureListener(e -> Log.w(TAG, "Error retrieving group with id" + gid));
     }
 
     @Override

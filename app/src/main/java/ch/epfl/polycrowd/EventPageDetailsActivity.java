@@ -109,16 +109,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         String imgUri = curEvent.getImageUri();
         Log.d(TAG, "event img uri: " + imgUri);
         if(null != imgUri) {
-            Log.d(TAG, "download event img, imgUri: " + imgUri);
             dbi.downloadEventImage(curEvent, image -> {
-                /*
-                if(image == null) {
-                    Log.d(TAG, "image is null after download");
-                } else {
-                    Log.d(TAG, "image is NOT null after download");
-                    Log.d(TAG, "image length: " + image.length);
-                }
-                */
                 if(image != null) {
                     Bitmap bmp = BitmapFactory.decodeByteArray(image, 0, image.length);
                     imageInBytes = image;
@@ -214,7 +205,6 @@ public class EventPageDetailsActivity extends AppCompatActivity {
      * - Sets evenImg ImageView and imageInBytes attribute
      */
     private void compressAndSetImage() {
-        Log.d(TAG, "setting the image");
         BitmapDrawable bitmapDrawable = ((BitmapDrawable) eventImg.getDrawable());
         final int ONE_MEGABYTE = 1024*1024;
         int streamLength = ONE_MEGABYTE;
@@ -244,14 +234,12 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void onSubmitChangesClicked(View view) {
         if(imageInBytes == null) {
-            Log.d(TAG, "Image is not set");
             compressAndSetImage();
         }
         // upload the image to the storage
         // update the current event
         // update the event in the database
         dbi.uploadEventImage(curEvent, imageInBytes, event -> {
-            Log.d(TAG, "event img uri after upload: " + event.getImageUri());
             dbi.updateEvent(curEvent, event1 -> {
                 setEditing(false);
                 Log.d(TAG, "editing mode unset");

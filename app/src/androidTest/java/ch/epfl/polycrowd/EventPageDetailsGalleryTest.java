@@ -10,10 +10,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
-import android.util.Pair;
 import android.view.View;
 import android.widget.ImageView;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.hamcrest.Description;
 import org.junit.Before;
 import org.junit.Rule;
@@ -24,20 +24,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.GrantPermissionRule;
-import ch.epfl.polycrowd.firebase.DatabaseInterface;
-import ch.epfl.polycrowd.firebase.FirebaseMocker;
-import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
-import ch.epfl.polycrowd.logic.User;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -70,25 +62,10 @@ public class EventPageDetailsGalleryTest {
 
     @Before
     public void startIntent() {
-        List<Event> events;
-        Map<String, Pair<User, String>> usersAndPasswords;
-        Date sDate = new Date(1649430344),
-                eDate = new Date(1649516744);
-        Event ev = new Event("eventOwner", "testEvent", true, Event.EventType.CONCERT,
-                sDate, eDate, "testCalendar", "testDescription", false);
-        ev.setId("1");
-        User user = new User("organizer@op.com", "1", "organizer", 3);
-        ev.addOrganizer(user.getEmail());
-        PolyContext.setCurrentEvent(ev);
-        usersAndPasswords = new HashMap<>();
-        events = new ArrayList<>();
-        events.add(ev);
-        usersAndPasswords.put("organizer@op.com", new Pair(user, "123456"));
-        // PolyContext setup
-        DatabaseInterface dbi = new FirebaseMocker(usersAndPasswords, events);
-        PolyContext.setDbInterface(dbi);
-        PolyContext.setCurrentUser(user);
-        PolyContext.setCurrentEvent(ev);
+        AndroidTestHelper.SetupMockDBI();
+
+        PolyContext.setCurrentUser(AndroidTestHelper.getOwner());
+        PolyContext.setCurrentEvent(AndroidTestHelper.getDebugEvent());
 
         // launch the intent
         Intent intent = new Intent();
@@ -126,11 +103,14 @@ public class EventPageDetailsGalleryTest {
         ArrayList<Parcelable> parcels = new ArrayList<>();
         Intent resultData = new Intent();
         File dir = context.getExternalCacheDir(); // /storage/sdcard/Android/data/ch.epfl.polycrowd/cache
+        if(dir== null){
+            Log.e(TAG, "Directory for external cache is null" );
+            return null;
+        }
         Log.d(TAG, "create stub : external cache path: " + dir.getPath());
         File file = new File(dir.getPath(), "pickImageResult.jpeg");
         Uri uri = Uri.fromFile(file);
-        Parcelable parcelable1 = (Parcelable) uri;
-        parcels.add(parcelable1);
+        parcels.add((Parcelable) uri);
         bundle.putParcelableArrayList(Intent.EXTRA_STREAM, parcels);
         resultData.putExtras(bundle);
         // Activity.RESULT_OK const value i -1
