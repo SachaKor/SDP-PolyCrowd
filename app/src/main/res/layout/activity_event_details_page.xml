@@ -64,6 +64,24 @@
             android:layout_marginTop="5dp"
             />
 
+        <EditText
+            android:id="@+id/event_details_start"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:layout_below="@id/event_details_description"
+            android:hint="@string/date_format"
+            android:inputType="date" />
+
+        <EditText
+            android:id="@+id/event_details_end"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:layout_below="@id/event_details_start"
+            android:hint="@string/date_format"
+            android:inputType="date" />
+
         <TextView
             android:id="@+id/EditEventOrganizers"
             android:layout_width="fill_parent"
@@ -73,7 +91,7 @@
             android:text="@string/organizers"
             android:padding="10dp"
             android:ems="10"
-            android:layout_below="@id/event_details_description"/>
+            android:layout_below="@id/event_details_end"/>
 
         <ScrollView
             android:layout_width="match_parent"
