@@ -9,19 +9,25 @@ import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+
+import ch.epfl.polycrowd.authentification.LoginActivity;
+import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 
-public class OrganizerInviteActivity extends AppCompatActivity {
-    private static final String TAG = "OrganizerInviteActivity";
+public class GroupInviteActivity extends AppCompatActivity {
+    private static final String TAG = "GroupInviteActivity";
+    String groupId;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_organizer_invite);
+        setContentView(R.layout.activity_group_invite);
         setInviteText();
         Log.d(TAG, "onCreate");
 
+        Intent intent = getIntent();
+        groupId = intent.getStringExtra("groupId");
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -31,15 +37,15 @@ public class OrganizerInviteActivity extends AppCompatActivity {
             Log.e(TAG, "current event is null");
             return;
         }
-        TextView previewText = findViewById(R.id.organizer_invite_text);
-        String toDisplay = "You are invited to become an organizer of \"" + curEvent.getName()
-                + "\"\nLog in to accept the invitation";
+        TextView previewText = findViewById(R.id.group_invite_text);
+        String toDisplay = "You are invited to a group.\nLog in to accept the invitation";
         previewText.setText(toDisplay);
     }
 
     public void logInClicked(View view) {
         PolyContext.setPreviousPage(TAG);
         Intent intent = new Intent(this, LoginActivity.class);
+        intent.putExtra("inviteGroupId", groupId);
         startActivity(intent);
     }
 }

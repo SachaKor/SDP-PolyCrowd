@@ -1,5 +1,9 @@
 package ch.epfl.polycrowd.logic;
 
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -9,7 +13,7 @@ public class User extends Storable {
     //TODO: add necessary attributes and methods
 
     //Sample attributes
-    private String name, email, uid;
+    private String name, email, uid, gid;
     private Integer age;
 
     //Sample constructor
@@ -44,9 +48,11 @@ public class User extends Storable {
         return uid;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public static User getFromDocument(Map<String, Object> data) {
         String username = Objects.requireNonNull(data.get("username")).toString();
         String email = Objects.requireNonNull(data.get("email")).toString();
+
         Integer age = (Integer) Objects.requireNonNull(data.get("age"));
         String uid = Objects.requireNonNull(data.get("uid")).toString();
         return new User(email, uid, username, age);

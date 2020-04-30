@@ -1,10 +1,12 @@
 package ch.epfl.polycrowd;
 
 import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
 import androidx.test.rule.ActivityTestRule;
+
 import ch.epfl.polycrowd.frontPage.FrontPageActivity;
 import ch.epfl.polycrowd.logic.PolyContext;
 
@@ -12,14 +14,16 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static org.junit.Assert.assertTrue;
 
 /* Test the dynamic link handling on the FrontPage */
 public class ReceiveDynamicLinkTest {
 
-    @Test
-    public void checkTestMockingEnabled(){
-        assertTrue(PolyContext.isRunningTest());
+
+    @BeforeClass
+    public static void setUpBeforeActivityLaunch(){
+        PolyContext.reset();
+
+        AndroidTestHelper.SetupMockDBI();
     }
 
     @Rule

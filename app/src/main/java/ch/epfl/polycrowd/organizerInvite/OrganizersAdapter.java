@@ -1,6 +1,5 @@
-package ch.epfl.polycrowd;
+package ch.epfl.polycrowd.organizerInvite;
 
-import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,12 +12,15 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import ch.epfl.polycrowd.EventPageDetailsActivity;
+import ch.epfl.polycrowd.R;
+
 public class OrganizersAdapter extends RecyclerView.Adapter<OrganizersAdapter.ViewHolder>{
     private static final String LOG_TAG = "OrganizersAdapter";
 
     private final List<String> organizers;
 
-    public OrganizersAdapter(List<String> organizers, Context context) {
+    public OrganizersAdapter(List<String> organizers) {
         this.organizers = organizers;
     }
 

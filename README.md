@@ -1,5 +1,5 @@
 # PolyCrowd
-[![Build Status](https://travis-ci.org/SachaKor/SDP-polycrowd.svg?branch=master)](https://travis-ci.org/https://SachaKor/SDP-PolyCrowd)
+[![Build](https://github.com/SachaKor/SDP-PolyCrowd/workflows/Build/badge.svg)](https://github.com/SachaKor/SDP-PolyCrowd/actions)
 [![Maintainability](https://api.codeclimate.com/v1/badges/ab7dc43be48b160e4c3d/maintainability)](https://codeclimate.com/github/SachaKor/SDP-PolyCrowd/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/ab7dc43be48b160e4c3d/test_coverage)](https://codeclimate.com/github/SachaKor/SDP-PolyCrowd/test_coverage)  
 

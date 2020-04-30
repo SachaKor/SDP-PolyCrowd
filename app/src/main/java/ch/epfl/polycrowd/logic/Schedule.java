@@ -3,6 +3,7 @@ package ch.epfl.polycrowd.logic;
 
 import android.os.Build;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
 import net.fortuna.ical4j.data.CalendarBuilder;
@@ -29,22 +30,11 @@ public class Schedule {
 
 
 
-    private final List<Activity> activities;
+    private List<Activity> activities;
     private String downloadPath;
 
-    // ------- Schedule for Testing --------------------------------------
-    public Schedule(){
-        downloadPath = "degug/path";
-        activities = new ArrayList<>();
-    }
-    // -------------------------------------------------------------------
-
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public Schedule(String url , File f){
-
-        if (url==null || f==null) {
-            throw new IllegalArgumentException("File and url cannot be null");
-        }
+    public Schedule(@NonNull String url , @NonNull File f){
 
         this.downloadPath = downloadIcsFile(url, f);
         this.activities = loadIcs(f);
@@ -54,13 +44,13 @@ public class Schedule {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public static String downloadIcsFile(String url, File f){
+    private static String downloadIcsFile(String url, File f){
 
         if (url.equals("url") || url.length() == 0){
             return null;
         }
         else if ( !url.contains("://") ){
-            throw new IllegalArgumentException("This is not a url");
+            throw new IllegalArgumentException(url +" is not a url");
         }
         try {
             URL downloadUrl = new URL(url.replace("webcal://","https://"));
@@ -68,7 +58,7 @@ public class Schedule {
             c.setRequestMethod("GET");
             c.connect();
 
-            if (!f.exists() && !f.createNewFile()){
+            if (!f.exists() && (!f.getParentFile().mkdirs() && !f.createNewFile())){
                 throw new IOException("File does not exist and can't be created");
             }
             FileOutputStream fos = new FileOutputStream(f);
@@ -87,7 +77,7 @@ public class Schedule {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public List<Activity> loadIcs(File path) {
+    private List<Activity> loadIcs(File path) {
         if ( downloadPath == null){
             return  null;
         }
@@ -101,7 +91,6 @@ public class Schedule {
             Calendar calendar = builder.build(fin);
             if(calendar == null)
                 throw new IOException("Null Calendar");
-
             for (CalendarComponent cc : calendar.getComponents()) {
                 if (cc.getName().equalsIgnoreCase("VEVENT")) {
                     Map<String, String> calendarEntry = new HashMap<>();
@@ -123,5 +112,6 @@ public class Schedule {
     public List<Activity> getActivities(){
         return this.activities;
     }
+
 
 }
