@@ -17,9 +17,11 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -54,11 +56,13 @@ public class EventPageDetailsActivity extends AppCompatActivity {
 
     private byte[] imageInBytes;
 
-    ImageView eventImg;
-    ImageView editImg;
-    Button inviteOrganizerButton;
-    Button submitChanges;
-    FloatingActionButton editEventButton;
+    private ImageView eventImg;
+    private ImageView editImg;
+    private Button inviteOrganizerButton;
+    private Button submitChanges;
+    private FloatingActionButton editEventButton;
+    private EditText eventTitle;
+    private EditText eventDescription;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -91,13 +95,19 @@ public class EventPageDetailsActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void setUpViews() {
-        TextView eventTitle = findViewById(R.id.event_details_title);
-        TextView eventDescription = findViewById(R.id.event_details_description);
+        eventTitle = findViewById(R.id.event_details_title);
+        eventDescription = findViewById(R.id.event_details_description);
+
+        eventTitle.setInputType(InputType.TYPE_NULL);
+        eventDescription.setInputType(InputType.TYPE_NULL);
+
         eventImg = findViewById(R.id.event_details_img);
         eventTitle.setText(curEvent.getName());
         eventDescription.setText(curEvent.getDescription());
+
         downloadEventImage();
         editImg = findViewById(R.id.event_details_edit_img);
+
         inviteOrganizerButton = findViewById(R.id.invite_organizer_button);
         submitChanges = findViewById(R.id.event_details_submit);
         editEventButton = findViewById(R.id.event_details_fab);
@@ -166,6 +176,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         Log.d(TAG, "setting editing mode to " + enable);
         int visibilityEdit = enable ? View.VISIBLE : View.INVISIBLE;
         int visibilityFab = enable ? View.INVISIBLE : View.VISIBLE;
+        int textInputType = enable ? InputType.TYPE_CLASS_TEXT : InputType.TYPE_NULL;
         // set the "Organizer Invite" button visible
         inviteOrganizerButton.setVisibility(visibilityEdit);
         // set the "Submit Changes" button visible
@@ -173,6 +184,8 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         // set the "Edit" floating button invisible until the changes submitted
         editEventButton.setVisibility(visibilityFab);
         editImg.setVisibility(visibilityEdit);
+        eventTitle.setInputType(textInputType);
+        eventDescription.setInputType(textInputType);
     }
 
     public void onEditImageClicked(View view) {
@@ -229,6 +242,11 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         setEditing(true);
     }
 
+    private void updateCurrentEvent() {
+        curEvent.setName(eventTitle.getText().toString());
+        curEvent.setDescription(eventDescription.getText().toString());
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void onSubmitChangesClicked(View view) {
         if(imageInBytes == null) {
@@ -237,13 +255,14 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         // upload the image to the storage
         // update the current event
         // update the event in the database
+        updateCurrentEvent();
         dbi.uploadEventImage(curEvent, imageInBytes, event -> {
             Log.d(TAG, "event img uri after upload: " + event.getImageUri());
             dbi.updateEvent(curEvent, event1 -> {
                 setEditing(false);
                 Log.d(TAG, "editing mode unset");
-                initEvent();
                 PolyContext.setCurrentEvent(event); // update the data
+                initEvent();
             });
         });
     }
