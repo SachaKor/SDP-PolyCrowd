@@ -20,6 +20,7 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.not;
 
 @RunWith(AndroidJUnit4.class)
@@ -53,24 +54,20 @@ public class EventPageDetailsActivityTest {
 
     @Test
     public void dialogWithInviteLinkOpensWhenInviteClicked() {
-        sleep();
-        //onView(withId(R.id.invite_organizer_button)).perform(click()); //TODO: FIX NOT MOCKED BEHAVIOUR
-        //onView(withText(R.string.invite_link_dialog_title)).check(matches(isDisplayed()));
+        AndroidTestHelper.sleep();
+        onView(withId(R.id.event_details_fab)).perform(click());
+        onView(withId(R.id.invite_organizer_button)).perform(click()); //TODO: FIX NOT MOCKED BEHAVIOUR
+        onView(withText(R.string.invite_link_dialog_title)).check(matches(isDisplayed()));
     }
 
     @Test
     public void editModeTurnsOffAfterChangesSubmitted() {
-//        onView(withId(R.id.event_details_fab)).perform(click());
-//        onView(withId(R.id.event_details_submit)).perform(click());
-//        onView(withId(R.id.event_details_submit)).check(matches(not(isDisplayed())));
-    }
-
-    private void sleep(){
-        try{
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        AndroidTestHelper.sleep();
+        onView(withId(R.id.event_details_fab)).perform(click());
+        AndroidTestHelper.sleep();
+        onView(withId(R.id.event_details_submit)).perform(click());
+        AndroidTestHelper.sleep();
+        onView(withId(R.id.event_details_submit)).check(matches(not(isDisplayed())));
     }
 }
 

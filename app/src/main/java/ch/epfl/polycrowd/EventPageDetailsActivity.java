@@ -32,6 +32,7 @@ import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.Arrays;
 import java.util.List;
 
 import ch.epfl.polycrowd.logic.Event;
@@ -108,10 +109,21 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         String imgUri = curEvent.getImageUri();
         Log.d(TAG, "event img uri: " + imgUri);
         if(null != imgUri) {
+            Log.d(TAG, "download event img, imgUri: " + imgUri);
             dbi.downloadEventImage(curEvent, image -> {
-                Bitmap bmp = BitmapFactory.decodeByteArray(image, 0, image.length);
-                imageInBytes = image;
-                eventImg.setImageBitmap(bmp);
+                /*
+                if(image == null) {
+                    Log.d(TAG, "image is null after download");
+                } else {
+                    Log.d(TAG, "image is NOT null after download");
+                    Log.d(TAG, "image length: " + image.length);
+                }
+                */
+                if(image != null) {
+                    Bitmap bmp = BitmapFactory.decodeByteArray(image, 0, image.length);
+                    imageInBytes = image;
+                    eventImg.setImageBitmap(bmp);
+                }
             });
         } else {
             eventImg.setImageResource(R.drawable.balelec);
@@ -202,6 +214,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
      * - Sets evenImg ImageView and imageInBytes attribute
      */
     private void compressAndSetImage() {
+        Log.d(TAG, "setting the image");
         BitmapDrawable bitmapDrawable = ((BitmapDrawable) eventImg.getDrawable());
         final int ONE_MEGABYTE = 1024*1024;
         int streamLength = ONE_MEGABYTE;
@@ -222,7 +235,6 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         }
 
         imageInBytes = bmpStream.toByteArray();
-
     }
 
     public void onEditClicked(View view) {
@@ -232,6 +244,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void onSubmitChangesClicked(View view) {
         if(imageInBytes == null) {
+            Log.d(TAG, "Image is not set");
             compressAndSetImage();
         }
         // upload the image to the storage
@@ -242,8 +255,8 @@ public class EventPageDetailsActivity extends AppCompatActivity {
             dbi.updateEvent(curEvent, event1 -> {
                 setEditing(false);
                 Log.d(TAG, "editing mode unset");
-                initEvent();
                 PolyContext.setCurrentEvent(event); // update the data
+                initEvent();
             });
         });
     }
