@@ -175,7 +175,7 @@ public class EventEditActivity extends AppCompatActivity {
         }else {
             PolyContext.getDatabaseInterface().patchEventByID(this.eventId, ev, successHandler, failureHandler);
         }
-        Intent intent = new Intent(this, MapActivity.class);
-        startActivity(intent);
+        ch.epfl.polycrowd.Utils.navigate(this, EventPageDetailsActivity.class);
+
     }
 }
