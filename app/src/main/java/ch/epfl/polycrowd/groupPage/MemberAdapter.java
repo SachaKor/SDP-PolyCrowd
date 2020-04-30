@@ -41,7 +41,7 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberListHolder>{
             //vp.setCurrentItem(0); //0 for MapFragment index
             //the "v" is which view? the holder view?
             ((GroupPageActivity)c).showUserOnMap(members.get(position));
-            ((GroupPageActivity)c).selectViewPagerIndex(0);
+            //((GroupPageActivity)c).selectViewPagerIndex(0);
         } ;
     }
 
