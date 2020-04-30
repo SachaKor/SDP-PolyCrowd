@@ -209,4 +209,14 @@ public class GroupPageActivity extends AppCompatActivity {
         });
     }
 
+    public void selectViewPagerIndex(int index){
+        viewPager.setCurrentItem(index);
+    }
+
+    public void showUserOnMap(User user){
+        //
+    }
+
+
+
 }
