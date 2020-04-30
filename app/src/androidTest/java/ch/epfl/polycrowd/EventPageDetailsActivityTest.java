@@ -56,6 +56,7 @@ public class EventPageDetailsActivityTest {
     public void dialogWithInviteLinkOpensWhenInviteClicked() {
         AndroidTestHelper.sleep();
         onView(withId(R.id.event_details_fab)).perform(click());
+        AndroidTestHelper.sleep();
         onView(withId(R.id.invite_organizer_button)).perform(click());
         onView(withText(R.string.invite_link_dialog_title)).check(matches(isDisplayed()));
     }
@@ -63,6 +64,7 @@ public class EventPageDetailsActivityTest {
     @Test
     public void editModeTurnsOffAfterChangesSubmitted() {
         onView(withId(R.id.event_details_fab)).perform(click());
+        AndroidTestHelper.sleep();
         onView(withId(R.id.event_details_submit)).perform(click());
         onView(withId(R.id.event_details_submit)).check(matches(not(isDisplayed())));
     }
