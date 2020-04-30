@@ -41,7 +41,7 @@
                 android:onClick="onEditImageClicked"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <TextView
+        <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/event_details_title"
@@ -52,7 +52,7 @@
             android:layout_below="@id/event_img_layout"
             />
 
-        <TextView
+        <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/description"
@@ -75,17 +75,22 @@
             android:ems="10"
             android:layout_below="@id/event_details_description"/>
 
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/EditEventOrganizers"
+            android:id="@+id/organizers_scroll">
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/organizers_recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/EditEventOrganizers"/>
+            android:layout_height="wrap_content"/>
+        </ScrollView>
 
         <Button
             android:id="@+id/invite_organizer_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/organizers_recycler_view"
+            android:layout_below="@+id/organizers_scroll"
             android:layout_marginTop="10dp"
             android:text="@string/invite_organizer"
             android:onClick="inviteLinkClicked"
