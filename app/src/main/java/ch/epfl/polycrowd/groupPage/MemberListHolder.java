@@ -22,6 +22,7 @@ public class MemberListHolder extends RecyclerView.ViewHolder implements View.On
         mImaeView = itemView.findViewById(R.id.imageIv) ;
         mTitle = itemView.findViewById(R.id.titleTv) ;
         mDes = itemView.findViewById(R.id.descriptionTv) ;
+        itemView.setOnClickListener(this);
     }
 
     @Override
