@@ -1,6 +1,7 @@
 package ch.epfl.polycrowd.logic;
 
 import android.content.Context;
+import android.util.Log;
 
 import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
@@ -49,7 +50,7 @@ public abstract class PolyContext extends Context {
     }
     public static void setPreviousContext(Context previousPage) {
         PolyContext.previousContext= previousPage;
-        String[] fullyQualifiedName =previousPage.getClass().getName().split(".");
+        String[] fullyQualifiedName =previousPage.getClass().getName().split("\\.");
         PolyContext.setPreviousPage(fullyQualifiedName[fullyQualifiedName.length-1]);
     }
     public static void setMockDynamicLink(boolean mock) { mockDynamicLink = mock; }
