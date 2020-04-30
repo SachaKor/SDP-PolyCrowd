@@ -1,5 +1,6 @@
 package ch.epfl.polycrowd.logic;
 
+import android.net.Uri;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
@@ -8,6 +9,7 @@ import androidx.annotation.RequiresApi;
 import com.google.firebase.Timestamp;
 
 import java.io.File;
+import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -37,11 +39,30 @@ public class Event {
     private String calendar;
     private String description;
     private String id;
-    private int image;
     private String imageUri;
     private Schedule schedule;
     private List<String> organizers;
 
+
+    public InputStream getMapStream() {
+        return mapStream;
+    }
+
+    public void setMapStream(InputStream mapStream) {
+        this.mapStream = mapStream;
+    }
+
+    private InputStream mapStream;
+
+    public String getMapUri() {
+        return mapUri;
+    }
+
+    public void setMapUri(String mapUri) {
+        this.mapUri = mapUri;
+    }
+
+    private String mapUri;
 
     // ---------- Constructors ---------------------------------------------------------
     public Event(@NonNull String owner, @NonNull String name, Boolean isPublic, @NonNull EventType type,

@@ -1,6 +1,7 @@
 package ch.epfl.polycrowd.firebase;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
@@ -67,6 +68,10 @@ public interface DatabaseInterface {
     void receiveDynamicLink(DynamicLinkHandler handler, Intent intent);
 
     void uploadEventImage(Event event, byte[] image, EventHandler handler);
+
+    void uploadEventMap(Event event , Uri file , EventHandler handler );
+
+    void downloadEventMap( Event event , EventHandler handler );
 
     void downloadEventImage(Event event, ImageHandler handler);
 

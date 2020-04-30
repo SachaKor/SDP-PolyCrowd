@@ -1,8 +1,13 @@
 package ch.epfl.polycrowd;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
+import android.provider.OpenableColumns;
 import android.view.Gravity;
 import android.widget.Toast;
+
+import java.io.File;
 
 
 public class Utils {
@@ -17,6 +22,12 @@ public class Utils {
         Toast toast = Toast.makeText(context, text, duration);
         toast.setGravity(Gravity.BOTTOM, 0, 16);
         toast.show();
+    }
+
+
+    public static String getFileNameFromUri(Uri uri) {
+        File file= new File(uri.getPath());
+        return file.getName();
     }
 
 

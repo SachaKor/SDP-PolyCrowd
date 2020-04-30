@@ -196,6 +196,20 @@ public class FirebaseMocker implements DatabaseInterface {
         handler.handle(event);
     }
 
+    @Override
+    public void uploadEventMap(Event event, Uri file, EventHandler handler) {
+
+        // TODO : load file maybe ?
+        event.setMapUri(file.getPath());
+        handler.handle(event);
+
+    }
+
+    @Override
+    public void downloadEventMap(Event event, EventHandler handler) {
+        // todo
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void downloadEventImage(Event event, ImageHandler handler) {

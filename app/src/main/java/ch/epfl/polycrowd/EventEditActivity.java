@@ -2,6 +2,7 @@ package ch.epfl.polycrowd;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -49,6 +50,8 @@ public class EventEditActivity extends AppCompatActivity {
 
     Button filePicker;
 
+    Uri kmlUri;
+
 
 
     // -------- ON CREATE ----------------------------------------------------------
@@ -69,7 +72,7 @@ public class EventEditActivity extends AppCompatActivity {
         switch (requestCode) {
             case 10:
                 if (resultCode == RESULT_OK) {
-                    String path = data.getData().getPath();
+                    kmlUri = data.getData();
                     Utils.toastPopup(getApplicationContext(), "File Selected");
                 }
                 break;
@@ -188,17 +191,30 @@ public class EventEditActivity extends AppCompatActivity {
                 scheduleUrl.getText().toString(),
                 "TODO : implement description", hasEmergency, organizers);
         if(PolyContext.getCurrentEvent() != null) {
+            ev.setId(PolyContext.getCurrentEvent().getId());
             ev.setImageUri(PolyContext.getCurrentEvent().getImageUri());
         }
+        // TODO : set the map url
+
 
 
         // upload the Event to Firebase
         EventHandler successHandler = e -> {
             PolyContext.setCurrentEvent(e);
-            Toast.makeText(this, "Event added", Toast.LENGTH_LONG).show();
-            // start map ACTIVITY
-            Intent intent = new Intent(this, MapActivity.class);
-            startActivity(intent);
+
+
+
+            if(kmlUri != null){
+                // downlaod path to firebase
+                PolyContext.getDatabaseInterface().uploadEventMap( ev , kmlUri , evv -> {
+                    PolyContext.getDatabaseInterface().downloadEventMap(ev, e1 -> {
+                        Toast.makeText(this, "Event added", Toast.LENGTH_LONG).show();
+                        // start map ACTIVITY
+                        Intent intent = new Intent(this, MapActivity.class);
+                        startActivity(intent);
+                    } );
+                } );
+            }
         };
         EventHandler failureHandler = e -> {
             Toast.makeText(this, "Error occurred while adding the event", Toast.LENGTH_LONG).show();
