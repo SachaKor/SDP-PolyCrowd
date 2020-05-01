@@ -95,4 +95,6 @@ public interface DatabaseInterface {
                                       EmptyHandler emptyHandler, Context appContext);
 
     void getUserGroupIds(String userEmail, Handler<Map<String, String>> groupIdEventIdPairsHandler) ;
+
+    void getGroupByGroupId(String groupId, Handler<Group> groupHandler);
 }

@@ -316,6 +316,21 @@ public class FirebaseInterface implements DatabaseInterface {
                 }) ;
     }
 
+    @Override
+    public void getGroupByGroupId(String groupId, Handler<Group> groupHandler) {
+            getFirestoreInstance(false).collection(GROUPS).whereEqualTo("groupId", groupId).get().addOnSuccessListener(
+                    queryDocumentSnapshots ->{
+                        if (queryDocumentSnapshots.size() == 1){
+                            DocumentSnapshot groupDoc = queryDocumentSnapshots.getDocuments().get(0) ;
+                            Map<String, Object> data = groupDoc.getData() ;
+                            Group group = Group.getFromDocument(data);
+                        } else{
+                            groupHandler.handle(null);
+                        }
+
+                    } ).addOnFailureListener(e -> groupHandler.handle(null)) ;
+    }
+
     //TODO
     //What's the diff between someCallback(String arg1, Handler<E> arg2) rather than specifiying E ?
     @Override

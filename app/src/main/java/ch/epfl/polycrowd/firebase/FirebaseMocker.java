@@ -309,4 +309,9 @@ public class FirebaseMocker implements DatabaseInterface {
     public void getUserGroupIds(String userEmail, Handler<Map<String, String>> groupIdEventIdPairsHandler) {
 
     }
+
+    @Override
+    public void getGroupByGroupId(String groupId, Handler<Group> groupHandler) {
+
+    }
 }
