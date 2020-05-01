@@ -71,46 +71,15 @@ public class EventPageDetailsGalleryTest {
         // launch the intent
         Intent intent = new Intent();
         mActivityTestRule.launchActivity(intent);
+        AndroidTestHelper.sleep();
     }
 
     @Test
     public void galleryTest() {
         savePickedImage(mActivityTestRule.getActivity());
         Instrumentation.ActivityResult imgGalleryResult = createImageGallerySetResultStub(mActivityTestRule.getActivity());
-
+        AndroidTestHelper.sleep();
         onView(withId(R.id.event_details_fab)).perform(click());
-        sleep();
-        sleep();
-        sleep();
-        sleep();
-        sleep();
-        sleep();
-        sleep();
-        sleep();
-        sleep();
-        sleep();
-        sleep();
-        sleep();
-        sleep();
-        sleep();
-        sleep();
-        sleep();
-        sleep();
-        sleep();
-        sleep();
-        sleep();
-        sleep();
-        sleep();
-        sleep();
-        sleep();
-        sleep();
-        sleep();
-        sleep();
-        sleep();
-        sleep();
-        sleep();
-        sleep();
-        sleep();
         intending(hasAction(Intent.ACTION_CHOOSER)).respondWith(imgGalleryResult);
         onView(withId(R.id.event_details_edit_img)).perform(click());
         onView(withId(R.id.event_details_img)).check(matches(hasImageSet()));

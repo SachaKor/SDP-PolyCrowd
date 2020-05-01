@@ -74,7 +74,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     private EditText eventTitleEdit, eventDescriptionEdit, startEdit,endEdit, urlEdit;
     private Switch isPublicEdit, sosEdit;
     private Spinner typeEdit;
-    private Set<TextView> textFields;
+    private Set<View> textFields;
     private Set<EditText> editFields;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -166,7 +166,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
 
         // Filling edit text set
         this.editFields = new HashSet<>(Arrays.asList(new View []{cancel,eventTitleEdit, eventDescriptionEdit,startEdit,endEdit, typeEdit,urlEdit, isPublicEdit, sosEdit}));
-        this.textFields = new HashSet<>(Arrays.asList(new View[]{eventTitle, eventDescription, start,end, type, scheduleButton}));
+        this.textFields = new HashSet<>(Arrays.asList(new View[]{eventTitle, eventDescription, start,end, type}));
 
         // Setting content
         fillFields();
