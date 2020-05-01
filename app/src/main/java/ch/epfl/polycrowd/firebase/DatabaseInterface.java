@@ -19,6 +19,7 @@ import ch.epfl.polycrowd.firebase.handlers.ImageHandler;
 import ch.epfl.polycrowd.firebase.handlers.OrganizersHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
+import ch.epfl.polycrowd.logic.Group;
 
 public interface DatabaseInterface {
 
@@ -80,9 +81,7 @@ public interface DatabaseInterface {
 
     void removeUserFromGroup(String gid, String uid, EmptyHandler handler) ;
 
-    //void getGroupByUserAndEvent(String eventId, String userId, GroupHandler groupHandler) ;
-
-    void createGroup(String eventId, GroupHandler handler) ;
+    void createGroup(Group group, GroupHandler handler) ;
 
     void getUserGroups(String userEmail, GroupsHandler handler);
 
