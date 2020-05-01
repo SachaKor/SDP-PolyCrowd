@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class Activity {
     private final String location;
     private final String uid;
@@ -32,7 +33,6 @@ public class Activity {
     }
 
     @SuppressWarnings("ConstantConditions")
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public Activity (Map<String,String> data) throws ParseException {
         this.location = data.get("LOCATION");
         this.uid = data.get("UID");
@@ -41,8 +41,8 @@ public class Activity {
         this.organizer = data.get("ORGANIZER");
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd'T'HHmmss", Locale.ENGLISH);
-        if(data.containsKey("DTSTART") && data.get("DSTART") != null &&
-                data.containsKey("DTEND") && data.get("DTEND")!= null) {
+        if(data.containsKey("DTSTART") &&
+                data.containsKey("DTEND")) {
             this.start = formatter.parse(data.get("DTSTART"));
             this.end = formatter.parse(data.get("DTEND"));
         }else {
@@ -72,7 +72,6 @@ public class Activity {
         return this.end;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @NonNull
     @Override
     public String toString(){

@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
+import java.security.InvalidParameterException;
 
 import ch.epfl.polycrowd.logic.Schedule;
 
@@ -28,9 +29,9 @@ public class ScheduleTest {
     }
     @Test
     public void testGetAndParse(){
-        Schedule s = new Schedule(CalURL ,new File("calendars/test.ics"));
-        assertNotNull(s.getActivities());
-        assertEquals(s.getDownloadPath(), new File("calendars/test.ics").getAbsolutePath());
+            Schedule s = new Schedule(CalURL, new File("calendars/test.ics"));
+            assertNotNull(s.getActivities());
+            assertEquals(s.getDownloadPath(), new File("calendars/test.ics").getAbsolutePath());
     }
 
     @Test
@@ -38,14 +39,4 @@ public class ScheduleTest {
         new Schedule("", new File(""));
     }
 
-    @Test
-    public void testScheduleWithNonUrlString(){
-//        PolyContext.setCurrentEvent( new Event(1,
-//                "fakeEvent", true,
-//                Event.EventType.CONVENTION,
-//                LocalDateTime.of(LocalDate.parse("2018-12-27"), LocalTime.parse("00:00")),
-//                LocalDateTime.of(LocalDate.parse("2018-12-28"), LocalTime.parse("00:00")),
-//                "", null));
-        assertThrows(IllegalArgumentException.class, () ->new Schedule("notAUrl", new File("")));
-    }
 }

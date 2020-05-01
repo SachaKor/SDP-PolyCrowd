@@ -34,10 +34,14 @@ public class ActivityTest {
         Activity a = null;
         try {
             a = new Activity(this.mockActivity);
-        }catch (ParseException e){
+        }catch (Exception e){
             assert(false);
         }
-        String s = "Location: Location 1\nUid: id1\nSummary: activity summary\nDescription: activity description\nOrganizer: MAILTO:email@email.com";
+        String s = "Location: Location 1\n" +
+                   "Uid: id1\n" +
+                   "Summary: activity summary\n" +
+                   "Description: activity description\n" +
+                   "Organizer: MAILTO:email@email.com";
         assert(s.equals(a.toString()));
     }
     @Test
@@ -45,7 +49,7 @@ public class ActivityTest {
         Activity a = null;
         try {
             a = new Activity(this.mockActivity);
-        }catch (ParseException e){
+        }catch (Exception e){
             assert(false);
         }
         assertEquals("id1", a.getUid());
