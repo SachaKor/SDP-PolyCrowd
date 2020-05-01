@@ -167,7 +167,8 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
     public void createLinkClicked(View view){
         Context c = this;
         User user = PolyContext.getCurrentUser();
-        PolyContext.getDatabaseInterface().createGroup(eventId, group -> {
+        Group group  = PolyContext.getCurrentGroup() ;
+        PolyContext.getDatabaseInterface().createGroup(group, gr -> {
             groupId = group.getGid();
             PolyContext.getDatabaseInterface().addUserToGroup(groupId, user.getEmail(), () -> {
                 Log.w("createLinkClicked", "group " + groupId + " user " + user.getEmail() + " event " + eventId);
