@@ -25,6 +25,7 @@ public class User extends Storable implements LocationListener {
     private Integer age;
 
     private LatLng location ;
+    //private Map<String, String> groupIdEventIdPairs;
 
     //https://stackoverflow.com/questions/17591147/how-to-get-current-location-in-android
 
@@ -34,6 +35,7 @@ public class User extends Storable implements LocationListener {
         this.age = age;
         this.email = email;
         this.uid = uid;
+        //groupIdEventIdPairs = new HashMap<>() ;
     }
 
     @Override
@@ -69,6 +71,20 @@ public class User extends Storable implements LocationListener {
         this.email = email;
     }
 
+    /*public Map<String, String> getGroupIdEventIdPairs() {
+        return groupIdEventIdPairs ;
+    }
+
+    public void addGroup(@NonNull String groupId, @NonNull String eventId){
+        //TODO also update in  firestore
+        groupIdEventIdPairs.put(groupId, eventId) ;
+    }
+
+    public void removeGroup(@NonNull String groupId){
+        //TODO also update in  firestore
+        groupIdEventIdPairs.remove(groupId) ;
+    }*/
+
     @RequiresApi(api = Build.VERSION_CODES.N)
     public static User getFromDocument(Map<String, Object> data) {
         String username = Objects.requireNonNull(data.get("username")).toString();
@@ -80,7 +96,6 @@ public class User extends Storable implements LocationListener {
         String uid = Objects.requireNonNull(data.get("uid")).toString();
         return new User(email, uid, username, real_age);
     }
-
 
     @Override
     public void onLocationChanged(Location location) {
@@ -103,8 +118,8 @@ public class User extends Storable implements LocationListener {
     }
 
     public LatLng getLocation(){
-        //return location ;
         //TODO remove hard-coded location
         return new LatLng(46.5183369,6.565701) ;
     }
+
 }
