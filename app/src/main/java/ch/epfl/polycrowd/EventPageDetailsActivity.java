@@ -17,10 +17,14 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -29,14 +33,21 @@ import com.google.firebase.dynamiclinks.DynamicLink;
 import com.google.firebase.dynamiclinks.DynamicLink.SocialMetaTagParameters;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
+import org.w3c.dom.Text;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.organizerInvite.OrganizersAdapter;
 import ch.epfl.polycrowd.schedulePage.ScheduleActivity;
+import edu.emory.mathcs.backport.java.util.Arrays;
 
 public class EventPageDetailsActivity extends AppCompatActivity {
 
@@ -54,11 +65,17 @@ public class EventPageDetailsActivity extends AppCompatActivity {
 
     private byte[] imageInBytes;
 
-    ImageView eventImg;
-    ImageView editImg;
-    Button inviteOrganizerButton;
-    Button submitChanges;
-    FloatingActionButton editEventButton;
+    private ImageView eventImg;
+    private ImageView editImg;
+    private Button inviteOrganizerButton, scheduleButton, cancel;
+    private Button submitChanges;
+    private FloatingActionButton editEventButton;
+    private TextView eventTitle, start,end, eventDescription, type;
+    private EditText eventTitleEdit, eventDescriptionEdit, startEdit,endEdit, urlEdit;
+    private Switch isPublicEdit, sosEdit;
+    private Spinner typeEdit;
+    private Set<View> textFields;
+    private Set<EditText> editFields;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -69,7 +86,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         dbi = PolyContext.getDatabaseInterface();
         initEvent();
 
-        final Button scheduleButton = findViewById(R.id.schedule);
+        scheduleButton = findViewById(R.id.schedule);
         scheduleButton.setOnClickListener(v -> clickSchedule(v));
     }
 
@@ -89,18 +106,70 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void setUpViews() {
-        TextView eventTitle = findViewById(R.id.event_details_title);
-        TextView eventDescription = findViewById(R.id.event_details_description);
+    private void setEdition(View t, int v){
+        t.setVisibility(v);
+    }
+    private void setAllEditTexts(int  text, int edit){
+        for (View t : this.textFields){
+            setEdition(t,text);
+        }
+        for(View e : this.editFields){
+            setEdition(e, edit);
+        }
+    }
+
+    private void initFields(){
+        eventTitle = findViewById(R.id.event_details_title);
+        eventTitleEdit= findViewById(R.id.event_details_title_edit);
+        eventDescription = findViewById(R.id.event_details_description);
+        eventDescriptionEdit = findViewById(R.id.event_details_description_edit);
+        start = findViewById(R.id.event_details_start);
+        startEdit = findViewById(R.id.event_details_start_edit);
+        end = findViewById(R.id.event_details_end);
+        endEdit = findViewById(R.id.event_details_end_edit);
+        urlEdit = findViewById(R.id.event_details_url_edit);
         eventImg = findViewById(R.id.event_details_img);
-        eventTitle.setText(curEvent.getName());
-        eventDescription.setText(curEvent.getDescription());
+        type = findViewById(R.id.event_type);
+        typeEdit = findViewById(R.id.event_type_edit);
+        sosEdit = findViewById(R.id.event_sos_edit);
+        isPublicEdit = findViewById(R.id.event_public_edit);
         downloadEventImage();
         editImg = findViewById(R.id.event_details_edit_img);
         inviteOrganizerButton = findViewById(R.id.invite_organizer_button);
         submitChanges = findViewById(R.id.event_details_submit);
         editEventButton = findViewById(R.id.event_details_fab);
+        cancel = findViewById(R.id.event_details_cancel);
+    }
+    private void fillFields(){
+        eventTitleEdit.setText(curEvent.getName());
+        eventDescriptionEdit.setText(curEvent.getDescription());
+        startEdit.setText(Event.dateToString(curEvent.getStart()));
+        endEdit.setText(Event.dateToString(curEvent.getEnd()));
+        urlEdit.setText(curEvent.getCalendar());
+        typeEdit.setSelection(curEvent.getType().ordinal());
+        sosEdit.setChecked(curEvent.isEmergencyEnabled());
+        isPublicEdit.setChecked(curEvent.getPublic());
+        refreshTextViews();
+    }
+    private void refreshTextViews(){
+        eventTitle.setText(eventTitleEdit.getText());
+        eventDescription.setText(eventDescriptionEdit.getText());
+        start.setText(startEdit.getText());
+        end.setText(endEdit.getText());
+        type.setText(typeEdit.getSelectedItem().toString());
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void setUpViews() {
+        // Initializing field objects
+        initFields();
+
+        // Filling edit text set
+        this.editFields = new HashSet<>(Arrays.asList(new View []{cancel,eventTitleEdit, eventDescriptionEdit,startEdit,endEdit, typeEdit,urlEdit, isPublicEdit, sosEdit}));
+        this.textFields = new HashSet<>(Arrays.asList(new View[]{eventTitle, eventDescription, start,end, type}));
+
+        // Setting content
+        fillFields();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -165,7 +234,9 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     private void setEditing(boolean enable) {
         Log.d(TAG, "setting editing mode to " + enable);
         int visibilityEdit = enable ? View.VISIBLE : View.INVISIBLE;
+        int visibilityText = enable? View.INVISIBLE: View.VISIBLE;
         int visibilityFab = enable ? View.INVISIBLE : View.VISIBLE;
+        //int textInputType = enable ? InputType.TYPE_CLASS_TEXT : InputType.TYPE_NULL;
         // set the "Organizer Invite" button visible
         inviteOrganizerButton.setVisibility(visibilityEdit);
         // set the "Submit Changes" button visible
@@ -173,6 +244,14 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         // set the "Edit" floating button invisible until the changes submitted
         editEventButton.setVisibility(visibilityFab);
         editImg.setVisibility(visibilityEdit);
+        /*
+        eventTitle.setInputType(textInputType);
+        eventDescription.setInputType(textInputType);
+        start.setInputType(textInputType);
+        end.setInputType(textInputType);*/
+        //setAllEditTexts(enable);
+        refreshTextViews();
+        setAllEditTexts(visibilityText, visibilityEdit);
     }
 
     public void onEditImageClicked(View view) {
@@ -229,6 +308,17 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         setEditing(true);
     }
 
+    private void updateCurrentEvent() {
+        curEvent.setName(eventTitleEdit.getText().toString());
+        curEvent.setDescription(eventDescriptionEdit.getText().toString());
+        curEvent.setStart(Event.stringToDate(startEdit.getText().toString()));
+        curEvent.setEnd(Event.stringToDate(endEdit.getText().toString()));
+        curEvent.setCalendar(urlEdit.getText().toString());
+        curEvent.setEmergencyEnabled(sosEdit.isChecked());
+        curEvent.setPublic(isPublicEdit.isChecked());
+        curEvent.setType(Event.EventType.valueOf(typeEdit.getSelectedItem().toString().toUpperCase()));
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void onSubmitChangesClicked(View view) {
         if(imageInBytes == null) {
@@ -237,15 +327,20 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         // upload the image to the storage
         // update the current event
         // update the event in the database
+        updateCurrentEvent();
         dbi.uploadEventImage(curEvent, imageInBytes, event -> {
             Log.d(TAG, "event img uri after upload: " + event.getImageUri());
             dbi.updateEvent(curEvent, event1 -> {
                 setEditing(false);
                 Log.d(TAG, "editing mode unset");
-                initEvent();
                 PolyContext.setCurrentEvent(event); // update the data
+                initEvent();
             });
         });
+    }
+    public void onCancelClicked(View view){
+        setEditing(false);
+        initEvent();
     }
 
 

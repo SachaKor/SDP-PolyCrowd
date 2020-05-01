@@ -24,7 +24,8 @@
         android:theme="@style/AppTheme">
         <activity android:name=".authentification.ResetPasswordActivity" />
         <activity android:name=".authentification.SignUpActivity" />
-        <activity android:name=".EventPageDetailsActivity" />
+        <activity android:name=".EventPageDetailsActivity"
+            android:windowSoftInputMode="adjustPan"/>
         <activity android:name="com.google.firebase.auth.internal.FederatedSignInActivity"
             android:launchMode="standard"
             tools:replace="android:launchMode" />

@@ -251,9 +251,13 @@ public class Event {
         return this.schedule;
     }
 
-
+    public static SimpleDateFormat defaultDateFormat = new SimpleDateFormat("dd-MM-yyyy");
     public static String dateToString(Date d, SimpleDateFormat dtf){
         return dtf.format(d);
+    }
+    public static String dateToString(Date d ){ return Event.dateToString(d, Event.defaultDateFormat);}
+    public static Date stringToDate(String s){
+        return stringToDate(s, Event.defaultDateFormat);
     }
     public static Date stringToDate(String s, SimpleDateFormat dtf){
         try {
