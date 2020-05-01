@@ -37,6 +37,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intending;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static ch.epfl.polycrowd.AndroidTestHelper.sleep;
 
 /**
  * Mocking the gallery intent & image pick:
@@ -76,7 +77,40 @@ public class EventPageDetailsGalleryTest {
     public void galleryTest() {
         savePickedImage(mActivityTestRule.getActivity());
         Instrumentation.ActivityResult imgGalleryResult = createImageGallerySetResultStub(mActivityTestRule.getActivity());
+
         onView(withId(R.id.event_details_fab)).perform(click());
+        sleep();
+        sleep();
+        sleep();
+        sleep();
+        sleep();
+        sleep();
+        sleep();
+        sleep();
+        sleep();
+        sleep();
+        sleep();
+        sleep();
+        sleep();
+        sleep();
+        sleep();
+        sleep();
+        sleep();
+        sleep();
+        sleep();
+        sleep();
+        sleep();
+        sleep();
+        sleep();
+        sleep();
+        sleep();
+        sleep();
+        sleep();
+        sleep();
+        sleep();
+        sleep();
+        sleep();
+        sleep();
         intending(hasAction(Intent.ACTION_CHOOSER)).respondWith(imgGalleryResult);
         onView(withId(R.id.event_details_edit_img)).perform(click());
         onView(withId(R.id.event_details_img)).check(matches(hasImageSet()));
