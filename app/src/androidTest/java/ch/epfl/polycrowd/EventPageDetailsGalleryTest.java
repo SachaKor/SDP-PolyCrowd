@@ -32,6 +32,8 @@ import ch.epfl.polycrowd.logic.PolyContext;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.scrollTo;
+import static androidx.test.espresso.action.ViewActions.swipeLeft;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intending;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
@@ -77,6 +79,8 @@ public class EventPageDetailsGalleryTest {
         Instrumentation.ActivityResult imgGalleryResult = createImageGallerySetResultStub(mActivityTestRule.getActivity());
         onView(withId(R.id.event_details_fab)).perform(click());
         intending(hasAction(Intent.ACTION_CHOOSER)).respondWith(imgGalleryResult);
+        AndroidTestHelper.sleep();
+        onView(withId(R.id.event_details_edit_img)).perform(scrollTo());
         onView(withId(R.id.event_details_edit_img)).perform(click());
         onView(withId(R.id.event_details_img)).check(matches(hasImageSet()));
     }
