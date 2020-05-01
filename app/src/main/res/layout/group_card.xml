@@ -23,6 +23,17 @@
         android:textColor="#000"
         android:textStyle="bold"
         />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/groupEventTv"
+        android:text="Event"
+        android:textSize="18sp"
+        android:textColor="#000"
+        android:textStyle="bold"
+        android:layout_below="@id/groupNameTv"
+        />
     </RelativeLayout>
 
 
