@@ -3,6 +3,7 @@ package ch.epfl.polycrowd.groupPage;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,10 +20,12 @@ import java.util.List;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.logic.Group;
 import ch.epfl.polycrowd.logic.PolyContext;
+import ch.epfl.polycrowd.logic.User;
 import ch.epfl.polycrowd.userProfile.ItemClickListener;
 
 public class GroupsListActivity extends AppCompatActivity {
 
+    private static final String TAG = "GroupsListActivity" ;
     private RecyclerView mRecyclerView;
     private GroupsListAdapter mAdapter ;
 
@@ -31,25 +34,25 @@ public class GroupsListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_groups_list);
 
-        //TODO Replace with user-defined groups, either fetched from Firebase or contained in User object of signed-in user
-        Group group_1 = new Group() ;
-        Group group_2 = new Group() ;
-        Group group_3 = new Group() ;
-
-        group_1.setGid("Group1");
-        group_2.setGid("Group2");
-        group_3.setGid("Group3") ;
-
-        List<Group> groups = new ArrayList<>() ;
-        groups.add(group_1) ;
-        groups.add(group_2) ;
-        groups.add(group_3) ;
-
-
         mRecyclerView = findViewById(R.id.groupsListRecyclerView) ;
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        List<Group> groups = new ArrayList<>() ;
+        User user = PolyContext.getCurrentUser() ;
+
         mAdapter = new GroupsListAdapter(groups, this) ;
         mRecyclerView.setAdapter(mAdapter);
+
+        PolyContext.getDatabaseInterface().getUserGroups(user.getEmail(), fetchedGroups ->
+        {
+            if(fetchedGroups != null){
+                Log.d(TAG, "fetched groups size is " + fetchedGroups.size()) ;
+                fetchedGroups.forEach(group -> groups.add(group)) ;
+                mAdapter.notifyDataSetChanged();
+            }
+
+        });
+
     }
 
 
@@ -84,6 +87,7 @@ public class GroupsListActivity extends AppCompatActivity {
 
         @Override
         public int getItemCount() {
+            Log.d(TAG, "Groups list has size "+groups.size()) ;
             return groups.size();
         }
     }
