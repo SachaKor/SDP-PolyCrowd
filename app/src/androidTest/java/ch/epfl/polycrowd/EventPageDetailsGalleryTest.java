@@ -13,7 +13,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.hamcrest.Description;
 import org.junit.Before;
 import org.junit.Rule;
@@ -37,7 +36,6 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intending;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static ch.epfl.polycrowd.AndroidTestHelper.sleep;
 
 /**
  * Mocking the gallery intent & image pick:
@@ -71,14 +69,12 @@ public class EventPageDetailsGalleryTest {
         // launch the intent
         Intent intent = new Intent();
         mActivityTestRule.launchActivity(intent);
-        AndroidTestHelper.sleep();
     }
 
     @Test
     public void galleryTest() {
         savePickedImage(mActivityTestRule.getActivity());
         Instrumentation.ActivityResult imgGalleryResult = createImageGallerySetResultStub(mActivityTestRule.getActivity());
-        AndroidTestHelper.sleep();
         onView(withId(R.id.event_details_fab)).perform(click());
         intending(hasAction(Intent.ACTION_CHOOSER)).respondWith(imgGalleryResult);
         onView(withId(R.id.event_details_edit_img)).perform(click());
