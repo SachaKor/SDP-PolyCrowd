@@ -77,7 +77,9 @@ public class GroupsListActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(@NonNull GroupsListHolder holder, int position) {
             String groupId = groups.get(position).getGid() ;
+            String groupEvent = groups.get(position).getEventId();
             holder.groupIdTv.setText(groupId);
+            holder.groupEventTv.setText(groupEvent);
             holder.itemClickListener = (v,p) -> {
                 Intent intent = new Intent(c, GroupPageActivity.class) ;
                 PolyContext.setCurrentGroup(groups.get(p)) ;
@@ -95,11 +97,13 @@ public class GroupsListActivity extends AppCompatActivity {
 
     private class GroupsListHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView groupIdTv ;
+        TextView groupEventTv ;
         ItemClickListener itemClickListener ;
 
         public GroupsListHolder(@NonNull View itemView) {
             super(itemView);
             groupIdTv = itemView.findViewById(R.id.groupNameTv) ;
+            groupEventTv = itemView.findViewById(R.id.groupEventTv) ;
             itemView.setOnClickListener(this);
         }
 
