@@ -8,6 +8,12 @@ import android.view.Gravity;
 import android.widget.Toast;
 
 import java.io.File;
+import android.content.Intent;
+import android.view.Gravity;
+import android.widget.Toast;
+
+import ch.epfl.polycrowd.logic.PolyContext;
+
 
 
 public class Utils {
@@ -22,6 +28,12 @@ public class Utils {
         Toast toast = Toast.makeText(context, text, duration);
         toast.setGravity(Gravity.BOTTOM, 0, 16);
         toast.show();
+    }
+
+    public static void navigate(Context from, Class to){
+        Intent i = new Intent(from,to);
+        PolyContext.setPreviousContext(from);
+        from.startActivity(i);
     }
 
 

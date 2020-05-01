@@ -1,6 +1,7 @@
 package ch.epfl.polycrowd.logic;
 
 import android.content.Context;
+import android.util.Log;
 
 import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
@@ -12,6 +13,7 @@ public abstract class PolyContext extends Context {
 
     private static Event currentEvent;
     private static User currentUser;
+    private static Context previousContext;
     private static String previousPage = "";
     private static boolean mockDynamicLink = false; // for the FrontPage testing
     private static DatabaseInterface dbInterface  = new FirebaseInterface();
@@ -34,6 +36,7 @@ public abstract class PolyContext extends Context {
     public static String getPreviousPage() {
         return previousPage;
     }
+    public static Context getPreviousContext(){ return previousContext;}
     public static boolean getMockDynamicLink() { return mockDynamicLink; }
 
     public static User getCurrentUser() {
@@ -44,6 +47,11 @@ public abstract class PolyContext extends Context {
     }
     public static void setPreviousPage(String previousPage) {
         PolyContext.previousPage = previousPage;
+    }
+    public static void setPreviousContext(Context previousPage) {
+        PolyContext.previousContext= previousPage;
+        String[] fullyQualifiedName =previousPage.getClass().getName().split("\\.");
+        PolyContext.setPreviousPage(fullyQualifiedName[fullyQualifiedName.length-1]);
     }
     public static void setMockDynamicLink(boolean mock) { mockDynamicLink = mock; }
 

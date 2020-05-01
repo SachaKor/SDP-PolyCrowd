@@ -174,6 +174,7 @@ public class FirebaseInterface implements DatabaseInterface {
                     .add(event.toHashMap())
                     .addOnSuccessListener(documentReference -> {
                         Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
+                        event.setId(documentReference.getId());
                         successHandler.handle(event);
                     })
                     .addOnFailureListener(e -> {

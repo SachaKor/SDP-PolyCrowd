@@ -142,7 +142,6 @@ public class MapActivity extends AppCompatActivity {
         Button buttonRight = findViewById(R.id.butRight);
         Button buttonLeft = findViewById(R.id.butLeft);
         Button buttonSOS = findViewById(R.id.butSOS);
-        Button buttonEdit = findViewById(R.id.butEdit);
 
         Log.d(TAG, "user status: " + status);
 
@@ -158,8 +157,6 @@ public class MapActivity extends AppCompatActivity {
                 break;
             case ORGANISER:
                 setOrganiserButtons(buttonLeft, buttonRight);
-                buttonEdit.setVisibility(View.VISIBLE);
-                buttonEdit.setOnClickListener(v->clickEventEdit(v));
                 break;
 
         }
@@ -210,10 +207,12 @@ public class MapActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+
     public void clickEventEdit(View view){
         Intent intent = new Intent(this, EventEditActivity.class);
         startActivity(intent);
     }
+
 
     public void clickGroup(View view) {
         Intent intent = new Intent(this, GroupPageActivity.class);

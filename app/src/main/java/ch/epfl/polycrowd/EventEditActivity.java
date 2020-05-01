@@ -18,7 +18,12 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+
 import java.lang.reflect.Array;
+
+import com.google.maps.android.PolyUtil;
+
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -204,17 +209,20 @@ public class EventEditActivity extends AppCompatActivity {
 
 
 
+
             if(kmlUri != null){
                 // downlaod path to firebase
                 PolyContext.getDatabaseInterface().uploadEventMap( ev , kmlUri , evv -> {
                     PolyContext.getDatabaseInterface().downloadEventMap(ev, e1 -> {
                         Toast.makeText(this, "Event added", Toast.LENGTH_LONG).show();
-                        // start map ACTIVITY
-                        Intent intent = new Intent(this, MapActivity.class);
-                        startActivity(intent);
+
+                        ch.epfl.polycrowd.Utils.navigate(this, EventPageDetailsActivity.class);
                     } );
                 } );
             }
+
+
+
         };
         EventHandler failureHandler = e -> {
             Toast.makeText(this, "Error occurred while adding the event", Toast.LENGTH_LONG).show();
