@@ -20,9 +20,9 @@ import ch.epfl.polycrowd.EventPageDetailsActivity;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.frontPage.FrontPageActivity;
+import ch.epfl.polycrowd.groupPage.GroupsListActivity;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
-import ch.epfl.polycrowd.map.MapActivity;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -123,8 +123,8 @@ public class LoginActivity extends AppCompatActivity {
 
                 if(inviteGroupId != null){
                     PolyContext.getDatabaseInterface().addUserToGroup(inviteGroupId, user.getEmail(), () -> {
-                    Intent map = new Intent(c, MapActivity.class);
-                    startActivity(map);
+                    Intent intent = new Intent(c, GroupsListActivity.class);
+                    startActivity(intent);
                 });
             }
         } ;
