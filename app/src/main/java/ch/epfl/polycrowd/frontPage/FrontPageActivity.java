@@ -2,6 +2,8 @@ package ch.epfl.polycrowd.frontPage;
 
 import android.content.Context;
 import android.net.Uri;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -15,6 +17,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
+import java.io.File;
 import java.util.Date;
 import java.util.List;
 
@@ -35,11 +38,22 @@ public class FrontPageActivity extends AppCompatActivity {
     ViewPager viewPager;
     EventPagerAdaptor adapter;
 
+    //https://stackoverflow.com/questions/61396588/androidruntime-fatal-exception-androidmapsapi-zoomtablemanager
+    private void fixGoogleMapBug() {
+        SharedPreferences googleBug = getSharedPreferences("google_bug", Context.MODE_PRIVATE);
+        if (!googleBug.contains("fixed")) {
+            File corruptedZoomTables = new File(getFilesDir(), "ZoomTables.data");
+            corruptedZoomTables.delete();
+            googleBug.edit().putBoolean("fixed", true).apply();
+        }
+    }
+
 
     // ------------- ON CREATE ----------------------------------------------------------
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        fixGoogleMapBug();
         setContentView(R.layout.activity_front_page);
 
         // front page should dispatch the dynamic links
