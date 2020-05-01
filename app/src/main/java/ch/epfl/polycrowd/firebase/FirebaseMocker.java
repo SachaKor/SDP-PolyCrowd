@@ -24,6 +24,7 @@ import ch.epfl.polycrowd.firebase.handlers.EventHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
 import ch.epfl.polycrowd.firebase.handlers.GroupHandler;
 import ch.epfl.polycrowd.firebase.handlers.GroupsHandler;
+import ch.epfl.polycrowd.firebase.handlers.Handler;
 import ch.epfl.polycrowd.firebase.handlers.ImageHandler;
 import ch.epfl.polycrowd.firebase.handlers.OrganizersHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
@@ -302,5 +303,10 @@ public class FirebaseMocker implements DatabaseInterface {
         Toast.makeText(appContext, "Successfully changed email",
                 Toast.LENGTH_SHORT).show();
         emptyHandler.handle();
+    }
+
+    @Override
+    public void getUserGroupIds(String userEmail, Handler<Map<String, String>> groupIdEventIdPairsHandler) {
+
     }
 }

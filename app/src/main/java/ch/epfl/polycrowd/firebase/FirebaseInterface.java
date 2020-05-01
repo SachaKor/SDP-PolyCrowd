@@ -43,6 +43,7 @@ import ch.epfl.polycrowd.firebase.handlers.EventHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
 import ch.epfl.polycrowd.firebase.handlers.GroupHandler;
 import ch.epfl.polycrowd.firebase.handlers.GroupsHandler;
+import ch.epfl.polycrowd.firebase.handlers.Handler;
 import ch.epfl.polycrowd.firebase.handlers.ImageHandler;
 import ch.epfl.polycrowd.firebase.handlers.OrganizersHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
@@ -229,11 +230,6 @@ public class FirebaseInterface implements DatabaseInterface {
                 .get()
                 .addOnSuccessListener(documentSnapshots -> {
                     Log.d(TAG, TAG1 + " success");
-                    /*if(documentSnapshots.size() > 1){
-                        Log.e(TAG, TAG1 + ", more than one group containing a user given one event.");
-                        groupHandler.handle(null);
-                        return;
-                    }*/
                     if(documentSnapshots.size() < 1){
                         // That user is in no group !
                         Log.e(TAG, TAG1 + ", less than one group containing a user given one event.");
@@ -246,7 +242,9 @@ public class FirebaseInterface implements DatabaseInterface {
                     List<Group> groups = new ArrayList<>() ;
                     //Extract group from each group document
                     List<DocumentSnapshot> docs = documentSnapshots.getDocuments();
-                    documentSnapshots.forEach(d -> {
+                    int n = 0 ;
+                    for(DocumentSnapshot d: docs) {
+                        ++ n  ;
                         Map<String, Object> data = d.getData();
                         List<String> emails = new ArrayList<>((List<String>) data.get(MEMBERS));
 
@@ -254,6 +252,7 @@ public class FirebaseInterface implements DatabaseInterface {
                         AtomicInteger index = new AtomicInteger(0);
 
                         for(String mail : emails){
+                            int finalN = n;
                             getUserByEmail(mail, user -> {
                                 int this_index = index.getAndIncrement();
                                 collected_users.add(user);
@@ -269,16 +268,17 @@ public class FirebaseInterface implements DatabaseInterface {
                                     groups.add(group) ;
                                     Log.d(TAG, TAG1 + " , groups inside of FOREACH has size "+groups.size())  ;
                                     //TODO Replace ugliest fix ever
-                                    groupsHandler.handle(groups);
+                                    if(finalN == docs.size())
+                                        groupsHandler.handle(groups);
                                 }
                             }, user -> {
                                 Log.e(TAG1, "Failure handler called. User with email " + mail + " could not be retrieved");
                             });
                         }
-                    });
+                    }
 
                     Log.d(TAG, TAG1 + " groups size from FIREBASE is "+ groups.size()) ;
-                    groupsHandler.handle(groups);
+                    //groupsHandler.handle(groups);
 
                 })
                 .addOnFailureListener(e -> {
@@ -288,6 +288,36 @@ public class FirebaseInterface implements DatabaseInterface {
                 });
     }
 
+
+    @Override
+    public void getUserGroupIds(String userEmail, Handler<Map<String, String>> groupIdEventIdPairsHandler){
+        final String TAG1 = "getGroupByUserAndEvent";
+        Log.d(TAG, TAG1 + " is not mocked");
+        getFirestoreInstance(false).collection(GROUPS)
+                .whereArrayContains("members", userEmail)
+                .get()
+                .addOnSuccessListener(documentSnapshots -> {
+                    Log.d(TAG, TAG1 + " success");
+                    if (documentSnapshots.size() < 1) {
+                        // That user is in no group !
+                        Log.e(TAG, TAG1 + ", less than one group containing a user given one event.");
+                        groupIdEventIdPairsHandler.handle(null);
+                        return;
+                    }
+
+                    Map<String, String> groupIdEventIdPairs = new HashMap<>();
+                    for(DocumentSnapshot d: documentSnapshots){
+                        String groupId = (String) d.get("groupId") ;
+                        String eventId = (String) d.get("eventId") ;
+                        groupIdEventIdPairs.put(groupId, eventId) ;
+                    }
+                    Log.d(TAG, "GOES HERE") ;
+                    groupIdEventIdPairsHandler.handle(groupIdEventIdPairs);
+                }) ;
+    }
+
+    //TODO
+    //What's the diff between someCallback(String arg1, Handler<E> arg2) rather than specifiying E ?
     @Override
     public void createGroup(Group group, GroupHandler handler){
         final String TAG1 = "createGroup";

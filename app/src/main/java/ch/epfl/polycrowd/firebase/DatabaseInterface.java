@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
 import java.text.ParseException;
+import java.util.Map;
 
 import ch.epfl.polycrowd.firebase.handlers.DynamicLinkHandler;
 import ch.epfl.polycrowd.firebase.handlers.EmptyHandler;
@@ -15,6 +16,7 @@ import ch.epfl.polycrowd.firebase.handlers.EventHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
 import ch.epfl.polycrowd.firebase.handlers.GroupHandler;
 import ch.epfl.polycrowd.firebase.handlers.GroupsHandler;
+import ch.epfl.polycrowd.firebase.handlers.Handler;
 import ch.epfl.polycrowd.firebase.handlers.ImageHandler;
 import ch.epfl.polycrowd.firebase.handlers.OrganizersHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
@@ -91,4 +93,6 @@ public interface DatabaseInterface {
 
     void reauthenticateAndChangeEmail(String email, String curPassword, String newEmail,
                                       EmptyHandler emptyHandler, Context appContext);
+
+    void getUserGroupIds(String userEmail, Handler<Map<String, String>> groupIdEventIdPairsHandler) ;
 }
