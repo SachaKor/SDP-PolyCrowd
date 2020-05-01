@@ -29,25 +29,21 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.atomic.AtomicReferenceArray;
 
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.firebase.handlers.DynamicLinkHandler;
 import ch.epfl.polycrowd.firebase.handlers.EmptyHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
-
 import ch.epfl.polycrowd.firebase.handlers.GroupHandler;
+import ch.epfl.polycrowd.firebase.handlers.GroupsHandler;
 import ch.epfl.polycrowd.firebase.handlers.ImageHandler;
-
 import ch.epfl.polycrowd.firebase.handlers.OrganizersHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
@@ -224,59 +220,70 @@ public class FirebaseInterface implements DatabaseInterface {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public void getGroupByUserAndEvent(String eventId, String userEmail, GroupHandler groupHandler) {
+    //TODO extract into getUserGroups
+    public void getUserGroups(String userEmail, GroupsHandler groupsHandler) {
         final String TAG1 = "getGroupByUserAndEvent";
         Log.d(TAG, TAG1 + " is not mocked");
         getFirestoreInstance(false).collection(GROUPS)
-                .whereEqualTo("eventId", eventId)
                 .whereArrayContains("members", userEmail)
                 .get()
                 .addOnSuccessListener(documentSnapshots -> {
                     Log.d(TAG, TAG1 + " success");
-                    if(documentSnapshots.size() > 1){
+                    /*if(documentSnapshots.size() > 1){
                         Log.e(TAG, TAG1 + ", more than one group containing a user given one event.");
                         groupHandler.handle(null);
                         return;
-                    }
+                    }*/
                     if(documentSnapshots.size() < 1){
                         // That user is in no group !
                         Log.e(TAG, TAG1 + ", less than one group containing a user given one event.");
-                        groupHandler.handle(null);
+                        groupsHandler.handle(null);
                         return;
                     }
 
                     // Replace stored list of emails with actual User objects.
                     // Doing many requests like that seems to be the correct Firebase join meta.
-                    DocumentSnapshot d = documentSnapshots.getDocuments().get(0);
-                    Map<String, Object> data = d.getData();
-                    List<String> emails = new ArrayList<>((List<String>) data.get(MEMBERS));
+                    List<Group> groups = new ArrayList<>() ;
+                    //Extract group from each group document
+                    List<DocumentSnapshot> docs = documentSnapshots.getDocuments();
+                    documentSnapshots.forEach(d -> {
+                        Map<String, Object> data = d.getData();
+                        List<String> emails = new ArrayList<>((List<String>) data.get(MEMBERS));
 
-                    ArrayList<User> collected_users = new ArrayList<>(emails.size());
-                    AtomicInteger index = new AtomicInteger(0);
+                        ArrayList<User> collected_users = new ArrayList<>(emails.size());
+                        AtomicInteger index = new AtomicInteger(0);
 
-                    for(String mail : emails){
-                        getUserByEmail(mail, user -> {
-                            int this_index = index.getAndIncrement();
-                            collected_users.add(user);
-                            Log.w(TAG, "get user number " + this_index + ": " + user.getEmail());
+                        for(String mail : emails){
+                            getUserByEmail(mail, user -> {
+                                int this_index = index.getAndIncrement();
+                                collected_users.add(user);
+                                Log.w(TAG, "get user number " + this_index + ": " + user.getEmail());
 
-                            // Done. Only one thread continues here.
-                            if(this_index == emails.size()-1){
-                                Log.w(TAG, "done collecting users");
-                                data.put(MEMBERS, collected_users);
-                                data.put("gid", d.getId());
-                                Group group = Group.getFromDocument(data);
-                                groupHandler.handle(group);
-                                return;
-                            }
-                        }, user -> {
-                            Log.e(TAG1, "Failure handler called. User with email " + mail + " could not be retrieved");
-                        });
-                    }
+                                // Done. Only one thread continues here.
+                                if(this_index == emails.size()-1){
+                                    Log.w(TAG, "done collecting users");
+                                    data.put(MEMBERS, collected_users);
+                                    data.put("gid", d.getId());
+                                    Group group = Group.getFromDocument(data);
+                                    Log.d(TAG, TAG1 + " , group is "+group.getGid())  ;
+                                    groups.add(group) ;
+                                    Log.d(TAG, TAG1 + " , groups inside of FOREACH has size "+groups.size())  ;
+                                    //TODO Replace ugliest fix ever
+                                    groupsHandler.handle(groups);
+                                }
+                            }, user -> {
+                                Log.e(TAG1, "Failure handler called. User with email " + mail + " could not be retrieved");
+                            });
+                        }
+                    });
+
+                    Log.d(TAG, TAG1 + " groups size from FIREBASE is "+ groups.size()) ;
+                    groupsHandler.handle(groups);
+
                 })
                 .addOnFailureListener(e -> {
                     // That user is in no group !
-                    groupHandler.handle(null);
+                    groupsHandler.handle(null);
                     return;
                 });
     }
@@ -297,6 +304,11 @@ public class FirebaseInterface implements DatabaseInterface {
             }).addOnFailureListener(e -> Log.e(TAG, "Error adding new group : " + e));
 
     }
+
+    /*@Override
+    public void getUserGroups(String userEmail, GroupsHandler handler) {
+        //TODO Implement
+    }*/
 
     public void addUserToGroup(String gid, String userEmail, EmptyHandler handler){
         final String TAG1 = "addUserToGroup";

@@ -11,16 +11,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.EmailAuthProvider;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -32,13 +22,13 @@ import ch.epfl.polycrowd.firebase.handlers.DynamicLinkHandler;
 import ch.epfl.polycrowd.firebase.handlers.EmptyHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
-
 import ch.epfl.polycrowd.firebase.handlers.GroupHandler;
+import ch.epfl.polycrowd.firebase.handlers.GroupsHandler;
 import ch.epfl.polycrowd.firebase.handlers.ImageHandler;
-
 import ch.epfl.polycrowd.firebase.handlers.OrganizersHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
+import ch.epfl.polycrowd.logic.Group;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 
@@ -49,6 +39,7 @@ public class FirebaseMocker implements DatabaseInterface {
     private Map<User, String> usersAndPasswords;
     private List<Event> events;
     private byte[] image;
+    private Map<String, Group> groupIdGroupPairs ;
 
     public FirebaseMocker(Map<String, Pair<User, String>> defaultMailAndUserPassPair, List<Event> defaultEvents) {
         Log.d(TAG, "Database mocker init");
@@ -174,8 +165,11 @@ public class FirebaseMocker implements DatabaseInterface {
     }
 
     @Override
-    public void addUserToGroup(String inviteGroupId, String uid, EmptyHandler emptyHandler) {
-
+    public void addUserToGroup(String inviteGroupId, String userEmail, EmptyHandler emptyHandler) {
+        Group group = groupIdGroupPairs.get(inviteGroupId) ;
+        User user = findUserByEmail(userEmail) ;
+        group.addMember(user);
+        emptyHandler.handle();
     }
 
     @Override
@@ -188,14 +182,27 @@ public class FirebaseMocker implements DatabaseInterface {
 
     }
 
-    @Override
+    /*@Override
     public void getGroupByUserAndEvent(String eventId, String userId, GroupHandler groupHandler) {
 
-    }
+    }*/
 
     @Override
     public void createGroup(String eventId, GroupHandler handler) {
 
+    }
+
+    @Override
+    public void getUserGroups(String userEmail, GroupsHandler handler) {
+        List<Group> userGroups = new ArrayList<>() ;
+        groupIdGroupPairs.values().forEach(group ->
+        {
+            group.getMembers().forEach(u -> {
+                if(u.getEmail().equals(userEmail))
+                    userGroups.add(group) ;
+            } );
+        });
+        handler.handle(userGroups);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
