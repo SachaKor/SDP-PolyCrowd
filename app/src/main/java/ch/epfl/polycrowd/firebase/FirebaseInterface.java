@@ -288,27 +288,24 @@ public class FirebaseInterface implements DatabaseInterface {
                 });
     }
 
-    public void createGroup(String eventId, GroupHandler handler){
+    @Override
+    public void createGroup(Group group, GroupHandler handler){
         final String TAG1 = "createGroup";
-        if(eventId == null) {
+        if(group.getEventId() == null) {
             Log.w(TAG, TAG1 + " eventId id is null");
             return;
         }
-            Group g = new Group("", eventId, new ArrayList<>());
+            group.addMember(PolyContext.getCurrentUser());
             getFirestoreInstance(false).collection(GROUPS)
-                    .add(g.getRawData())
+                    .add(group.getRawData())
                     .addOnSuccessListener(documentReference -> {
-                        Log.e("CREATEGROUP", g.getGid());
-                        g.setGid(documentReference.getId());
-                        handler.handle(g);
+                        Log.e("CREATEGROUP", group.getGid());
+                        group.setGid(documentReference.getId());
+                        handler.handle(group);
             }).addOnFailureListener(e -> Log.e(TAG, "Error adding new group : " + e));
 
     }
 
-    /*@Override
-    public void getUserGroups(String userEmail, GroupsHandler handler) {
-        //TODO Implement
-    }*/
 
     public void addUserToGroup(String gid, String userEmail, EmptyHandler handler){
         final String TAG1 = "addUserToGroup";

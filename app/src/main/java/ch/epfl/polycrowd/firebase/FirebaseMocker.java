@@ -49,6 +49,7 @@ public class FirebaseMocker implements DatabaseInterface {
         }
         events = new ArrayList<>();
         events.addAll(defaultEvents);
+        groupIdGroupPairs = new HashMap<>() ;
     }
 
 
@@ -182,14 +183,12 @@ public class FirebaseMocker implements DatabaseInterface {
 
     }
 
-    /*@Override
-    public void getGroupByUserAndEvent(String eventId, String userId, GroupHandler groupHandler) {
-
-    }*/
-
     @Override
-    public void createGroup(String eventId, GroupHandler handler) {
-
+    public void createGroup(Group group, GroupHandler handler) {
+        Group newGroup = new Group(group.getGid(), group.getEventId(), new ArrayList<>()) ;
+        newGroup.addMember(PolyContext.getCurrentUser());
+        groupIdGroupPairs.put(newGroup.getGid(), newGroup) ;
+        handler.handle(newGroup);
     }
 
     @Override
@@ -201,7 +200,11 @@ public class FirebaseMocker implements DatabaseInterface {
                 if(u.getEmail().equals(userEmail))
                     userGroups.add(group) ;
             } );
+
+            Log.d("FireBaseMocker"," In the FOREACH OF MOCKER");
         });
+
+        Log.d("FireBaseMocker"," USERgroups SIZE" + userGroups.size());
         handler.handle(userGroups);
     }
 
