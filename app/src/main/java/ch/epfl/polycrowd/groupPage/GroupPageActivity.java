@@ -16,8 +16,6 @@ import android.widget.TextView;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
@@ -34,7 +32,6 @@ import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
-import ch.epfl.polycrowd.organizerInvite.OrganizersAdapter;
 
 public class GroupPageActivity extends AppCompatActivity implements TabLayout.OnTabSelectedListener {
 
@@ -78,23 +75,7 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
 
         group = PolyContext.getCurrentGroup() ;
         List<User> members = group.getMembers();
-        LocationManager mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        for (User u : members) {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                return;
-            }
-            //TODO use PASSIVE_PROVIDER instead?
-            //TODO what time and distance are suitable ?
-            //https://stackoverflow.com/questions/17591147/how-to-get-current-location-in-android
-            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
-                    LOCATION_REFRESH_DISTANCE, u);
-        }
+        requestMemberLocations(members);
 
     }
 
@@ -114,13 +95,6 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
         }
     }
 
-    private void initRecyclerView(List<String> members) {
-        RecyclerView recyclerView = findViewById(R.id.members_recycler_view);
-        OrganizersAdapter adapter = new OrganizersAdapter(members);
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-    }
-
     /**
      * Fetches the organizers of the event from the database
      * Initializes the RecyclerView displaying the organizers
@@ -136,23 +110,14 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void initGroup() {
+    /**/private void initGroup() {
         DatabaseInterface dbi = PolyContext.getDatabaseInterface();
         User user = PolyContext.getCurrentUser();
         if(user == null){
             Log.e(TAG, "initGroup : current user is null ?!");
             return;
         }
-        dbi.getGroupByUserAndEvent(eventId, user.getEmail(), group -> {
-            if(group == null){
-                //findViewById(R.id.leave_group_button).setVisibility(View.GONE);
-                //findViewById(R.id.invite_group_button).setVisibility(View.GONE);
-                return;
-            }
-
-            groupId = group.getGid();
-            initRecyclerView(group.getMembersNames());
-        });
+        groupId = PolyContext.getCurrentGroup().getGid() ;
     }
     /**
      * OnClick "INVITE TO GROUP"
@@ -161,6 +126,7 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
      */
     public void inviteLinkClicked(View view) {
         // build the invite dynamic link
+        //TODO How to mock?
         DynamicLink inviteLink = FirebaseDynamicLinks.getInstance().createDynamicLink()
                 .setLink(Uri.parse("https://www.example.com/inviteGroup/?groupId=" + groupId))
                 .setDomainUriPrefix("https://polycrowd.page.link")
@@ -240,12 +206,28 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
         }
     }
 
-    private void selectViewPagerIndex(int index){
-        viewPager.setCurrentItem(index);
-    }
-
     public void showUserOnMap(User user){
         ((GroupMapFragment)fragmentAdapter.getItem(0)).highlightUserMarker(user);
-        selectViewPagerIndex(0);
+        viewPager.setCurrentItem(0);;
+    }
+
+    private void requestMemberLocations(List<User> members) {
+        LocationManager mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        for (User u : members) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            //TODO use PASSIVE_PROVIDER instead?
+            //TODO what time and distance are suitable ?
+            //https://stackoverflow.com/questions/17591147/how-to-get-current-location-in-android
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
+                    LOCATION_REFRESH_DISTANCE, u);
+        }
     }
 }
