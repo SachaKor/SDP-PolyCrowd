@@ -200,7 +200,7 @@ public class FirebaseMocker implements DatabaseInterface {
     public void uploadEventMap(Event event, Uri file, EventHandler handler) {
 
         // TODO : load file maybe ?
-        event.setMapUri(file.getPath());
+        //event.setMapUri(file.getPath());
         handler.handle(event);
 
     }

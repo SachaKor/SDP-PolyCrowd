@@ -114,10 +114,14 @@ public class CrowdMap implements OnMapReadyCallback {
         // --- KML layer ---------------------------------------------------------------
         KmlLayer layer = null;
         try {
-            InputStream kmlFile = PolyContext.getCurrentEvent().getMapStream();
 
-            BufferedReader b = new BufferedReader(new InputStreamReader(kmlFile));
-                    Log.d(TAG, b.lines().collect(Collectors.joining("\n")));
+            InputStream kmlFile = null;
+
+            if(PolyContext.getCurrentEvent() != null)
+                kmlFile = PolyContext.getCurrentEvent().getMapStream();
+
+            /*BufferedReader b = new BufferedReader(new InputStreamReader(kmlFile));
+                    Log.d(TAG, b.lines().collect(Collectors.joining("\n")));*/
 
             if(kmlFile != null) layer = new KmlLayer(mMap, kmlFile, act.getApplicationContext());
             else layer = new KmlLayer(mMap, R.raw.example, act.getApplicationContext());

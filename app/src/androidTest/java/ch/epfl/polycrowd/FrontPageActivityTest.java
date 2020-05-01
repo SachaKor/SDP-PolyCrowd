@@ -107,7 +107,7 @@ public class FrontPageActivityTest {
 
     @Test
     public void testClickOnEventGoesToMapActivity(){
-        sleep();
+         sleep();
         onView(withId(R.id.viewPager)).perform(click());
         sleep();
         onView(withId(R.id.map)).check(matches(isDisplayed()));
