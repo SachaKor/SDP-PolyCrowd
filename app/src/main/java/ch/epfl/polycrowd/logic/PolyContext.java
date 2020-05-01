@@ -14,7 +14,7 @@ public abstract class PolyContext extends Context {
     private static User currentUser;
     private static String previousPage = "";
     private static boolean mockDynamicLink = false; // for the FrontPage testing
-    private static Group group  ;
+    private static String groupId  ;
     private static DatabaseInterface dbInterface  = new FirebaseInterface();
 
     public static void reset(){
@@ -61,11 +61,11 @@ public abstract class PolyContext extends Context {
         return dbInterface ;
     }
 
-    public static void setCurrentGroup(Group gr) {
-       group = gr;
+    public static void setCurrentGroupId(String id) {
+       groupId = id;
     }
 
-    public static Group getCurrentGroup() {
-        return group ;
+    public static String getCurrentGroupId() {
+        return groupId ;
     }
 }
