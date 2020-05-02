@@ -141,9 +141,6 @@ public class MapActivityTest {
             sleep();
             Espresso.pressBack();
             sleep();
-
-            onView(withId(R.id.butEdit)).check(matches(withText(containsString("EDIT"))));
-            onView(withId(R.id.butEdit)).perform(click());
             
         }
     }

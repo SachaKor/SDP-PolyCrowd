@@ -14,6 +14,8 @@ import android.widget.Toast;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.maps.android.PolyUtil;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -175,6 +177,7 @@ public class EventEditActivity extends AppCompatActivity {
         EventHandler successHandler = e -> {
             PolyContext.setCurrentEvent(e);
             Toast.makeText(c, "Event added", Toast.LENGTH_LONG).show();
+            ch.epfl.polycrowd.Utils.navigate(this, EventPageDetailsActivity.class);
         };
         EventHandler failureHandler = e -> Toast.makeText(c, "Error occurred while adding the event", Toast.LENGTH_LONG).show();
         if( this.eventId == null) {
@@ -182,7 +185,8 @@ public class EventEditActivity extends AppCompatActivity {
         }else {
             PolyContext.getDatabaseInterface().patchEventByID(this.eventId, ev, successHandler, failureHandler);
         }
-        Intent intent = new Intent(this, MapActivity.class);
-        startActivity(intent);
+
+
+
     }
 }

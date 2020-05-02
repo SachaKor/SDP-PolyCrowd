@@ -159,8 +159,9 @@ public class FrontPageActivity extends AppCompatActivity {
     // --------- Button Activity ----------------------------------------------------------
 
     public void clickSignIn(View view) {
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
+        ch.epfl.polycrowd.Utils.navigate(this, LoginActivity.class);
+        //Intent intent = new Intent(this, LoginActivity.class);
+        //startActivity(intent);
     }
 
     public void clickSignOut(View view) {
