@@ -7,6 +7,7 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
+import java.io.InputStream;
 import java.text.ParseException;
 
 import ch.epfl.polycrowd.firebase.handlers.ImageHandler;
@@ -69,7 +70,7 @@ public interface DatabaseInterface {
 
     void uploadEventImage(Event event, byte[] image, EventHandler handler);
 
-    void uploadEventMap(Event event , Uri file , EventHandler handler );
+    void uploadEventMap(Event event , byte[] file , EventHandler handler );
 
     void downloadEventMap( Event event , EventHandler handler );
 

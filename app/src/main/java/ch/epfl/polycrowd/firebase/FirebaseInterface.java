@@ -21,6 +21,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -476,50 +477,38 @@ public class FirebaseInterface implements DatabaseInterface {
     }
 
     @Override
-    public void uploadEventMap(Event event, Uri file, EventHandler handler) {
-        String mapUri = EVENT_MAPS + "/" + Utils.getFileNameFromUri(file);
-        event.setMapUri(mapUri);
-        StorageReference mapRef = getStorageInstance(true).getReference().child(mapUri);
+    public void uploadEventMap(Event event, byte[] map, EventHandler handler) {
+        String mapPath = EVENT_IMAGES + "/" + "paperino" + ".kml";
+        event.setMapUri(mapPath);
+        StorageReference imgRef = getStorageInstance(true).getReference().child(mapPath);
 
-        mapRef.putFile(file)
-                .addOnSuccessListener( taskSnapshot -> {
-                    Log.d(TAG, "Map for the event " + event.getId() + " is successfully uploaded");
+        UploadTask uploadTask = imgRef.putBytes(map);
+        uploadTask
+                .addOnSuccessListener(taskSnapshot -> {
+                    Log.d(TAG, "Image for the event " + event.getId() + " is successfully uploaded");
                     handler.handle(event);
-                    }
-                )
-                .addOnFailureListener(exception -> {
-                    Log.w(TAG, "Error occurred during the upload of the map for the event " + event.getId());
-                    }
-                );
+                })
+                .addOnFailureListener(e ->
+                        Log.w(TAG, "Error occurred during the upload of the image for the event " + event.getId()));
     }
 
     @Override
     public void downloadEventMap(Event event, EventHandler handler) {
-            // dowload event map from its uri and then set its data into inputstream
+        // dowload event map from its uri and then set its data into inputstream
         if(event.getMapUri() == null){
             return;
         }
 
         StorageReference eventMapRef = getStorageInstance(false).getReference().child(event.getMapUri());
-        try {
-            File f  = new File(Environment.getExternalStorageDirectory() + "/" + File.separator + "temp.any");
-            if (f.createNewFile())
-                Log.w(TAG,"File created");
-            else
-                Log.w(TAG,"File already exists");
 
-            InputStream stream = new FileInputStream(f);
-            event.setMapStream(stream);
-        }catch(Exception e){
-            Log.w(TAG, e.getMessage() );
-            Log.w(TAG, "could not create stream");
-            return;
-        }
+        final long ONE_MEGABYTE = 1024 * 1024;
 
-
-        eventMapRef.putStream(event.getMapStream())
-                .addOnSuccessListener( e-> handler.handle(event) )
-                .addOnFailureListener( e -> Log.w(TAG, "Error downloading kml " + event.getMapUri() + " from firebase storage"));
+        eventMapRef.getBytes(ONE_MEGABYTE)
+                .addOnSuccessListener( bytes -> {
+                    event.setMapStream( new ByteArrayInputStream(bytes));
+                    handler.handle(event);
+                } )
+                .addOnFailureListener(e -> Log.w(TAG, "Error downloading map " + event.getMapUri() + " from firebase storage"));
 
     }
 

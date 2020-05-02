@@ -9,6 +9,7 @@ import android.util.Pair;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -199,7 +200,7 @@ public class FirebaseMocker implements DatabaseInterface {
     }
 
     @Override
-    public void uploadEventMap(Event event, Uri file, EventHandler handler) {
+    public void uploadEventMap(Event event, byte[] file, EventHandler handler) {
 
         // TODO : load file maybe ?
         //event.setMapUri(file.getPath());

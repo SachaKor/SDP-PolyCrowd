@@ -2,9 +2,11 @@ package ch.epfl.polycrowd;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -19,6 +21,11 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Array;
 
 import com.google.maps.android.PolyUtil;
@@ -54,9 +61,7 @@ public class EventEditActivity extends AppCompatActivity {
 
 
     Button filePicker;
-
-    Uri kmlUri;
-
+    byte[] kmlBytes = null;
 
 
     // -------- ON CREATE ----------------------------------------------------------
@@ -70,15 +75,21 @@ public class EventEditActivity extends AppCompatActivity {
 
     // -----------------------------------------------------------------------------
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case 10:
                 if (resultCode == RESULT_OK) {
-                    kmlUri = data.getData();
-                    Utils.toastPopup(getApplicationContext(), "File Selected");
+
+                    try {
+                        InputStream myS = getContentResolver().openInputStream(data.getData());
+                        kmlBytes = Utils.getBytes(myS);
+                        Utils.toastPopup(getApplicationContext(), "File Selected ok");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Utils.toastPopup(getApplicationContext(), "File Selected not ok");
+                    }
                 }
                 break;
         }
@@ -210,14 +221,16 @@ public class EventEditActivity extends AppCompatActivity {
 
 
 
-            if(kmlUri != null){
+            if(kmlBytes != null){
                 // downlaod path to firebase
-                PolyContext.getDatabaseInterface().uploadEventMap( ev , kmlUri , evv -> {
+                PolyContext.getDatabaseInterface().uploadEventMap( ev , kmlBytes , evv -> {
+
                     PolyContext.getDatabaseInterface().downloadEventMap(ev, e1 -> {
                         Toast.makeText(this, "Event added", Toast.LENGTH_LONG).show();
+                        ch.epfl.polycrowd.Utils.navigate(this, MapActivity.class);
+                    }
 
-                        ch.epfl.polycrowd.Utils.navigate(this, EventPageDetailsActivity.class);
-                    } );
+                    );
                 } );
             }
 
