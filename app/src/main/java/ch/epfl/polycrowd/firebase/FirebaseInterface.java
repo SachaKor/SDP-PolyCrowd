@@ -479,7 +479,7 @@ public class FirebaseInterface implements DatabaseInterface {
     @Override
     public void uploadEventMap(Event event, byte[] map, EventHandler handler) {
         String mapPath = EVENT_MAPS + "/" + event.getMapUri();
-        event.setMapUri(mapPath);
+        //event.setMapUri(mapPath);
         StorageReference imgRef = getStorageInstance(true).getReference().child(mapPath);
 
         UploadTask uploadTask = imgRef.putBytes(map);
@@ -499,7 +499,9 @@ public class FirebaseInterface implements DatabaseInterface {
             return;
         }
 
-        StorageReference eventMapRef = getStorageInstance(false).getReference().child(event.getMapUri());
+        String mapPath = EVENT_MAPS + "/" + event.getMapUri();
+
+        StorageReference eventMapRef = getStorageInstance(false).getReference().child(mapPath);
 
         final long ONE_MEGABYTE = 1024 * 1024; // Arbitrary , maybe we should change this
 

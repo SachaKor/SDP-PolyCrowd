@@ -221,6 +221,7 @@ public class Event {
         event.put("isEmergencyEnabled", this.isEmergencyEnabled.toString());
         event.put("organizers", organizers);
         event.put("imageUri", imageUri);
+        event.put("mapUri" , mapUri);
         return event;
     }
 
@@ -243,6 +244,7 @@ public class Event {
         String imageUri = (String) data.get("imageUri"); // can be null but this is ok
         Event result = new Event(owner, name, isPublic, type, start, end, calendar, desc, emergency, organizers);
         result.setImageUri(imageUri);
+        result.setMapUri( (String) data.get("mapUri"));
         return result;
     }
 

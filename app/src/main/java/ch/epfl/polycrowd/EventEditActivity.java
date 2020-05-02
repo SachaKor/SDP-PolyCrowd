@@ -86,7 +86,8 @@ public class EventEditActivity extends AppCompatActivity {
                     try {
                         InputStream myS = getContentResolver().openInputStream(data.getData());
                         kmlBytes = Utils.getBytes(myS);
-                        kmlName = "pappamolle.kml";
+                        kmlName = Utils.getFileNameFromUri(data.getData());
+                        // TODO : only accept kml file types
                         Utils.toastPopup(getApplicationContext(), "File Selected ok");
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -227,12 +228,9 @@ public class EventEditActivity extends AppCompatActivity {
                 // downlaod path to firebase
                 PolyContext.getDatabaseInterface().uploadEventMap( ev , kmlBytes , evv -> {
 
-                    PolyContext.getDatabaseInterface().downloadEventMap(ev, e1 -> {
                         Toast.makeText(this, "Event added", Toast.LENGTH_LONG).show();
                         ch.epfl.polycrowd.Utils.navigate(this, MapActivity.class);
-                    }
 
-                    );
                 } );
             }
 
