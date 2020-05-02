@@ -62,6 +62,7 @@ public class EventEditActivity extends AppCompatActivity {
 
     Button filePicker;
     byte[] kmlBytes = null;
+    String kmlName = null;
 
 
     // -------- ON CREATE ----------------------------------------------------------
@@ -85,6 +86,7 @@ public class EventEditActivity extends AppCompatActivity {
                     try {
                         InputStream myS = getContentResolver().openInputStream(data.getData());
                         kmlBytes = Utils.getBytes(myS);
+                        kmlName = "pappamolle.kml";
                         Utils.toastPopup(getApplicationContext(), "File Selected ok");
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -210,7 +212,7 @@ public class EventEditActivity extends AppCompatActivity {
             ev.setId(PolyContext.getCurrentEvent().getId());
             ev.setImageUri(PolyContext.getCurrentEvent().getImageUri());
         }
-        // TODO : set the map url
+        ev.setMapUri(kmlName);
 
 
 

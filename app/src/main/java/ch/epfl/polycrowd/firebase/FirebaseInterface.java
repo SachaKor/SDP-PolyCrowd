@@ -478,7 +478,7 @@ public class FirebaseInterface implements DatabaseInterface {
 
     @Override
     public void uploadEventMap(Event event, byte[] map, EventHandler handler) {
-        String mapPath = EVENT_MAPS + "/" + "paperino" + ".kml";
+        String mapPath = EVENT_MAPS + "/" + event.getMapUri();
         event.setMapUri(mapPath);
         StorageReference imgRef = getStorageInstance(true).getReference().child(mapPath);
 
