@@ -3,6 +3,7 @@ package ch.epfl.polycrowd.firebase;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -20,6 +21,11 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +37,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
 import ch.epfl.polycrowd.R;
+import ch.epfl.polycrowd.Utils;
 import ch.epfl.polycrowd.firebase.handlers.DynamicLinkHandler;
 import ch.epfl.polycrowd.firebase.handlers.EmptyHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventHandler;
@@ -60,6 +67,7 @@ public class FirebaseInterface implements DatabaseInterface {
     private static final String GROUPS = "groups";
     private static final String USERS = "users";
     private static final String EVENT_IMAGES = "event-images";
+    private static final String EVENT_MAPS = "event-maps";
     private static final String TAG = "FirebaseInterface";
 
     public FirebaseInterface(){}
@@ -154,8 +162,6 @@ public class FirebaseInterface implements DatabaseInterface {
                 queryDocumentSnapshots.forEach(queryDocumentSnapshot -> {
                     Event e = Event.getFromDocument(queryDocumentSnapshot.getData());
                     e.setId(queryDocumentSnapshot.getId());
-                    e.setImage(R.drawable.balelec);
-                    e.setDescription("default description");
                     events.add(e);
                 });
                 handler.handle(events);
@@ -469,6 +475,45 @@ public class FirebaseInterface implements DatabaseInterface {
                 .addOnFailureListener(e ->
                         Log.w(TAG, "Error occurred during the upload of the image for the event " + event.getId()));
     }
+
+    @Override
+    public void uploadEventMap(Event event, byte[] map, EventHandler handler) {
+        String mapPath = EVENT_MAPS + "/" + event.getMapUri();
+        //event.setMapUri(mapPath);
+        StorageReference imgRef = getStorageInstance(true).getReference().child(mapPath);
+
+        UploadTask uploadTask = imgRef.putBytes(map);
+        uploadTask
+                .addOnSuccessListener(taskSnapshot -> {
+                    Log.d(TAG, "Image for the event " + event.getId() + " is successfully uploaded");
+                    handler.handle(event);
+                })
+                .addOnFailureListener(e ->
+                        Log.w(TAG, "Error occurred during the upload of the image for the event " + event.getId()));
+    }
+
+    @Override
+    public void downloadEventMap(Event event, EventHandler handler) {
+        // dowload event map from its uri and then set its data into inputstream
+        if(event.getMapUri() == null){
+            return;
+        }
+
+        String mapPath = EVENT_MAPS + "/" + event.getMapUri();
+
+        StorageReference eventMapRef = getStorageInstance(false).getReference().child(mapPath);
+
+        final long ONE_MEGABYTE = 1024 * 1024; // Arbitrary , maybe we should change this
+
+        eventMapRef.getBytes(ONE_MEGABYTE)
+                .addOnSuccessListener( bytes -> {
+                    event.setMapStream( new ByteArrayInputStream(bytes));
+                    handler.handle(event);
+                } )
+                .addOnFailureListener(e -> Log.w(TAG, "Error downloading map " + event.getMapUri() + " from firebase storage"));
+
+    }
+
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void downloadEventImage(Event event, ImageHandler handler) {

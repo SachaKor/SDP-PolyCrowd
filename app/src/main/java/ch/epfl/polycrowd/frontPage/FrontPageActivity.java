@@ -50,7 +50,9 @@ public class FrontPageActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         fixGoogleMapBug();
+
         setContentView(R.layout.activity_front_page);
 
         // front page should dispatch the dynamic links
@@ -75,6 +77,7 @@ public class FrontPageActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void setUp() {
+        PolyContext.setCurrentEvent(null);
         toggleLoginLogout();
         setEventModels();
     }
@@ -122,7 +125,7 @@ public class FrontPageActivity extends AppCompatActivity {
                 if(position != 0){
                     Event pointedEvent = events.get(position - 1 );
                     description.setText( pointedEvent.getDescription() );
-                    eventTitle.setText(pointedEvent.getName() );
+                    eventTitle.setText( pointedEvent.getName() );
                 } else {
                     eventTitle.setText("Create an EVENT");
                     description.setText("your journey starts now ! \n sky is the limit");
@@ -184,8 +187,6 @@ public class FrontPageActivity extends AppCompatActivity {
                         eventName = deepLink.getQueryParameter("eventName");
                 if (eventId != null && eventName != null) {
                     Intent intent = new Intent(c, OrganizerInviteActivity.class);
-                    intent.putExtra("eventId", eventId);
-                    intent.putExtra("eventName", eventName);
                     startActivity(intent);
                 }
             } else if(lastPathSegment != null && lastPathSegment.equals("inviteGroup")) {

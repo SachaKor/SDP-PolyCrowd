@@ -35,6 +35,14 @@ public class MapActivityTest {
     @BeforeClass
     public static void setUpBeforeActivityLaunch(){
         PolyContext.reset();
+        AndroidTestHelper.SetupMockDBI();
+
+        PolyContext.setCurrentUser(null);
+
+        Event e = AndroidTestHelper.getDebugEvent();
+        e.setMapUri("noMap");
+
+        PolyContext.setCurrentEvent(e);
     }
 
     @Rule
@@ -50,6 +58,11 @@ public class MapActivityTest {
         AndroidTestHelper.SetupMockDBI();
 
         PolyContext.setCurrentUser(null);
+
+        Event e = AndroidTestHelper.getDebugEvent();
+        e.setMapUri("noMap");
+
+        PolyContext.setCurrentEvent(e);
 
         Intent intent = new Intent();
         mActivityRule.launchActivity(intent);
@@ -170,9 +183,7 @@ public class MapActivityTest {
     @Test
     public void asGuestLoginButtonNavigatesToLoginPage() {
 
-        PolyContext.setCurrentUser(null);
-        Intent intent = new Intent();
-        mActivityRule.launchActivity(intent);
+        setUp();
 
         sleep();
 

@@ -20,14 +20,17 @@ import com.google.maps.android.heatmaps.HeatmapTileProvider;
 
 import org.xmlpull.v1.XmlPullParserException;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 import ch.epfl.polycrowd.R;
-
-
+import ch.epfl.polycrowd.logic.PolyContext;
 
 
 public class CrowdMap implements OnMapReadyCallback {
@@ -111,7 +114,17 @@ public class CrowdMap implements OnMapReadyCallback {
         // --- KML layer ---------------------------------------------------------------
         KmlLayer layer = null;
         try {
-            layer = new KmlLayer(mMap, R.raw.example, act.getApplicationContext());
+
+            InputStream kmlFile = null;
+
+            if(PolyContext.getCurrentEvent() != null)
+                kmlFile = PolyContext.getCurrentEvent().getMapStream();
+
+            /*BufferedReader b = new BufferedReader(new InputStreamReader(kmlFile));
+                    Log.d(TAG, b.lines().collect(Collectors.joining("\n")));*/
+
+            if(kmlFile != null) layer = new KmlLayer(mMap, kmlFile, act.getApplicationContext());
+            else layer = new KmlLayer(mMap, R.raw.example, act.getApplicationContext());
         } catch (XmlPullParserException | IOException e) {
             e.printStackTrace();
         }
