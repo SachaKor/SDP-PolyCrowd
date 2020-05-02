@@ -77,8 +77,14 @@ public class MapActivity extends AppCompatActivity {
         setStatusOfUser();
 
         createButtons();
-        createMap();
-        launchLocationRequest();
+
+        PolyContext.getDatabaseInterface().downloadEventMap(PolyContext.getCurrentEvent() , ev -> {
+            createMap();
+            launchLocationRequest();
+        });
+
+        // createMap();
+        //launchLocationRequest();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
