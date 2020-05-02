@@ -73,10 +73,8 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
             e.printStackTrace();
         }
 
-        group = PolyContext.getCurrentGroup() ;
         List<User> members = group.getMembers();
         requestMemberLocations(members);
-
     }
 
     @Override
@@ -117,7 +115,11 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
             Log.e(TAG, "initGroup : current user is null ?!");
             return;
         }
-        groupId = PolyContext.getCurrentGroup().getGid() ;
+        groupId = PolyContext.getCurrentGroupId();
+        PolyContext.getDatabaseInterface().getGroupByGroupId(groupId, fetchedGroup -> {
+            group = new Group(fetchedGroup.getGid(), fetchedGroup.getEventId(), fetchedGroup.getMembers()) ;
+            PolyContext.setCurrentGroup(group) ;
+        } ) ;
     }
     /**
      * OnClick "INVITE TO GROUP"
@@ -164,10 +166,10 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
         });
     }
 
-    public void createLinkClicked(View view){
+    //TODO
+   public void createLinkClicked(View view){
         Context c = this;
         User user = PolyContext.getCurrentUser();
-        Group group  = PolyContext.getCurrentGroup() ;
         PolyContext.getDatabaseInterface().createGroup(group, gr -> {
             groupId = group.getGid();
             PolyContext.getDatabaseInterface().addUserToGroup(groupId, user.getEmail(), () -> {
