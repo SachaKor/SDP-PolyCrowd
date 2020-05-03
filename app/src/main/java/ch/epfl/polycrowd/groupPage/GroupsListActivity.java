@@ -84,8 +84,13 @@ public class GroupsListActivity extends AppCompatActivity {
             holder.groupEventTv.setText(groupEvent);
             holder.itemClickListener = (v,p) -> {
                 Intent intent = new Intent(c, GroupPageActivity.class) ;
-                PolyContext.setCurrentGroupId(groupId); ;
-                c.startActivity(intent);
+                PolyContext.setCurrentGroupId(groupId);
+                PolyContext.getDatabaseInterface().getGroupByGroupId(groupId, fetchedGroup -> {
+                    PolyContext.setCurrentGroup(fetchedGroup) ;
+                    Log.d(TAG, "ABOUT TO LAUNCH GROUPPAGE") ;
+                    c.startActivity(intent);
+                } ) ;
+                Log.d(TAG, "At end of listener method" );
             } ;
         }
 
