@@ -8,13 +8,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
 import java.text.ParseException;
+import java.util.List;
+import java.util.Map;
 
 import ch.epfl.polycrowd.firebase.handlers.DynamicLinkHandler;
 import ch.epfl.polycrowd.firebase.handlers.EmptyHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
 import ch.epfl.polycrowd.firebase.handlers.GroupHandler;
-import ch.epfl.polycrowd.firebase.handlers.GroupsHandler;
+import ch.epfl.polycrowd.firebase.handlers.Handler;
 import ch.epfl.polycrowd.firebase.handlers.ImageHandler;
 import ch.epfl.polycrowd.firebase.handlers.OrganizersHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
@@ -84,8 +86,6 @@ public interface DatabaseInterface {
 
     void createGroup(Group group, GroupHandler handler) ;
 
-    void getUserGroups(String userEmail, GroupsHandler handler);
-
     void reauthenticateAndChangePassword(String email, String curPassword, String newPassword, Context appContext);
 
     void updateCurrentUserUsername(String newUserName, EmptyHandler emptyHandler);
@@ -98,4 +98,10 @@ public interface DatabaseInterface {
     void downloadUserProfileImage(User user, ImageHandler handler);
 
     void updateUser(User user, UserHandler userHandler);
+
+    void getUserGroupIds(String userEmail, Handler<Map<String, String>> groupIdEventIdPairsHandler);
+
+    void getGroupByGroupId(String groupId, Handler<Group> groupHandler);
+
+    void getUserCollectionByEmails(List<String> userEmails, Handler<List<User>> usersHandler) ;
 }

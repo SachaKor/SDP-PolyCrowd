@@ -15,10 +15,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import ch.epfl.polycrowd.R;
-import ch.epfl.polycrowd.logic.Group;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 import ch.epfl.polycrowd.userProfile.ItemClickListener;
@@ -37,33 +38,36 @@ public class GroupsListActivity extends AppCompatActivity {
         mRecyclerView = findViewById(R.id.groupsListRecyclerView) ;
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        List<Group> groups = new ArrayList<>() ;
+        Map<String, String> gidEids = new HashMap<>() ;
         User user = PolyContext.getCurrentUser() ;
 
-        mAdapter = new GroupsListAdapter(groups, this) ;
+        mAdapter = new GroupsListAdapter(gidEids, this) ;
         mRecyclerView.setAdapter(mAdapter);
 
-        PolyContext.getDatabaseInterface().getUserGroups(user.getEmail(), fetchedGroups ->
+        PolyContext.getDatabaseInterface().getUserGroupIds(user.getEmail(), fetchedPairs ->
         {
-            if(fetchedGroups != null){
-                Log.d(TAG, "fetched groups size is " + fetchedGroups.size()) ;
-                fetchedGroups.forEach(group -> groups.add(group)) ;
-                mAdapter.notifyDataSetChanged();
+            if(fetchedPairs != null){
+                Log.d(TAG, "fetched groups size is " + fetchedPairs.size()) ;
+                fetchedPairs.forEach((gid, eid) -> gidEids.put(gid, eid)) ;
+                mAdapter.notifyAdapterDatasetChanged();
+            } else {
+                Log.d(TAG, "fetched groups size is " + "0") ;
             }
 
         });
-
     }
 
 
     private class GroupsListAdapter extends RecyclerView.Adapter<GroupsListHolder> {
 
-        List<Group> groups ;
+        Map<String, String> gidEidPairs;
+        List<String> gIds ;
         Context c ;
 
-        public GroupsListAdapter(List<Group> groups, Context c){
-            this.groups = groups ;
+        public GroupsListAdapter(Map<String, String> gidEidPairs, Context c){
+            this.gidEidPairs = gidEidPairs ;
             this.c = c ;
+            initGids();
         }
 
 
@@ -76,21 +80,36 @@ public class GroupsListActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(@NonNull GroupsListHolder holder, int position) {
-            String groupId = groups.get(position).getGid() ;
-            String groupEvent = groups.get(position).getEventId();
+            String groupId = gIds.get(position) ;
+            String groupEvent = gidEidPairs.get(groupId);
             holder.groupIdTv.setText(groupId);
             holder.groupEventTv.setText(groupEvent);
             holder.itemClickListener = (v,p) -> {
                 Intent intent = new Intent(c, GroupPageActivity.class) ;
-                PolyContext.setCurrentGroup(groups.get(p)) ;
-                c.startActivity(intent);
+                PolyContext.setCurrentGroupId(groupId);
+                PolyContext.getDatabaseInterface().getGroupByGroupId(groupId, fetchedGroup -> {
+                    PolyContext.setCurrentGroup(fetchedGroup) ;
+                    Log.d(TAG, "ABOUT TO LAUNCH GROUPPAGE") ;
+                    c.startActivity(intent);
+                } ) ;
+                Log.d(TAG, "At end of listener method" );
             } ;
         }
 
         @Override
         public int getItemCount() {
-            Log.d(TAG, "Groups list has size "+groups.size()) ;
-            return groups.size();
+            Log.d(TAG, "Groups list has size "+gIds.size()) ;
+            return gIds.size();
+        }
+
+        public void notifyAdapterDatasetChanged(){
+          initGids();
+          notifyDataSetChanged();
+        }
+
+        private void initGids(){
+            gIds = new ArrayList<>() ;
+            gidEidPairs.keySet().forEach(gid -> gIds.add(gid) );
         }
     }
 

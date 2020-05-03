@@ -80,8 +80,10 @@ public class GroupMapFragment extends Fragment implements OnMapReadyCallback  {
         //Fit map over users' locations
         LatLngBounds.Builder boundsBuilder  = LatLngBounds.builder() ;
         memberLocationsMap.values().forEach(l -> boundsBuilder.include(l));
-        LatLngBounds bounds = boundsBuilder.build() ;
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 0));
+        if(memberLocationsMap.values().size() != 0) {
+            LatLngBounds bounds = boundsBuilder.build();
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 0));
+        }
     }
 
     public void highlightUserMarker(User user){
@@ -95,10 +97,12 @@ public class GroupMapFragment extends Fragment implements OnMapReadyCallback  {
         memberLocationsMap = new HashMap<>();
         memberMarkersMap = new HashMap<>();
         Group gr = PolyContext.getCurrentGroup() ;
-        for(User u: gr.getMembers()){
-            LatLng location = u.getLocation() ;
-            memberLocationsMap.put(u, location ) ;
-            memberMarkersMap.put(u, new MarkerOptions().position(location).title(u.getName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.pointred))) ;
+        if(gr != null) {
+            for (User u : gr.getMembers()) {
+                LatLng location = u.getLocation();
+                memberLocationsMap.put(u, location);
+                memberMarkersMap.put(u, new MarkerOptions().position(location).title(u.getName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.pointred)));
+            }
         }
     }
 

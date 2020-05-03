@@ -50,8 +50,9 @@ public class GroupMemberListFragment extends Fragment {
         members.add(new User("user_email@mail", "123", "user", 23)) ;
         members.add(new User("user_email@mail", "123", "user", 23)) ;
         members.add(new User("user_email@mail", "123", "user", 23)) ; */
-        List<User> members = PolyContext.getCurrentGroup().getMembers() ;
-
-        mRecyclerView.setAdapter(new MemberAdapter(this.getContext(),members ));
+        if (PolyContext.getCurrentGroup() != null) {
+            List<User> members = PolyContext.getCurrentGroup().getMembers();
+            mRecyclerView.setAdapter(new MemberAdapter(this.getContext(), members));
+        }
     }
 }
