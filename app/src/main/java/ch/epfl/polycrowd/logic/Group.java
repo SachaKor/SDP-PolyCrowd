@@ -57,7 +57,7 @@ public class Group extends Storable {
 
     public static Group getFromDocument(Map<String, Object> data) {
         List<User> members = (List<User>) Objects.requireNonNull(data.get("members"));
-        String gid = Objects.requireNonNull(data.get("gid")).toString();
+        String gid = Objects.requireNonNull(data.get("groupId")).toString();
         String eventId = Objects.requireNonNull(data.get("eventId")).toString();
 
         Group ret = new Group(gid, eventId, members);
