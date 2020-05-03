@@ -66,6 +66,8 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.addOnTabSelectedListener(this);
 
+
+
         try {
             initEvent();
             initGroup();
@@ -116,10 +118,7 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
             return;
         }
         groupId = PolyContext.getCurrentGroupId();
-        PolyContext.getDatabaseInterface().getGroupByGroupId(groupId, fetchedGroup -> {
-            group = new Group(fetchedGroup.getGid(), fetchedGroup.getEventId(), fetchedGroup.getMembers()) ;
-            PolyContext.setCurrentGroup(group) ;
-        } ) ;
+        group = PolyContext.getCurrentGroup() ;
     }
     /**
      * OnClick "INVITE TO GROUP"
