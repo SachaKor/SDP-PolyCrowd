@@ -40,7 +40,7 @@ public class User extends Storable implements LocationListener {
     }
 
     public User(String email, String uid, String name, Integer age){
-        this(email, name, uid, age, null);
+        this(email, uid, name, age, null);
     }
 
     @Override
