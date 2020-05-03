@@ -68,6 +68,7 @@ public class FirebaseInterface implements DatabaseInterface {
     private static final String GROUPS = "groups";
     private static final String USERS = "users";
     private static final String EVENT_IMAGES = "event-images";
+    private static final String USER_IMAGES = "user-images";
     private static final String TAG = "FirebaseInterface";
 
     public FirebaseInterface(){}
@@ -109,7 +110,7 @@ public class FirebaseInterface implements DatabaseInterface {
                         if(taskc.isSuccessful()) {
                             // TODO: use getUserByEmail, clean up firestore first
                             getUserByEmail(email, u-> {
-                                User user = new User(email, u.getUid(), u.getName(), u.getAge());
+                                User user = new User(email, u.getUid(), u.getName(), u.getAge(), u.getImageUri());
                                 successHandler.handle(user);
                             }, u->{failureHandler.handle(null);});
                         } else {
@@ -430,11 +431,13 @@ public class FirebaseInterface implements DatabaseInterface {
         user.put("username", username);
         user.put("age", age);
         user.put("email", email) ;
+        user.put("imgUri", null) ; //TODO could ask user for img for now no profile image by default
         getFirestoreInstance(false).collection("users")
                 .add(user)
                 .addOnSuccessListener(documentReference -> {Log.d("SIGN_UP", "DocumentSnapshot added with ID: " + documentReference.getId());
                 successHandler.handle(new User(email, username, username, age));})
-                .addOnFailureListener(e -> {Log.w("SIGN_UP", "Error adding document", e) ; failureHandler.handle(new User(email, username, username, age));});
+                .addOnFailureListener(e -> {Log.w("SIGN_UP", "Error adding document", e) ;
+                failureHandler.handle(new User(email, username, username, age));});
     }
 
     @Override
@@ -520,6 +523,19 @@ public class FirebaseInterface implements DatabaseInterface {
                 .set(event.toHashMap())
                 .addOnSuccessListener(aVoid -> eventHandler.handle(event))
                 .addOnFailureListener(e -> Log.w(TAG, "Error updating the event with id: " + event.getId()));
+    }
+
+    /**
+     * Updates the Event in the Firestore.
+     * The data contained in the event will be merged with already existing data for this event
+     */
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    @Override
+    public void updateUser(User user, UserHandler userHandler) {
+        getFirestoreInstance(false).collection(USERS).document(user.getUid())
+                .set(user.toHashMap())
+                .addOnSuccessListener(aVoid -> userHandler.handle(user))
+                .addOnFailureListener(e -> Log.w(TAG, "Error updating the event with id: " + user.getUid()));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -622,6 +638,36 @@ public class FirebaseInterface implements DatabaseInterface {
                 }
             }
         });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void uploadUserProfileImage(User user, byte[] image, UserHandler handler) {
+        String imageUri = USER_IMAGES + "/" + user.getUid() + ".jpg";
+        user.setImageUri(imageUri);
+        StorageReference imgRef = getStorageInstance(true).getReference().child(imageUri);
+        UploadTask uploadTask = imgRef.putBytes(image);
+        uploadTask
+                .addOnSuccessListener(taskSnapshot -> {
+                    Log.d(TAG, "Image for the event " + user.getUid() + " is successfully uploaded");
+                    handler.handle(user);
+                })
+                .addOnFailureListener(e ->
+                        Log.w(TAG, "Error occurred during the upload of the image for the event " + user.getUid()));
+    }
+
+    public void downloadUserProfileImage(User user, ImageHandler handler) {
+        String eventId = user.getUid();
+        String imageUri = user.getImageUri();
+        if(user.getImageUri() == null) {
+            Log.d(TAG, "image is not set for the user: " + eventId);
+            return;
+        }
+        // TODO: compress images before upload to limit their size
+        final long ONE_MEGABYTE = 1024 * 1024;
+        StorageReference eventImageRef = getStorageInstance(false).getReference().child(imageUri);
+        eventImageRef.getBytes(ONE_MEGABYTE)
+                .addOnSuccessListener(handler::handle)
+                .addOnFailureListener(e -> Log.w(TAG, "Error downloading image " + imageUri + " from firebase storage"));
     }
 }
 

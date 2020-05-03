@@ -40,6 +40,7 @@ public class FirebaseMocker implements DatabaseInterface {
     private List<Event> events;
     private byte[] image;
     private Map<String, Group> groupIdGroupPairs ;
+    private byte[] userImg;
 
     public FirebaseMocker(Map<String, Pair<User, String>> defaultMailAndUserPassPair, List<Event> defaultEvents) {
         Log.d(TAG, "Database mocker init");
@@ -247,6 +248,12 @@ public class FirebaseMocker implements DatabaseInterface {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
+    @Override
+    public void updateUser(User user, UserHandler eventHandler) {
+        eventHandler.handle(user);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private Event findEventWithId(String eventId) {
         boolean eventFound = false;
         Event event = null;
@@ -303,4 +310,28 @@ public class FirebaseMocker implements DatabaseInterface {
                 Toast.LENGTH_SHORT).show();
         emptyHandler.handle();
     }
+
+    @Override
+    public void downloadUserProfileImage(User user, ImageHandler handler) {
+        Log.d(TAG, "downloading the image");
+        // check if the imageUri isn't null
+        if (user.getImageUri() == null) {
+            Log.d(TAG, "image is not set for the event: " + user.getUid());
+        }
+        // handle the image stored in the mocker
+        handler.handle(userImg);
+    }
+
+
+    @Override
+    public void uploadUserProfileImage(User user, byte[] image, UserHandler handler) {
+        Log.d(TAG, "uploading the image");
+        // save the image
+        this.userImg = image;
+        // set the imageUri field of the event
+        user.setImageUri("testImageUri");
+        // handle the updated event
+        handler.handle(user);
+    }
+
 }

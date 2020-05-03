@@ -20,6 +20,7 @@ import ch.epfl.polycrowd.firebase.handlers.OrganizersHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
+import ch.epfl.polycrowd.logic.User;
 
 public interface DatabaseInterface {
 
@@ -91,4 +92,10 @@ public interface DatabaseInterface {
 
     void reauthenticateAndChangeEmail(String email, String curPassword, String newEmail,
                                       EmptyHandler emptyHandler, Context appContext);
+
+    void uploadUserProfileImage(User user, byte[] image, UserHandler handler);
+
+    void downloadUserProfileImage(User user, ImageHandler handler);
+
+    void updateUser(User user, UserHandler userHandler);
 }

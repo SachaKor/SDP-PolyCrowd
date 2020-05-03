@@ -1,23 +1,34 @@
 package ch.epfl.polycrowd.userProfile;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.groupPage.GroupsListActivity;
@@ -26,10 +37,15 @@ import ch.epfl.polycrowd.logic.User;
 
 public class UserProfilePageActivity extends AppCompatActivity {
 
+    public static final int PICK_IMAGE = 1;
     private User user;
     View view;
     AlertDialog dialog;
     EditText editText;
+
+    private byte[] imageInBytes;
+
+    ImageView userImg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,19 +53,36 @@ public class UserProfilePageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         view = LayoutInflater.from(this).inflate(R.layout.activity_user_profile_page, null, false) ;
-        setUpTextFields();
+        setUpViews();
         setContentView(view);
+        userImg = findViewById(R.id.imgUser);
+        user = PolyContext.getCurrentUser();
 
     }
 
-    void setUpTextFields() {
-        //FirebaseUser AuthUser = FirebaseAuth.getInstance().getCurrentUser();
-        //PolyContext.getDatabaseInterface().getUserByEmail(AuthUser.getEmail(), u->Success(u), u->Failure(u));
+    void setUpViews() {
         user = PolyContext.getCurrentUser();
         TextView usernameField = view.findViewById(R.id.profileUserName);
         usernameField.setText(user.getName());
         TextView emailField = view.findViewById(R.id.profileEmail);
         emailField.setText(user.getEmail());
+        downloadUserImage();
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void downloadUserImage() {
+        userImg = findViewById(R.id.imgUser);
+        String imgUri = user.getImageUri();
+        if(null != imgUri) {
+            PolyContext.getDatabaseInterface().downloadUserProfileImage(user, image -> {
+                Bitmap bmp = BitmapFactory.decodeByteArray(image, 0, image.length);
+                imageInBytes = image;
+                userImg.setImageBitmap(bmp);
+            });
+        } else {
+           //leave the default pic (ie dont do anything)
+        }
     }
 
     public void onEventsListClick(View view) {
@@ -91,14 +124,68 @@ public class UserProfilePageActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         PolyContext.getDatabaseInterface().
                                 updateCurrentUserUsername(newUsernameText.getText().toString(),
-                                ()->{setUpTextFields();}  );
+                                ()->{
+                                    setUpViews();}  );
                     }
                 });
         dialog.show();
     }
 
     public void OnUserProfileEditImgClick(View view) {
-        //TODO implement this
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE);
+    }
+
+    /**
+     * Handles the image picked from the gallery
+     */
+    @Override
+    public void onActivityResult(int requestCode, int resultCode,Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK)
+            if(requestCode == PICK_IMAGE) {
+                //data.getData returns the content URI for the selected Image
+                Uri selectedImage = data.getData();
+                userImg.setImageURI(selectedImage);
+                compressAndSetImage();
+            }
+    }
+
+    /**
+     * - Compresses the image to <= 1Mb
+     * - Sets userImg ImageView and imageInBytes attribute
+     */
+    private void compressAndSetImage() {
+        BitmapDrawable bitmapDrawable = ((BitmapDrawable) userImg.getDrawable());
+        final int ONE_MEGABYTE = 1024*1024;
+        int streamLength = ONE_MEGABYTE;
+        int compressQuality = 105;
+        Bitmap bitmap = bitmapDrawable.getBitmap();
+        ByteArrayOutputStream bmpStream = new ByteArrayOutputStream();
+        while (streamLength >= ONE_MEGABYTE && compressQuality > 5) {
+            try {
+                bmpStream.flush();//to avoid out of memory error
+                bmpStream.reset();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            compressQuality -= 5;
+            bitmap.compress(Bitmap.CompressFormat.JPEG, compressQuality, bmpStream);
+            byte[] bmpPicByteArray = bmpStream.toByteArray();
+            streamLength = bmpPicByteArray.length;
+        }
+
+        imageInBytes = bmpStream.toByteArray();
+        // upload the image to the storage
+        //TODO update image stored in user!(so dont have to ask database everytime
+        //check how sasha did it !
+        PolyContext.getDatabaseInterface().uploadUserProfileImage(user, imageInBytes, event -> {
+                PolyContext.getDatabaseInterface().updateUser(user, event1 -> {
+            });
+        });
+
     }
 
     // Prompt the user to re-provide their sign-in credentials
@@ -188,7 +275,8 @@ public class UserProfilePageActivity extends AppCompatActivity {
                         PolyContext.getDatabaseInterface().reauthenticateAndChangeEmail(emailText.getText().toString(),
                                 passwordText.getText().toString(),
                                 newEmailText.getText().toString(),
-                                ()->{setUpTextFields();},
+                                ()->{
+                                    setUpViews();},
                                 getApplicationContext());
                     }
                 });

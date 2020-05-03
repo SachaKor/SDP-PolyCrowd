@@ -8,6 +8,7 @@ import android.os.Bundle;
 import androidx.annotation.RequiresApi;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.Timestamp;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,19 +24,23 @@ public class User extends Storable implements LocationListener {
     //Sample attributes
     private String name, email, uid, gid;
     private Integer age;
-
+    private String imageUri = null;
     private LatLng location ;
     //private Map<String, String> groupIdEventIdPairs;
 
     //https://stackoverflow.com/questions/17591147/how-to-get-current-location-in-android
 
-    //Sample constructor
-    public User(String email, String uid, String name, Integer age){
+    public User(String email, String uid, String name, Integer age, String uri){
         this.name = name;
         this.age = age;
         this.email = email;
         this.uid = uid;
+        this.imageUri = uri;
         //groupIdEventIdPairs = new HashMap<>() ;
+    }
+
+    public User(String email, String uid, String name, Integer age){
+        this(email, name, uid, age, null);
     }
 
     @Override
@@ -62,6 +67,7 @@ public class User extends Storable implements LocationListener {
         return uid;
     }
 
+    public String getImageUri() { return imageUri; }
 
     public void setUsername(String username) {
         this.name = username;
@@ -70,6 +76,9 @@ public class User extends Storable implements LocationListener {
     public void setEmail(String email) {
         this.email = email;
     }
+
+    public void setImageUri(String imageUri) { this.imageUri = imageUri; }
+
 
     /*public Map<String, String> getGroupIdEventIdPairs() {
         return groupIdEventIdPairs ;
@@ -94,7 +103,20 @@ public class User extends Storable implements LocationListener {
         Integer real_age = toIntExact((Long)age);
 
         String uid = Objects.requireNonNull(data.get("uid")).toString();
-        return new User(email, uid, username, real_age);
+
+        Object obj = data.get("imgUri");
+        String imgUri = (obj == null)? null : obj.toString();
+
+        return new User(email, uid, username, real_age, imgUri);
+    }
+
+    public Map<String, Object> toHashMap(){
+        Map<String, Object> user = new HashMap<>();
+        user.put("age", this.age);
+        user.put("email", this.email);
+        user.put("username", this.name);
+        user.put("imgUri", imageUri);
+        return user;
     }
 
     @Override

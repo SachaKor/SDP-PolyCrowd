@@ -37,7 +37,7 @@
                 android:src="@drawable/default_user_pic"/>
 
             <ImageView
-                android:id="@+id/profileEditButton"
+                android:id="@+id/profileImgEditButton"
                 android:layout_width="70dp"
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="5dp"
