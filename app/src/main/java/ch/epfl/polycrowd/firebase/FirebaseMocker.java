@@ -23,7 +23,6 @@ import ch.epfl.polycrowd.firebase.handlers.EmptyHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
 import ch.epfl.polycrowd.firebase.handlers.GroupHandler;
-import ch.epfl.polycrowd.firebase.handlers.GroupsHandler;
 import ch.epfl.polycrowd.firebase.handlers.Handler;
 import ch.epfl.polycrowd.firebase.handlers.ImageHandler;
 import ch.epfl.polycrowd.firebase.handlers.OrganizersHandler;
@@ -192,22 +191,6 @@ public class FirebaseMocker implements DatabaseInterface {
         handler.handle(newGroup);
     }
 
-    @Override
-    public void getUserGroups(String userEmail, GroupsHandler handler) {
-        List<Group> userGroups = new ArrayList<>() ;
-        groupIdGroupPairs.values().forEach(group ->
-        {
-            group.getMembers().forEach(u -> {
-                if(u.getEmail().equals(userEmail))
-                    userGroups.add(group) ;
-            } );
-
-            Log.d("FireBaseMocker"," In the FOREACH OF MOCKER");
-        });
-
-        Log.d("FireBaseMocker"," USERgroups SIZE" + userGroups.size());
-        handler.handle(userGroups);
-    }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -312,6 +295,11 @@ public class FirebaseMocker implements DatabaseInterface {
 
     @Override
     public void getGroupByGroupId(String groupId, Handler<Group> groupHandler) {
+
+    }
+
+    @Override
+    public void getUserCollectionByEmails(List<String> userEmails, Handler<List<User>> usersHandler) {
 
     }
 }
