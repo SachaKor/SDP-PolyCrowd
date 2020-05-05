@@ -25,6 +25,7 @@ import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
 import java.text.ParseException;
 import java.util.List;
+import java.util.Set;
 
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.firebase.DatabaseInterface;
@@ -75,7 +76,7 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
             e.printStackTrace();
         }
 
-        List<User> members = group.getMembers();
+        Set<User> members = group.getMembers();
         requestMemberLocations(members);
     }
 
@@ -213,7 +214,7 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
         viewPager.setCurrentItem(0);;
     }
 
-    private void requestMemberLocations(List<User> members) {
+    private void requestMemberLocations(Set<User> members) {
         LocationManager mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         for (User u : members) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {

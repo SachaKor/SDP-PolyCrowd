@@ -10,7 +10,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 
 import ch.epfl.polycrowd.groupPage.GroupsListActivity;
 import ch.epfl.polycrowd.logic.Group;
@@ -37,9 +37,9 @@ public class GroupsListActivityTest {
         AndroidTestHelper.SetupMockDBI();
         testUser = AndroidTestHelper.getNewUser() ;
         PolyContext.setCurrentUser(testUser) ;
-        group0 = new Group("testGid0", "testEvent0", new ArrayList<>()) ;
+        group0 = new Group("testGid0", "testEvent0", new HashSet<>()) ;
         group0.addMember(testUser);
-        group1 = new Group("testGid1", "testEvent1", new ArrayList<>()) ;
+        group1 = new Group("testGid1", "testEvent1", new HashSet<>()) ;
         group1.addMember(testUser);
         PolyContext.getDatabaseInterface().createGroup(group0, gr -> {});
         PolyContext.getDatabaseInterface().createGroup(group1, gr -> {});
@@ -80,6 +80,5 @@ public class GroupsListActivityTest {
         assert(PolyContext.getCurrentUser() == testUser) ;
         assert(PolyContext.getCurrentGroup() == group) ;
     }
-
 
 }

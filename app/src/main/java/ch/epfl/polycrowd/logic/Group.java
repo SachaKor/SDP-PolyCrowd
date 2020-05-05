@@ -4,20 +4,22 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Group extends Storable {
 
     private String gid;
     private String eventId;
-    private List<User> members;
+    //TODO Make this a set instead of a list
+    private Set<User> members;
 
-    public Group(String gid, String eventId, List<User> members){
+    public Group(String gid, String eventId, Set<User> members){
         this.gid = gid;
         this.eventId = eventId;
         this.members = members;
@@ -26,7 +28,7 @@ public class Group extends Storable {
     // Testing constructor
     public Group()  {
         this.eventId = "DEBUGEVENTIDWHAT";
-        this.members = new ArrayList<>();
+        this.members = new HashSet<>();
         members.add(new User("fake@fake.com", "FAKEFAKEFAKEFAKE", "Fake John", 1));
     }
 
@@ -38,7 +40,7 @@ public class Group extends Storable {
         return m;
     }
 
-    public List<User> getMembers() {
+    public Set<User> getMembers() {
         return members;
     }
 
@@ -56,7 +58,7 @@ public class Group extends Storable {
     }
 
     public static Group getFromDocument(Map<String, Object> data) {
-        List<User> members = (List<User>) Objects.requireNonNull(data.get("members"));
+        Set<User> members = new HashSet<>((List<User>) Objects.requireNonNull(data.get("members")));
         String gid = Objects.requireNonNull(data.get("groupId")).toString();
         String eventId = Objects.requireNonNull(data.get("eventId")).toString();
 

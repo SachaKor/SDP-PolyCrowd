@@ -1,6 +1,7 @@
 package ch.epfl.polycrowd.groupPage;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +12,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
 
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.logic.PolyContext;
@@ -19,6 +21,7 @@ import ch.epfl.polycrowd.logic.User;
 
 public class GroupMemberListFragment extends Fragment {
 
+    private static final String TAG = "GroupMemberListFragment" ;
     private static GroupMemberListFragment INSTANCE = null ;
 
     View view ;
@@ -51,8 +54,9 @@ public class GroupMemberListFragment extends Fragment {
         members.add(new User("user_email@mail", "123", "user", 23)) ;
         members.add(new User("user_email@mail", "123", "user", 23)) ; */
         if (PolyContext.getCurrentGroup() != null) {
-            List<User> members = PolyContext.getCurrentGroup().getMembers();
-            mRecyclerView.setAdapter(new MemberAdapter(this.getContext(), members));
+            Set<User> members = PolyContext.getCurrentGroup().getMembers();
+            Log.d(TAG, "Number of members is" + members.size()) ;
+            mRecyclerView.setAdapter(new MemberAdapter(this.getContext(), new ArrayList<>(members)));
         }
     }
 }
