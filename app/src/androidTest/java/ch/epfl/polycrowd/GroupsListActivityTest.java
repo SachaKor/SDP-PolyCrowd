@@ -2,6 +2,7 @@ package ch.epfl.polycrowd;
 
 import android.content.Intent;
 
+import androidx.test.espresso.Espresso;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.rule.ActivityTestRule;
 
@@ -56,14 +57,29 @@ public class GroupsListActivityTest {
     }
 
     @Test
-    public void setsCurrentGroupCorrectlyBeforeLaunchingGroupPageActivity(){
-        onView(withText(group0.getGid())).check(matches((isDisplayed()))).perform(ViewActions.click());
-        AndroidTestHelper.sleep();
-        assert(PolyContext.getCurrentUser() == testUser) ;
-        assert(PolyContext.getCurrentGroup() == group0) ;
-
+    public void setsCurrentGroupCorrectlyBeforeLaunchingGroupPageActivityGroup0(){
+     selectGroup(group0);
     }
 
+    @Test
+    public void setsCurrentGroupCorrectlyBeforeLaunchingGroupPageActivityGroup1(){
+        selectGroup(group1);
+    }
+
+    @Test
+    public void setsCurrentGroupBeforeLaunchingGroupPageActivityWithPressBack(){
+        selectGroup(group0);
+        Espresso.pressBack();
+        selectGroup(group1);
+    }
+
+
+    private void selectGroup(Group group){
+        onView(withText(group.getGid())).check(matches((isDisplayed()))).perform(ViewActions.click());
+        AndroidTestHelper.sleep();
+        assert(PolyContext.getCurrentUser() == testUser) ;
+        assert(PolyContext.getCurrentGroup() == group) ;
+    }
 
 
 }
