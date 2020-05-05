@@ -2,6 +2,7 @@ package ch.epfl.polycrowd;
 
 import android.content.Intent;
 
+import androidx.test.espresso.action.ViewActions;
 import androidx.test.rule.ActivityTestRule;
 
 import org.junit.Before;
@@ -52,6 +53,15 @@ public class GroupsListActivityTest {
         onView(withText(group1.getGid())).check(matches((isDisplayed()))) ;
         onView(withText(group0.getEventId())).check(matches((isDisplayed()))) ;
         onView(withText(group1.getEventId())).check(matches((isDisplayed()))) ;
+    }
+
+    @Test
+    public void setsCurrentGroupCorrectlyBeforeLaunchingGroupPageActivity(){
+        onView(withText(group0.getGid())).check(matches((isDisplayed()))).perform(ViewActions.click());
+        AndroidTestHelper.sleep();
+        assert(PolyContext.getCurrentUser() == testUser) ;
+        assert(PolyContext.getCurrentGroup() == group0) ;
+
     }
 
 
