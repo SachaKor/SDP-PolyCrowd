@@ -186,7 +186,7 @@ public class FirebaseMocker implements DatabaseInterface {
 
     @Override
     public void createGroup(Group group, GroupHandler handler) {
-        Group newGroup = new Group(group.getGid(), group.getEventId(), new ArrayList<>()) ;
+        Group newGroup = new Group(group.getGid(), group.getEventId(), group.getMembers()) ;
         newGroup.addMember(PolyContext.getCurrentUser());
         groupIdGroupPairs.put(newGroup.getGid(), newGroup) ;
         handler.handle(newGroup);
