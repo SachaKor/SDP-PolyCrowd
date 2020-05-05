@@ -84,6 +84,7 @@ public interface DatabaseInterface {
 
     void removeUserFromGroup(String gid, String uid, EmptyHandler handler) ;
 
+    //TODO, should the argument be a group or the raw arguments of a group in the database?
     void createGroup(Group group, GroupHandler handler) ;
 
     void reauthenticateAndChangePassword(String email, String curPassword, String newPassword, Context appContext);
