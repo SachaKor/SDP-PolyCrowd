@@ -28,11 +28,12 @@ public class GroupsListActivityTest {
 
 
     Group group0, group1 ;
+    User testUser ;
 
     @Before
     public void setUp(){
         AndroidTestHelper.SetupMockDBI();
-        User testUser = AndroidTestHelper.getNewUser() ;
+        testUser = AndroidTestHelper.getNewUser() ;
         PolyContext.setCurrentUser(testUser) ;
         group0 = new Group("testGid0", "testEvent0", new ArrayList<>()) ;
         group0.addMember(testUser);
@@ -46,10 +47,13 @@ public class GroupsListActivityTest {
 
     @Test
     public void userGroupsAreDisplayedCorrectly(){
-        /*onView(withText(group0.getGid())).check(matches((isDisplayed()))) ;
+        assert(PolyContext.getCurrentUser() == testUser) ;
+        onView(withText(group0.getGid())).check(matches((isDisplayed()))) ;
         onView(withText(group1.getGid())).check(matches((isDisplayed()))) ;
         onView(withText(group0.getEventId())).check(matches((isDisplayed()))) ;
-        onView(withText(group1.getEventId())).check(matches((isDisplayed()))) ;*/
+        onView(withText(group1.getEventId())).check(matches((isDisplayed()))) ;
     }
+
+
 
 }
