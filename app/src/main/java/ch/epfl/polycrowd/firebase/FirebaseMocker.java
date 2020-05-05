@@ -319,16 +319,35 @@ public class FirebaseMocker implements DatabaseInterface {
     }
 
     public void getUserGroupIds(String userEmail, Handler<Map<String, String>> groupIdEventIdPairsHandler) {
-
+        Map<String, String> groupIdEventPairs = new HashMap<>() ;
+        groupIdGroupPairs.forEach((gid, g) -> {
+            g.getMembers().forEach(u -> {
+                if( u.getEmail().equals(userEmail)){
+                    groupIdEventPairs.put(gid, g.getEventId()) ;
+                }
+            });
+        });
+        groupIdEventIdPairsHandler.handle(groupIdEventPairs);
     }
 
     @Override
     public void getGroupByGroupId(String groupId, Handler<Group> groupHandler) {
-
+        for(Group g: groupIdGroupPairs.values()){
+            if(g.getGid().equals(groupId)){
+                groupHandler.handle(g);
+                return;
+            }
+        }
     }
 
     @Override
     public void getUserCollectionByEmails(List<String> userEmails, Handler<List<User>> usersHandler) {
-
+        List<User> users = new ArrayList<>() ;
+        for(User u: usersAndPasswords.keySet()){
+            if(userEmails.contains(u.getEmail())){
+                users.add(u) ;
+            }
+        }
+        usersHandler.handle(users);
     }
 }
