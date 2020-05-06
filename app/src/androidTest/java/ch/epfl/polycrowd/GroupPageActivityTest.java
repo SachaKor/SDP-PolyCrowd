@@ -20,6 +20,7 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static java.lang.Thread.sleep;
 import static org.hamcrest.Matchers.not;
 
 public class GroupPageActivityTest {
@@ -68,8 +69,18 @@ public class GroupPageActivityTest {
     public void switchesToMapFragmentOnUserClick(){
         navigateToFragment(false);
         AndroidTestHelper.sleep();
+        try {
+            sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         onView(withText(testUser0.getEmail())).check(matches((isDisplayed()))).perform(ViewActions.click()) ;
         AndroidTestHelper.sleep();
+        try {
+            sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         onView(withText(testUser0.getEmail())).check(matches(not(isDisplayed()))) ;
         onView(withText(testUser1.getEmail())).check(matches(not(isDisplayed()))) ;
         onView(withText(testUser0.getName())).check(matches(not(isDisplayed()))) ;
