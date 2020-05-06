@@ -20,6 +20,7 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.Matchers.not;
 
 public class GroupPageActivityTest {
     @Rule
@@ -56,13 +57,31 @@ public class GroupPageActivityTest {
     @Test
     public void userListShowsCorrectlyMembersOfGroup(){
         //First navigate to user-list fragment
-        assert(PolyContext.getCurrentUser() == testUser0) ;
-        assert(PolyContext.getCurrentGroup() == group1) ;
-        AndroidTestHelper.sleep();
-        onView(withText(SECOND_FRAG_TITLE)).perform(ViewActions.click()) ;
+        navigateToFragment(false);
         onView(withText(testUser0.getEmail())).check(matches((isDisplayed()))) ;
         onView(withText(testUser1.getEmail())).check(matches((isDisplayed()))) ;
         onView(withText(testUser0.getName())).check(matches((isDisplayed()))) ;
         onView(withText(testUser1.getName())).check(matches((isDisplayed()))) ;
+    }
+
+    @Test
+    public void switchesToMapFragmentOnUserClick(){
+        navigateToFragment(false);
+        onView(withText(testUser0.getEmail())).check(matches((isDisplayed()))).perform(ViewActions.click()) ;
+        onView(withText(testUser0.getEmail())).check(matches(not(isDisplayed()))) ;
+        onView(withText(testUser1.getEmail())).check(matches(not(isDisplayed()))) ;
+        onView(withText(testUser0.getName())).check(matches(not(isDisplayed()))) ;
+        onView(withText(testUser1.getName())).check(matches(not(isDisplayed()))) ;
+    }
+
+    private void navigateToFragment(boolean isMapFrag){
+        assert(PolyContext.getCurrentGroup() == group1) ;
+        assert(PolyContext.getCurrentUser() == testUser0) ;
+        AndroidTestHelper.sleep();
+        if(isMapFrag){
+            onView(withText(FIRST_FRAG_TITLE)).perform(ViewActions.click()) ;
+        } else{
+            onView(withText(SECOND_FRAG_TITLE)).perform(ViewActions.click()) ;
+        }
     }
 }
