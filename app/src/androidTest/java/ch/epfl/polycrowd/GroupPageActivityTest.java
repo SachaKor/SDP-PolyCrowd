@@ -67,7 +67,9 @@ public class GroupPageActivityTest {
     @Test
     public void switchesToMapFragmentOnUserClick(){
         navigateToFragment(false);
+        AndroidTestHelper.sleep();
         onView(withText(testUser0.getEmail())).check(matches((isDisplayed()))).perform(ViewActions.click()) ;
+        AndroidTestHelper.sleep();
         onView(withText(testUser0.getEmail())).check(matches(not(isDisplayed()))) ;
         onView(withText(testUser1.getEmail())).check(matches(not(isDisplayed()))) ;
         onView(withText(testUser0.getName())).check(matches(not(isDisplayed()))) ;
