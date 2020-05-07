@@ -20,8 +20,10 @@ import java.io.File;
 import java.util.Date;
 import java.util.List;
 
+import ch.epfl.polycrowd.EditTextActivity;
 import ch.epfl.polycrowd.GroupInviteActivity;
 import ch.epfl.polycrowd.R;
+import ch.epfl.polycrowd.Utils;
 import ch.epfl.polycrowd.authentification.LoginActivity;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
@@ -198,6 +200,13 @@ public class FrontPageActivity extends AppCompatActivity {
                 }
             }
         }, getIntent());
+    }
+
+    /**
+     * TODO: delete
+     */
+    public void toEditPage(View view) {
+        Utils.navigate(this, EditTextActivity.class);
     }
 
 }

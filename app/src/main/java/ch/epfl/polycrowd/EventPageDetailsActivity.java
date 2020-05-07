@@ -17,7 +17,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -33,15 +32,11 @@ import com.google.firebase.dynamiclinks.DynamicLink;
 import com.google.firebase.dynamiclinks.DynamicLink.SocialMetaTagParameters;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
-import org.w3c.dom.Text;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 import ch.epfl.polycrowd.logic.Event;
@@ -70,12 +65,11 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     private Button inviteOrganizerButton, scheduleButton, cancel;
     private Button submitChanges;
     private FloatingActionButton editEventButton;
-    private TextView eventTitle, start,end, eventDescription, type;
-    private EditText eventTitleEdit, eventDescriptionEdit, startEdit,endEdit, urlEdit;
-    private Switch isPublicEdit, sosEdit;
-    private Spinner typeEdit;
-    private Set<View> textFields;
-    private Set<EditText> editFields;
+    private TextView eventTitle, start,end, eventDescription, url;
+    private Switch isPublicSwitch, sosSwitch;
+    private Spinner eventTypeEdit;
+    private TextView eventType;
+    private Set<EditText> textFields;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -106,71 +100,26 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         }
     }
 
-    private void setEdition(View t, int v){
-        t.setVisibility(v);
-    }
-    private void setAllEditTexts(int  text, int edit){
-        for (View t : this.textFields){
-            setEdition(t,text);
-        }
-        for(View e : this.editFields){
-            setEdition(e, edit);
-        }
-    }
-
     private void initFields(){
         eventTitle = findViewById(R.id.event_details_title);
-        eventTitleEdit= findViewById(R.id.event_details_title_edit);
         eventDescription = findViewById(R.id.event_details_description);
-        eventDescriptionEdit = findViewById(R.id.event_details_description_edit);
         start = findViewById(R.id.event_details_start);
-        startEdit = findViewById(R.id.event_details_start_edit);
         end = findViewById(R.id.event_details_end);
-        endEdit = findViewById(R.id.event_details_end_edit);
-        urlEdit = findViewById(R.id.event_details_url_edit);
+        url = findViewById(R.id.event_details_url_edit);
         eventImg = findViewById(R.id.event_details_img);
-        type = findViewById(R.id.event_type);
-        typeEdit = findViewById(R.id.event_type_edit);
-        sosEdit = findViewById(R.id.event_sos_edit);
-        isPublicEdit = findViewById(R.id.event_public_edit);
+        eventTypeEdit = findViewById(R.id.event_type_edit);
+        eventType = findViewById(R.id.event_type);
+        sosSwitch = findViewById(R.id.event_sos_edit);
+        isPublicSwitch = findViewById(R.id.event_public_edit);
         downloadEventImage();
         editImg = findViewById(R.id.event_details_edit_img);
         inviteOrganizerButton = findViewById(R.id.invite_organizer_button);
         submitChanges = findViewById(R.id.event_details_submit);
         editEventButton = findViewById(R.id.event_details_fab);
         cancel = findViewById(R.id.event_details_cancel);
-    }
-    private void fillFields(){
-        eventTitleEdit.setText(curEvent.getName());
-        eventDescriptionEdit.setText(curEvent.getDescription());
-        startEdit.setText(Event.dateToString(curEvent.getStart()));
-        endEdit.setText(Event.dateToString(curEvent.getEnd()));
-        urlEdit.setText(curEvent.getCalendar());
-        typeEdit.setSelection(curEvent.getType().ordinal());
-        sosEdit.setChecked(curEvent.isEmergencyEnabled());
-        isPublicEdit.setChecked(curEvent.getPublic());
-        refreshTextViews();
-    }
-    private void refreshTextViews(){
-        eventTitle.setText(eventTitleEdit.getText());
-        eventDescription.setText(eventDescriptionEdit.getText());
-        start.setText(startEdit.getText());
-        end.setText(endEdit.getText());
-        type.setText(typeEdit.getSelectedItem().toString());
+        textFields = new HashSet<>(Arrays.asList(new View[]{eventTitle, eventDescription, start,end}));
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void setUpViews() {
-        // Initializing field objects
-        initFields();
-
-        // Filling edit text set
-        this.editFields = new HashSet<>(Arrays.asList(new View []{cancel,eventTitleEdit, eventDescriptionEdit,startEdit,endEdit, typeEdit,urlEdit, isPublicEdit, sosEdit}));
-        this.textFields = new HashSet<>(Arrays.asList(new View[]{eventTitle, eventDescription, start,end, type}));
-
-        // Setting content
-        fillFields();
-    }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void downloadEventImage() {
@@ -210,12 +159,13 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         try {
             dbi.getEventById(eventId, event -> {
                 initRecyclerView(event.getOrganizers());
-                setUpViews();
+                initFields();
                 // Check logged-in user => do not show invite button if user isn't organizer
                 User user = PolyContext.getCurrentUser();
                 if(user == null || event.getOrganizers().indexOf(user.getEmail()) == -1) {
                     Log.d(TAG, "current user is not an organizer");
                     currentUserIsOrganizer = false;
+                    editEventButton.setVisibility(View.INVISIBLE);
                 } else {
                     currentUserIsOrganizer = true;
                     setUpOrganizerPrivileges();
@@ -232,11 +182,8 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     }
 
     private void setEditing(boolean enable) {
-        Log.d(TAG, "setting editing mode to " + enable);
         int visibilityEdit = enable ? View.VISIBLE : View.INVISIBLE;
-        int visibilityText = enable? View.INVISIBLE: View.VISIBLE;
         int visibilityFab = enable ? View.INVISIBLE : View.VISIBLE;
-        //int textInputType = enable ? InputType.TYPE_CLASS_TEXT : InputType.TYPE_NULL;
         // set the "Organizer Invite" button visible
         inviteOrganizerButton.setVisibility(visibilityEdit);
         // set the "Submit Changes" button visible
@@ -244,14 +191,14 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         // set the "Edit" floating button invisible until the changes submitted
         editEventButton.setVisibility(visibilityFab);
         editImg.setVisibility(visibilityEdit);
-        /*
-        eventTitle.setInputType(textInputType);
-        eventDescription.setInputType(textInputType);
-        start.setInputType(textInputType);
-        end.setInputType(textInputType);*/
-        //setAllEditTexts(enable);
-        refreshTextViews();
-        setAllEditTexts(visibilityText, visibilityEdit);
+
+        for(EditText t : textFields) {
+            setEditTextEditable(t, enable);
+        }
+
+        eventTypeEdit.setVisibility(visibilityEdit);
+        eventType.setVisibility(visibilityFab);
+
     }
 
     public void onEditImageClicked(View view) {
@@ -309,14 +256,14 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     }
 
     private void updateCurrentEvent() {
-        curEvent.setName(eventTitleEdit.getText().toString());
-        curEvent.setDescription(eventDescriptionEdit.getText().toString());
-        curEvent.setStart(Event.stringToDate(startEdit.getText().toString()));
-        curEvent.setEnd(Event.stringToDate(endEdit.getText().toString()));
-        curEvent.setCalendar(urlEdit.getText().toString());
-        curEvent.setEmergencyEnabled(sosEdit.isChecked());
-        curEvent.setPublic(isPublicEdit.isChecked());
-        curEvent.setType(Event.EventType.valueOf(typeEdit.getSelectedItem().toString().toUpperCase()));
+        curEvent.setName(eventTitle.getText().toString());
+        curEvent.setDescription(eventDescription.getText().toString());
+        curEvent.setStart(Event.stringToDate(start.getText().toString()));
+        curEvent.setEnd(Event.stringToDate(end.getText().toString()));
+        curEvent.setCalendar(url.getText().toString());
+        curEvent.setEmergencyEnabled(sosSwitch.isChecked());
+        curEvent.setPublic(isPublicSwitch.isChecked());
+        curEvent.setType(Event.EventType.valueOf(eventTypeEdit.getSelectedItem().toString().toUpperCase()));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -380,8 +327,16 @@ public class EventPageDetailsActivity extends AppCompatActivity {
                 .setPositiveButton("OK", (dialog, which) -> dialog.cancel())
                 .show();
     }
+
     public void clickSchedule(View view){
         Intent intent = new Intent(this, ScheduleActivity.class);
         startActivity(intent);
     }
+
+    private void setEditTextEditable(EditText editText, boolean editable) {
+        editText.setFocusable(false);
+        editText.setEnabled(false);
+        editText.setCursorVisible(false);
+    }
+
 }
