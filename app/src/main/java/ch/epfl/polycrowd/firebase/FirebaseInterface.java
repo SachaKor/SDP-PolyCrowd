@@ -1,15 +1,24 @@
 package ch.epfl.polycrowd.firebase;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.firestore.CollectionReference;
@@ -43,11 +52,17 @@ import ch.epfl.polycrowd.firebase.handlers.EmptyHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
 import ch.epfl.polycrowd.firebase.handlers.GroupHandler;
+
+import ch.epfl.polycrowd.firebase.handlers.Handler;
+
 import ch.epfl.polycrowd.firebase.handlers.ImageHandler;
 import ch.epfl.polycrowd.firebase.handlers.OrganizersHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
+
+import ch.epfl.polycrowd.logic.PolyContext;
+
 import ch.epfl.polycrowd.logic.User;
 
 /**
@@ -67,7 +82,11 @@ public class FirebaseInterface implements DatabaseInterface {
     private static final String GROUPS = "groups";
     private static final String USERS = "users";
     private static final String EVENT_IMAGES = "event-images";
+
+    private static final String USER_IMAGES = "user-images";
+
     private static final String EVENT_MAPS = "event-maps";
+
     private static final String TAG = "FirebaseInterface";
 
     public FirebaseInterface(){}
@@ -108,8 +127,10 @@ public class FirebaseInterface implements DatabaseInterface {
                     .addOnCompleteListener(taskc -> {
                         if(taskc.isSuccessful()) {
                             // TODO: use getUserByEmail, clean up firestore first
-                            User user = new User(email, taskc.getResult().getUser().getUid(), "username", 3);
-                            successHandler.handle(user);
+                            getUserByEmail(email, u-> {
+                                User user = new User(email, u.getUid(), u.getName(), u.getAge(), u.getImageUri());
+                                successHandler.handle(user);
+                            }, u->{failureHandler.handle(null);});
                         } else {
                             failureHandler.handle(null);
                         }
@@ -205,6 +226,7 @@ public class FirebaseInterface implements DatabaseInterface {
         final String TAG1 = "getEventById";
             Log.d(TAG, TAG1 + " is not mocked");
             Log.d(TAG, TAG1 + " event id: " + eventId);
+
             getFirestoreInstance(false).collection(EVENTS)
                     .document(eventId).get()
                     .addOnSuccessListener(documentSnapshot -> {
@@ -215,77 +237,87 @@ public class FirebaseInterface implements DatabaseInterface {
                     }).addOnFailureListener(e -> Log.e(TAG, "Error retrieving document with id " + eventId));
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public void getGroupByUserAndEvent(String eventId, String userEmail, GroupHandler groupHandler) {
+    @Override
+    public void getUserGroupIds(String userEmail, Handler<Map<String, String>> groupIdEventIdPairsHandler){
         final String TAG1 = "getGroupByUserAndEvent";
         Log.d(TAG, TAG1 + " is not mocked");
         getFirestoreInstance(false).collection(GROUPS)
-                .whereEqualTo("eventId", eventId)
                 .whereArrayContains("members", userEmail)
                 .get()
                 .addOnSuccessListener(documentSnapshots -> {
                     Log.d(TAG, TAG1 + " success");
-                    if(documentSnapshots.size() > 1){
-                        Log.e(TAG, TAG1 + ", more than one group containing a user given one event.");
-                        groupHandler.handle(null);
-                        return;
-                    }
-                    if(documentSnapshots.size() < 1){
+                    if (documentSnapshots.size() < 1) {
                         // That user is in no group !
                         Log.e(TAG, TAG1 + ", less than one group containing a user given one event.");
-                        groupHandler.handle(null);
+                        groupIdEventIdPairsHandler.handle(null);
                         return;
                     }
 
-                    // Replace stored list of emails with actual User objects.
-                    // Doing many requests like that seems to be the correct Firebase join meta.
-                    DocumentSnapshot d = documentSnapshots.getDocuments().get(0);
-                    Map<String, Object> data = d.getData();
-                    List<String> emails = new ArrayList<>((List<String>) data.get(MEMBERS));
-
-                    ArrayList<User> collected_users = new ArrayList<>(emails.size());
-                    AtomicInteger index = new AtomicInteger(0);
-
-                    for(String mail : emails){
-                        getUserByEmail(mail, user -> {
-                            int this_index = index.getAndIncrement();
-                            collected_users.add(user);
-                            Log.w(TAG, "get user number " + this_index + ": " + user.getEmail());
-
-                            // Done. Only one thread continues here.
-                            if(this_index == emails.size()-1){
-                                Log.w(TAG, "done collecting users");
-                                data.put(MEMBERS, collected_users);
-                                data.put("gid", d.getId());
-                                Group group = Group.getFromDocument(data);
-                                groupHandler.handle(group);
-                                return;
-                            }
-                        }, user -> {
-                            Log.e(TAG1, "Failure handler called. User with email " + mail + " could not be retrieved");
-                        });
+                    Map<String, String> groupIdEventIdPairs = new HashMap<>();
+                    for(DocumentSnapshot d: documentSnapshots){
+                        String groupId = (String) d.get("groupId") ;
+                        String eventId = (String) d.get("eventId") ;
+                        groupIdEventIdPairs.put(groupId, eventId) ;
                     }
-                })
-                .addOnFailureListener(e -> {
-                    // That user is in no group !
-                    groupHandler.handle(null);
-                    return;
-                });
+                    Log.d(TAG, "GOES HERE") ;
+                    groupIdEventIdPairsHandler.handle(groupIdEventIdPairs);
+                }) ;
     }
 
-    public void createGroup(String eventId, GroupHandler handler){
+    @Override
+    public void getGroupByGroupId(String groupId, Handler<Group> groupHandler) {
+            getFirestoreInstance(false).collection(GROUPS).whereEqualTo("groupId", groupId).get().addOnSuccessListener(
+                    queryDocumentSnapshots ->{
+                        if (queryDocumentSnapshots.size() == 1){
+                            DocumentSnapshot groupDoc = queryDocumentSnapshots.getDocuments().get(0) ;
+                            Map<String, Object> data = groupDoc.getData() ;
+                            List<String> userEmails = (List<String>) data.get(MEMBERS) ;
+
+                            PolyContext.getDatabaseInterface().getUserCollectionByEmails(userEmails,
+                                    fetchedUsers -> {
+                                        Map<String, Object> groupData = new HashMap<>() ;
+                                        groupData.put("groupId", data.get("groupId")) ;
+                                        groupData.put("eventId", data.get("eventId")) ;
+                                        groupData.put("members", fetchedUsers) ;
+                                        Group group = Group.getFromDocument(groupData) ;
+                                        groupHandler.handle(group);
+                                    }) ;
+                        } else{
+                            groupHandler.handle(null);
+                        }
+
+                    } ).addOnFailureListener(e -> groupHandler.handle(null)) ;
+    }
+
+    public void getUserCollectionByEmails(List<String> userEmails, Handler<List<User>> usersHandler) {
+        getFirestoreInstance(false).collection(USERS).whereIn("email", userEmails).get().addOnSuccessListener(queryDocumentSnapshots -> {
+            List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments() ;
+            List<User> users = new ArrayList<>() ;
+            for(DocumentSnapshot doc: docs){
+                Map<String, Object> userData = doc.getData() ;
+                userData.put("uid", doc.getId()) ;
+                users.add(User.getFromDocument(userData))  ;
+            }
+            usersHandler.handle(users);
+        }) ;
+    }
+
+    //TODO
+    //What's the diff between someCallback(String arg1, Handler<E> arg2) rather than specifiying E ?
+    @Override
+    public void createGroup(Group group, GroupHandler handler){
         final String TAG1 = "createGroup";
-        if(eventId == null) {
+        if(group.getEventId() == null) {
             Log.w(TAG, TAG1 + " eventId id is null");
             return;
         }
-            Group g = new Group("", eventId, new ArrayList<>());
+            group.addMember(PolyContext.getCurrentUser());
             getFirestoreInstance(false).collection(GROUPS)
-                    .add(g.getRawData())
+                    .add(group.getRawData())
                     .addOnSuccessListener(documentReference -> {
-                        Log.e("CREATEGROUP", g.getGid());
-                        g.setGid(documentReference.getId());
-                        handler.handle(g);
+                        Log.e("CREATEGROUP", group.getGid());
+                        group.setGid(documentReference.getId());
+                        handler.handle(group);
             }).addOnFailureListener(e -> Log.e(TAG, "Error adding new group : " + e));
 
     }
@@ -413,11 +445,13 @@ public class FirebaseInterface implements DatabaseInterface {
         user.put("username", username);
         user.put("age", age);
         user.put("email", email) ;
+        user.put("imgUri", null) ; //TODO could ask user for img for now no profile image by default
         getFirestoreInstance(false).collection("users")
                 .add(user)
                 .addOnSuccessListener(documentReference -> {Log.d("SIGN_UP", "DocumentSnapshot added with ID: " + documentReference.getId());
                 successHandler.handle(new User(email, username, username, age));})
-                .addOnFailureListener(e -> {Log.w("SIGN_UP", "Error adding document", e) ; failureHandler.handle(new User(email, username, username, age));});
+                .addOnFailureListener(e -> {Log.w("SIGN_UP", "Error adding document", e) ;
+                failureHandler.handle(new User(email, username, username, age));});
     }
 
     @Override
@@ -544,10 +578,149 @@ public class FirebaseInterface implements DatabaseInterface {
                 .addOnFailureListener(e -> Log.w(TAG, "Error updating the event with id: " + event.getId()));
     }
 
+    /**
+     * Updates the Event in the Firestore.
+     * The data contained in the event will be merged with already existing data for this event
+     */
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    @Override
+    public void updateUser(User user, UserHandler userHandler) {
+        getFirestoreInstance(false).collection(USERS).document(user.getUid())
+                .set(user.toHashMap())
+                .addOnSuccessListener(aVoid -> userHandler.handle(user))
+                .addOnFailureListener(e -> Log.w(TAG, "Error updating the event with id: " + user.getUid()));
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void addSOS(@NonNull String userId, @NonNull String eventId, @NonNull String reason) {
         getFirestoreInstance(false).collection(EVENTS).document(eventId).update("sos."+userId,reason).addOnFailureListener(e-> Log.w(TAG, "addSOS:onFailure",e));
+    }
+
+    public void reauthenticateAndChangePassword(String email, String curPassword, String newPassword, Context appContext) {
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            AuthCredential credential = EmailAuthProvider
+                    .getCredential(email, curPassword);
+            user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        user.updatePassword(newPassword).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    Toast.makeText(appContext, "Successfully changed password",
+                                            Toast.LENGTH_SHORT).show();
+                                    Log.d("resetpassTag", "Password updated");
+                                } else {
+                                    Log.d("resetpassTag", "Error password not updated");
+                                }
+                            }
+                        });
+                    } else {
+                        Toast.makeText(appContext, "Email or password incorrect",
+                                Toast.LENGTH_SHORT).show();
+                        Log.d("resetpassTag", "Error auth failed");
+                    }
+                }
+            });
+
+    }
+
+    public void updateCurrentUserUsername(String newUserName, EmptyHandler updateUserFields) {
+        FirebaseFirestore.getInstance().collection("users")
+                .document(PolyContext.getCurrentUser().getUid()).update("username", newUserName)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("changeUsername", "DocumentSnapshot successfully updated!");
+                        //update username
+                        PolyContext.getCurrentUser().setUsername(newUserName);
+                        updateUserFields.handle();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure( Exception e) {
+                        Log.w("changeUsername", "Error updating document", e);
+                    }
+                });
+    }
+
+    public void reauthenticateAndChangeEmail(String email, String curPassword, String newEmail,
+                                             EmptyHandler updateUserFields, Context appContext) {
+        FirebaseUser authUser = FirebaseAuth.getInstance().getCurrentUser();
+        AuthCredential credential = EmailAuthProvider
+                .getCredential(email, curPassword);
+        authUser.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(Task<Void> task) {
+                if (task.isSuccessful()) {
+                    authUser.updateEmail(newEmail).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Toast.makeText(appContext, "Successfully changed email",
+                                        Toast.LENGTH_SHORT).show();
+                                FirebaseFirestore.getInstance().collection("users")
+                                        .document(PolyContext.getCurrentUser().getUid()).update("email", newEmail)
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                Log.d("changeEmail", "DocumentSnapshot successfully updated!");
+                                                PolyContext.getCurrentUser().setEmail(newEmail);
+                                                updateUserFields.handle();
+                                            }
+                                        })
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure( Exception e) {
+                                                Log.w("changeEmail", "Error updating document", e);
+                                            }
+                                        });
+                                Log.d("resetpassTag", "Email updated");
+                            } else {
+                                Log.d("resetpassTag", "Error email not updated");
+                            }
+                        }
+                    });
+                } else {
+                    Toast.makeText(appContext, "Email or password incorrect",
+                            Toast.LENGTH_SHORT).show();
+                    Log.d("resetpassTag", "Error auth failed");
+                }
+            }
+        });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void uploadUserProfileImage(User user, byte[] image, UserHandler handler) {
+        String imageUri = USER_IMAGES + "/" + user.getUid() + ".jpg";
+        user.setImageUri(imageUri);
+        StorageReference imgRef = getStorageInstance(true).getReference().child(imageUri);
+        UploadTask uploadTask = imgRef.putBytes(image);
+        uploadTask
+                .addOnSuccessListener(taskSnapshot -> {
+                    Log.d(TAG, "Image for the event " + user.getUid() + " is successfully uploaded");
+                    handler.handle(user);
+                })
+                .addOnFailureListener(e ->
+                        Log.w(TAG, "Error occurred during the upload of the image for the event " + user.getUid()));
+    }
+
+    public void downloadUserProfileImage(User user, ImageHandler handler) {
+        String eventId = user.getUid();
+        String imageUri = user.getImageUri();
+        if(user.getImageUri() == null) {
+            Log.d(TAG, "image is not set for the user: " + eventId);
+            return;
+        }
+        // TODO: compress images before upload to limit their size
+        final long ONE_MEGABYTE = 1024 * 1024;
+        StorageReference eventImageRef = getStorageInstance(false).getReference().child(imageUri);
+        eventImageRef.getBytes(ONE_MEGABYTE)
+                .addOnSuccessListener(handler::handle)
+                .addOnFailureListener(e -> Log.w(TAG, "Error downloading image " + imageUri + " from firebase storage"));
     }
 }
 

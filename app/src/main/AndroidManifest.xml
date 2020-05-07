@@ -1,18 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-
     xmlns:tools="http://schemas.android.com/tools"
     package="ch.epfl.polycrowd">
-
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -22,6 +16,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".groupPage.GroupsListActivity"></activity>
+        <activity android:name=".userProfile.UserProfilePageActivity" />
+        <activity android:name=".userProfile.UserEventListActivity" />
+        <activity android:name=".groupPage.GroupPageActivity" />
         <activity android:name=".authentification.ResetPasswordActivity" />
         <activity android:name=".authentification.SignUpActivity" />
         <activity android:name=".EventPageDetailsActivity"
@@ -31,8 +29,7 @@
             tools:replace="android:launchMode" />
         <activity android:name=".authentification.LoginActivity" />
         <activity android:name=".EventEditActivity" />
-        <activity android:name=".GroupPageActivity" />
-        <activity android:name=".GroupInviteActivity" />
+        <activity android:name=".groupPage.GroupInviteActivity" />
         <activity android:name=".schedulePage.ScheduleActivity" />
         <activity
             android:name=".frontPage.FrontPageActivity"
@@ -48,7 +45,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-
                 <data
                     android:host="example.com"
                     android:scheme="https" />
@@ -58,7 +54,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".organizerInvite.OrganizerInviteActivity" />
-        <activity android:name=".map.MapActivity"
+        <activity
+            android:name=".map.MapActivity"
             android:label="@string/title_activity_main" />
         <activity android:name=".EmergencyActivity" />
         <!--
@@ -75,9 +72,6 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
-
-
     </application>
-
 
 </manifest>

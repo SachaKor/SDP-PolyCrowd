@@ -1,7 +1,6 @@
 package ch.epfl.polycrowd.logic;
 
 import android.content.Context;
-import android.util.Log;
 
 import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
@@ -16,6 +15,8 @@ public abstract class PolyContext extends Context {
     private static Context previousContext;
     private static String previousPage = "";
     private static boolean mockDynamicLink = false; // for the FrontPage testing
+    private static String groupId  ;
+    private static Group group ;
     private static DatabaseInterface dbInterface  = new FirebaseInterface();
 
     public static void reset(){
@@ -33,21 +34,26 @@ public abstract class PolyContext extends Context {
     public static Event getCurrentEvent(){
         return currentEvent;
     }
+
     public static String getPreviousPage() {
         return previousPage;
     }
     public static Context getPreviousContext(){ return previousContext;}
+  
     public static boolean getMockDynamicLink() { return mockDynamicLink; }
 
     public static User getCurrentUser() {
         return currentUser;
     }
+
     public static void setCurrentUser(User u){
        currentUser= u;
     }
+
     public static void setPreviousPage(String previousPage) {
         PolyContext.previousPage = previousPage;
     }
+
     public static void setPreviousContext(Context previousPage) {
         PolyContext.previousContext= previousPage;
         String[] fullyQualifiedName =previousPage.getClass().getName().split("\\.");
@@ -64,30 +70,19 @@ public abstract class PolyContext extends Context {
         return dbInterface ;
     }
 
+    public static void setCurrentGroupId(String id) {
+       groupId = id;
+    }
 
+    public static String getCurrentGroupId() {
+        return groupId ;
+    }
 
+    public static void setCurrentGroup(Group gr){
+        group = gr ;
+    }
 
-
-    // ----------- Use isRunningTest() to check if u are doing a test ------------------------
-    // https://stackoverflow.com/questions/28550370/how-to-detect-whether-android-app-is-running-ui-test-with-espresso
-    /*private static AtomicBoolean isRunningTest;
-    public static synchronized boolean isRunningTest () {
-        if (null == isRunningTest) {
-            boolean istest;
-
-            try {
-                Class.forName("org.junit.Test");
-                istest = true;
-            } catch (ClassNotFoundException e) {
-                istest = false;
-            }
-
-            isRunningTest = new AtomicBoolean (istest);
-        }
-
-        return isRunningTest.get ();
-    }*/
-
-    // --------------------------------------------------------------------------------------
-
+    public static Group getCurrentGroup(){
+        return group ;
+    }
 }

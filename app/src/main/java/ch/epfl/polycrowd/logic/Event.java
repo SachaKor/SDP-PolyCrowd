@@ -20,6 +20,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
+
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class Event {
 

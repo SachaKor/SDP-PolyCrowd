@@ -20,12 +20,14 @@ import java.io.File;
 import java.util.Date;
 import java.util.List;
 
-import ch.epfl.polycrowd.GroupInviteActivity;
+
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.authentification.LoginActivity;
+import ch.epfl.polycrowd.groupPage.GroupInviteActivity;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.organizerInvite.OrganizerInviteActivity;
+import ch.epfl.polycrowd.userProfile.UserProfilePageActivity;
 
 public class FrontPageActivity extends AppCompatActivity {
 
@@ -33,7 +35,6 @@ public class FrontPageActivity extends AppCompatActivity {
 
     ViewPager viewPager;
     EventPagerAdaptor adapter;
-
     //https://stackoverflow.com/questions/61396588/androidruntime-fatal-exception-androidmapsapi-zoomtablemanager
     private void fixGoogleMapBug() {
         SharedPreferences googleBug = getSharedPreferences("google_bug", Context.MODE_PRIVATE);
@@ -44,13 +45,11 @@ public class FrontPageActivity extends AppCompatActivity {
         }
     }
 
-
     // ------------- ON CREATE ----------------------------------------------------------
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         fixGoogleMapBug();
 
         setContentView(R.layout.activity_front_page);
@@ -87,6 +86,9 @@ public class FrontPageActivity extends AppCompatActivity {
         if(PolyContext.getCurrentUser() != null){
             Button button = findViewById(R.id.button);
             button.setText("LOGOUT");
+            //Also show profile button
+            Button profileButton = findViewById(R.id.goToUserProfileButton) ;
+            profileButton.setVisibility(View.VISIBLE);
             button.setOnClickListener(v -> clickSignOut(v));
         }
     }
@@ -173,6 +175,12 @@ public class FrontPageActivity extends AppCompatActivity {
         recreate();
     }
 
+    public void clickUserProfile(View view){
+        Intent intent = new Intent(this, UserProfilePageActivity.class) ;
+        startActivity(intent) ;
+
+    }
+
 
     // --------- Link --------------------------------------------------------------------
 
@@ -187,6 +195,13 @@ public class FrontPageActivity extends AppCompatActivity {
                         eventName = deepLink.getQueryParameter("eventName");
                 if (eventId != null && eventName != null) {
                     Intent intent = new Intent(c, OrganizerInviteActivity.class);
+                    startActivity(intent);
+                }
+            } else if(lastPathSegment != null && lastPathSegment.equals("inviteGroup")) {
+                String groupId = deepLink.getQueryParameter("groupId");
+                if (groupId != null) {
+                    Intent intent = new Intent(c, GroupInviteActivity.class);
+                    intent.putExtra("groupId", groupId);
                     startActivity(intent);
                 }
             } else if(lastPathSegment != null && lastPathSegment.equals("inviteGroup")) {

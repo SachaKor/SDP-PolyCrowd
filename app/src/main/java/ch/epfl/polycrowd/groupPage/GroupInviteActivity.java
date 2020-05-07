@@ -1,4 +1,4 @@
-package ch.epfl.polycrowd;
+package ch.epfl.polycrowd.groupPage;
 
 import android.content.Intent;
 import android.os.Build;
@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.authentification.LoginActivity;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
