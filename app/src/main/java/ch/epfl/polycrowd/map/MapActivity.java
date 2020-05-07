@@ -22,12 +22,15 @@ import androidx.core.app.ActivityCompat;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
-import ch.epfl.polycrowd.EventEditActivity;
+import java.util.List;
+
 import ch.epfl.polycrowd.EmergencyActivity;
+import ch.epfl.polycrowd.EventEditActivity;
 import ch.epfl.polycrowd.EventPageDetailsActivity;
-import ch.epfl.polycrowd.GroupPageActivity;
-import ch.epfl.polycrowd.authentification.LoginActivity;
 import ch.epfl.polycrowd.R;
+import ch.epfl.polycrowd.authentification.LoginActivity;
+import ch.epfl.polycrowd.groupPage.GroupPageActivity;
+import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 
 import static ch.epfl.polycrowd.ActivityHelper.eventIntentHandler;
@@ -52,14 +55,24 @@ public class MapActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if(PolyContext.getCurrentEvent()==null){
-            //TODO: Return HOME ?
-            Log.d(TAG,"Return to MainActivity");
-        }
+        Event event = PolyContext.getCurrentEvent();
+        if(event != null)
+            eventId = event.getId();
+
+        Log.d(TAG, "event is : " + eventId);
+
+
+        setStatusOfUser();
 
         createButtons();
-        createMap();
-        launchLocationRequest();
+
+        PolyContext.getDatabaseInterface().downloadEventMap(PolyContext.getCurrentEvent() , ev -> {
+            createMap();
+            launchLocationRequest();
+        });
+
+        // createMap();
+        //launchLocationRequest();
     }
 
     @SuppressLint("NewApi")
@@ -106,7 +119,6 @@ public class MapActivity extends AppCompatActivity {
         Button buttonRight = findViewById(R.id.butRight);
         Button buttonLeft = findViewById(R.id.butLeft);
         Button buttonSOS = findViewById(R.id.butSOS);
-        Button buttonEdit = findViewById(R.id.butEdit);
 
         Log.d(TAG, "user status: " + PolyContext.getRole());
 
@@ -174,6 +186,42 @@ public class MapActivity extends AppCompatActivity {
         mapFragment.getMapAsync(mMap);
     }
 
+    // --- BUTTONS CLICKS -------------------------------
+    public void clickSignIn(View view) {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+    }
+
+    public void clickEventDetails(View view) {
+        Intent intent = new Intent(this, EventPageDetailsActivity.class);
+        startActivity(intent);
+    }
+
+
+    public void clickEventEdit(View view){
+        Intent intent = new Intent(this, EventEditActivity.class);
+        startActivity(intent);
+    }
+
+
+    public void clickGroup(View view) {
+        Intent intent = new Intent(this, GroupPageActivity.class);
+        startActivity(intent);
+    }
+
+    /*public void clickGroup(View view) {
+        Intent intent = new Intent(this, GroupPageActivity.class);
+        intent.putExtra("eventId", eventId);
+        startActivity(intent);
+    }*/
+
+    public boolean clickSOS(View view) {
+        Intent intent = new Intent(this, EmergencyActivity.class);
+        startActivity(intent);
+        return true;
+    }
+
+
     void setGuestButtons(Button buttonLeft, Button buttonRight) {
         buttonRight.setText("EVENT DETAILS");
         buttonLeft.setText("LOGIN");
@@ -187,8 +235,9 @@ public class MapActivity extends AppCompatActivity {
         buttonRight.setText("EVENT DETAILS");
         buttonLeft.setText("GROUPS");
 
-        buttonRight.setOnClickListener(v -> eventIntentHandler(this,EventPageDetailsActivity.class));
-        buttonRight.setOnClickListener(v -> eventIntentHandler(this,GroupPageActivity.class));
+        buttonRight.setOnClickListener(v -> clickEventDetails(v));
+        //buttonLeft.setOnClickListener(v -> clickGroup(v));
+
     }
 
     void setOrganiserButtons(Button buttonLeft, Button buttonRight) {

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="editTextChangeUsernameUsername" type="id"/>
+    <item name="editTextChangeEmailEmail" type="id"/>
+    <item name="editTextChangeEmailCurPassword" type="id"/>
+    <item name="editTextChangeEmailNewEmail" type="id"/>
+    <item name="editTextChangePassEmail" type="id"/>
+    <item name="editTextChangePassCurPass" type="id"/>
+    <item name="editTextChangePassNewPass1" type="id"/>
+    <item name="editTextChangePassNewPass2" type="id"/>
+    <item name="changeEmailButton" type="id"/>
+    <item name="changePasswordButton" type="id"/>
+    <item name="changeUsernameButton" type="id"/>
+</resources>

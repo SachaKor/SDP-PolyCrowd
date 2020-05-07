@@ -50,6 +50,9 @@
     <string name="organizer_invite_text">Log in to view the invite</string>
     <string name="organizer_invite_text_1">"You are invited to become an organizer of the event</string>
     <string name="organizer_invite_text_2">Sign in to accept the invitation</string>
+    <string name="goToUserEventsList">Events</string>
+    <string name="goToUserFriendsList">Friends</string>
+    <string name="profile">Profile</string>
     <string name="event_add_success">Event added</string>
     <string name="event_add_failure">Error occurred while adding the event</string>
     <string name="group">Your group</string>
@@ -62,6 +65,7 @@
     <string name="sos_type">What is the reason for the emergency ??</string>
     <string name="invite_security">Invite Security</string>
     <string name="security">Security</string>
+    <string name="my_groups">MyGroups</string>
     <string-array name="sos_type_list">
         <item value="LOSTMINOR">Lost Minor</item>
         <item value="ACCIDENT">Accident</item>

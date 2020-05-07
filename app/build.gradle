@@ -63,13 +63,16 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     androidTestImplementation 'androidx.test:rules:1.2.0'
     androidTestImplementation 'androidx.test:runner:1.2.0'
+
     androidTestImplementation 'androidx.test.espresso:espresso-intents:3.2.0'
+
     //androidTestUtil 'androidx.test:orchestrator:1.2.0'
 
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'androidx.percentlayout:percentlayout:1.0.0'
 
-
+    implementation 'com.google.android.material:material:1.0.0-alpha3'
     implementation 'com.google.firebase:firebase-analytics:17.3.0'
     implementation 'com.google.firebase:firebase-auth:19.3.0'
     implementation 'com.google.firebase:firebase-database:19.2.1'
@@ -93,13 +96,13 @@ dependencies {
 }
 
 
-
 tasks.withType(Test) {
     jacoco.includeNoLocationClasses = true
     jacoco.excludes = ['jdk.internal.*']
 }
 
-task jacocoTestReport(type: JacocoReport){//, dependsOn: ['testDebugUnitTest', 'createDebugCoverageReport']) {
+task jacocoTestReport(type: JacocoReport) {
+//, dependsOn: ['testDebugUnitTest', 'createDebugCoverageReport']) {
 
     reports {
         xml.enabled = true
@@ -108,7 +111,7 @@ task jacocoTestReport(type: JacocoReport){//, dependsOn: ['testDebugUnitTest', '
 
     def mockedClasses = ['**/*FirebaseInterface.*']
     def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', '**/*Test*.*', 'android/**/*.*']
-    def debugTree = fileTree(dir: "$project.buildDir/intermediates/javac/debug/classes", excludes: fileFilter+mockedClasses)
+    def debugTree = fileTree(dir: "$project.buildDir/intermediates/javac/debug/classes", excludes: fileFilter + mockedClasses)
     def mainSrc = "$project.projectDir/src/main/java"
 
     sourceDirectories.from = [mainSrc]

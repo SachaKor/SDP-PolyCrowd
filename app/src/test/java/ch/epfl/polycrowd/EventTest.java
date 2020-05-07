@@ -162,12 +162,7 @@ public class EventTest {
         e.addOrganizer(null);
     }
 
-    @Test
-    public void getSetImage() {
-        final int new_image = R.drawable.balelec;
-        e.setImage(new_image);
-        assertEquals(new_image, e.getImage());
-    }
+
 
     @Test
     public void getSetType() {

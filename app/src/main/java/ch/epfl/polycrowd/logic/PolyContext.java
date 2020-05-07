@@ -89,6 +89,7 @@ public abstract class PolyContext extends Context {
     public static User getCurrentUser() {
         return currentUser;
     }
+
     public static void setCurrentUser(User u){
         currentUser= u;
     }
@@ -107,13 +108,22 @@ public abstract class PolyContext extends Context {
     public static void setInviteRole(Role r){
         inviteRole = r;
     }
+    public static void setCurrentGroupId(String id) {
+       groupId = id;
+    }
 
     public static Role getInviteRole() {
         return inviteRole;
     }
+    public static String getCurrentGroupId() {
+        return groupId ;
+    }
 
     public static void setDBI(DatabaseInterface dbInterfaceInject){
         dbInterface = dbInterfaceInject ;
+    }
+    public static void setCurrentGroup(Group gr){
+        group = gr ;
     }
 
     public static DatabaseInterface getDBI(){
@@ -128,4 +138,7 @@ public abstract class PolyContext extends Context {
         return list;
     }
 
+    public static Group getCurrentGroup(){
+        return group ;
+    }
 }

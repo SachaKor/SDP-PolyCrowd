@@ -1,6 +1,7 @@
 package ch.epfl.polycrowd.frontPage;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -28,6 +29,7 @@ import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 import ch.epfl.polycrowd.eventMemberInvite.EventMemberInviteActivity;
+import ch.epfl.polycrowd.userProfile.UserProfilePageActivity;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class FrontPageActivity extends AppCompatActivity {
@@ -152,6 +154,11 @@ public class FrontPageActivity extends AppCompatActivity {
     }
 
 
+    public void clickUserProfile(View view){
+        Intent intent = new Intent(this, UserProfilePageActivity.class) ;
+        startActivity(intent) ;
+
+    }
 
     // --------- Link --------------------------------------------------------------------
     private void receiveDynamicLink() {
