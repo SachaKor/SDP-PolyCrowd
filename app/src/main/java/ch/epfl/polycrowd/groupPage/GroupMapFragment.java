@@ -29,6 +29,11 @@ import ch.epfl.polycrowd.logic.Group;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 
+//TODO Map functionality extraction:
+// Make GroupMap Fragment not implement OnMapReadyCallBack
+// Instead, make it contain a map-wrapper object which is instantiated in onCreate
+// map wrapper-object
+
 public class GroupMapFragment extends Fragment implements OnMapReadyCallback  {
 
     private static final String TAG = "GroupMapFragment";
