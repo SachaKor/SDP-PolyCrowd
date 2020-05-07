@@ -21,7 +21,7 @@ public class EditTextActivity extends AppCompatActivity {
     }
 
     public void onEditClicked(View view) {
-        text.setFocusable(false);
+        text.setFocusableInTouchMode(false);
         text.setEnabled(false);
         text.setCursorVisible(false);
 //        text.setKeyListener(null);

@@ -49,7 +49,7 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <TextView
+            <EditText
                 android:id="@+id/event_details_title"
                 android:layout_width="377dp"
                 android:layout_height="wrap_content"
@@ -61,7 +61,7 @@
                 android:textStyle="bold" />
 
 
-            <TextView
+            <EditText
                 android:id="@+id/event_details_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -85,7 +85,7 @@
                 android:visibility="invisible" />
 
 
-            <TextView
+            <EditText
                 android:id="@+id/event_details_start"
 
                 android:layout_below="@id/event_details_description"
@@ -96,7 +96,7 @@
                 android:hint="@string/date_format"
                 android:inputType="date" />
 
-            <TextView
+            <EditText
                 android:id="@+id/event_details_end"
                 android:layout_below="@id/event_details_description"
                 android:layout_marginLeft="100dp"

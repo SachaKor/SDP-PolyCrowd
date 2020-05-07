@@ -65,7 +65,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     private Button inviteOrganizerButton, scheduleButton, cancel;
     private Button submitChanges;
     private FloatingActionButton editEventButton;
-    private TextView eventTitle, start,end, eventDescription, url;
+    private EditText eventTitle, start,end, eventDescription, url;
     private Switch isPublicSwitch, sosSwitch;
     private Spinner eventTypeEdit;
     private TextView eventType;
@@ -117,7 +117,8 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         submitChanges = findViewById(R.id.event_details_submit);
         editEventButton = findViewById(R.id.event_details_fab);
         cancel = findViewById(R.id.event_details_cancel);
-        textFields = new HashSet<>(Arrays.asList(new View[]{eventTitle, eventDescription, start,end}));
+        textFields = new HashSet<>(Arrays.asList(new EditText[]{eventTitle, eventDescription, start,end}));
+        setEditing(false);
     }
 
 
@@ -191,6 +192,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         // set the "Edit" floating button invisible until the changes submitted
         editEventButton.setVisibility(visibilityFab);
         editImg.setVisibility(visibilityEdit);
+        cancel.setVisibility(visibilityEdit);
 
         for(EditText t : textFields) {
             setEditTextEditable(t, enable);
@@ -285,6 +287,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
             });
         });
     }
+
     public void onCancelClicked(View view){
         setEditing(false);
         initEvent();
@@ -334,9 +337,9 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     }
 
     private void setEditTextEditable(EditText editText, boolean editable) {
-        editText.setFocusable(false);
-        editText.setEnabled(false);
-        editText.setCursorVisible(false);
+        editText.setFocusableInTouchMode(editable);
+        editText.setEnabled(editable);
+        editText.setCursorVisible(editable);
     }
 
 }
