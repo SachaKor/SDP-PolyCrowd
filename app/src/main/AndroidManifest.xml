@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="ch.epfl.polycrowd">
-
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -23,9 +22,9 @@
         <activity android:name=".groupPage.GroupPageActivity" />
         <activity android:name=".authentification.ResetPasswordActivity" />
         <activity android:name=".authentification.SignUpActivity" />
-        <activity android:name=".EventPageDetailsActivity" />
-        <activity
-            android:name="com.google.firebase.auth.internal.FederatedSignInActivity"
+        <activity android:name=".EventPageDetailsActivity"
+            android:windowSoftInputMode="adjustPan"/>
+        <activity android:name="com.google.firebase.auth.internal.FederatedSignInActivity"
             android:launchMode="standard"
             tools:replace="android:launchMode" />
         <activity android:name=".authentification.LoginActivity" />

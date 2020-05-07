@@ -23,6 +23,7 @@ import ch.epfl.polycrowd.frontPage.FrontPageActivity;
 import ch.epfl.polycrowd.groupPage.GroupsListActivity;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
+import ch.epfl.polycrowd.map.MapActivity;
 
 public class LoginActivity extends AppCompatActivity {
 

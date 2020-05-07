@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -23,7 +24,9 @@ import ch.epfl.polycrowd.firebase.handlers.EmptyHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
 import ch.epfl.polycrowd.firebase.handlers.GroupHandler;
+
 import ch.epfl.polycrowd.firebase.handlers.Handler;
+
 import ch.epfl.polycrowd.firebase.handlers.ImageHandler;
 import ch.epfl.polycrowd.firebase.handlers.OrganizersHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
@@ -110,7 +113,8 @@ public class FirebaseMocker implements DatabaseInterface {
 
     @Override
     public void addEvent(Event event, EventHandler successHandler, EventHandler failureHandler) {
-        events.add(event);
+        if (event.getId() == null) event.setId(String.valueOf(events.size()));
+        events.add(event) ;
         successHandler.handle(event);
     }
 
@@ -192,7 +196,6 @@ public class FirebaseMocker implements DatabaseInterface {
         handler.handle(newGroup);
     }
 
-
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void uploadEventImage(Event event, byte[] image, EventHandler handler) {
@@ -203,6 +206,20 @@ public class FirebaseMocker implements DatabaseInterface {
         event.setImageUri("testImageUri");
         // handle the updated event
         handler.handle(event);
+    }
+
+    @Override
+    public void uploadEventMap(Event event, byte[] file, EventHandler handler) {
+
+        // TODO : load file maybe ?
+        //event.setMapUri(file.getPath());
+        handler.handle(event);
+
+    }
+
+    @Override
+    public void downloadEventMap(Event event, EventHandler handler) {
+        // todo
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)

@@ -10,12 +10,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+
 import java.util.stream.Collectors;
 
 public class Group extends Storable {
 
     private String gid;
     private String eventId;
+
     //TODO Make this a set instead of a list
     private Set<User> members;
 
@@ -31,7 +33,7 @@ public class Group extends Storable {
         this.members = new HashSet<>();
         members.add(new User("fake@fake.com", "FAKEFAKEFAKEFAKE", "Fake John", 1));
     }
-
+  
     @Override
     public Map<String, Object> getRawData() {
         Map<String,Object> m = new HashMap<>();

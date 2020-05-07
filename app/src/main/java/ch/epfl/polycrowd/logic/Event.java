@@ -1,5 +1,6 @@
 package ch.epfl.polycrowd.logic;
 
+import android.net.Uri;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
@@ -8,6 +9,7 @@ import androidx.annotation.RequiresApi;
 import com.google.firebase.Timestamp;
 
 import java.io.File;
+import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -38,11 +40,30 @@ public class Event {
     private String calendar;
     private String description;
     private String id;
-    private int image;
     private String imageUri;
     private Schedule schedule;
     private List<String> organizers;
 
+
+    public InputStream getMapStream() {
+        return mapStream;
+    }
+
+    public void setMapStream(InputStream mapStream) {
+        this.mapStream = mapStream;
+    }
+
+    private InputStream mapStream;
+
+    public String getMapUri() {
+        return mapUri;
+    }
+
+    public void setMapUri(String mapUri) {
+        this.mapUri = mapUri;
+    }
+
+    private String mapUri;
 
     // ---------- Constructors ---------------------------------------------------------
     public Event(@NonNull String owner, @NonNull String name, Boolean isPublic, @NonNull EventType type,
@@ -102,13 +123,6 @@ public class Event {
     }
 
 
-    public int getImage(){
-        return image;
-    }
-    public  void setImage( int im ){
-        image = im;
-    }
-
     public String getDescription(){
         return description;
     }
@@ -116,6 +130,7 @@ public class Event {
         if(description == null)
             this.description = "";
         else
+            // I do this because firebase may append \\\ to a \n
             this.description = description.replaceAll("\\\\n", "\n" );
     }
 
@@ -180,10 +195,10 @@ public class Event {
     public String getImageUri() {
         return imageUri;
     }
-
     public void setImageUri(String imageUri) {
         this.imageUri = imageUri;
     }
+
 
     public boolean isEmergencyEnabled(){ return this.isEmergencyEnabled; }
     public void setEmergencyEnabled(boolean b){
@@ -207,6 +222,7 @@ public class Event {
         event.put("isEmergencyEnabled", this.isEmergencyEnabled.toString());
         event.put("organizers", organizers);
         event.put("imageUri", imageUri);
+        event.put("mapUri" , mapUri);
         return event;
     }
 
@@ -229,6 +245,7 @@ public class Event {
         String imageUri = (String) data.get("imageUri"); // can be null but this is ok
         Event result = new Event(owner, name, isPublic, type, start, end, calendar, desc, emergency, organizers);
         result.setImageUri(imageUri);
+        result.setMapUri( (String) data.get("mapUri"));
         return result;
     }
 
@@ -252,9 +269,13 @@ public class Event {
         return this.schedule;
     }
 
-
+    public static SimpleDateFormat defaultDateFormat = new SimpleDateFormat("dd-MM-yyyy");
     public static String dateToString(Date d, SimpleDateFormat dtf){
         return dtf.format(d);
+    }
+    public static String dateToString(Date d ){ return Event.dateToString(d, Event.defaultDateFormat);}
+    public static Date stringToDate(String s){
+        return stringToDate(s, Event.defaultDateFormat);
     }
     public static Date stringToDate(String s, SimpleDateFormat dtf){
         try {

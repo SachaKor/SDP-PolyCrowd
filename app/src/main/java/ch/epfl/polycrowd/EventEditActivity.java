@@ -2,21 +2,39 @@ package ch.epfl.polycrowd;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Array;
+
+import com.google.maps.android.PolyUtil;
+
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -40,10 +58,14 @@ public class EventEditActivity extends AppCompatActivity {
     private EditText startDate, endDate;
     private Switch isPublicSwitch, isEmergencyEnabled;
     private Spinner eventTypeSpinner;
-    private String eventId;
 
 
+    Button filePicker;
+    byte[] kmlBytes = null;
+    String kmlName = null;
 
+
+    // -------- ON CREATE ----------------------------------------------------------
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,7 +74,39 @@ public class EventEditActivity extends AppCompatActivity {
 
     }
 
+    // -----------------------------------------------------------------------------
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case 10:
+                if (resultCode == RESULT_OK) {
+
+                    try {
+                        InputStream myS = getContentResolver().openInputStream(data.getData());
+                        kmlBytes = Utils.getBytes(myS);
+                        kmlName = Utils.getFileNameFromUri(data.getData());
+                        // TODO : only accept kml file types
+                        Utils.toastPopup(getApplicationContext(), "File Selected ok");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Utils.toastPopup(getApplicationContext(), "File Selected not ok");
+                    }
+                }
+                break;
+        }
+    }
+
+    Intent myFileIntent;
+    // ----- Setup input fields (if modifying an existing event) ------------------
     private void setUpViews() {
+        // show which event is beeing modified
+        TextView titleActivity = findViewById(R.id.event_name);
+        if(PolyContext.getCurrentEvent() == null) titleActivity.setText("new Event");
+        else titleActivity.setText(PolyContext.getCurrentEvent().getName());
+
+
         eventName = findViewById(R.id.EditEventName);
         startDate = findViewById(R.id.EditEventStart);
         endDate = findViewById(R.id.EditEventEnd);
@@ -61,8 +115,15 @@ public class EventEditActivity extends AppCompatActivity {
         scheduleUrl = findViewById(R.id.EditEventCalendar);
         isEmergencyEnabled = findViewById(R.id.EditEventEmergency);
 
-        if (getIntent().hasExtra("eventId")){
-            this.eventId = getIntent().getStringExtra("eventId");
+        filePicker = findViewById(R.id.chose_file);
+        filePicker.setOnClickListener( v -> {
+            myFileIntent = new Intent(Intent.ACTION_GET_CONTENT);
+            myFileIntent.setType("*/*");
+            startActivityForResult(myFileIntent,10);
+        });
+
+
+        if (PolyContext.getCurrentEvent() != null){
 
             EventHandler eventHandler = ev -> {
                 eventName.setText(ev.getName());
@@ -74,35 +135,14 @@ public class EventEditActivity extends AppCompatActivity {
                 eventTypeSpinner.setSelection(ev.getType().ordinal());
                 scheduleUrl.setText(ev.getCalendar());
             };
-            try {
-                System.out.println("############ retreiving event:" + eventId);
-                PolyContext.getDatabaseInterface().getEventById(eventId, eventHandler);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
 
-        }else this.eventId = null;
+            eventHandler.handle(PolyContext.getCurrentEvent());
 
-
+        }
     }
 
 
-    /*
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private LocalDateTime parseDate(String dateStr) {
-        String dateWithTime = dateStr + " 00:00";
-        LocalDateTime date;
-        try {
-            date = dtFormat.parse(dateWithTime).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-        } catch (DateTimeParseException | ParseException e) {
-            Toast.makeText(getApplicationContext(), "Date " + dateStr + " is incorrect", Toast.LENGTH_SHORT).show();
-            return null;
-        }
-
-        return date;
-
-    }*/
-
+    // ----- Check input --------------------------------------------------------
     private boolean hasEmptyFields() {
         Log.d(TAG, "fieldsNotEmpty");
         String eventNameText = eventName.getText().toString();
@@ -122,60 +162,91 @@ public class EventEditActivity extends AppCompatActivity {
         }
 
         return false;
-
     }
 
+
+    // ---- SUBMIT BUTTON ACTION -----------------------------------------------
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void sendEventSubmit(View view) {
-        final EditText evName = findViewById(R.id.EditEventName);
 
-        Log.d(TAG, "Send Event Button Clicked");
-        // Add the event
-        // Add an Event to the firestore
+        // check if the user is logged in
+        User user = PolyContext.getCurrentUser();
+        if(user == null) {
+            Utils.toastPopup(getApplicationContext(), "please Login first") ;
+            return;
+        }
+
+
         // Retrieve the field values from the Edit Event layout
         Boolean isPublic = isPublicSwitch.isChecked();
         String sDate = startDate.getText().toString(),
                 eDate = endDate.getText().toString(),
                 type = eventTypeSpinner.getSelectedItem().toString();
         Boolean hasEmergency = isEmergencyEnabled.isChecked();
+
+
         if(hasEmptyFields()) {
+            //Utils.toastPopup(getApplicationContext(), "fill empty fields") ;
             return;
         }
+
+
         Date startDate = stringToDate(sDate+" 00:00", dtFormat),
                 endDate = stringToDate(eDate+" 00:00", dtFormat);
-
         if(startDate == null || endDate == null) {
+            Utils.toastPopup(getApplicationContext(), "wrong date format") ;
             return;
         }
 
-        // check if the user is logged in
-        User user = PolyContext.getCurrentUser();
 
-        List<String> organizers = new ArrayList<>();
-        organizers.add(user.getEmail());
-        // Create the map containing the event info
-        EditText calendarUrl = findViewById(R.id.EditEventCalendar);
+        List<String> organizers = Arrays.asList( user.getEmail() );
+        if(PolyContext.getCurrentEvent() != null) organizers = PolyContext.getCurrentEvent().getOrganizers();
 
-        // Create the map containing the event info
 
-        Event ev = new Event(user.getUid(), evName.getText().toString(), isPublic,
+        // Create the Event
+        Event ev = new Event(user.getUid(), eventName.getText().toString(), isPublic,
                 Event.EventType.valueOf(type.toUpperCase()),
                 startDate, endDate,
-                calendarUrl.getText().toString(), "", hasEmergency, organizers);
-        // Map<String, Object> event = ev.toHashMap();
-        // add event to the database
-        Context c = this ;
+                scheduleUrl.getText().toString(),
+                "TODO : implement description", hasEmergency, organizers);
+        if(PolyContext.getCurrentEvent() != null) {
+            ev.setId(PolyContext.getCurrentEvent().getId());
+            ev.setImageUri(PolyContext.getCurrentEvent().getImageUri());
+        }
+        ev.setMapUri(kmlName);
+
+
+
+        // upload the Event to Firebase
         EventHandler successHandler = e -> {
             PolyContext.setCurrentEvent(e);
-            Toast.makeText(c, "Event added", Toast.LENGTH_LONG).show();
+
+
+
+
+            if(kmlBytes != null){
+                // downlaod path to firebase
+                PolyContext.getDatabaseInterface().uploadEventMap( ev , kmlBytes , evv -> {
+
+                        Toast.makeText(this, "Event added", Toast.LENGTH_LONG).show();
+                        ch.epfl.polycrowd.Utils.navigate(this, MapActivity.class);
+
+                } );
+            }
+
+
+
         };
-        EventHandler failureHandler = e -> Toast.makeText(c, "Error occurred while adding the event", Toast.LENGTH_LONG).show();
-        if( this.eventId == null) {
+        EventHandler failureHandler = e -> {
+            Toast.makeText(this, "Error occurred while adding the event", Toast.LENGTH_LONG).show();
+        };
+        if( PolyContext.getCurrentEvent() == null) {
             PolyContext.getDatabaseInterface().addEvent(ev, successHandler, failureHandler);
         }else {
-            PolyContext.getDatabaseInterface().patchEventByID(this.eventId, ev, successHandler, failureHandler);
+            PolyContext.getDatabaseInterface().patchEventByID(
+                    PolyContext.getCurrentEvent().getId(),
+                    ev, successHandler, failureHandler);
         }
-        Intent intent = new Intent(this, MapActivity.class);
-        startActivity(intent);
+
     }
 }

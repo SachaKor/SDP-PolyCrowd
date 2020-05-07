@@ -2,11 +2,13 @@ package ch.epfl.polycrowd.firebase;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
+import java.io.InputStream;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +25,10 @@ import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
 import ch.epfl.polycrowd.logic.User;
+import ch.epfl.polycrowd.firebase.handlers.OrganizersHandler;
+import ch.epfl.polycrowd.firebase.handlers.UserHandler;
+import ch.epfl.polycrowd.logic.Event;
+
 
 public interface DatabaseInterface {
 
@@ -73,6 +79,10 @@ public interface DatabaseInterface {
 
     void uploadEventImage(Event event, byte[] image, EventHandler handler);
 
+    void uploadEventMap(Event event , byte[] file , EventHandler handler );
+
+    void downloadEventMap( Event event , EventHandler handler );
+
     void downloadEventImage(Event event, ImageHandler handler);
 
     void updateEvent(Event event, EventHandler eventHandler);
@@ -105,4 +115,5 @@ public interface DatabaseInterface {
     void getGroupByGroupId(String groupId, Handler<Group> groupHandler);
 
     void getUserCollectionByEmails(List<String> userEmails, Handler<List<User>> usersHandler) ;
+
 }

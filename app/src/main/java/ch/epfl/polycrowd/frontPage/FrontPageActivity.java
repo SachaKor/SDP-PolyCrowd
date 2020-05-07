@@ -20,6 +20,7 @@ import java.io.File;
 import java.util.Date;
 import java.util.List;
 
+
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.authentification.LoginActivity;
 import ch.epfl.polycrowd.groupPage.GroupInviteActivity;
@@ -34,7 +35,7 @@ public class FrontPageActivity extends AppCompatActivity {
 
     ViewPager viewPager;
     EventPagerAdaptor adapter;
-
+    //https://stackoverflow.com/questions/61396588/androidruntime-fatal-exception-androidmapsapi-zoomtablemanager
     private void fixGoogleMapBug() {
         SharedPreferences googleBug = getSharedPreferences("google_bug", Context.MODE_PRIVATE);
         if (!googleBug.contains("fixed")) {
@@ -50,6 +51,7 @@ public class FrontPageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         fixGoogleMapBug();
+
         setContentView(R.layout.activity_front_page);
 
         // front page should dispatch the dynamic links
@@ -74,6 +76,7 @@ public class FrontPageActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void setUp() {
+        PolyContext.setCurrentEvent(null);
         toggleLoginLogout();
         setEventModels();
     }
@@ -124,7 +127,7 @@ public class FrontPageActivity extends AppCompatActivity {
                 if(position != 0){
                     Event pointedEvent = events.get(position - 1 );
                     description.setText( pointedEvent.getDescription() );
-                    eventTitle.setText(pointedEvent.getName() );
+                    eventTitle.setText( pointedEvent.getName() );
                 } else {
                     eventTitle.setText("Create an EVENT");
                     description.setText("your journey starts now ! \n sky is the limit");
@@ -161,8 +164,9 @@ public class FrontPageActivity extends AppCompatActivity {
     // --------- Button Activity ----------------------------------------------------------
 
     public void clickSignIn(View view) {
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
+        ch.epfl.polycrowd.Utils.navigate(this, LoginActivity.class);
+        //Intent intent = new Intent(this, LoginActivity.class);
+        //startActivity(intent);
     }
 
     public void clickSignOut(View view) {
@@ -191,8 +195,13 @@ public class FrontPageActivity extends AppCompatActivity {
                         eventName = deepLink.getQueryParameter("eventName");
                 if (eventId != null && eventName != null) {
                     Intent intent = new Intent(c, OrganizerInviteActivity.class);
-                    intent.putExtra("eventId", eventId);
-                    intent.putExtra("eventName", eventName);
+                    startActivity(intent);
+                }
+            } else if(lastPathSegment != null && lastPathSegment.equals("inviteGroup")) {
+                String groupId = deepLink.getQueryParameter("groupId");
+                if (groupId != null) {
+                    Intent intent = new Intent(c, GroupInviteActivity.class);
+                    intent.putExtra("groupId", groupId);
                     startActivity(intent);
                 }
             } else if(lastPathSegment != null && lastPathSegment.equals("inviteGroup")) {
