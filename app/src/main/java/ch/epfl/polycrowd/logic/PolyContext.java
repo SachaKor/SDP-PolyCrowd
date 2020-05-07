@@ -1,7 +1,6 @@
 package ch.epfl.polycrowd.logic;
 
 import android.content.Context;
-import android.util.Log;
 
 import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
@@ -49,10 +48,6 @@ public abstract class PolyContext extends Context {
 
     public static void setCurrentUser(User u){
        currentUser= u;
-    }
-
-    public static String getPreviousPage() {
-        return previousPage;
     }
 
     public static void setPreviousPage(String previousPage) {

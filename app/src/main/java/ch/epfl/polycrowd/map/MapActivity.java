@@ -24,16 +24,12 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
 
-import ch.epfl.polycrowd.EventEditActivity;
-import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.EmergencyActivity;
+import ch.epfl.polycrowd.EventEditActivity;
 import ch.epfl.polycrowd.EventPageDetailsActivity;
-
-import ch.epfl.polycrowd.GroupPageActivity;
-import ch.epfl.polycrowd.authentification.LoginActivity;
-
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.authentification.LoginActivity;
+import ch.epfl.polycrowd.groupPage.GroupPageActivity;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
