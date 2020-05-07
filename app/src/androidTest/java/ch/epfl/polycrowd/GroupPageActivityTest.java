@@ -73,7 +73,7 @@ public class GroupPageActivityTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        onView(withText(testUser0.getEmail())).check(matches((isDisplayed()))).perform(ViewActions.click()) ;
+        onView(withText(testUser0.getEmail())).perform(ViewActions.click()) ;
         AndroidTestHelper.sleep();
         try {
             sleep(3000);
