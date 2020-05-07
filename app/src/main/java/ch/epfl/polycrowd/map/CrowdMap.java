@@ -14,6 +14,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
+import com.google.maps.android.data.Feature;
 import com.google.maps.android.data.kml.KmlLayer;
 import com.google.maps.android.heatmaps.Gradient;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
@@ -30,6 +31,7 @@ import java.util.stream.Collectors;
 
 
 import ch.epfl.polycrowd.R;
+import ch.epfl.polycrowd.Utils;
 import ch.epfl.polycrowd.logic.PolyContext;
 
 
@@ -129,6 +131,19 @@ public class CrowdMap implements OnMapReadyCallback {
             e.printStackTrace();
         }
         assert layer != null;
+
+
+        // Set a listener for geometry clicked events.
+        layer.setOnFeatureClickListener( feature -> {
+                for(String key  : feature.getPropertyKeys()){
+                    Log.i("KmlClick", "property : " + key + " -> "+feature.getProperty(key));
+                }
+                Log.i("KmlClick","Geometry type : "+feature.getGeometry().getGeometryType());
+
+                Utils.toastPopup(act.getApplicationContext() ,feature.getProperty("name") );
+                // TODO : move to corresponding Activity
+            }
+        );
         layer.addLayerToMap();
 
         //TODO get eventLocation from firebase
