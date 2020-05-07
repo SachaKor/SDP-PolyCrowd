@@ -17,6 +17,16 @@ public abstract class PolyContext extends Context {
     private static boolean mockDynamicLink = false; // for the FrontPage testing
     private static String groupId  ;
     private static Group group ;
+
+    public static String getStandId() {
+        return standId;
+    }
+
+    public static void setStandId(String standId) {
+        PolyContext.standId = standId;
+    }
+
+    private static String standId ;
     private static DatabaseInterface dbInterface  = new FirebaseInterface();
 
     public static void reset(){
