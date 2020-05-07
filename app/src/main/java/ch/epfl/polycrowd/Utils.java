@@ -7,6 +7,7 @@ import android.provider.OpenableColumns;
 import android.view.Gravity;
 import android.widget.Toast;
 
+import ch.epfl.polycrowd.logic.User;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -32,6 +33,10 @@ public class Utils {
         Toast toast = Toast.makeText(context, text, duration);
         toast.setGravity(Gravity.BOTTOM, 0, 16);
         toast.show();
+    }
+
+    public static User getFakeUser(){
+        return new User("fake@fake.com", "1", "fake user", 100);
     }
 
     public static void navigate(Context from, Class to){
@@ -72,6 +77,5 @@ public class Utils {
         }
         return bytesResult;
     }
-
 
 }

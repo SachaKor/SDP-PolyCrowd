@@ -65,4 +65,18 @@
         android:textSize="24sp"
         android:textStyle="bold" />
 
+    <Button
+        android:id="@+id/goToUserProfileButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="38dp"
+        android:layout_marginEnd="175dp"
+        android:layout_marginBottom="19dp"
+        android:layout_toStartOf="@+id/button"
+        android:text="@string/profile"
+        android:onClick="clickUserProfile"
+        android:visibility="gone"/>
+
 </RelativeLayout>
