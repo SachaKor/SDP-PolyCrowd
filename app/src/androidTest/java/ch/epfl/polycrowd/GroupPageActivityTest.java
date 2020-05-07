@@ -48,9 +48,8 @@ public class GroupPageActivityTest {
         group1.addMember(testUser0);
         group1.addMember(testUser1);
         PolyContext.getDatabaseInterface().createGroup(group0, gr -> {});
-        PolyContext.getDatabaseInterface().createGroup(group1, gr -> {
-            PolyContext.setCurrentGroup(gr);
-        });
+        PolyContext.getDatabaseInterface().createGroup(group1, gr -> {});
+        PolyContext.setCurrentGroup(group1);
         Intent intent = new Intent() ;
         groupPageActivityRule.launchActivity(intent) ;
     }
