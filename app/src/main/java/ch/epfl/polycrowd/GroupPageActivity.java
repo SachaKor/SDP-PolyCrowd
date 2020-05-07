@@ -21,7 +21,7 @@ import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import java.util.List;
 
 import ch.epfl.polycrowd.logic.PolyContext;
-import ch.epfl.polycrowd.organizerInvite.OrganizersAdapter;
+import ch.epfl.polycrowd.eventMemberInvite.EventMemberAdapter;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class GroupPageActivity extends AppCompatActivity {
@@ -59,7 +59,7 @@ public class GroupPageActivity extends AppCompatActivity {
 
     private void initRecyclerView(List<String> members) {
         RecyclerView recyclerView = findViewById(R.id.members_recycler_view);
-        OrganizersAdapter adapter = new OrganizersAdapter(members);
+        EventMemberAdapter adapter = new EventMemberAdapter(members);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }

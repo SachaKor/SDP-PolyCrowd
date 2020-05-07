@@ -58,7 +58,6 @@ public class PolyContextTest {
         PolyContext.reset();
         assertNull(PolyContext.getCurrentEvent());
         assertNull(PolyContext.getCurrentUser());
-        assertNull(PolyContext.getDBI());
         assertNull(PolyContext.getPreviousPage());
     }
 

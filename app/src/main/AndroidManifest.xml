@@ -52,7 +52,7 @@
                     android:scheme="http" />
             </intent-filter>
         </activity>
-        <activity android:name=".organizerInvite.OrganizerInviteActivity" />
+        <activity android:name=".eventMemberInvite.EventMemberInviteActivity" />
         <activity android:name=".map.MapActivity"
             android:label="@string/title_activity_main" />
         <activity android:name=".EmergencyActivity" />

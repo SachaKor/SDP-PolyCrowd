@@ -89,7 +89,33 @@
             android:layout_below="@+id/organizers_recycler_view"
             android:layout_marginTop="10dp"
             android:text="@string/invite_organizer"
-            android:onClick="inviteLinkClicked"
+            android:onClick="organizerInviteLinkClicked"
+            android:visibility="invisible"/>
+
+        <TextView
+            android:id="@+id/EditEventSecurity"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:text="@string/security"
+            android:padding="10dp"
+            android:ems="10"
+            android:layout_below="@id/invite_organizer_button"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/security_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/EditEventSecurity"/>
+        <Button
+            android:id="@+id/invite_security_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/organizers_recycler_view"
+            android:layout_marginTop="10dp"
+            android:text="@string/invite_security"
+            android:onClick="securityInviteLinkClicked"
             android:visibility="invisible"/>
         <Button
             android:layout_width="match_parent"

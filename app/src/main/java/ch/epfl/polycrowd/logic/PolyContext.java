@@ -18,19 +18,13 @@ public abstract class PolyContext extends Context {
 
     private static final String TAG = PolyContext.class.getSimpleName();
 
-    public static void setCurrentGroup(String groupId) {
-        currentGroup = groupId;
-    }
-
-    public static String getCurrentGroup() {
-        return currentGroup;
-    }
 
     public enum Role {ORGANIZER, STAFF, SECURITY, VISITOR, GUEST, UNKNOWN }
 
-    private static Event currentEvent;
-    private static User currentUser;
-    private static String currentGroup;
+    private static Event currentEvent = null;
+    private static User currentUser = null;
+    private static String currentGroup = null;
+    private static Role inviteRole = Role.UNKNOWN;
     private static Class<? extends AppCompatActivity> previousPage = null;
     private static DatabaseInterface dbInterface  = new FirebaseInterface();
 
@@ -38,8 +32,8 @@ public abstract class PolyContext extends Context {
     public static void reset(){
         currentEvent = null;
         currentUser = null;
+        inviteRole = Role.UNKNOWN;
         previousPage = null;
-        dbInterface = null;
     }
 
     public static boolean isLoggedIn(){
@@ -102,6 +96,21 @@ public abstract class PolyContext extends Context {
         PolyContext.previousPage = previousPage;
     }
 
+    public static void setCurrentGroup(String groupId) {
+        currentGroup = groupId;
+    }
+
+    public static String getCurrentGroup() {
+        return currentGroup;
+    }
+
+    public static void setInviteRole(Role r){
+        inviteRole = r;
+    }
+
+    public static Role getInviteRole() {
+        return inviteRole;
+    }
 
     public static void setDBI(DatabaseInterface dbInterfaceInject){
         dbInterface = dbInterfaceInject ;

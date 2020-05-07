@@ -2,7 +2,6 @@ package ch.epfl.polycrowd.frontPage;
 
 import android.content.Context;
 import android.net.Uri;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
@@ -28,7 +27,7 @@ import ch.epfl.polycrowd.authentification.LoginActivity;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
-import ch.epfl.polycrowd.organizerInvite.OrganizerInviteActivity;
+import ch.epfl.polycrowd.eventMemberInvite.EventMemberInviteActivity;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class FrontPageActivity extends AppCompatActivity {
@@ -163,11 +162,13 @@ public class FrontPageActivity extends AppCompatActivity {
                 return;
             switch(lastPathSegment){
                 case "invite":
-                case "inviteOrganizer":
-                    inviteOrganizerDynamicLink(this,deepLink);
+                case "inviteORGANIZER":
+                    inviteEventMemberDynamicLink(this,deepLink, PolyContext.Role.ORGANIZER);
                     break;
-                case "inviteStaff":
-                case "inviteSecurity":
+                case "inviteSECURITY":
+                    inviteEventMemberDynamicLink(this,deepLink, PolyContext.Role.SECURITY);
+                    break;
+                case "inviteSTAFF":
                     break;
                 case "inviteGroup":
                     inviteGroupDynamicLink(this, deepLink);
@@ -176,13 +177,14 @@ public class FrontPageActivity extends AppCompatActivity {
         }, getIntent());
     }
 
-    private static void inviteOrganizerDynamicLink(Context c, Uri deepLink){
+    private static void inviteEventMemberDynamicLink(Context c, Uri deepLink, PolyContext.Role role){
         String eventId = deepLink.getQueryParameter("eventId"),
                 eventName = deepLink.getQueryParameter("eventName");
         if (eventId != null && eventName != null) {
             PolyContext.getDBI().getEventById(eventId, event -> {
                 PolyContext.setCurrentEvent(event);
-                ActivityHelper.eventIntentHandler(c, OrganizerInviteActivity.class);
+                PolyContext.setInviteRole(role);
+                ActivityHelper.eventIntentHandler(c, EventMemberInviteActivity.class);
             });
         }
     }

@@ -77,9 +77,10 @@ public class Event extends Storable{
 
     public Event(@NonNull String owner, @NonNull String name, Boolean isPublic, @NonNull EventType type,
                  @NonNull Date start, @NonNull Date end,
-                 String calendar, String description, Boolean hasEmergencyFeature,@NonNull List<String> organizers){
+                 String calendar, String description, Boolean hasEmergencyFeature,@NonNull List<String> organizers,@NonNull List<String> security){
         this(owner, name, isPublic, type, start, end, calendar, description, hasEmergencyFeature);
         this.organizers = organizers;
+        this.security = security;
     }
 
     public List<Activity> getActivities() {
@@ -208,6 +209,7 @@ public class Event extends Storable{
         event.put("description", this.description);
         event.put("isEmergencyEnabled", this.isEmergencyEnabled.toString());
         event.put("organizers", organizers);
+        event.put("security", security);
         event.put("imageUri", imageUri);
         return event;
     }
@@ -226,12 +228,13 @@ public class Event extends Storable{
         String desc = (String) data.get("description");
         Boolean emergency = Boolean.parseBoolean((String) data.get("isEmergencyEnabled"));
         List<String> organizers = convertObjectToList(data.get("organizers"));
+        List<String> security = convertObjectToList(data.get("security"));
         String imageUri = (String) data.get("imageUri"); // can be null but this is ok
         if(owner == null || name == null || sStamp == null || eStamp == null)
             return null;
         Date start = sStamp.toDate();
         Date end = eStamp.toDate();
-        Event result = new Event(owner, name, isPublic, type, start, end, calendar, desc, emergency, organizers);
+        Event result = new Event(owner, name, isPublic, type, start, end, calendar, desc, emergency, organizers, security);
         result.setImageUri(imageUri);
         return result;
     }

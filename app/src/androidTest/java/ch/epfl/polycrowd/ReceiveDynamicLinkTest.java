@@ -29,7 +29,7 @@ public class ReceiveDynamicLinkTest {
     @Before
     public void setUp(){
         PolyContext.reset();
-        AndroidTestHelper.SetupMockDBI("https://www.example.com/invite/?eventId="+"2"+"&eventName="+"DEBUG_EVENT");
+        AndroidTestHelper.SetupMockDBI("https://www.example.com/inviteORGANIZER/?eventId="+"2"+"&eventName="+"DEBUG_EVENT");
 
         Intent intent = new Intent();
         mActivityRule.launchActivity(intent);
@@ -37,6 +37,6 @@ public class ReceiveDynamicLinkTest {
 
     @Test
     public void testOpensOrganizerInvitePageWhenDynamicLinkReceived() {
-        onView(withId(R.id.organizer_invite_text)).check(matches(isDisplayed()));
+        onView(withId(R.id.member_invite_text)).check(matches(isDisplayed()));
     }
 }

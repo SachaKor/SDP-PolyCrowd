@@ -78,30 +78,31 @@ public class LoginActivity extends AppCompatActivity {
             /* if the user logs in to accept the organizer invitation, add him/her to the
                 organizers list, then open the event details page for the preview */
             Log.d(TAG, "previous page: " + PolyContext.getPreviousPage());
-            if(PolyContext.getPreviousPage()!= null) {
-                switch (PolyContext.getPreviousPage().getSimpleName()) {
-                    case "OrganizerInviteActivity":
+            switch (PolyContext.getInviteRole()) {
+                case ORGANIZER:
                         if (PolyContext.getCurrentEvent() == null) {
                             Log.e(TAG, "current event is null");
                             return;
                         }
-                        String organizerEmail = PolyContext.getCurrentUser().getEmail();
-                        PolyContext.getDBI().addOrganizerToEvent(PolyContext.getCurrentEvent().getId(), organizerEmail,
+                        PolyContext.getDBI().addOrganizerToEvent(PolyContext.getCurrentEvent().getId(), PolyContext.getCurrentUser().getEmail(),
                                 () -> ActivityHelper.eventIntentHandler(this, EventPageDetailsActivity.class));
                         break;
-                    case "GroupInviteActivity":
+                case SECURITY:
+                        if (PolyContext.getCurrentEvent() == null) {
+                            Log.e(TAG, "current event is null");
+                            return;
+                        }
+                        PolyContext.getDBI().addSecurityToEvent(PolyContext.getCurrentEvent().getId(), PolyContext.getCurrentUser().getEmail(),
+                                () -> ActivityHelper.eventIntentHandler(this, EventPageDetailsActivity.class));
+                        break;
+                case VISITOR:
                         if (PolyContext.getCurrentGroup() != null) {
                             PolyContext.getDBI().addUserToGroup(PolyContext.getCurrentGroup(), user.getEmail(),
                                     () -> ActivityHelper.eventIntentHandler(this, MapActivity.class));
                         }
                         break;
-                    default:
+                 default:
                         ActivityHelper.eventIntentHandler(this,PolyContext.getPreviousPage());
-                }
-
-
-            }else{
-                ActivityHelper.eventIntentHandler(this, FrontPageActivity.class);
             }
         };
     }

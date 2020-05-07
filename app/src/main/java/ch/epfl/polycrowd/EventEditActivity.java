@@ -146,6 +146,8 @@ public class EventEditActivity extends AppCompatActivity {
 
         List<String> organizers = new ArrayList<>();
         organizers.add(user.getEmail());
+
+        List<String> security = new ArrayList<>();
         // Create the map containing the event info
         EditText calendarUrl = findViewById(R.id.EditEventCalendar);
 
@@ -154,7 +156,7 @@ public class EventEditActivity extends AppCompatActivity {
         Event ev = new Event(user.getUid(), evName.getText().toString(), isPublic,
                 Event.EventType.valueOf(type.toUpperCase()),
                 startDate, endDate,
-                calendarUrl.getText().toString(), "", hasEmergency, organizers);
+                calendarUrl.getText().toString(), "", hasEmergency, organizers, security);
         // Map<String, Object> event = ev.toHashMap();
         // add event to the database
         Context c = this ;

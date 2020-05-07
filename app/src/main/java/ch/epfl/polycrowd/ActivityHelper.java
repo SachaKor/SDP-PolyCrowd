@@ -9,12 +9,16 @@ import android.widget.Toast;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import ch.epfl.polycrowd.frontPage.FrontPageActivity;
+
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public abstract class ActivityHelper {
 
 
     public static void eventIntentHandler(Context currentAct, Class<? extends AppCompatActivity> targetAct) {
+        if(targetAct == null)
+            targetAct = FrontPageActivity.class;
         Intent intent = new Intent(currentAct,targetAct);
         currentAct.startActivity(intent);
     }

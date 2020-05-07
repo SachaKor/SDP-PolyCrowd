@@ -20,7 +20,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,7 +34,7 @@ import ch.epfl.polycrowd.firebase.handlers.EventHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
 import ch.epfl.polycrowd.firebase.handlers.GroupHandler;
 import ch.epfl.polycrowd.firebase.handlers.ImageHandler;
-import ch.epfl.polycrowd.firebase.handlers.OrganizersHandler;
+import ch.epfl.polycrowd.firebase.handlers.EventMemberHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
@@ -56,6 +55,7 @@ public class FirebaseInterface implements DatabaseInterface {
 
     private static final String EVENTS = "polyevents";
     private static final String ORGANIZERS = "organizers";
+    private static final String SECURITY = "security";
     private static final String MEMBERS = "members";
     private static final String GROUPS = "groups";
     private static final String USERS = "users";
@@ -359,28 +359,37 @@ public class FirebaseInterface implements DatabaseInterface {
 
     @Override
     public void addOrganizerToEvent(@NonNull String eventId, String organizerEmail,
-                                    OrganizersHandler handler) {
-        final String TAG1 = "addOrganizerToEvent";
-            Log.d(TAG, TAG1 + " is not mocked");
-            // check if the organizer is already in the list
-            getFirestoreInstance(false).collection(EVENTS)
-                    .document(eventId).get().addOnSuccessListener(documentSnapshot -> {
-                List<String> organizers = new ArrayList<>((List<String>) documentSnapshot.get(ORGANIZERS));
-                // if organizer is not in the list, add
-                if(!organizers.contains(organizerEmail)) {
-                    Log.d(TAG, TAG1 + " adding organizer " + organizerEmail + " to the list");
-                    organizers.add(organizerEmail);
-                    Map<String, Object> data = new HashMap<>();
-                    data.put(ORGANIZERS, organizers);
-                    getFirestoreInstance(false).collection(EVENTS).document(eventId)
-                            .set(data, SetOptions.merge())
-                            .addOnSuccessListener(e -> handler.handle())
-                            .addOnFailureListener(e -> Log.w(TAG, "Error updating " + ORGANIZERS + " list"));
-                } else {
-                    Log.d(TAG, TAG1 + " organizer " + organizerEmail + " already in the list");
-                    handler.handle();
-                }
-            }).addOnFailureListener(e -> Log.w(TAG, "Error retrieving event with id" + eventId));
+                                    EventMemberHandler handler) {
+        addPersonToEvent(eventId,organizerEmail,handler,ORGANIZERS);
+    }
+
+    @Override
+    public void addSecurityToEvent(@NonNull String eventId, String securityEmail,
+                                   EventMemberHandler handler) {
+        addPersonToEvent(eventId,securityEmail,handler,SECURITY);
+    }
+
+    private void addPersonToEvent(@NonNull String eventId, String email,
+                                  EventMemberHandler handler, String role){
+        final String TAG1 = "addPersonToEvent";
+        getFirestoreInstance(false).collection(EVENTS)
+                .document(eventId).get().addOnSuccessListener(documentSnapshot -> {
+            List<String> users = convertObjectToList(documentSnapshot.get(role));
+            // if security is not in the list, add
+            if(!users.contains(email)) {
+                Log.d(TAG, TAG1 + " adding "+ role +"@"+ email + " to the list");
+                users.add(email);
+                Map<String, Object> data = new HashMap<>();
+                data.put(role, users);
+                getFirestoreInstance(false).collection(EVENTS).document(eventId)
+                        .set(data, SetOptions.merge())
+                        .addOnSuccessListener(e -> handler.handle())
+                        .addOnFailureListener(e -> Log.w(TAG, "Error updating " + role + " list"));
+            } else {
+                Log.d(TAG, TAG1 + role +"@"+ email + " already in the list");
+                handler.handle();
+            }
+        }).addOnFailureListener(e -> Log.w(TAG, "Error retrieving event with id" + eventId));
     }
 
     @Override

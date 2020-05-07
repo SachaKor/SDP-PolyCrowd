@@ -22,7 +22,7 @@ import ch.epfl.polycrowd.firebase.handlers.EventHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
 import ch.epfl.polycrowd.firebase.handlers.GroupHandler;
 import ch.epfl.polycrowd.firebase.handlers.ImageHandler;
-import ch.epfl.polycrowd.firebase.handlers.OrganizersHandler;
+import ch.epfl.polycrowd.firebase.handlers.EventMemberHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
@@ -129,11 +129,20 @@ public class FirebaseMocker implements DatabaseInterface {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
-    public void addOrganizerToEvent(String eventId, String organizerEmail, OrganizersHandler handler) {
+    public void addOrganizerToEvent(String eventId, String organizerEmail, EventMemberHandler handler) {
         //getEventById(eventId, organizerEmail);
         Event event = findEventWithId(eventId);
         if(event != null){
             event.addOrganizer(organizerEmail);
+            handler.handle();
+        }
+    }
+
+    @Override
+    public void addSecurityToEvent(String eventId, String securityEmail, EventMemberHandler handler) {
+        Event event = findEventWithId(eventId);
+        if(event != null){
+            event.addSecurity(securityEmail);
             handler.handle();
         }
     }
