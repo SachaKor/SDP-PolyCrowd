@@ -29,6 +29,7 @@ import ch.epfl.polycrowd.EventEditActivity;
 import ch.epfl.polycrowd.EventPageDetailsActivity;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.authentification.LoginActivity;
+import ch.epfl.polycrowd.frontPage.FrontPageActivity;
 import ch.epfl.polycrowd.groupPage.GroupPageActivity;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
@@ -55,18 +56,13 @@ public class MapActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Event event = PolyContext.getCurrentEvent();
-        if(event != null)
-            eventId = event.getId();
-
-        Log.d(TAG, "event is : " + eventId);
-
-
-        setStatusOfUser();
+        if(PolyContext.getCurrentEvent() == null){
+            eventIntentHandler(this, FrontPageActivity.class);
+        }
 
         createButtons();
 
-        PolyContext.getDatabaseInterface().downloadEventMap(PolyContext.getCurrentEvent() , ev -> {
+        PolyContext.getDBI().downloadEventMap(PolyContext.getCurrentEvent() , ev -> {
             createMap();
             launchLocationRequest();
         });
@@ -139,8 +135,8 @@ public class MapActivity extends AppCompatActivity {
                 break;
             case ORGANIZER:
                 setOrganiserButtons(buttonLeft, buttonRight);
-                buttonEdit.setVisibility(View.VISIBLE);
-                buttonEdit.setOnClickListener(v-> eventIntentHandler(this,EventEditActivity.class));
+                buttonLeft.setVisibility(View.VISIBLE);
+                //buttonEdit.setOnClickListener(v-> eventIntentHandler(this,EventEditActivity.class));
                 break;
             case STAFF:
             case SECURITY:
@@ -186,28 +182,13 @@ public class MapActivity extends AppCompatActivity {
         mapFragment.getMapAsync(mMap);
     }
 
-    // --- BUTTONS CLICKS -------------------------------
-    public void clickSignIn(View view) {
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
-    }
+
 
     public void clickEventDetails(View view) {
         Intent intent = new Intent(this, EventPageDetailsActivity.class);
         startActivity(intent);
     }
 
-
-    public void clickEventEdit(View view){
-        Intent intent = new Intent(this, EventEditActivity.class);
-        startActivity(intent);
-    }
-
-
-    public void clickGroup(View view) {
-        Intent intent = new Intent(this, GroupPageActivity.class);
-        startActivity(intent);
-    }
 
     /*public void clickGroup(View view) {
         Intent intent = new Intent(this, GroupPageActivity.class);
@@ -235,7 +216,7 @@ public class MapActivity extends AppCompatActivity {
         buttonRight.setText("EVENT DETAILS");
         buttonLeft.setText("GROUPS");
 
-        buttonRight.setOnClickListener(v -> clickEventDetails(v));
+        buttonRight.setOnClickListener(v -> eventIntentHandler(this, EventPageDetailsActivity.class));
         //buttonLeft.setOnClickListener(v -> clickGroup(v));
 
     }

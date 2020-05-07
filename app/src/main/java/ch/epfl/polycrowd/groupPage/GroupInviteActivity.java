@@ -28,7 +28,7 @@ public class GroupInviteActivity extends AppCompatActivity {
         setInviteText();
         Log.d(TAG, "onCreate");
 
-        groupId = PolyContext.getCurrentGroup();
+        groupId = PolyContext.getCurrentGroupId();
     }
 
     private void setInviteText() {

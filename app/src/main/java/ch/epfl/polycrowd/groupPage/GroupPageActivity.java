@@ -2,6 +2,7 @@ package ch.epfl.polycrowd.groupPage;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
@@ -25,6 +26,7 @@ import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import java.util.List;
 import java.util.Set;
 
+import ch.epfl.polycrowd.ActivityHelper;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.logic.Event;
@@ -38,7 +40,7 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
     private static final long LOCATION_REFRESH_TIME = 5000; //5s
     private static final float LOCATION_REFRESH_DISTANCE = 10; //10 meters
 
-
+    private String eventId;
     private String groupId;
     private Group group;
     private AlertDialog linkDialog;
@@ -64,14 +66,9 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.addOnTabSelectedListener(this);
 
+        initEvent();
+        initGroup();
 
-
-        try {
-            initEvent();
-            initGroup();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
 
         Set<User> members = group.getMembers();
         requestMemberLocations(members);
@@ -98,7 +95,7 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
      * Initializes the RecyclerView displaying the organizers
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void initEvent() throws ParseException {
+    private void initEvent(){
         Event curEvent = PolyContext.getCurrentEvent();
         if(curEvent == null) {
             Log.e(TAG, "current event is null");
@@ -109,7 +106,7 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     /**/private void initGroup() {
-        DatabaseInterface dbi = PolyContext.getDatabaseInterface();
+        DatabaseInterface dbi = PolyContext.getDBI();
         User user = PolyContext.getCurrentUser();
         if(user == null){
             Log.e(TAG, "initGroup : current user is null ?!");
@@ -165,7 +162,7 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
    public void createLinkClicked(View view){
         Context c = this;
         User user = PolyContext.getCurrentUser();
-        PolyContext.getDatabaseInterface().createGroup(group, gr -> {
+        PolyContext.getDBI().createGroup(group, gr -> {
             groupId = group.getGid();
             PolyContext.getDBI().addUserToGroup(groupId, PolyContext.getCurrentUser().getEmail(), () -> {
                 Log.w("createLinkClicked", "group " + groupId + " user " + PolyContext.getCurrentUser().getEmail() + " event " + PolyContext.getCurrentEvent().getId());

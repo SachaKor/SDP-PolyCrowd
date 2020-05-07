@@ -16,7 +16,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".groupPage.GroupsListActivity"></activity>
+        <activity android:name=".groupPage.GroupsListActivity" />
         <activity android:name=".userProfile.UserProfilePageActivity" />
         <activity android:name=".userProfile.UserEventListActivity" />
         <activity android:name=".groupPage.GroupPageActivity" />
@@ -53,9 +53,6 @@
                     android:scheme="http" />
             </intent-filter>
         </activity>
-        <activity android:name=".organizerInvite.OrganizerInviteActivity" />
-        <activity
-            android:name=".map.MapActivity"
         <activity android:name=".eventMemberInvite.EventMemberInviteActivity" />
         <activity android:name=".map.MapActivity"
             android:label="@string/title_activity_main" />

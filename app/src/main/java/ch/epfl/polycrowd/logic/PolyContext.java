@@ -23,8 +23,9 @@ public abstract class PolyContext extends Context {
 
     private static Event currentEvent = null;
     private static User currentUser = null;
-    private static String currentGroup = null;
+    private static Group currentGroup = null;
     private static Role inviteRole = Role.UNKNOWN;
+    private static String groupId = null;
     private static Class<? extends AppCompatActivity> previousPage = null;
     private static DatabaseInterface dbInterface  = new FirebaseInterface();
 
@@ -97,13 +98,6 @@ public abstract class PolyContext extends Context {
         PolyContext.previousPage = previousPage;
     }
 
-    public static void setCurrentGroup(String groupId) {
-        currentGroup = groupId;
-    }
-
-    public static String getCurrentGroup() {
-        return currentGroup;
-    }
 
     public static void setInviteRole(Role r){
         inviteRole = r;
@@ -123,7 +117,7 @@ public abstract class PolyContext extends Context {
         dbInterface = dbInterfaceInject ;
     }
     public static void setCurrentGroup(Group gr){
-        group = gr ;
+        currentGroup = gr ;
     }
 
     public static DatabaseInterface getDBI(){
@@ -139,6 +133,6 @@ public abstract class PolyContext extends Context {
     }
 
     public static Group getCurrentGroup(){
-        return group ;
+        return currentGroup ;
     }
 }

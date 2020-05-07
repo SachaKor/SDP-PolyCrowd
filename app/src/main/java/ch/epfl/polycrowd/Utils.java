@@ -35,16 +35,6 @@ public class Utils {
         toast.show();
     }
 
-    public static User getFakeUser(){
-        return new User("fake@fake.com", "1", "fake user", 100);
-    }
-
-    public static void navigate(Context from, Class to){
-        Intent i = new Intent(from,to);
-        PolyContext.setPreviousContext(from);
-        from.startActivity(i);
-    }
-
 
     public static String getFileNameFromUri(Uri uri) {
         File file= new File(uri.getPath());

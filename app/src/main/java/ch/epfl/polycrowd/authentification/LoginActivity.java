@@ -99,7 +99,7 @@ public class LoginActivity extends AppCompatActivity {
                         break;
                 case VISITOR:
                         if (PolyContext.getCurrentGroup() != null) {
-                            PolyContext.getDBI().addUserToGroup(PolyContext.getCurrentGroup(), user.getEmail(),
+                            PolyContext.getDBI().addUserToGroup(PolyContext.getCurrentGroupId(), user.getEmail(),
                                     () -> ActivityHelper.eventIntentHandler(this, MapActivity.class));
                         }
                         break;

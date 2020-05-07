@@ -22,9 +22,9 @@ import java.util.Date;
 import java.util.List;
 
 import ch.epfl.polycrowd.ActivityHelper;
-import ch.epfl.polycrowd.GroupInviteActivity;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.authentification.LoginActivity;
+import ch.epfl.polycrowd.groupPage.GroupInviteActivity;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
@@ -199,7 +199,7 @@ public class FrontPageActivity extends AppCompatActivity {
     private static void inviteGroupDynamicLink(Context c, Uri deepLink){
         String groupId = deepLink.getQueryParameter("groupId");
         if (groupId != null) {
-            PolyContext.setCurrentGroup(groupId);
+            PolyContext.setCurrentGroupId(groupId);
             ActivityHelper.eventIntentHandler(c, GroupInviteActivity.class);
         }
     }

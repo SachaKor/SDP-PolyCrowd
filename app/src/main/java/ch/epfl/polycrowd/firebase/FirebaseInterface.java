@@ -274,7 +274,7 @@ public class FirebaseInterface implements DatabaseInterface {
                             Map<String, Object> data = groupDoc.getData() ;
                             List<String> userEmails = (List<String>) data.get(MEMBERS) ;
 
-                            PolyContext.getDatabaseInterface().getUserCollectionByEmails(userEmails,
+                            PolyContext.getDBI().getUserCollectionByEmails(userEmails,
                                     fetchedUsers -> {
                                         Map<String, Object> groupData = new HashMap<>() ;
                                         groupData.put("groupId", data.get("groupId")) ;

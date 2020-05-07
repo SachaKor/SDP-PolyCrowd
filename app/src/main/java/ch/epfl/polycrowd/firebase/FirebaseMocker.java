@@ -45,6 +45,7 @@ public class FirebaseMocker implements DatabaseInterface {
     private byte[] image;
     private Map<String, Group> groupIdGroupPairs ;
     private byte[] userImg;
+    private String uriString;
 
     public FirebaseMocker(Map<String, Pair<User, String>> defaultMailAndUserPassPair, List<Event> defaultEvents) {
         Log.d(TAG, "Database mocker init");

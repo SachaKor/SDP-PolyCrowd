@@ -35,6 +35,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -197,8 +198,11 @@ public class EventEditActivity extends AppCompatActivity {
         }
 
 
-        List<String> organizers = Arrays.asList( user.getEmail() );
+        List<String> organizers = Collections.singletonList(user.getEmail());
         if(PolyContext.getCurrentEvent() != null) organizers = PolyContext.getCurrentEvent().getOrganizers();
+
+        List<String> security = new ArrayList<>() ;
+        if(PolyContext.getCurrentEvent() != null) security = PolyContext.getCurrentEvent().getSecurity();
 
 
         // Create the Event
@@ -206,7 +210,7 @@ public class EventEditActivity extends AppCompatActivity {
                 Event.EventType.valueOf(type.toUpperCase()),
                 startDate, endDate,
                 scheduleUrl.getText().toString(),
-                "TODO : implement description", hasEmergency, organizers);
+                "TODO : implement description", hasEmergency, organizers,security);
         if(PolyContext.getCurrentEvent() != null) {
             ev.setId(PolyContext.getCurrentEvent().getId());
             ev.setImageUri(PolyContext.getCurrentEvent().getImageUri());
@@ -224,10 +228,10 @@ public class EventEditActivity extends AppCompatActivity {
 
             if(kmlBytes != null){
                 // downlaod path to firebase
-                PolyContext.getDatabaseInterface().uploadEventMap( ev , kmlBytes , evv -> {
+                PolyContext.getDBI().uploadEventMap( ev , kmlBytes , evv -> {
 
                         Toast.makeText(this, "Event added", Toast.LENGTH_LONG).show();
-                        ch.epfl.polycrowd.Utils.navigate(this, MapActivity.class);
+                        ActivityHelper.eventIntentHandler(this, MapActivity.class);
 
                 } );
             }
@@ -239,9 +243,9 @@ public class EventEditActivity extends AppCompatActivity {
             Toast.makeText(this, "Error occurred while adding the event", Toast.LENGTH_LONG).show();
         };
         if( PolyContext.getCurrentEvent() == null) {
-            PolyContext.getDatabaseInterface().addEvent(ev, successHandler, failureHandler);
+            PolyContext.getDBI().addEvent(ev, successHandler, failureHandler);
         }else {
-            PolyContext.getDatabaseInterface().patchEventByID(
+            PolyContext.getDBI().patchEventByID(
                     PolyContext.getCurrentEvent().getId(),
                     ev, successHandler, failureHandler);
         }

@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import ch.epfl.polycrowd.frontPage.FrontPageActivity;
+import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 
 import android.app.Activity;
@@ -58,6 +60,8 @@ public class EventPageDetailsActivity extends AppCompatActivity {
 
     private byte[] imageInBytes;
 
+    private Event curEvent;
+
     private ImageView eventImg;
     private ImageView editImg;
     private Button inviteOrganizerButton, scheduleButton, cancel;
@@ -75,10 +79,13 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_details_page);
 
-        initEvent();
+        curEvent = PolyContext.getCurrentEvent();
+        if(curEvent == null)
+            ActivityHelper.eventIntentHandler(this, FrontPageActivity.class);
 
+        initEvent();
         scheduleButton = findViewById(R.id.schedule);
-        scheduleButton.setOnClickListener(v -> clickSchedule(v));
+        scheduleButton.setOnClickListener(v -> ActivityHelper.eventIntentHandler(this,ScheduleActivity.class));
 
     }
 
@@ -132,6 +139,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         editEventButton = findViewById(R.id.event_details_fab);
         cancel = findViewById(R.id.event_details_cancel);
     }
+
     private void fillFields(){
         eventTitleEdit.setText(curEvent.getName());
         eventDescriptionEdit.setText(curEvent.getDescription());
@@ -168,7 +176,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         String imgUri = PolyContext.getCurrentEvent().getImageUri();
         Log.d(TAG, "event img uri: " + imgUri);
         if(null != imgUri) {
-            PolyContext.getDBI().downloadEventImage(PolyContext.getCurrentEvent(), image -> {
+            PolyContext.getDBI().downloadEventImage(curEvent, image -> {
                 Bitmap bmp = BitmapFactory.decodeByteArray(image, 0, image.length);
                 imageInBytes = image;
                 eventImg.setImageBitmap(bmp);
@@ -191,11 +199,6 @@ public class EventPageDetailsActivity extends AppCompatActivity {
      * Initializes the RecyclerView displaying the organizers
      */
     private void initEvent() {
-
-        if(PolyContext.getCurrentEvent() == null) {
-            Log.e(TAG, "current event is null");
-            return;
-        }
         PolyContext.getDBI().getEventById(PolyContext.getCurrentEvent().getId(), event -> {
             initRecyclerView(event.getOrganizers());
             setUpViews();
@@ -307,7 +310,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         // update the current event
         // update the event in the database
         updateCurrentEvent();
-        dbi.uploadEventImage(curEvent, imageInBytes, event -> {
+        PolyContext.getDBI().uploadEventImage(PolyContext.getCurrentEvent(), imageInBytes, event -> {
             Log.d(TAG, "event img uri after upload: " + event.getImageUri());
             PolyContext.getDBI().updateEvent(PolyContext.getCurrentEvent(), event1 -> {
                 setEditing(false);
@@ -364,9 +367,5 @@ public class EventPageDetailsActivity extends AppCompatActivity {
                 .setCancelable(true)
                 .setPositiveButton("OK", (dialog, which) -> dialog.cancel())
                 .show();
-    }
-    public void clickSchedule(View view){
-        Intent intent = new Intent(this, ScheduleActivity.class);
-        startActivity(intent);
     }
 }
