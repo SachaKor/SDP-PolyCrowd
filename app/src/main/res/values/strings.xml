@@ -44,6 +44,7 @@
     <string name="reset_email_not_found">Email not associated to any user. Please sign up.</string>
     <string name="invite_link_dialog_title">Here is the invite link:</string>
     <string name="invite_organizer">Invite Organizer</string>
+    <string name="revoke_organizer">Revoke Organizer</string>
     <string name="organizers">Organizers</string>
     <string name="description">Description</string>
     <string name="title">Title</string>

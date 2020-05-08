@@ -70,6 +70,8 @@ public interface DatabaseInterface {
     void addOrganizerToEvent(String eventId, String organizerEmail,
                              OrganizersHandler handler);
 
+    void removeOrganizerFromEvent(String eventId, String organizerEmail, OrganizersHandler handler);
+
     //Checking for existing username or email not handled in signUp call, but via other async. requests
     void signUp(String username, String firstPassword, String email, Integer age, UserHandler successHandler, UserHandler failureHandler);
 

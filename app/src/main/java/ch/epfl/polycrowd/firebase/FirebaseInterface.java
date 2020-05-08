@@ -128,7 +128,7 @@ public class FirebaseInterface implements DatabaseInterface {
                         if(taskc.isSuccessful()) {
                             // TODO: use getUserByEmail, clean up firestore first
                             getUserByEmail(email, u-> {
-                                User user = new User(email, u.getUid(), u.getName(), u.getAge(), u.getImageUri());
+                                User user = new User(email, taskc.getResult().getUser().getUid(), u.getName(), u.getAge(), u.getImageUri());
                                 successHandler.handle(user);
                             }, u->{failureHandler.handle(null);});
                         } else {
@@ -421,6 +421,32 @@ public class FirebaseInterface implements DatabaseInterface {
                     handler.handle();
                 }
             }).addOnFailureListener(e -> Log.w(TAG, "Error retrieving event with id" + eventId));
+    }
+
+    @Override
+    public void removeOrganizerFromEvent(@NonNull String eventId, String organizerEmail,
+                                         OrganizersHandler handler){
+        final String TAG1 = "removeOrganizerToEvent";
+        Log.d(TAG, TAG1 + " is not mocked");
+        // check if the organizer is already in the list
+        getFirestoreInstance(false).collection(EVENTS)
+                .document(eventId).get().addOnSuccessListener(documentSnapshot -> {
+            List<String> organizers = new ArrayList<>((List<String>) documentSnapshot.get(ORGANIZERS));
+            // if organizer is not in the list, add
+            if(organizers.contains(organizerEmail)) {
+                Log.d(TAG, TAG1 + " removing organizer " + organizerEmail + " from the list");
+                organizers.remove(organizerEmail);
+                Map<String, Object> data = new HashMap<>();
+                data.put(ORGANIZERS, organizers);
+                getFirestoreInstance(false).collection(EVENTS).document(eventId)
+                        .set(data, SetOptions.merge())
+                        .addOnSuccessListener(e -> handler.handle())
+                        .addOnFailureListener(e -> Log.w(TAG, "Error updating " + ORGANIZERS + " list"));
+            } else {
+                Log.d(TAG, TAG1 + " user " + organizerEmail + " is not an organizer");
+                handler.handle();
+            }
+        }).addOnFailureListener(e -> Log.w(TAG, "Error retrieving event with id" + eventId));
     }
 
     @Override
