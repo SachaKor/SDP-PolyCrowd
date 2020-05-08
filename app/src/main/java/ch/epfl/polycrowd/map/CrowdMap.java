@@ -9,12 +9,18 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
+import com.google.maps.android.data.Feature;
+import com.google.maps.android.data.kml.KmlContainer;
 import com.google.maps.android.data.kml.KmlLayer;
+import com.google.maps.android.data.kml.KmlPlacemark;
+import com.google.maps.android.data.kml.KmlPolygon;
+
 import com.google.maps.android.heatmaps.Gradient;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
 
@@ -30,6 +36,7 @@ import java.util.stream.Collectors;
 
 
 import ch.epfl.polycrowd.R;
+import ch.epfl.polycrowd.Utils;
 import ch.epfl.polycrowd.logic.PolyContext;
 
 
@@ -129,6 +136,19 @@ public class CrowdMap implements OnMapReadyCallback {
             e.printStackTrace();
         }
         assert layer != null;
+
+
+        // Set a listener for geometry clicked events.
+        layer.setOnFeatureClickListener( feature -> {
+                for(String key  : feature.getPropertyKeys()){
+                    Log.i("KmlClick", "property : " + key + " -> "+feature.getProperty(key));
+                }
+                Log.i("KmlClick","Geometry type : "+feature.getGeometry().getGeometryType());
+
+                Utils.toastPopup(act.getApplicationContext() ,feature.getProperty("name") );
+                // TODO : move to corresponding Activity
+            }
+        );
         layer.addLayerToMap();
 
         //TODO get eventLocation from firebase
@@ -138,8 +158,55 @@ public class CrowdMap implements OnMapReadyCallback {
         MarkerOptions currentLocationMarkerOptions = new MarkerOptions().position(eventLocation).icon(BitmapDescriptorFactory.fromResource(R.drawable.pointred));
         currentLocationMarker = googleMap.addMarker(currentLocationMarkerOptions);
 
-        // --- Camera Zoom ------------------------------------------------------------
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(eventLocation , 17.8f));
+
+
+
+        if(PolyContext.getStandId() != null) {
+            accessContainers(layer.getContainers());
+        } else {
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(eventLocation, 17.8f));
+        }
+
+
+    }
+
+
+    public void accessContainers(Iterable<KmlContainer> containers) {
+        for (KmlContainer container : containers) {
+            if (container != null) {
+                if (container.hasContainers()) {
+                    accessContainers(container.getContainers());
+                } else {
+                    if (container.hasPlacemarks()) {
+                        accessPlacemarks(container.getPlacemarks());
+                    }
+                }
+            }
+        }
+    }
+
+    public void accessPlacemarks(Iterable<KmlPlacemark> placemarks) {
+        for (KmlPlacemark placemark : placemarks) {
+            if (placemark != null) {
+                if( placemark.getProperty("name").equals(PolyContext.getStandId())){
+                    if (placemark.getGeometry() instanceof KmlPolygon) {
+                        KmlPolygon polygon = (KmlPolygon) placemark.getGeometry();
+                        final int POLYGON_PADDING_PREFERENCE = 230;
+                        final LatLngBounds latLngBounds = getPolygonLatLngBounds(polygon.getOuterBoundaryCoordinates());
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, POLYGON_PADDING_PREFERENCE));
+                    }
+                }
+            }
+        }
+    }
+
+
+    private static LatLngBounds getPolygonLatLngBounds(final List<LatLng> polygon) {
+        final LatLngBounds.Builder centerBuilder = LatLngBounds.builder();
+        for (LatLng point : polygon) {
+            centerBuilder.include(point);
+        }
+        return centerBuilder.build();
     }
 
 
