@@ -41,7 +41,7 @@
                     android:background="@color/white_transparent"
                     android:layout_marginBottom="5dp"
                     android:layout_marginHorizontal="5dp"
-                    android:visibility="invisible"
+                    android:visibility="gone"
                     android:id="@+id/event_details_edit_img"
                     android:onClick="onEditImageClicked"/>
 
@@ -296,7 +296,7 @@
         app:fabSize="normal"
         app:backgroundTint="@color/color2"
         android:id="@+id/event_details_fab"
-        android:visibility="visible"
+        android:visibility="gone"
         android:onClick="onEditClicked"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -210,23 +210,25 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         PolyContext.getDBI().getEventById(PolyContext.getCurrentEvent().getId(), event -> {
 
             initRecyclerViewOrganizer(event.getOrganizers());
-            initRecyclerViewSecurity(event.getSecurity());
-            setUpViews();
             // Check logged-in user => do not show invite button if user isn't organizer
-            if(PolyContext.getCurrentUser() == null || PolyContext.getRole() != PolyContext.Role.ORGANIZER) {
-                Log.d(TAG, "current user is not an organizer");
-            } else {
+            if(PolyContext.getRole() == PolyContext.Role.ORGANIZER) {
                 findViewById(R.id.event_details_fab).setVisibility(View.VISIBLE);
+                initRecyclerViewSecurity(event.getSecurity());
+            } else {
+                Log.d(TAG, "current user is not an organizer");
+                findViewById(R.id.event_details_fab).setVisibility(View.GONE);
+                findViewById(R.id.EditEventSecurity).setVisibility(View.GONE);
             }
+            setUpViews();
         });
     }
 
 
     private void setEditing(boolean enable) {
         Log.d(TAG, "setting editing mode to " + enable);
-        int visibilityEdit = enable ? View.VISIBLE : View.INVISIBLE;
-        int visibilityText = enable? View.INVISIBLE: View.VISIBLE;
-        int visibilityFab = enable ? View.INVISIBLE : View.VISIBLE;
+        int visibilityEdit = enable ? View.VISIBLE : View.GONE;
+        int visibilityText = enable? View.GONE: View.VISIBLE;
+        int visibilityFab = enable ? View.GONE : View.VISIBLE;
         //int textInputType = enable ? InputType.TYPE_CLASS_TEXT : InputType.TYPE_NULL;
         // set the "Organizer Invite" button visible
         inviteOrganizerButton.setVisibility(visibilityEdit);
