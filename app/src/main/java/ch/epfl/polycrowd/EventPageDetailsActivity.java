@@ -5,11 +5,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import ch.epfl.polycrowd.firebase.DatabaseInterface;
+import ch.epfl.polycrowd.firebase.handlers.EventHandler;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -25,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -34,7 +37,8 @@ import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -43,6 +47,9 @@ import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.organizerInvite.OrganizersAdapter;
 import ch.epfl.polycrowd.schedulePage.ScheduleActivity;
 import edu.emory.mathcs.backport.java.util.Arrays;
+
+import static ch.epfl.polycrowd.logic.Event.dtFormat;
+import static ch.epfl.polycrowd.logic.Event.stringToDate;
 
 public class EventPageDetailsActivity extends AppCompatActivity {
 
@@ -57,6 +64,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     private DatabaseInterface dbi;
 
     private Event curEvent;
+    private User curUser;
 
     private byte[] imageInBytes;
 
@@ -65,7 +73,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     private Button inviteOrganizerButton, scheduleButton, cancel;
     private Button submitChanges;
     private FloatingActionButton editEventButton;
-    private EditText eventTitle, start,end, eventDescription, url;
+    private EditText eventTitle, start,end, eventDescription, scheduleUrl;
     private Switch isPublicSwitch, sosSwitch;
     private Spinner eventTypeEdit;
     private TextView eventType;
@@ -78,7 +86,21 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_event_details_page);
 
         dbi = PolyContext.getDatabaseInterface();
-        initEvent();
+
+        initFields();
+
+        curEvent = PolyContext.getCurrentEvent();
+        curUser = PolyContext.getCurrentUser();
+        if(curEvent != null) {
+            if(curUser != null && curEvent.getOrganizers().indexOf(curUser.getEmail()) != -1) {
+                editEventButton.setVisibility(View.VISIBLE);
+            }
+            downloadEventImage();
+            fillFields();
+            initRecyclerView(curEvent.getOrganizers());
+        } else {
+            setEditing(true);
+        }
 
         scheduleButton = findViewById(R.id.schedule);
         scheduleButton.setOnClickListener(v -> clickSchedule(v));
@@ -100,32 +122,46 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         }
     }
 
+    private void fillFields() {
+        eventTitle.setText(curEvent.getName());
+        eventDescription.setText(curEvent.getDescription());
+        start.setText(curEvent.getStart().toString());
+        end.setText(curEvent.getEnd().toString());
+
+        String pattern = "dd-MM-yyyy";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+
+        String s = simpleDateFormat.format(curEvent.getStart()),
+                e = simpleDateFormat.format(curEvent.getEnd());
+        start.setText(s);
+        end.setText(e);
+        isPublicSwitch.setChecked(curEvent.getPublic());
+        sosSwitch.setChecked(curEvent.isEmergencyEnabled());
+    }
+
     private void initFields(){
         eventTitle = findViewById(R.id.event_details_title);
         eventDescription = findViewById(R.id.event_details_description);
         start = findViewById(R.id.event_details_start);
         end = findViewById(R.id.event_details_end);
-        url = findViewById(R.id.event_details_url_edit);
+        scheduleUrl = findViewById(R.id.event_details_url_edit);
         eventImg = findViewById(R.id.event_details_img);
         eventTypeEdit = findViewById(R.id.event_type_edit);
         eventType = findViewById(R.id.event_type);
         sosSwitch = findViewById(R.id.event_sos_edit);
         isPublicSwitch = findViewById(R.id.event_public_edit);
-        downloadEventImage();
         editImg = findViewById(R.id.event_details_edit_img);
         inviteOrganizerButton = findViewById(R.id.invite_organizer_button);
         submitChanges = findViewById(R.id.event_details_submit);
         editEventButton = findViewById(R.id.event_details_fab);
         cancel = findViewById(R.id.event_details_cancel);
         textFields = new HashSet<>(Arrays.asList(new EditText[]{eventTitle, eventDescription, start,end}));
-        setEditing(false);
     }
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void downloadEventImage() {
         String imgUri = curEvent.getImageUri();
-        Log.d(TAG, "event img uri: " + imgUri);
         if(null != imgUri) {
             dbi.downloadEventImage(curEvent, image -> {
                 Bitmap bmp = BitmapFactory.decodeByteArray(image, 0, image.length);
@@ -145,42 +181,6 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
-    /**
-     * Fetches the organizers of the event from the database
-     * Initializes the RecyclerView displaying the organizers
-     */
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void initEvent() {
-        curEvent = PolyContext.getCurrentEvent();
-        if(curEvent == null) {
-            Log.e(TAG, "current event is null");
-            return;
-        }
-        String eventId = curEvent.getId();
-        try {
-            dbi.getEventById(eventId, event -> {
-                initRecyclerView(event.getOrganizers());
-                initFields();
-                // Check logged-in user => do not show invite button if user isn't organizer
-                User user = PolyContext.getCurrentUser();
-                if(user == null || event.getOrganizers().indexOf(user.getEmail()) == -1) {
-                    Log.d(TAG, "current user is not an organizer");
-                    currentUserIsOrganizer = false;
-                    editEventButton.setVisibility(View.INVISIBLE);
-                } else {
-                    currentUserIsOrganizer = true;
-                    setUpOrganizerPrivileges();
-                }
-            });
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void setUpOrganizerPrivileges() {
-        FloatingActionButton editButton = findViewById(R.id.event_details_fab);
-        editButton.setVisibility(View.VISIBLE);
-    }
 
     private void setEditing(boolean enable) {
         int visibilityEdit = enable ? View.VISIBLE : View.INVISIBLE;
@@ -200,6 +200,8 @@ public class EventPageDetailsActivity extends AppCompatActivity {
 
         eventTypeEdit.setVisibility(visibilityEdit);
         eventType.setVisibility(visibilityFab);
+        isPublicSwitch.setClickable(enable);
+        sosSwitch.setClickable(enable);
 
     }
 
@@ -262,7 +264,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         curEvent.setDescription(eventDescription.getText().toString());
         curEvent.setStart(Event.stringToDate(start.getText().toString()));
         curEvent.setEnd(Event.stringToDate(end.getText().toString()));
-        curEvent.setCalendar(url.getText().toString());
+        curEvent.setCalendar(scheduleUrl.getText().toString());
         curEvent.setEmergencyEnabled(sosSwitch.isChecked());
         curEvent.setPublic(isPublicSwitch.isChecked());
         curEvent.setType(Event.EventType.valueOf(eventTypeEdit.getSelectedItem().toString().toUpperCase()));
@@ -276,21 +278,95 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         // upload the image to the storage
         // update the current event
         // update the event in the database
-        updateCurrentEvent();
         dbi.uploadEventImage(curEvent, imageInBytes, event -> {
             Log.d(TAG, "event img uri after upload: " + event.getImageUri());
-            dbi.updateEvent(curEvent, event1 -> {
-                setEditing(false);
-                Log.d(TAG, "editing mode unset");
-                PolyContext.setCurrentEvent(event); // update the data
-                initEvent();
-            });
+            if(curEvent != null) { // update event
+                updateCurrentEvent();
+                dbi.updateEvent(curEvent, event1 -> {
+                    setEditing(false);
+                    Log.d(TAG, "editing mode unset");
+                    PolyContext.setCurrentEvent(event); // update the data
+                    fillFields();
+                });
+            } else { // add the new event
+                if(hasEmptyFields() || !datesAreCorrect() || !userLoggedIn()) {
+                    Event newEvent = readEvent();
+                    Context c = this;
+                    dbi.addEvent(newEvent,
+                            event12 -> PolyContext.setCurrentEvent(newEvent),
+                            event13 -> Toast.makeText(c, "Error occurred while adding the event", Toast.LENGTH_SHORT).show()
+                    );
+                }
+            }
         });
+    }
+
+    private Event readEvent() {
+        String desc = eventDescription.getText().toString(),
+                name = eventTitle.getText().toString(),
+                sDate = start.getText().toString(),
+                eDate = end.getText().toString(),
+                type = eventTypeEdit.getSelectedItem().toString(),
+                schedule = scheduleUrl.getText().toString();
+        Boolean isPublic = isPublicSwitch.isChecked(),
+                hasEmergency = sosSwitch.isChecked();
+
+        Date startDate = stringToDate(sDate+" 00:00", dtFormat),
+                endDate = stringToDate(eDate+" 00:00", dtFormat);
+
+        List<String> organizers = java.util.Arrays.asList( PolyContext.getCurrentUser().getEmail() );
+        return new Event(curUser.getUid(), name, isPublic,
+                Event.EventType.valueOf(type.toUpperCase()),
+                startDate, endDate,
+                schedule,
+                "TODO : implement description", hasEmergency, organizers);
+
+    }
+
+    private boolean datesAreCorrect() {
+        String sDate = start.getText().toString(),
+                eDate = end.getText().toString();
+        Date startDate = stringToDate(sDate+" 00:00", dtFormat),
+                endDate = stringToDate(eDate+" 00:00", dtFormat);
+        if(startDate == null || endDate == null) {
+            Toast.makeText(getApplicationContext(), "Wrong date format", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
+    }
+
+    private boolean userLoggedIn() {
+        if(curUser == null) {
+            Toast.makeText(this, "Log In to create an event", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
+    }
+
+
+    private boolean hasEmptyFields() {
+        String eventNameText = eventTitle.getText().toString();
+        if(eventNameText.isEmpty()) {
+            Toast.makeText(getApplicationContext(), "Enter the name of the event", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+
+        if (start.getText().toString().isEmpty()) {
+            Toast.makeText(getApplicationContext(), "Enter the starting date", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+
+        if (end.getText().toString().isEmpty()) {
+            Toast.makeText(getApplicationContext(), "Enter the ending date", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+
+        return false;
     }
 
     public void onCancelClicked(View view){
         setEditing(false);
-        initEvent();
+        fillFields();
     }
 
 

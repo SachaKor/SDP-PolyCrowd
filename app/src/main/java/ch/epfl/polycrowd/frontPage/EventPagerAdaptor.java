@@ -18,6 +18,8 @@ import androidx.viewpager.widget.PagerAdapter;
 
 import java.util.List;
 
+import ch.epfl.polycrowd.EventPageDetailsActivity;
+import ch.epfl.polycrowd.Utils;
 import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.EventEditActivity;
@@ -54,7 +56,7 @@ public class EventPagerAdaptor extends PagerAdapter {
             view = layoutInflater.inflate(R.layout.create_event_card, container, false);
 
             view.setOnClickListener(v -> {
-                Intent intent = new Intent(context, EventEditActivity.class);
+                Intent intent = new Intent(context, EventPageDetailsActivity.class);
                 context.startActivity(intent);
             });
         // position > 0 : views are the Event

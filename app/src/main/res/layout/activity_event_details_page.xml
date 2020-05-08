@@ -51,6 +51,9 @@
 
             <EditText
                 android:id="@+id/event_details_title"
+                android:focusableInTouchMode="false"
+                android:cursorVisible="false"
+                android:enabled="false"
                 android:layout_width="377dp"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/event_img_layout"
@@ -70,7 +73,10 @@
                 android:text="@string/description"
                 android:textColor="#A9A9A9"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:focusableInTouchMode="false"
+                android:cursorVisible="false"
+                android:enabled="false"/>
 
             <EditText
                 android:id="@+id/event_details_url_edit"
@@ -82,7 +88,10 @@
                 android:textColor="#A9A9A9"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:visibility="invisible" />
+                android:visibility="invisible"
+                android:focusableInTouchMode="false"
+                android:cursorVisible="false"
+                android:enabled="false"/>
 
 
             <EditText
@@ -94,7 +103,10 @@
                 android:layout_marginTop="5dp"
                 android:ems="10"
                 android:hint="@string/date_format"
-                android:inputType="date" />
+                android:inputType="date"
+                android:focusableInTouchMode="false"
+                android:cursorVisible="false"
+                android:enabled="false"/>
 
             <EditText
                 android:id="@+id/event_details_end"
@@ -105,7 +117,10 @@
                 android:layout_height="41dp"
                 android:ems="10"
                 android:hint="@string/date_format"
-                android:inputType="date" />
+                android:inputType="date"
+                android:focusableInTouchMode="false"
+                android:cursorVisible="false"
+                android:enabled="false"/>
 
             <Spinner
                 android:id="@+id/event_type_edit"
@@ -114,7 +129,8 @@
                 android:entries="@array/event_type_list"
                 android:prompt="@string/event_type_hint"
                 android:layout_below="@id/event_details_url_edit"
-                android:visibility="invisible"/>
+                android:visibility="invisible"
+                android:clickable="false"/>
 
             <TextView
                 android:id="@+id/event_type"
@@ -131,7 +147,9 @@
                 android:layout_below="@id/event_details_url_edit"
                 android:layout_marginLeft="135dp"
                 android:hint="isPublic"
-                android:visibility="invisible"/>
+                android:visibility="visible"
+                android:clickable="false"/>
+
 
             <Switch
                 android:id="@+id/event_sos_edit"
@@ -140,7 +158,8 @@
                 android:layout_below="@id/event_details_url_edit"
                 android:layout_marginLeft="245dp"
                 android:hint="Emergencies"
-                android:visibility="invisible"/>
+                android:visibility="visible"
+                android:clickable="false"/>
             <TextView
                 android:id="@+id/EditEventOrganizers"
                 android:layout_width="fill_parent"
@@ -223,7 +242,7 @@
         app:fabSize="normal"
         app:backgroundTint="@color/color2"
         android:id="@+id/event_details_fab"
-        android:visibility="visible"
+        android:visibility="invisible"
         android:onClick="onEditClicked"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
