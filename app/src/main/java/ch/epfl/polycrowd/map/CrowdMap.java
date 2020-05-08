@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
+import ch.epfl.polycrowd.ActivityHelper;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.Utils;
 import ch.epfl.polycrowd.logic.PolyContext;
@@ -152,7 +153,7 @@ public class CrowdMap implements OnMapReadyCallback {
                 }
                 Log.i("KmlClick","Geometry type : "+feature.getGeometry().getGeometryType());
 
-                Utils.toastPopup(act.getApplicationContext() ,feature.getProperty("name") );
+                ActivityHelper.toastPopup(act.getApplicationContext() ,feature.getProperty("name") );
                 // TODO : move to corresponding Activity
             }
         );

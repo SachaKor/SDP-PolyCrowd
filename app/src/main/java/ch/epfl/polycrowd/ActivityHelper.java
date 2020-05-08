@@ -1,5 +1,6 @@
 package ch.epfl.polycrowd;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -10,16 +11,18 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import ch.epfl.polycrowd.frontPage.FrontPageActivity;
+import ch.epfl.polycrowd.logic.PolyContext;
 
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public abstract class ActivityHelper {
 
 
-    public static void eventIntentHandler(Context currentAct, Class<? extends AppCompatActivity> targetAct) {
+    public static void eventIntentHandler(Context currentAct, Class<? extends Activity> targetAct) {
         if(targetAct == null)
             targetAct = FrontPageActivity.class;
         Intent intent = new Intent(currentAct,targetAct);
+        PolyContext.setPreviousPage(currentAct);
         currentAct.startActivity(intent);
     }
 

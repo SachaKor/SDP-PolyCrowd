@@ -1,10 +1,10 @@
 package ch.epfl.polycrowd.logic;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.Arrays;
 import java.util.List;
@@ -18,7 +18,6 @@ public abstract class PolyContext extends Context {
 
     private static final String TAG = PolyContext.class.getSimpleName();
 
-
     public enum Role {ORGANIZER, STAFF, SECURITY, VISITOR, GUEST, UNKNOWN }
 
     private static Event currentEvent = null;
@@ -26,7 +25,7 @@ public abstract class PolyContext extends Context {
     private static Group currentGroup = null;
     private static Role inviteRole = Role.UNKNOWN;
     private static String groupId = null;
-    private static Class<? extends AppCompatActivity> previousPage = null;
+    private static Class<? extends android.app.Activity> previousPage = null;
     private static String standId = null;
   
     private static DatabaseInterface dbInterface  = new FirebaseInterface();
@@ -88,23 +87,25 @@ public abstract class PolyContext extends Context {
     public static void setCurrentEvent(Event ev){
         currentEvent = ev;
     }
-
     public static Event getCurrentEvent(){
         return currentEvent;
-    }
-    public static Class<? extends AppCompatActivity> getPreviousPage() {
-        return previousPage;
     }
 
     public static User getCurrentUser() {
         return currentUser;
     }
-
     public static void setCurrentUser(User u){
         currentUser= u;
     }
-    public static void setPreviousPage(Class<? extends AppCompatActivity> previousPage) {
+
+    public static Class<? extends Activity> getPreviousPage() {
+        return previousPage;
+    }
+    public static void setPreviousPage(Class<? extends android.app.Activity> previousPage) {
         PolyContext.previousPage = previousPage;
+    }
+    public static void setPreviousPage(Context previousPage) {
+        PolyContext.previousPage = previousPage.getClass().asSubclass(android.app.Activity.class);
     }
 
 

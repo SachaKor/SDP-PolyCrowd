@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Locale;
 
 import ch.epfl.polycrowd.firebase.handlers.EventHandler;
+import ch.epfl.polycrowd.logic.Activity;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
@@ -88,10 +89,10 @@ public class EventEditActivity extends AppCompatActivity {
                         kmlBytes = Utils.getBytes(myS);
                         kmlName = Utils.getFileNameFromUri(data.getData());
                         // TODO : only accept kml file types
-                        Utils.toastPopup(getApplicationContext(), "File Selected ok");
+                        ActivityHelper.toastPopup(getApplicationContext(), "File Selected ok");
                     } catch (Exception e) {
                         e.printStackTrace();
-                        Utils.toastPopup(getApplicationContext(), "File Selected not ok");
+                        ActivityHelper.toastPopup(getApplicationContext(), "File Selected not ok");
                     }
                 }
                 break;
@@ -170,7 +171,7 @@ public class EventEditActivity extends AppCompatActivity {
         // check if the user is logged in
         User user = PolyContext.getCurrentUser();
         if(user == null) {
-            Utils.toastPopup(getApplicationContext(), "please Login first") ;
+            ActivityHelper.toastPopup(getApplicationContext(), "please Login first") ;
             return;
         }
 
@@ -193,7 +194,7 @@ public class EventEditActivity extends AppCompatActivity {
         Date startDate = stringToDate(sDate+" 00:00", dtFormat),
                 endDate = stringToDate(eDate+" 00:00", dtFormat);
         if(startDate == null || endDate == null) {
-            Utils.toastPopup(getApplicationContext(), "wrong date format") ;
+            ActivityHelper.toastPopup(getApplicationContext(), "wrong date format") ;
             return;
         }
 
