@@ -84,23 +84,29 @@ public class FrontPageActivity extends AppCompatActivity {
         PolyContext.setCurrentEvent(null);
         assert(PolyContext.getCurrentEvent() == null);
         toggleLoginLogout();
+
         setEventModels();
     }
 
     private void toggleLoginLogout() {
-        // Toggle login/logout button
+        Button button = findViewById(R.id.button);
+        Button profileButton = findViewById(R.id.goToUserProfileButton);
         if(PolyContext.isLoggedIn()){
-            Button button = findViewById(R.id.button);
             button.setText("LOGOUT");
-            button.setOnClickListener(v -> ActivityHelper.eventIntentHandler(this,FrontPageActivity.class));
+            button.setOnClickListener(v -> {
+                PolyContext.setCurrentUser(null);
+                ActivityHelper.eventIntentHandler(this,FrontPageActivity.class);
+            });
+            profileButton.setOnClickListener(v->ActivityHelper.eventIntentHandler(this,UserProfilePageActivity.class));
+            profileButton.setVisibility(View.VISIBLE);
+        }else{
+            button.setText("LOGIN");
+            button.setOnClickListener(v -> {
+                ActivityHelper.eventIntentHandler(this,LoginActivity.class);
+            });
+            profileButton.setVisibility(View.GONE);
         }
     }
-
-    public void clickLogin(View v){
-        ActivityHelper.eventIntentHandler(this, LoginActivity.class);
-    }
-
-
 
     // --------- Create the event List and Create event button -----------------------
     void setEventModels()  {
@@ -161,11 +167,6 @@ public class FrontPageActivity extends AppCompatActivity {
     }
 
 
-    public void clickUserProfile(View view){
-        Intent intent = new Intent(this, UserProfilePageActivity.class) ;
-        startActivity(intent) ;
-
-    }
 
     // --------- Link --------------------------------------------------------------------
     private void receiveDynamicLink() {
