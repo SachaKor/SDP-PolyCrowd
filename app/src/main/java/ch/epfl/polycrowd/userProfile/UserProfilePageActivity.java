@@ -26,6 +26,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -144,13 +146,25 @@ public class UserProfilePageActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode,Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == Activity.RESULT_OK)
-            if(requestCode == PICK_IMAGE) {
-                //data.getData returns the content URI for the selected Image
-                Uri selectedImage = data.getData();
+        if (resultCode == Activity.RESULT_OK  && requestCode == PICK_IMAGE && data!= null) {
+
+            //data.getData returns the content URI for the selected Image
+            Uri imageUri = data.getData();
+
+            //crop selected image
+            CropImage.activity(imageUri)
+                    .setAspectRatio(1, 1)
+                    .start(this);
+
+        }
+        if(requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE){
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if(resultCode == RESULT_OK) {
+                Uri selectedImage = result.getUri();
                 userImg.setImageURI(selectedImage);
                 compressAndSetImage();
             }
+        }
     }
 
     /**
