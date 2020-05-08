@@ -150,7 +150,8 @@ public class UserProfilePageActivity extends AppCompatActivity {
 
             //data.getData returns the content URI for the selected Image
             Uri imageUri = data.getData();
-
+            userImg.setImageURI(imageUri);
+            compressAndSetImage();
             //crop selected image
             CropImage.activity(imageUri)
                     .setAspectRatio(1, 1)
