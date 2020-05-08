@@ -32,7 +32,7 @@ public class ResetPasswordActivityTest {
 
     @Rule
     public final ActivityTestRule<ResetPasswordActivity> resetPasswordActivityActivityTestRule =
-            new ActivityTestRule<>(ResetPasswordActivity.class);
+            new ActivityTestRule<>(ResetPasswordActivity.class,false , false);
 
 
     @Before
