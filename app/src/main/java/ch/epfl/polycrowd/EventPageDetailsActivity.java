@@ -1,5 +1,6 @@
 package ch.epfl.polycrowd;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -187,9 +188,16 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     }
 
 
-    private void initRecyclerView(List<String> organizers) {
+    private void initRecyclerViewOrganizer(@NonNull List<String> organizers) {
         RecyclerView recyclerView = findViewById(R.id.organizers_recycler_view);
         EventMemberAdapter adapter = new EventMemberAdapter(organizers);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    private void initRecyclerViewSecurity(@NonNull List<String> security) {
+        RecyclerView recyclerView = findViewById(R.id.security_recycler_view);
+        EventMemberAdapter adapter = new EventMemberAdapter(security);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
@@ -200,7 +208,9 @@ public class EventPageDetailsActivity extends AppCompatActivity {
      */
     private void initEvent() {
         PolyContext.getDBI().getEventById(PolyContext.getCurrentEvent().getId(), event -> {
-            initRecyclerView(event.getOrganizers());
+
+            initRecyclerViewOrganizer(event.getOrganizers());
+            initRecyclerViewSecurity(event.getSecurity());
             setUpViews();
             // Check logged-in user => do not show invite button if user isn't organizer
             if(PolyContext.getCurrentUser() == null || PolyContext.getRole() != PolyContext.Role.ORGANIZER) {
