@@ -32,7 +32,7 @@
                 android:layout_margin="9dp"
                 android:padding ="3dp"
                 android:layout_centerHorizontal="true"
-                android:scaleType="centerInside"
+                android:scaleType="centerCrop"
                 android:background="@drawable/circle"
                 android:src="@drawable/default_user_pic"/>
 
