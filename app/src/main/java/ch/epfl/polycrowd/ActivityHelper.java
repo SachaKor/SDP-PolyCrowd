@@ -18,6 +18,19 @@ import ch.epfl.polycrowd.logic.PolyContext;
 public abstract class ActivityHelper {
 
 
+    public static void checkActivityRequirment( Boolean needLogin , Boolean needNoLogin ,  Boolean needEvent, Boolean needNoEvent  ){
+
+        // don't ask for something impossible
+        assert(! ( needLogin && needNoLogin ) && ! (needEvent && needNoEvent));
+
+        if(needEvent) assert (PolyContext.getCurrentEvent() != null);
+        if(needNoEvent) assert  (PolyContext.getCurrentEvent() == null);
+
+        if(needLogin) assert ( PolyContext.getCurrentUser() != null);
+        if(needNoLogin) assert  (PolyContext.getCurrentUser() == null);
+    }
+
+
     public static void eventIntentHandler(Context currentAct, Class<? extends Activity> targetAct) {
         if(targetAct == null)
             targetAct = FrontPageActivity.class;

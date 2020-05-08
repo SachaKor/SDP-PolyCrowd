@@ -24,6 +24,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
 
+import ch.epfl.polycrowd.ActivityHelper;
 import ch.epfl.polycrowd.EmergencyActivity;
 import ch.epfl.polycrowd.EventEditActivity;
 import ch.epfl.polycrowd.EventPageDetailsActivity;
@@ -53,6 +54,8 @@ public class MapActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ActivityHelper.checkActivityRequirment(false , false , true , false);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
