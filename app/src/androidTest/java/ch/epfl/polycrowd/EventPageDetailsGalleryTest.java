@@ -89,32 +89,20 @@ public class EventPageDetailsGalleryTest {
     }
     @Test
     public void clickRevokeUser(){
-        savePickedImage(mActivityTestRule.getActivity());
-        Instrumentation.ActivityResult imgGalleryResult = createImageGallerySetResultStub(mActivityTestRule.getActivity());
         onView(withId(R.id.event_details_fab)).perform(click());
-        intending(hasAction(Intent.ACTION_CHOOSER)).respondWith(imgGalleryResult);
-        AndroidTestHelper.sleep();
         onView(withId(R.id.revoke_organizer_button)).perform(scrollTo(), click());
 
     }
     @Test
     public void clickSubmit(){
-        savePickedImage(mActivityTestRule.getActivity());
-        Instrumentation.ActivityResult imgGalleryResult = createImageGallerySetResultStub(mActivityTestRule.getActivity());
         onView(withId(R.id.event_details_fab)).perform(click());
-        intending(hasAction(Intent.ACTION_CHOOSER)).respondWith(imgGalleryResult);
-        AndroidTestHelper.sleep();
         //TODO change values
         onView(withId(R.id.event_details_submit)).perform(scrollTo(), click());
         //TODO check values integrety
     }
     @Test
     public void clickCancel(){
-        savePickedImage(mActivityTestRule.getActivity());
-        Instrumentation.ActivityResult imgGalleryResult = createImageGallerySetResultStub(mActivityTestRule.getActivity());
         onView(withId(R.id.event_details_fab)).perform(click());
-        intending(hasAction(Intent.ACTION_CHOOSER)).respondWith(imgGalleryResult);
-        AndroidTestHelper.sleep();
         onView(withId(R.id.event_details_cancel)).perform(scrollTo(), click());
     }
 
