@@ -53,9 +53,14 @@ public class FrontPageActivity extends AppCompatActivity {
     // ------------- ON CREATE ----------------------------------------------------------
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //The Front page should ve no event assigned
+        assert(PolyContext.getCurrentEvent() == null);
+
         super.onCreate(savedInstanceState);
         fixGoogleMapBug();
         setContentView(R.layout.activity_front_page);
+
+
 
         // front page should dispatch the dynamic links
         receiveDynamicLink();
@@ -76,6 +81,8 @@ public class FrontPageActivity extends AppCompatActivity {
     }
 
     private void setUp() {
+        PolyContext.setCurrentEvent(null);
+        assert(PolyContext.getCurrentEvent() == null);
         toggleLoginLogout();
         setEventModels();
     }
