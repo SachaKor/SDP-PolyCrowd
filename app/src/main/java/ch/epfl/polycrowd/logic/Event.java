@@ -81,6 +81,7 @@ public class Event extends Storable{
         this.calendar = calendar;
         organizers = new ArrayList<>();
         organizers.add(owner);
+        security = new ArrayList<>();
         setDescription(description);
         this.isEmergencyEnabled = hasEmergencyFeature;
     }

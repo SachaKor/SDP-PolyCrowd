@@ -6,6 +6,7 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -135,7 +136,7 @@ public abstract class PolyContext extends Context {
     }
 
     public static List<String> convertObjectToList(Object obj) {
-        List<String> list = null;
+        List<String> list = new ArrayList<>();
         if (obj != null && obj.getClass().isArray()) {
             list = Arrays.asList((String[])obj);
         }
