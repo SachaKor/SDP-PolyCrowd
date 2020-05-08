@@ -27,14 +27,23 @@ public abstract class PolyContext extends Context {
     private static Role inviteRole = Role.UNKNOWN;
     private static String groupId = null;
     private static Class<? extends AppCompatActivity> previousPage = null;
+    private static String standId = null;
+  
     private static DatabaseInterface dbInterface  = new FirebaseInterface();
-
 
     public static void reset(){
         currentEvent = null;
         currentUser = null;
         inviteRole = Role.UNKNOWN;
         previousPage = null;
+    }
+  
+    public static String getStandId() {
+        return standId;
+    }
+
+    public static void setStandId(String standId) {
+        PolyContext.standId = standId;
     }
 
     public static boolean isLoggedIn(){
