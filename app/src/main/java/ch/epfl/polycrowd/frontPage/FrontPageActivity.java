@@ -54,7 +54,7 @@ public class FrontPageActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //The Front page should ve no event assigned
-        PolyContext.setCurrentEvent(null);
+        ActivityHelper.checkActivityRequirment(false , false , false , true);
 
         super.onCreate(savedInstanceState);
         fixGoogleMapBug();
