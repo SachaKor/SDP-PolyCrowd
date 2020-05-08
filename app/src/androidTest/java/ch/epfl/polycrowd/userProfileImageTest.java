@@ -75,7 +75,9 @@ public class userProfileImageTest {
     }
 
     private void savePickedImage(Context context) {
-        Bitmap bm = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher1);
+        Bitmap bm = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher);
+        if(bm == null)
+            return;
         File dir = context.getExternalCacheDir(); // /storage/sdcard/Android/data/ch.epfl.polycrowd/cache
         Log.d(TAG, "save image, cache dir: " + dir.getPath());
         File file = new File(dir.getPath(), "pickImageResult.jpeg");

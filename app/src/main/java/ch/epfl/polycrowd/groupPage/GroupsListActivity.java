@@ -44,7 +44,7 @@ public class GroupsListActivity extends AppCompatActivity {
         mAdapter = new GroupsListAdapter(gidEids, this) ;
         mRecyclerView.setAdapter(mAdapter);
 
-        PolyContext.getDatabaseInterface().getUserGroupIds(user.getEmail(), fetchedPairs ->
+        PolyContext.getDBI().getUserGroupIds(user.getEmail(), fetchedPairs ->
         {
             if(fetchedPairs != null){
                 Log.d(TAG, "fetched groups size is " + fetchedPairs.size()) ;
@@ -87,7 +87,7 @@ public class GroupsListActivity extends AppCompatActivity {
             holder.itemClickListener = (v,p) -> {
                 Intent intent = new Intent(c, GroupPageActivity.class) ;
                 PolyContext.setCurrentGroupId(groupId);
-                PolyContext.getDatabaseInterface().getGroupByGroupId(groupId, fetchedGroup -> {
+                PolyContext.getDBI().getGroupByGroupId(groupId, fetchedGroup -> {
                     PolyContext.setCurrentGroup(fetchedGroup) ;
                     Log.d(TAG, "ABOUT TO LAUNCH GROUPPAGE") ;
                     c.startActivity(intent);

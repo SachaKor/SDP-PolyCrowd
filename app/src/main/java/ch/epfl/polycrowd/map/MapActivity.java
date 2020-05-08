@@ -29,30 +29,21 @@ import ch.epfl.polycrowd.EventEditActivity;
 import ch.epfl.polycrowd.EventPageDetailsActivity;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.authentification.LoginActivity;
+import ch.epfl.polycrowd.frontPage.FrontPageActivity;
 import ch.epfl.polycrowd.groupPage.GroupPageActivity;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
-import ch.epfl.polycrowd.logic.User;
 
+import static ch.epfl.polycrowd.ActivityHelper.eventIntentHandler;
+
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class MapActivity extends AppCompatActivity {
-
-    public enum level {
-        GUEST,
-        VISITOR,
-        ORGANISER
-    }
-
-    // status of the current Activity
-    public level status;
 
     // map displayed
     public CrowdMap mMap;
 
     // DEBUG
-    private static final String TAG = "MainActivity";
-
-    // eventId is needed to open the correct EventDetails page
-    private String eventId;
+    private static final String TAG = MapActivity.class.getSimpleName();
 
 
     //create buttons for testing location
@@ -60,24 +51,18 @@ public class MapActivity extends AppCompatActivity {
     private LocationListener locationListener;
 
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Event event = PolyContext.getCurrentEvent();
-        if(event != null)
-            eventId = event.getId();
-
-        Log.d(TAG, "event is : " + eventId);
-
-
-        setStatusOfUser();
+        if(PolyContext.getCurrentEvent() == null){
+            eventIntentHandler(this, FrontPageActivity.class);
+        }
 
         createButtons();
 
-        PolyContext.getDatabaseInterface().downloadEventMap(PolyContext.getCurrentEvent() , ev -> {
+        PolyContext.getDBI().downloadEventMap(PolyContext.getCurrentEvent() , ev -> {
             createMap();
             launchLocationRequest();
         });
@@ -86,25 +71,6 @@ public class MapActivity extends AppCompatActivity {
         //launchLocationRequest();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    void setStatusOfUser() {
-        final String TAG1 = "setStatusOfUser";
-        status = level.GUEST; // default status to debug
-        User user = PolyContext.getCurrentUser();
-        Log.d(TAG, TAG1 + " current user " + user);
-        if(user == null){
-            status = level.GUEST;
-        }else{
-            Log.d("user_email_tag", TAG1 + " user email: " + user.getEmail());
-            Event event = PolyContext.getCurrentEvent();
-            List<String> organizerEmails = event.getOrganizers();
-            if(organizerEmails.indexOf(user.getEmail()) == -1){
-                status = level.VISITOR;
-            } else {
-                status = level.ORGANISER;
-            }
-        }
-    }
     @SuppressLint("NewApi")
     private void launchLocationRequest() {
         //setup classe instances needed for getting location
@@ -116,7 +82,9 @@ public class MapActivity extends AppCompatActivity {
             }
 
             @Override
+            @SuppressLint("deprecation")
             public void onStatusChanged(String provider, int status, Bundle extras) {
+                //This function is deprecated !
             }
 
             @Override
@@ -148,20 +116,33 @@ public class MapActivity extends AppCompatActivity {
         Button buttonLeft = findViewById(R.id.butLeft);
         Button buttonSOS = findViewById(R.id.butSOS);
 
-        Log.d(TAG, "user status: " + status);
+        Log.d(TAG, "user status: " + PolyContext.getRole());
 
-        switch (status) {
+        switch (PolyContext.getRole()) {
             case GUEST:
                 setGuestButtons(buttonLeft, buttonRight);
                 break;
             case VISITOR:
                 setVisitorButtons(buttonLeft, buttonRight);
-                if (PolyContext.getCurrentEvent().isEmergencyEnabled()) buttonSOS.setVisibility(View.VISIBLE);
-                else buttonSOS.setVisibility(View.INVISIBLE);
-                buttonSOS.setOnLongClickListener(v->clickSOS(v)); //TODO: hold for 5 seconds + animation ?
+                if (PolyContext.getCurrentEvent().isEmergencyEnabled()){
+                    buttonSOS.setVisibility(View.VISIBLE);
+                    buttonSOS.setOnLongClickListener(v-> {
+                        eventIntentHandler(this, EmergencyActivity.class);
+                        return true;
+                    }); //TODO: hold for 5 seconds + animation ?
+                }
+
                 break;
-            case ORGANISER:
+            case ORGANIZER:
                 setOrganiserButtons(buttonLeft, buttonRight);
+                buttonLeft.setVisibility(View.VISIBLE);
+                //buttonEdit.setOnClickListener(v-> eventIntentHandler(this,EventEditActivity.class));
+                break;
+            case STAFF:
+            case SECURITY:
+                //Staff & Security
+                break;
+            case UNKNOWN:
                 break;
 
         }
@@ -201,28 +182,13 @@ public class MapActivity extends AppCompatActivity {
         mapFragment.getMapAsync(mMap);
     }
 
-    // --- BUTTONS CLICKS -------------------------------
-    public void clickSignIn(View view) {
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
-    }
+
 
     public void clickEventDetails(View view) {
         Intent intent = new Intent(this, EventPageDetailsActivity.class);
         startActivity(intent);
     }
 
-
-    public void clickEventEdit(View view){
-        Intent intent = new Intent(this, EventEditActivity.class);
-        startActivity(intent);
-    }
-
-
-    public void clickGroup(View view) {
-        Intent intent = new Intent(this, GroupPageActivity.class);
-        startActivity(intent);
-    }
 
     /*public void clickGroup(View view) {
         Intent intent = new Intent(this, GroupPageActivity.class);
@@ -241,8 +207,8 @@ public class MapActivity extends AppCompatActivity {
         buttonRight.setText("EVENT DETAILS");
         buttonLeft.setText("LOGIN");
 
-        buttonRight.setOnClickListener(v -> clickEventDetails(v));
-        buttonLeft.setOnClickListener(v -> clickSignIn(v));
+        buttonRight.setOnClickListener(v -> eventIntentHandler(this,EventPageDetailsActivity.class));
+        buttonLeft.setOnClickListener(v -> eventIntentHandler(this,LoginActivity.class));
     }
 
 
@@ -250,7 +216,7 @@ public class MapActivity extends AppCompatActivity {
         buttonRight.setText("EVENT DETAILS");
         buttonLeft.setText("GROUPS");
 
-        buttonRight.setOnClickListener(v -> clickEventDetails(v));
+        buttonRight.setOnClickListener(v -> eventIntentHandler(this, EventPageDetailsActivity.class));
         //buttonLeft.setOnClickListener(v -> clickGroup(v));
 
     }
@@ -259,9 +225,8 @@ public class MapActivity extends AppCompatActivity {
         buttonRight.setText("MANAGE DETAILS");
         buttonLeft.setText("STAFF");
 
-        buttonRight.setOnClickListener(v -> clickEventDetails(v));
+        buttonRight.setOnClickListener(v -> eventIntentHandler(this,EventPageDetailsActivity.class));
         buttonLeft.setOnClickListener(v -> {});
     }
-
 
 }

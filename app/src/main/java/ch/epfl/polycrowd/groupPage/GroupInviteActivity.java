@@ -15,11 +15,12 @@ import ch.epfl.polycrowd.authentification.LoginActivity;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class GroupInviteActivity extends AppCompatActivity {
-    private static final String TAG = "GroupInviteActivity";
-    String groupId;
+    private static final String TAG = GroupInviteActivity.class.getSimpleName();
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    private String groupId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,11 +28,9 @@ public class GroupInviteActivity extends AppCompatActivity {
         setInviteText();
         Log.d(TAG, "onCreate");
 
-        Intent intent = getIntent();
-        groupId = intent.getStringExtra("groupId");
+        groupId = PolyContext.getCurrentGroupId();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void setInviteText() {
         Event curEvent = PolyContext.getCurrentEvent();
         if(curEvent == null) {
@@ -44,7 +43,7 @@ public class GroupInviteActivity extends AppCompatActivity {
     }
 
     public void logInClicked(View view) {
-        PolyContext.setPreviousPage(TAG);
+        PolyContext.setPreviousPage(this.getClass());
         Intent intent = new Intent(this, LoginActivity.class);
         intent.putExtra("inviteGroupId", groupId);
         startActivity(intent);

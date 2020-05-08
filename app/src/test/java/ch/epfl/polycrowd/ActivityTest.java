@@ -1,8 +1,5 @@
 package ch.epfl.polycrowd;
 
-
-import net.fortuna.ical4j.model.Date;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -34,25 +31,48 @@ public class ActivityTest {
 
     @Test
     public void testToString(){
-        Activity a = new Activity(this.mockActivity);
-        String s = "Location: Location 1\nUid: id1\nSummary: activity summary\nDescription: activity description\nOrganizer: MAILTO:email@email.com";
+        Activity a = null;
+        try {
+            a = new Activity(this.mockActivity);
+        }catch (Exception e){
+            assert(false);
+        }
+        String s = "Location: Location 1\n" +
+                   "Uid: id1\n" +
+                   "Summary: activity summary\n" +
+                   "Description: activity description\n" +
+                   "Organizer: MAILTO:email@email.com";
         assert(s.equals(a.toString()));
     }
     @Test
     public void testUid(){
-        Activity a = new Activity(this.mockActivity);
+        Activity a = null;
+        try {
+            a = new Activity(this.mockActivity);
+        }catch (Exception e){
+            assert(false);
+        }
         assertEquals("id1", a.getUid());
     }
     @Test
     public void testOrganizer(){
-        Activity a = new Activity(this.mockActivity);
+        Activity a = null;
+        try {
+            a = new Activity(this.mockActivity);
+        }catch (ParseException e){
+            assert(false);
+        }
         assertEquals("MAILTO:email@email.com", a.getOrganizer());
     }
 
     @Test
     public void activityIntegrety(){
-
-        Activity a = new Activity(this.mockActivity);
+        Activity a= null;
+        try {
+            a = new Activity(this.mockActivity);
+        }catch (ParseException e){
+            assert(false);
+        }
         assertEquals(a.getLocation(), "Location 1");
         assertEquals(a.getDescription(), "activity description");
         assertEquals(a.getUid(),"id1");

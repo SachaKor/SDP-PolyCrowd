@@ -41,8 +41,8 @@ public class GroupsListActivityTest {
         group0.addMember(testUser);
         group1 = new Group("testGid1", "testEvent1", new HashSet<>()) ;
         group1.addMember(testUser);
-        PolyContext.getDatabaseInterface().createGroup(group0, gr -> {});
-        PolyContext.getDatabaseInterface().createGroup(group1, gr -> {});
+        PolyContext.getDBI().createGroup(group0, gr -> {});
+        PolyContext.getDBI().createGroup(group1, gr -> {});
         Intent intent = new Intent() ;
         groupsListActivityRule.launchActivity(intent) ;
     }

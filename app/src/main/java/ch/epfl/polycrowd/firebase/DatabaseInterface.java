@@ -16,18 +16,15 @@ import java.util.Map;
 import ch.epfl.polycrowd.firebase.handlers.DynamicLinkHandler;
 import ch.epfl.polycrowd.firebase.handlers.EmptyHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventHandler;
+import ch.epfl.polycrowd.firebase.handlers.EventMemberHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
 import ch.epfl.polycrowd.firebase.handlers.GroupHandler;
 import ch.epfl.polycrowd.firebase.handlers.Handler;
 import ch.epfl.polycrowd.firebase.handlers.ImageHandler;
-import ch.epfl.polycrowd.firebase.handlers.OrganizersHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
 import ch.epfl.polycrowd.logic.User;
-import ch.epfl.polycrowd.firebase.handlers.OrganizersHandler;
-import ch.epfl.polycrowd.firebase.handlers.UserHandler;
-import ch.epfl.polycrowd.logic.Event;
 
 
 public interface DatabaseInterface {
@@ -65,10 +62,13 @@ public interface DatabaseInterface {
     void patchEventByID(String eventId, Event event, EventHandler successHandler, EventHandler failureHandler);
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    void getEventById(String eventId, EventHandler eventHandler) throws ParseException;
+    void getEventById(String eventId, EventHandler eventHandler);
 
     void addOrganizerToEvent(String eventId, String organizerEmail,
-                             OrganizersHandler handler);
+                             EventMemberHandler handler);
+
+    void addSecurityToEvent(String eventId, String securityEmail,
+                            EventMemberHandler handler);
 
     //Checking for existing username or email not handled in signUp call, but via other async. requests
     void signUp(String username, String firstPassword, String email, Integer age, UserHandler successHandler, UserHandler failureHandler);

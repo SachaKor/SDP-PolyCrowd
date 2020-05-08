@@ -23,10 +23,10 @@ import com.google.firebase.dynamiclinks.DynamicLink;
 import com.google.firebase.dynamiclinks.DynamicLink.SocialMetaTagParameters;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
-import java.text.ParseException;
 import java.util.List;
 import java.util.Set;
 
+import ch.epfl.polycrowd.ActivityHelper;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.logic.Event;
@@ -39,7 +39,6 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
     private static final String TAG = "GroupPageActivity";
     private static final long LOCATION_REFRESH_TIME = 5000; //5s
     private static final float LOCATION_REFRESH_DISTANCE = 10; //10 meters
-
 
     private String eventId;
     private String groupId;
@@ -67,14 +66,9 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.addOnTabSelectedListener(this);
 
+        initEvent();
+        initGroup();
 
-
-        try {
-            initEvent();
-            initGroup();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
 
         Set<User> members = group.getMembers();
         requestMemberLocations(members);
@@ -101,7 +95,7 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
      * Initializes the RecyclerView displaying the organizers
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void initEvent() throws ParseException {
+    private void initEvent(){
         Event curEvent = PolyContext.getCurrentEvent();
         if(curEvent == null) {
             Log.e(TAG, "current event is null");
@@ -112,7 +106,7 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     /**/private void initGroup() {
-        DatabaseInterface dbi = PolyContext.getDatabaseInterface();
+        DatabaseInterface dbi = PolyContext.getDBI();
         User user = PolyContext.getCurrentUser();
         if(user == null){
             Log.e(TAG, "initGroup : current user is null ?!");
@@ -156,26 +150,23 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
     }
 
     public void leaveLinkClicked(View view) {
-        Context c = this;
-        User user = PolyContext.getCurrentUser();
-        PolyContext.getDatabaseInterface().removeUserFromGroup(groupId, user.getEmail(), () -> {
-            PolyContext.getDatabaseInterface().removeGroupIfEmpty(groupId, group -> {
-                Intent map = new Intent(c, GroupPageActivity.class);
+        PolyContext.getDBI().removeUserFromGroup(groupId, PolyContext.getCurrentUser().getEmail(), () ->
+            PolyContext.getDBI().removeGroupIfEmpty(groupId, group -> {
+                Intent map = new Intent(this, GroupPageActivity.class);
                 startActivity(map);
-            });
-        });
+            }
+        ));
     }
 
     //TODO
    public void createLinkClicked(View view){
         Context c = this;
         User user = PolyContext.getCurrentUser();
-        PolyContext.getDatabaseInterface().createGroup(group, gr -> {
+        PolyContext.getDBI().createGroup(group, gr -> {
             groupId = group.getGid();
-            PolyContext.getDatabaseInterface().addUserToGroup(groupId, user.getEmail(), () -> {
-                Log.w("createLinkClicked", "group " + groupId + " user " + user.getEmail() + " event " + eventId);
-                Intent map = new Intent(c, GroupPageActivity.class);
-                startActivity(map);
+            PolyContext.getDBI().addUserToGroup(groupId, PolyContext.getCurrentUser().getEmail(), () -> {
+                Log.w("createLinkClicked", "group " + groupId + " user " + PolyContext.getCurrentUser().getEmail() + " event " + PolyContext.getCurrentEvent().getId());
+                ActivityHelper.eventIntentHandler(this,GroupPageActivity.class);
             });
         });
     }

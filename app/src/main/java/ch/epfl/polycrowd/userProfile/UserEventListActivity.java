@@ -25,7 +25,7 @@ public class UserEventListActivity  extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private UserEventListAdapter mAdapter ;
 
-    private DatabaseInterface dbi = PolyContext.getDatabaseInterface();
+    private DatabaseInterface dbi = PolyContext.getDBI();
 
     private List<Event> models =  new ArrayList<Event>()  ;
 

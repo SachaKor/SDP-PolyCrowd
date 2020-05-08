@@ -45,8 +45,8 @@ public class GroupPageActivityTest {
         group1 = new Group("testGid1", "testEvent1", new HashSet<>()) ;
         group1.addMember(testUser0);
         group1.addMember(testUser1);
-        PolyContext.getDatabaseInterface().createGroup(group0, gr -> {});
-        PolyContext.getDatabaseInterface().createGroup(group1, gr -> {});
+        PolyContext.getDBI().createGroup(group0, gr -> {});
+        PolyContext.getDBI().createGroup(group1, gr -> {});
         PolyContext.setCurrentGroup(group1);
         Intent intent = new Intent() ;
         groupPageActivityRule.launchActivity(intent) ;

@@ -35,7 +35,7 @@ public class EventPageDetailsActivityTest {
 
     @Rule
     // https://stackoverflow.com/questions/31388847/how-to-get-the-activity-reference-before-its-oncreate-gets-called-during-testing
-    public ActivityTestRule<EventPageDetailsActivity> mActivityRule =
+    public final ActivityTestRule<EventPageDetailsActivity> mActivityRule =
             new ActivityTestRule<>(EventPageDetailsActivity.class, true /* Initial touch mode  */,
                     false /* Lazily launch activity */);
 
