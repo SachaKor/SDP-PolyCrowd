@@ -40,7 +40,7 @@ public class userProfileActivityTest {
 
     @Rule
     public final ActivityTestRule<UserProfilePageActivity> userProfileActivityRule =
-            new ActivityTestRule<UserProfilePageActivity>(UserProfilePageActivity.class, false, false);
+            new ActivityTestRule<>(UserProfilePageActivity.class, false, false);
 
     @Before
     public void setUp() {
