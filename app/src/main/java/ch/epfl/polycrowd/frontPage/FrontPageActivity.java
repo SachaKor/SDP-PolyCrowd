@@ -54,7 +54,7 @@ public class FrontPageActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //The Front page should ve no event assigned
-        assert(PolyContext.getCurrentEvent() == null);
+        PolyContext.setCurrentEvent(null);
 
         super.onCreate(savedInstanceState);
         fixGoogleMapBug();
@@ -82,7 +82,6 @@ public class FrontPageActivity extends AppCompatActivity {
 
     private void setUp() {
         PolyContext.setCurrentEvent(null);
-        assert(PolyContext.getCurrentEvent() == null);
         toggleLoginLogout();
 
         setEventModels();
