@@ -2,7 +2,10 @@ package ch.epfl.polycrowd.map;
 
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.os.Build;
 import android.util.Log;
+
+import androidx.annotation.RequiresApi;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -35,6 +38,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
+import ch.epfl.polycrowd.ActivityHelper;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.Utils;
 import ch.epfl.polycrowd.logic.PolyContext;
@@ -44,7 +48,7 @@ public class CrowdMap implements OnMapReadyCallback {
 
     // map displayed
     private GoogleMap mMap;
-    private MapActivity act;
+    private final MapActivity act;
     private LatLng currentLocation;
     private Marker currentLocationMarker;
     //TODO make is a param in the firebase so if user is not at event he can still know where the event is
@@ -55,17 +59,17 @@ public class CrowdMap implements OnMapReadyCallback {
     }
 
     // DEBUG
-    private static final String TAG = "CrowdMap";
+    private static final String TAG = CrowdMap.class.getSimpleName();
 
 
 
     // ---- HEATMAP -------------------------------------------------
     // Heatmap gradients
-    private Gradient gradientGreenRed = new Gradient(
+    private final Gradient gradientGreenRed = new Gradient(
             new int[] {Color.rgb(102, 225, 0), Color.rgb(255, 0, 0)} ,
             new float[] {0.2f, 1f} );
 
-    private Gradient gradientGrey = new Gradient(
+    private final Gradient gradientGrey = new Gradient(
             new int[] {Color.rgb(200, 200, 200), Color.rgb(150, 150, 150)} ,
             new float[] {0.2f, 1f} );
 
@@ -74,6 +78,7 @@ public class CrowdMap implements OnMapReadyCallback {
     // tile overlay
     private TileOverlay TOverlay;
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
@@ -99,15 +104,18 @@ public class CrowdMap implements OnMapReadyCallback {
         }
 
         // --- HeatMap -------------------------------------------------------------
-        switch(act.status) {
+        switch(PolyContext.getRole()) {
             case GUEST:
             case VISITOR:
+            case UNKNOWN:
                 HmTP = new HeatmapTileProvider.Builder()
                         .data(getEventGoersPositions())
                         .gradient(gradientGrey)
                         .build();
                 break;
-            case ORGANISER:
+            case ORGANIZER:
+            case SECURITY:
+            case STAFF:
                 HmTP = new HeatmapTileProvider.Builder()
                         .data(getEventGoersPositions())
                         .gradient(gradientGreenRed)
@@ -145,7 +153,7 @@ public class CrowdMap implements OnMapReadyCallback {
                 }
                 Log.i("KmlClick","Geometry type : "+feature.getGeometry().getGeometryType());
 
-                Utils.toastPopup(act.getApplicationContext() ,feature.getProperty("name") );
+                ActivityHelper.toastPopup(act.getApplicationContext() ,feature.getProperty("name") );
                 // TODO : move to corresponding Activity
             }
         );

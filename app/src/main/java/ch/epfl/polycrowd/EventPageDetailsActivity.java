@@ -4,9 +4,10 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import ch.epfl.polycrowd.firebase.DatabaseInterface;
+
+import ch.epfl.polycrowd.frontPage.FrontPageActivity;
+import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
-import ch.epfl.polycrowd.logic.User;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -44,26 +45,22 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import ch.epfl.polycrowd.logic.Event;
-import ch.epfl.polycrowd.organizerInvite.OrganizersAdapter;
+import ch.epfl.polycrowd.eventMemberInvite.EventMemberAdapter;
 import ch.epfl.polycrowd.schedulePage.ScheduleActivity;
 import edu.emory.mathcs.backport.java.util.Arrays;
 
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class EventPageDetailsActivity extends AppCompatActivity {
 
     private static final String TAG = "EventPageDetails";
 
     private AlertDialog linkDialog;
 
-    private boolean currentUserIsOrganizer = false;
-
     public static final int PICK_IMAGE = 1;
 
-    private DatabaseInterface dbi;
+    private byte[] imageInBytes;
 
     private Event curEvent;
-
-    private byte[] imageInBytes;
 
     private ImageView eventImg;
     private ImageView editImg;
@@ -77,17 +74,19 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     private Set<View> textFields;
     private Set<EditText> editFields;
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_details_page);
 
-        dbi = PolyContext.getDatabaseInterface();
-        initEvent();
+        curEvent = PolyContext.getCurrentEvent();
+        if(curEvent == null)
+            ActivityHelper.eventIntentHandler(this, FrontPageActivity.class);
 
+        initEvent();
         scheduleButton = findViewById(R.id.schedule);
-        scheduleButton.setOnClickListener(v -> clickSchedule(v));
+        scheduleButton.setOnClickListener(v -> ActivityHelper.eventIntentHandler(this,ScheduleActivity.class));
+
     }
 
     @Override
@@ -140,6 +139,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         editEventButton = findViewById(R.id.event_details_fab);
         cancel = findViewById(R.id.event_details_cancel);
     }
+
     private void fillFields(){
         eventTitleEdit.setText(curEvent.getName());
         eventDescriptionEdit.setText(curEvent.getDescription());
@@ -172,12 +172,11 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         fillFields();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void downloadEventImage() {
-        String imgUri = curEvent.getImageUri();
+        String imgUri = PolyContext.getCurrentEvent().getImageUri();
         Log.d(TAG, "event img uri: " + imgUri);
         if(null != imgUri) {
-            dbi.downloadEventImage(curEvent, image -> {
+            PolyContext.getDBI().downloadEventImage(curEvent, image -> {
                 Bitmap bmp = BitmapFactory.decodeByteArray(image, 0, image.length);
                 imageInBytes = image;
                 eventImg.setImageBitmap(bmp);
@@ -190,7 +189,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
 
     private void initRecyclerView(List<String> organizers) {
         RecyclerView recyclerView = findViewById(R.id.organizers_recycler_view);
-        OrganizersAdapter adapter = new OrganizersAdapter(organizers);
+        EventMemberAdapter adapter = new EventMemberAdapter(organizers);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
@@ -199,37 +198,19 @@ public class EventPageDetailsActivity extends AppCompatActivity {
      * Fetches the organizers of the event from the database
      * Initializes the RecyclerView displaying the organizers
      */
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void initEvent() {
-        curEvent = PolyContext.getCurrentEvent();
-        if(curEvent == null) {
-            Log.e(TAG, "current event is null");
-            return;
-        }
-        String eventId = curEvent.getId();
-        try {
-            dbi.getEventById(eventId, event -> {
-                initRecyclerView(event.getOrganizers());
-                setUpViews();
-                // Check logged-in user => do not show invite button if user isn't organizer
-                User user = PolyContext.getCurrentUser();
-                if(user == null || event.getOrganizers().indexOf(user.getEmail()) == -1) {
-                    Log.d(TAG, "current user is not an organizer");
-                    currentUserIsOrganizer = false;
-                } else {
-                    currentUserIsOrganizer = true;
-                    setUpOrganizerPrivileges();
-                }
-            });
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        PolyContext.getDBI().getEventById(PolyContext.getCurrentEvent().getId(), event -> {
+            initRecyclerView(event.getOrganizers());
+            setUpViews();
+            // Check logged-in user => do not show invite button if user isn't organizer
+            if(PolyContext.getCurrentUser() == null || PolyContext.getRole() != PolyContext.Role.ORGANIZER) {
+                Log.d(TAG, "current user is not an organizer");
+            } else {
+                findViewById(R.id.event_details_fab).setVisibility(View.VISIBLE);
+            }
+        });
     }
 
-    private void setUpOrganizerPrivileges() {
-        FloatingActionButton editButton = findViewById(R.id.event_details_fab);
-        editButton.setVisibility(View.VISIBLE);
-    }
 
     private void setEditing(boolean enable) {
         Log.d(TAG, "setting editing mode to " + enable);
@@ -308,6 +289,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         setEditing(true);
     }
 
+
     private void updateCurrentEvent() {
         curEvent.setName(eventTitleEdit.getText().toString());
         curEvent.setDescription(eventDescriptionEdit.getText().toString());
@@ -328,9 +310,9 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         // update the current event
         // update the event in the database
         updateCurrentEvent();
-        dbi.uploadEventImage(curEvent, imageInBytes, event -> {
+        PolyContext.getDBI().uploadEventImage(PolyContext.getCurrentEvent(), imageInBytes, event -> {
             Log.d(TAG, "event img uri after upload: " + event.getImageUri());
-            dbi.updateEvent(curEvent, event1 -> {
+            PolyContext.getDBI().updateEvent(PolyContext.getCurrentEvent(), event1 -> {
                 setEditing(false);
                 Log.d(TAG, "editing mode unset");
                 PolyContext.setCurrentEvent(event); // update the data
@@ -349,20 +331,26 @@ public class EventPageDetailsActivity extends AppCompatActivity {
      * - Generates the dynamic link for the organizer invite
      * - Displays the link in the dialog
      */
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public void inviteLinkClicked(View view) {
-        String eventName = curEvent.getName();
+    public void organizerInviteLinkClicked(View view){
+        inviteLinkClicked(view, PolyContext.Role.ORGANIZER);
+    }
+    public void securityInviteLinkClicked(View view){
+        inviteLinkClicked(view, PolyContext.Role.SECURITY);
+    }
+
+    public void inviteLinkClicked(View view, PolyContext.Role role) {
+        String eventName = PolyContext.getCurrentEvent().getName();
         // build the invite dynamic link
         // TODO: replace by short dynamic link
         DynamicLink inviteLink = FirebaseDynamicLinks.getInstance().createDynamicLink()
-                .setLink(Uri.parse("https://www.example.com/invite/?eventId=" + curEvent.getId()
+                .setLink(Uri.parse("https://www.example.com/invite"+role.toString()+"/?eventId=" + PolyContext.getCurrentEvent().getId()
                         + "&eventName=" + eventName))
                 .setDomainUriPrefix("https://polycrowd.page.link")
                 .setAndroidParameters(new DynamicLink.AndroidParameters.Builder().build())
                 .setSocialMetaTagParameters(
                         new SocialMetaTagParameters.Builder()
                                 .setTitle("PolyCrowd Organizer Invite")
-                                .setDescription("You are invited to become an organizer of " + eventName)
+                                .setDescription("You are invited to become an "+role.toString()+" of " + eventName)
                                 .build())
                 .buildDynamicLink();
 
@@ -379,9 +367,5 @@ public class EventPageDetailsActivity extends AppCompatActivity {
                 .setCancelable(true)
                 .setPositiveButton("OK", (dialog, which) -> dialog.cancel())
                 .show();
-    }
-    public void clickSchedule(View view){
-        Intent intent = new Intent(this, ScheduleActivity.class);
-        startActivity(intent);
     }
 }

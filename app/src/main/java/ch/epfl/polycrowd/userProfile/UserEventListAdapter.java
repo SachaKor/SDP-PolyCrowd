@@ -53,16 +53,14 @@ public class UserEventListAdapter extends RecyclerView.Adapter<UserEventListHold
             Event clickedModel = models.get(p) ;
             String eventId = clickedModel.getId() ;
 
-            DatabaseInterface dbi = PolyContext.getDatabaseInterface();
-            try {
-                dbi.getEventById(eventId,event -> {
-                    PolyContext.setCurrentEvent(event);
-                    Intent intent = new Intent(c, EventPageDetailsActivity.class) ;
-                    c.startActivity(intent);
-                } );
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+            DatabaseInterface dbi = PolyContext.getDBI();
+
+            dbi.getEventById(eventId,event -> {
+                PolyContext.setCurrentEvent(event);
+                Intent intent = new Intent(c, EventPageDetailsActivity.class) ;
+                c.startActivity(intent);
+            });
+
         } );
     }
 
