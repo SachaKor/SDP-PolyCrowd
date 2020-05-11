@@ -9,6 +9,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
@@ -46,6 +47,9 @@ public class MapActivity extends AppCompatActivity {
     // DEBUG
     private static final String TAG = MapActivity.class.getSimpleName();
 
+    //For periodic calls to updateMap
+    private int mInterval = 5000; // 5 seconds by default, can be changed later
+    private Handler mHandler;
 
     //create buttons for testing location
     private LocationManager locationManager;
@@ -68,11 +72,43 @@ public class MapActivity extends AppCompatActivity {
         PolyContext.getDBI().downloadEventMap(PolyContext.getCurrentEvent() , ev -> {
             createMap();
             launchLocationRequest();
+
+            //once map is downloaded
+            //initiaize handler used to repeat the repeating task every mInterval amount of time
+            mHandler = new Handler();
+            startRepeatingTask();
         });
+
+
 
         // createMap();
         //launchLocationRequest();
     }
+
+    //------------------TIMER/REPEATING TASKS SETUP----------------------------
+    Runnable updateHeatMap = new Runnable() {
+        @Override
+        public void run() {
+            mMap.update();
+            mHandler.postDelayed(updateHeatMap, mInterval);
+        }
+    };
+
+    //the repeating task will be repeated every mInterval amound of time by mHandler
+    void startRepeatingTask() {
+        updateHeatMap.run();
+    }
+
+    void stopRepeatingTask() {
+        mHandler.removeCallbacks(updateHeatMap);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        stopRepeatingTask();
+    }
+//------------------------------------------------------------------------------
 
     @SuppressLint("NewApi")
     private void launchLocationRequest() {

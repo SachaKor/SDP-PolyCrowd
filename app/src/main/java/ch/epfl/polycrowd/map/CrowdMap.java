@@ -218,6 +218,12 @@ public class CrowdMap implements OnMapReadyCallback {
     }
 
 
+    //Updates HeatMap
+    public void update(){
+        //TODO get eventGoersPositions from firebase and display them on the map
+        //TODO remove this Log.d message
+        Log.d("UPDATE", "goes into the update function");
+    }
 
     //Updates heatMap and current location of user
     public void update(LatLng myPosition){
