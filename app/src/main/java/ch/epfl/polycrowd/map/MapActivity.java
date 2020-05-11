@@ -69,14 +69,12 @@ public class MapActivity extends AppCompatActivity {
 
         createButtons();
 
+        //initiaize handler used to repeat the repeating task every mInterval amount of time
+        mHandler = new Handler();
+
         PolyContext.getDBI().downloadEventMap(PolyContext.getCurrentEvent() , ev -> {
             createMap();
             launchLocationRequest();
-
-            //once map is downloaded
-            //initiaize handler used to repeat the repeating task every mInterval amount of time
-            mHandler = new Handler();
-            startRepeatingTask();
         });
 
 
@@ -219,6 +217,9 @@ public class MapActivity extends AppCompatActivity {
                 .findFragmentById(R.id.map);
         if(mapFragment == null) return;
         mapFragment.getMapAsync(mMap);
+
+        //start the repeating task
+        startRepeatingTask();
     }
 
 
