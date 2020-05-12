@@ -33,8 +33,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -42,21 +46,30 @@ import ch.epfl.polycrowd.ActivityHelper;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.Utils;
 import ch.epfl.polycrowd.logic.PolyContext;
+import ch.epfl.polycrowd.logic.User;
 
 
 public class CrowdMap implements OnMapReadyCallback {
 
     // map displayed
     private GoogleMap mMap;
+    // to access Context for broadcasting and receiving intents
     private final MapActivity act;
-    private LatLng currentLocation;
+    // User position marker
     private Marker currentLocationMarker;
-    //TODO make is a param in the firebase so if user is not at event he can still know where the event is
-    private LatLng eventLocation;
+    // Group Markers
+    private Map<User , Marker> groupMarkers;
 
+
+
+
+    // ------ Constructor ---------------------------------------------
     public CrowdMap(MapActivity act_){
         act = act_;
     }
+
+
+
 
     // DEBUG
     private static final String TAG = CrowdMap.class.getSimpleName();
@@ -64,7 +77,7 @@ public class CrowdMap implements OnMapReadyCallback {
 
 
     // ---- HEATMAP -------------------------------------------------
-    // Heatmap gradients
+    // Heatmap gradients constants
     private final Gradient gradientGreenRed = new Gradient(
             new int[] {Color.rgb(102, 225, 0), Color.rgb(255, 0, 0)} ,
             new float[] {0.2f, 1f} );
@@ -73,10 +86,7 @@ public class CrowdMap implements OnMapReadyCallback {
             new int[] {Color.rgb(200, 200, 200), Color.rgb(150, 150, 150)} ,
             new float[] {0.2f, 1f} );
 
-    // provider
-    private HeatmapTileProvider HmTP;
-    // tile overlay
-    private TileOverlay TOverlay;
+
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -84,26 +94,18 @@ public class CrowdMap implements OnMapReadyCallback {
 
         mMap = googleMap;
 
-
         // --- Style map ----------------------------------------------------------
         // to remove buildings 3D effect put false
         mMap.setBuildingsEnabled(true);
 
-        try {
-            // Customise the styling of the base map using a JSON object defined
-            // in a raw resource file.
-            boolean success = googleMap.setMapStyle(
-                    MapStyleOptions.loadRawResourceStyle(
-                            act, R.raw.style_map));
-
-            if (!success) {
-                Log.e(TAG, "Style parsing failed.");
-            }
+        try {  // Customise the styling of the base map using a JSON object defined
+           googleMap.setMapStyle( MapStyleOptions.loadRawResourceStyle(act, R.raw.style_map));
         } catch (Resources.NotFoundException e) {
             Log.e(TAG, "Can't find style. Error: ", e);
         }
 
         // --- HeatMap -------------------------------------------------------------
+        HeatmapTileProvider HmTP = new HeatmapTileProvider.Builder().build();
         switch(PolyContext.getRole()) {
             case GUEST:
             case VISITOR:
@@ -121,9 +123,17 @@ public class CrowdMap implements OnMapReadyCallback {
                         .gradient(gradientGreenRed)
                         .build();
                 break;
-
         }
-        TOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(HmTP));
+        // tile overlay
+        TileOverlay TOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(HmTP));
+
+
+
+
+
+
+
+
 
 
         // --- KML layer ---------------------------------------------------------------
@@ -134,9 +144,6 @@ public class CrowdMap implements OnMapReadyCallback {
 
             if(PolyContext.getCurrentEvent() != null)
                 kmlFile = PolyContext.getCurrentEvent().getMapStream();
-
-            /*BufferedReader b = new BufferedReader(new InputStreamReader(kmlFile));
-                    Log.d(TAG, b.lines().collect(Collectors.joining("\n")));*/
 
             if(kmlFile != null) layer = new KmlLayer(mMap, kmlFile, act.getApplicationContext());
             else layer = new KmlLayer(mMap, R.raw.example, act.getApplicationContext());
@@ -157,16 +164,27 @@ public class CrowdMap implements OnMapReadyCallback {
                 // TODO : move to corresponding Activity
             }
         );
+
+
         layer.addLayerToMap();
 
+
+
+
+
+
+
+
+
+
+        // ------- Move to event /or stand position ---------------------------------------------------------------------
         //TODO get eventLocation from firebase
         //set default location for the event
-        eventLocation = new LatLng(46.518033, 6.566919);
+        //TODO make is a param in the firebase so if user is not at event he can still know where the event is
+        LatLng eventLocation = new LatLng(46.518033, 6.566919);
         //place the location marker at the event by default
         MarkerOptions currentLocationMarkerOptions = new MarkerOptions().position(eventLocation).icon(BitmapDescriptorFactory.fromResource(R.drawable.pointred));
         currentLocationMarker = googleMap.addMarker(currentLocationMarkerOptions);
-
-
 
 
         if(PolyContext.getStandId() != null) {
@@ -176,8 +194,45 @@ public class CrowdMap implements OnMapReadyCallback {
         }
 
 
+
+
+
+        // ----- ADD Group on map ----------------------------------------------------------------------------
+        groupMarkers = new HashMap<>();
+        if(PolyContext.getCurrentGroup() != null){
+            for(User groupMember : PolyContext.getCurrentGroup().getMembers()){
+                groupMarkers.put(groupMember , googleMap.addMarker(
+                        new MarkerOptions().position(groupMember.getLocation())
+                                           .title(groupMember.getName())
+                                           .icon(BitmapDescriptorFactory.fromResource(R.drawable.pointred))));
+            }
+        }
+
     }
 
+
+
+
+
+
+
+    // ------- Update user position ------------------------------------------------------
+
+    public void update(LatLng myPosition){
+
+        //update marker to point to current Location
+        currentLocationMarker.setPosition(myPosition);
+
+    }
+
+
+
+
+
+
+
+
+    // ------ KML Parsing functions --------------------------------------------------------------------------
 
     public void accessContainers(Iterable<KmlContainer> containers) {
         for (KmlContainer container : containers) {
@@ -218,19 +273,7 @@ public class CrowdMap implements OnMapReadyCallback {
     }
 
 
-
-    //Updates heatMap and current location of user
-    public void update(LatLng myPosition){
-        //update currentLocation
-        currentLocation = myPosition;
-        //update marker to point to current Location
-        currentLocationMarker.setPosition(myPosition);
-        //place the camera over the currentLocation and zoom in
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation , 17.8f));
-    }
-
-
-    // --- GET USER DATA --------------------------------
+    // --- GET USER DATA (MOCKING) --------------------------------
     private List<LatLng> getEventGoersPositions(){
         List<LatLng> l = new LinkedList<>();
         l.add(new LatLng(46.518033, 6.566919));l.add(new LatLng(46.518933, 6.566819));l.add(new LatLng(46.518533, 6.566719));
@@ -245,5 +288,6 @@ public class CrowdMap implements OnMapReadyCallback {
         l.add(new LatLng(46.518533, 6.566379));l.add(new LatLng(46.518363, 6.566359));l.add(new LatLng(46.518233, 6.566359));
         return l;
     }
+
 
 }
