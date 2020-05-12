@@ -105,7 +105,7 @@ public class CrowdMap implements OnMapReadyCallback {
         }
 
         // --- HeatMap -------------------------------------------------------------
-        HeatmapTileProvider HmTP = new HeatmapTileProvider.Builder().build();
+        HeatmapTileProvider HmTP = null;
         switch(PolyContext.getRole()) {
             case GUEST:
             case VISITOR:
@@ -125,7 +125,7 @@ public class CrowdMap implements OnMapReadyCallback {
                 break;
         }
         // tile overlay
-        TileOverlay TOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(HmTP));
+        if(HmTP != null) mMap.addTileOverlay(new TileOverlayOptions().tileProvider(HmTP));
 
 
 
@@ -198,6 +198,7 @@ public class CrowdMap implements OnMapReadyCallback {
 
 
         // ----- ADD Group on map ----------------------------------------------------------------------------
+
         groupMarkers = new HashMap<>();
         if(PolyContext.getCurrentGroup() != null){
             for(User groupMember : PolyContext.getCurrentGroup().getMembers()){
