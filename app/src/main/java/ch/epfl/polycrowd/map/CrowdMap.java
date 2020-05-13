@@ -169,14 +169,11 @@ public class CrowdMap implements OnMapReadyCallback {
 
 
         // ------- Move to event /or stand position ---------------------------------------------------------------------
-        //TODO get eventLocation from firebase
-        //set default location for the event
-        //TODO make is a param in the firebase so if user is not at event he can still know where the event is
-        LatLng eventLocation = new LatLng(46.518033, 6.566919);
-        //place the location marker at the event by default
-        MarkerOptions currentLocationMarkerOptions = new MarkerOptions().position(eventLocation).icon(BitmapDescriptorFactory.fromResource(R.drawable.pointred));
-        currentLocationMarker = googleMap.addMarker(currentLocationMarkerOptions);
 
+        currentLocationMarker = mMap.addMarker(
+                new MarkerOptions().position(new LatLng(0, 0)) // TODO : maybe PolyContex.getCurrentUser().getLocation() ..
+                                   .icon(BitmapDescriptorFactory.fromResource(R.drawable.pointred))
+        );
 
         if(PolyContext.getStandId() != null) {
             accessContainers(layer.getContainers() , this::accessPlacemarks);
