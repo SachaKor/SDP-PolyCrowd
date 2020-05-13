@@ -179,7 +179,7 @@ public class CrowdMap implements OnMapReadyCallback {
             accessContainers(layer.getContainers() , this::accessPlacemarks );
         } else {
             accessContainers(layer.getContainers() , this::findAllVertexInPlacemarks );
-            mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(getPolygonLatLngBounds(eventVertexList), 150));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(getPolygonLatLngBounds(eventVertexList), 150));
         }
 
 
@@ -249,7 +249,7 @@ public class CrowdMap implements OnMapReadyCallback {
                         KmlPolygon polygon = (KmlPolygon) placemark.getGeometry();
                         final int POLYGON_PADDING_PREFERENCE = 230;
                         final LatLngBounds latLngBounds = getPolygonLatLngBounds(polygon.getOuterBoundaryCoordinates());
-                        mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, POLYGON_PADDING_PREFERENCE));
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, POLYGON_PADDING_PREFERENCE));
                     }
                 }
             }
