@@ -176,11 +176,10 @@ public class CrowdMap implements OnMapReadyCallback {
         );
 
         if(PolyContext.getStandId() != null) {
-            accessContainers(layer.getContainers() , this::accessPlacemarks);
+            accessContainers(layer.getContainers() , this::accessPlacemarks );
         } else {
-            accessContainers(layer.getContainers(),this::findAllVertexInPlacemarks);
-            final LatLngBounds latLngBounds = getPolygonLatLngBounds(eventVertexList);
-            mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 150));
+            accessContainers(layer.getContainers() , this::findAllVertexInPlacemarks );
+            mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(getPolygonLatLngBounds(eventVertexList), 150));
         }
 
 
@@ -214,7 +213,7 @@ public class CrowdMap implements OnMapReadyCallback {
         //update marker to point to current Location
         currentLocationMarker.setPosition(myPosition);
 
-        // todo : update group markers
+        // TODO : update group markers
         groupMarkers.forEach( (user , maker) -> {} );
 
     }
@@ -228,7 +227,7 @@ public class CrowdMap implements OnMapReadyCallback {
 
     // ------ KML Parsing functions --------------------------------------------------------------------------
 
-    public void accessContainers(Iterable<KmlContainer> containers , Consumer<Iterable<KmlPlacemark>> accessPlacemarksFunc) {
+    private void accessContainers(Iterable<KmlContainer> containers, Consumer<Iterable<KmlPlacemark>> accessPlacemarksFunc) {
         for (KmlContainer container : containers) {
             if (container != null) {
                 if (container.hasContainers()) {
@@ -242,7 +241,7 @@ public class CrowdMap implements OnMapReadyCallback {
         }
     }
 
-    public void accessPlacemarks(Iterable<KmlPlacemark> placemarks) {
+    private void accessPlacemarks(Iterable<KmlPlacemark> placemarks) {
         for (KmlPlacemark placemark : placemarks) {
             if (placemark != null) {
                 if( placemark.getProperty("name").equals(PolyContext.getStandId())){
@@ -258,7 +257,7 @@ public class CrowdMap implements OnMapReadyCallback {
     }
 
     private List<LatLng> eventVertexList = new ArrayList<>();
-    public void findAllVertexInPlacemarks(Iterable<KmlPlacemark> placemarks) {
+    private void findAllVertexInPlacemarks(Iterable<KmlPlacemark> placemarks) {
         for (KmlPlacemark placemark : placemarks) {
             if (placemark != null) {
                     if (placemark.getGeometry() instanceof KmlPolygon) {
