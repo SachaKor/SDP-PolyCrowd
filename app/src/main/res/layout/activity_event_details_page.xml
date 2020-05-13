@@ -130,19 +130,21 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/event_details_map_url"
+                    android:id="@+id/event_details_map_text"
                     android:text="upload the .kml file"
                     android:layout_centerVertical="true"
-                    android:padding="5dp"/>
+                    android:padding="5dp"
+                    android:visibility="gone"/>
 
                 <Button
                     android:id="@+id/event_details_map_upload"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_alignTop="@id/event_details_map_url"
-                    android:layout_alignEnd="@+id/event_details_map_url"
+                    android:layout_alignTop="@id/event_details_map_text"
+                    android:layout_alignEnd="@+id/event_details_map_text"
                     android:text="map upload"
-                    android:onClick="onUploadMapClick"/>
+                    android:onClick="onUploadMapClick"
+                    android:visibility="gone"/>
             </RelativeLayout>
 
             <Spinner
@@ -151,17 +153,7 @@
                 android:layout_height="wrap_content"
                 android:entries="@array/event_type_list"
                 android:prompt="@string/event_type_hint"
-                android:layout_below="@id/event_details_map_layout"
-                android:visibility="invisible"
-                android:clickable="false"/>
-
-            <TextView
-                android:id="@+id/event_type"
-                android:layout_width="144dp"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/event_details_map_layout"
-                android:entries="@array/event_type_list"
-                />
+                android:layout_below="@id/event_details_map_layout" />
 
             <Switch
                 android:id="@+id/event_public_edit"

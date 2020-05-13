@@ -77,7 +77,6 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     private EditText eventTitle, start,end, eventDescription, scheduleUrl;
     private Switch isPublicSwitch, sosSwitch;
     private Spinner eventTypeEdit;
-    private TextView eventType;
     private TextView mapText;
     private Button mapUpload;
     private Set<EditText> textFields;
@@ -141,6 +140,9 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         end.setText(e);
         isPublicSwitch.setChecked(curEvent.getPublic());
         sosSwitch.setChecked(curEvent.isEmergencyEnabled());
+        eventTypeEdit.setSelection(curEvent.getType().ordinal());
+        eventTypeEdit.setEnabled(false);
+        eventTypeEdit.setClickable(false);
     }
 
     private void initFields(){
@@ -151,7 +153,6 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         scheduleUrl = findViewById(R.id.event_details_url_edit);
         eventImg = findViewById(R.id.event_details_img);
         eventTypeEdit = findViewById(R.id.event_type_edit);
-        eventType = findViewById(R.id.event_type);
         sosSwitch = findViewById(R.id.event_sos_edit);
         isPublicSwitch = findViewById(R.id.event_public_edit);
         editImg = findViewById(R.id.event_details_edit_img);
@@ -159,7 +160,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         submitChanges = findViewById(R.id.event_details_submit);
         editEventButton = findViewById(R.id.event_details_fab);
         cancel = findViewById(R.id.event_details_cancel);
-        mapText = findViewById(R.id.event_details_map_url);
+        mapText = findViewById(R.id.event_details_map_text);
         mapUpload = findViewById(R.id.event_details_map_upload);
         textFields = new HashSet<>(Arrays.asList(new EditText[]{eventTitle, eventDescription, start,end}));
     }
@@ -189,8 +190,8 @@ public class EventPageDetailsActivity extends AppCompatActivity {
 
 
     private void setEditing(boolean enable) {
-        int visibilityEdit = enable ? View.VISIBLE : View.INVISIBLE;
-        int visibilityFab = enable ? View.INVISIBLE : View.VISIBLE;
+        int visibilityEdit = enable ? View.VISIBLE : View.GONE;
+        int visibilityFab = enable ? View.GONE : View.VISIBLE;
         // set the "Organizer Invite" button visible
         inviteOrganizerButton.setVisibility(visibilityEdit);
         // set the "Submit Changes" button visible
@@ -199,15 +200,17 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         editEventButton.setVisibility(visibilityFab);
         editImg.setVisibility(visibilityEdit);
         cancel.setVisibility(visibilityEdit);
+        mapUpload.setVisibility(visibilityEdit);
+        mapText.setVisibility(visibilityEdit);
 
         for(EditText t : textFields) {
             setEditTextEditable(t, enable);
         }
 
-        eventTypeEdit.setVisibility(visibilityEdit);
-        eventType.setVisibility(visibilityFab);
         isPublicSwitch.setClickable(enable);
         sosSwitch.setClickable(enable);
+        eventTypeEdit.setEnabled(enable);
+        eventTypeEdit.setClickable(enable);
 
     }
 
@@ -245,6 +248,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
                         try {
                             myS = getContentResolver().openInputStream(uri);
                             kmlInBytes = Utils.getBytes(myS);
+                            mapText.setText("event map is set");
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -301,6 +305,14 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         return userLoggedIn() && !hasEmptyFields() && datesAreCorrect();
     }
 
+    private void updateEvent(Event toUpdate) {
+        dbi.updateEvent(toUpdate, event1 -> {
+            PolyContext.setCurrentEvent(event1);
+            curEvent = event1;
+            setEditing(false);
+        });
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void onSubmitChangesClicked(View view) {
         if(imageInBytes == null) {
@@ -311,12 +323,11 @@ public class EventPageDetailsActivity extends AppCompatActivity {
             return;
 
         EventHandler successHandler = event -> dbi.uploadEventImage(event, imageInBytes, event14 -> {
-            dbi.uploadEventMap(event14, kmlInBytes, event12 ->
-                    dbi.updateEvent(event12, event1 -> {
-                        PolyContext.setCurrentEvent(event1);
-                        curEvent = event1;
-                        setEditing(false);
-            }));
+            if(kmlInBytes != null) {
+                dbi.uploadEventMap(event14, kmlInBytes, event12 -> updateEvent(event12));
+            } else {
+                updateEvent(event14);
+            }
         });
         EventHandler failureHandler = event -> Toast.makeText(this, "Error occurred while adding the event", Toast.LENGTH_SHORT);
         if(curEvent != null) { // update the event
@@ -327,31 +338,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
             dbi.addEvent(ev,
                     successHandler,
                     failureHandler);
-
         }
-        /*
-        dbi.uploadEventImage(curEvent, imageInBytes, event -> {
-            Log.d(TAG, "event img uri after upload: " + event.getImageUri());
-            if(curEvent != null) { // update event
-                updateCurrentEvent();
-                dbi.updateEvent(curEvent, event1 -> {
-                    setEditing(false);
-                    Log.d(TAG, "editing mode unset");
-                    PolyContext.setCurrentEvent(event); // update the data
-                    fillFields();
-                });
-            } else { // add the new event
-                if(hasEmptyFields() || !datesAreCorrect() || !userLoggedIn()) {
-                    Event newEvent = readEvent();
-                    Context c = this;
-                    dbi.addEvent(newEvent,
-                            event12 -> PolyContext.setCurrentEvent(newEvent),
-                            event13 -> Toast.makeText(c, "Error occurred while adding the event", Toast.LENGTH_SHORT).show()
-                    );
-                }
-            }
-        });
-         */
     }
 
     private Event readEvent() {
