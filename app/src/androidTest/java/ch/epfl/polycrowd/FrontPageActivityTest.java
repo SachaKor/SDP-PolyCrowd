@@ -12,19 +12,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import androidx.test.rule.GrantPermissionRule;
-import ch.epfl.polycrowd.firebase.DatabaseInterface;
-import ch.epfl.polycrowd.firebase.FirebaseMocker;
 import ch.epfl.polycrowd.frontPage.FrontPageActivity;
-import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
-import ch.epfl.polycrowd.logic.User;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -80,7 +70,7 @@ public class FrontPageActivityTest {
         onView(withId(R.id.viewPager))
                 .perform(swipeRight() , swipeLeft() , swipeRight() , click());
         sleep();
-        onView(withId(R.id.event_name)).check(matches(isDisplayed()));
+        onView(withId(R.id.event_details_title)).check(matches(isDisplayed()));
     }
 
     @Test
