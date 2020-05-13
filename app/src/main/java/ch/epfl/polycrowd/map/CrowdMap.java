@@ -33,12 +33,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 
@@ -139,27 +142,15 @@ public class CrowdMap implements OnMapReadyCallback {
         // --- KML layer ---------------------------------------------------------------
         KmlLayer layer = null;
         try {
-
-            InputStream kmlFile = null;
-
-            if(PolyContext.getCurrentEvent() != null)
-                kmlFile = PolyContext.getCurrentEvent().getMapStream();
-
-            if(kmlFile != null) layer = new KmlLayer(mMap, kmlFile, act.getApplicationContext());
-            else layer = new KmlLayer(mMap, R.raw.example, act.getApplicationContext());
+            layer = new KmlLayer(mMap,
+                                 PolyContext.getCurrentEvent().getMapStream(),
+                                 act.getApplicationContext());
         } catch (XmlPullParserException | IOException e) {
             e.printStackTrace();
         }
-        assert layer != null;
-
 
         // Set a listener for geometry clicked events.
         layer.setOnFeatureClickListener( feature -> {
-                for(String key  : feature.getPropertyKeys()){
-                    Log.i("KmlClick", "property : " + key + " -> "+feature.getProperty(key));
-                }
-                Log.i("KmlClick","Geometry type : "+feature.getGeometry().getGeometryType());
-
                 ActivityHelper.toastPopup(act.getApplicationContext() ,feature.getProperty("name") );
                 // TODO : move to corresponding Activity
             }
@@ -188,9 +179,11 @@ public class CrowdMap implements OnMapReadyCallback {
 
 
         if(PolyContext.getStandId() != null) {
-            accessContainers(layer.getContainers());
+            accessContainers(layer.getContainers() , this::accessPlacemarks);
         } else {
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(eventLocation, 17.8f));
+            accessContainers(layer.getContainers(),this::findAllVertexInPlacemarks);
+            final LatLngBounds latLngBounds = getPolygonLatLngBounds(eventVertexList);
+            mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 150));
         }
 
 
@@ -224,6 +217,9 @@ public class CrowdMap implements OnMapReadyCallback {
         //update marker to point to current Location
         currentLocationMarker.setPosition(myPosition);
 
+        // todo : update group markers
+        groupMarkers.forEach( (user , maker) -> {} );
+
     }
 
 
@@ -235,14 +231,14 @@ public class CrowdMap implements OnMapReadyCallback {
 
     // ------ KML Parsing functions --------------------------------------------------------------------------
 
-    public void accessContainers(Iterable<KmlContainer> containers) {
+    public void accessContainers(Iterable<KmlContainer> containers , Consumer<Iterable<KmlPlacemark>> accessPlacemarksFunc) {
         for (KmlContainer container : containers) {
             if (container != null) {
                 if (container.hasContainers()) {
-                    accessContainers(container.getContainers());
+                    accessContainers(container.getContainers() , accessPlacemarksFunc);
                 } else {
                     if (container.hasPlacemarks()) {
-                        accessPlacemarks(container.getPlacemarks());
+                        accessPlacemarksFunc.accept(container.getPlacemarks());
                     }
                 }
             }
@@ -260,6 +256,18 @@ public class CrowdMap implements OnMapReadyCallback {
                         mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, POLYGON_PADDING_PREFERENCE));
                     }
                 }
+            }
+        }
+    }
+
+    private List<LatLng> eventVertexList = new ArrayList<>();
+    public void findAllVertexInPlacemarks(Iterable<KmlPlacemark> placemarks) {
+        for (KmlPlacemark placemark : placemarks) {
+            if (placemark != null) {
+                    if (placemark.getGeometry() instanceof KmlPolygon) {
+                        KmlPolygon polygon = (KmlPolygon) placemark.getGeometry();
+                        eventVertexList.addAll(polygon.getOuterBoundaryCoordinates());
+                    }
             }
         }
     }
