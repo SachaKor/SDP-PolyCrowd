@@ -26,6 +26,7 @@ import ch.epfl.polycrowd.map.MapActivity;
 import ch.epfl.polycrowd.userProfile.ItemClickListener;
 
 import static ch.epfl.polycrowd.ActivityHelper.eventIntentHandler;
+import static ch.epfl.polycrowd.ActivityHelper.toastPopup;
 
 public class GroupsListActivity extends AppCompatActivity {
 
@@ -92,7 +93,12 @@ public class GroupsListActivity extends AppCompatActivity {
                 PolyContext.setCurrentGroupId(groupId);
                 PolyContext.getDBI().getGroupByGroupId(groupId, fetchedGroup -> {
                     PolyContext.setCurrentGroup(fetchedGroup) ;
-                    if(PolyContext.getCurrentEvent() != null) eventIntentHandler(c, MapActivity.class);
+                    if(PolyContext.getCurrentEvent() != null) {
+                        if(PolyContext.getCurrentEvent().getId().equals(groupEvent))
+                            eventIntentHandler(c, MapActivity.class);
+                        else
+                            toastPopup(c , "group not part of the current event");
+                    }
                     else eventIntentHandler( c , GroupPageActivity.class);
                 } ) ;
             } ;
