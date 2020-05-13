@@ -11,7 +11,6 @@ import ch.epfl.polycrowd.logic.User;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -19,7 +18,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -37,6 +35,7 @@ import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
@@ -60,6 +59,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     private boolean currentUserIsOrganizer = false;
 
     public static final int PICK_IMAGE = 1;
+    public static final int PICK_MAP = 2;
 
     private DatabaseInterface dbi;
 
@@ -67,6 +67,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     private User curUser;
 
     private byte[] imageInBytes;
+    private byte[] kmlInBytes;
 
     private ImageView eventImg;
     private ImageView editImg;
@@ -77,6 +78,8 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     private Switch isPublicSwitch, sosSwitch;
     private Spinner eventTypeEdit;
     private TextView eventType;
+    private TextView mapText;
+    private Button mapUpload;
     private Set<EditText> textFields;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -91,15 +94,16 @@ public class EventPageDetailsActivity extends AppCompatActivity {
 
         curEvent = PolyContext.getCurrentEvent();
         curUser = PolyContext.getCurrentUser();
-        if(curEvent != null) {
+        if(curEvent != null) { // edit the event
             if(curUser != null && curEvent.getOrganizers().indexOf(curUser.getEmail()) != -1) {
                 editEventButton.setVisibility(View.VISIBLE);
             }
             downloadEventImage();
             fillFields();
             initRecyclerView(curEvent.getOrganizers());
-        } else {
+        } else { // create an event
             setEditing(true);
+            inviteOrganizerButton.setVisibility(View.INVISIBLE);
         }
 
         scheduleButton = findViewById(R.id.schedule);
@@ -155,6 +159,8 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         submitChanges = findViewById(R.id.event_details_submit);
         editEventButton = findViewById(R.id.event_details_fab);
         cancel = findViewById(R.id.event_details_cancel);
+        mapText = findViewById(R.id.event_details_map_url);
+        mapUpload = findViewById(R.id.event_details_map_upload);
         textFields = new HashSet<>(Arrays.asList(new EditText[]{eventTitle, eventDescription, start,end}));
     }
 
@@ -213,17 +219,38 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     }
 
     /**
-     * Handles the image picked from the gallery
+     * 1. Handles the image picked from the gallery
+     * 2. Handles the map picked from folder
      */
     @Override
-    public void onActivityResult(int requestCode, int resultCode,Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK)
-            if(requestCode == PICK_IMAGE) {
-                //data.getData returns the content URI for the selected Image
-                Uri selectedImage = data.getData();
-                eventImg.setImageURI(selectedImage);
-                compressAndSetImage();
+            switch (requestCode) {
+                case PICK_IMAGE: {
+                    //data.getData returns the content URI for the selected Image
+                    Uri selectedImage = data.getData();
+                    eventImg.setImageURI(selectedImage);
+                    compressAndSetImage();
+                    break;
+                }
+                case PICK_MAP: {
+                    InputStream myS = null;
+                    Uri uri = data.getData();
+                    String kmlName = uri.toString();
+                    String extension = kmlName.substring(kmlName.lastIndexOf("."));
+                    if(!extension.equals(".kml")) {
+                        Toast.makeText(this, "File extension is incorrect: " + extension, Toast.LENGTH_SHORT).show();
+                    } else {
+                        try {
+                            myS = getContentResolver().openInputStream(uri);
+                            kmlInBytes = Utils.getBytes(myS);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    break;
+                }
             }
     }
 
@@ -270,14 +297,39 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         curEvent.setType(Event.EventType.valueOf(eventTypeEdit.getSelectedItem().toString().toUpperCase()));
     }
 
+    private boolean canEditEvent() {
+        return userLoggedIn() && !hasEmptyFields() && datesAreCorrect();
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void onSubmitChangesClicked(View view) {
         if(imageInBytes == null) {
             compressAndSetImage();
         }
-        // upload the image to the storage
-        // update the current event
-        // update the event in the database
+
+        if(!canEditEvent())
+            return;
+
+        EventHandler successHandler = event -> dbi.uploadEventImage(event, imageInBytes, event14 -> {
+            dbi.uploadEventMap(event14, kmlInBytes, event12 ->
+                    dbi.updateEvent(event12, event1 -> {
+                        PolyContext.setCurrentEvent(event1);
+                        curEvent = event1;
+                        setEditing(false);
+            }));
+        });
+        EventHandler failureHandler = event -> Toast.makeText(this, "Error occurred while adding the event", Toast.LENGTH_SHORT);
+        if(curEvent != null) { // update the event
+            updateCurrentEvent();
+            dbi.updateEvent(curEvent, successHandler);
+        } else { // add the new event
+            Event ev = readEvent();
+            dbi.addEvent(ev,
+                    successHandler,
+                    failureHandler);
+
+        }
+        /*
         dbi.uploadEventImage(curEvent, imageInBytes, event -> {
             Log.d(TAG, "event img uri after upload: " + event.getImageUri());
             if(curEvent != null) { // update event
@@ -299,6 +351,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
                 }
             }
         });
+         */
     }
 
     private Event readEvent() {
@@ -319,7 +372,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
                 Event.EventType.valueOf(type.toUpperCase()),
                 startDate, endDate,
                 schedule,
-                "TODO : implement description", hasEmergency, organizers);
+                desc, hasEmergency, organizers);
 
     }
 
@@ -416,6 +469,13 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         editText.setFocusableInTouchMode(editable);
         editText.setEnabled(editable);
         editText.setCursorVisible(editable);
+    }
+
+    public void onUploadMapClick(View view) {
+        Intent fileIntent = new Intent(Intent.ACTION_GET_CONTENT);
+        fileIntent.setType("*/*");
+        startActivityForResult(fileIntent, PICK_MAP);
+
     }
 
 }

@@ -26,7 +26,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="300dp"
                     android:layout_centerHorizontal="true"
-                    android:src="@mipmap/ic_launcher"
+                    android:src="@drawable/balelec"
                     app:layout_constraintBottom_toBottomOf="parent"
                     tools:ignore="MissingConstraints"
                     tools:layout_editor_absoluteX="87dp" />
@@ -122,13 +122,36 @@
                 android:cursorVisible="false"
                 android:enabled="false"/>
 
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/event_details_start"
+                android:id="@+id/event_details_map_layout">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/event_details_map_url"
+                    android:text="upload the .kml file"
+                    android:layout_centerVertical="true"
+                    android:padding="5dp"/>
+
+                <Button
+                    android:id="@+id/event_details_map_upload"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_alignTop="@id/event_details_map_url"
+                    android:layout_alignEnd="@+id/event_details_map_url"
+                    android:text="map upload"
+                    android:onClick="onUploadMapClick"/>
+            </RelativeLayout>
+
             <Spinner
                 android:id="@+id/event_type_edit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:entries="@array/event_type_list"
                 android:prompt="@string/event_type_hint"
-                android:layout_below="@id/event_details_url_edit"
+                android:layout_below="@id/event_details_map_layout"
                 android:visibility="invisible"
                 android:clickable="false"/>
 
@@ -136,7 +159,7 @@
                 android:id="@+id/event_type"
                 android:layout_width="144dp"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/event_details_url_edit"
+                android:layout_below="@id/event_details_map_layout"
                 android:entries="@array/event_type_list"
                 />
 
@@ -144,7 +167,7 @@
                 android:id="@+id/event_public_edit"
                 android:layout_width="102dp"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/event_details_url_edit"
+                android:layout_below="@id/event_details_map_layout"
                 android:layout_marginLeft="135dp"
                 android:hint="isPublic"
                 android:visibility="visible"
@@ -155,16 +178,17 @@
                 android:id="@+id/event_sos_edit"
                 android:layout_width="134dp"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/event_details_url_edit"
+                android:layout_below="@id/event_details_map_layout"
                 android:layout_marginLeft="245dp"
                 android:hint="Emergencies"
                 android:visibility="visible"
                 android:clickable="false"/>
+        
             <TextView
                 android:id="@+id/EditEventOrganizers"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/event_type"
+                android:layout_below="@id/event_public_edit"
                 android:layout_marginTop="4dp"
                 android:ems="10"
                 android:padding="10dp"
@@ -172,16 +196,28 @@
                 android:textAlignment="center"
                 android:textSize="20sp" />
 
-            <ScrollView
-                android:layout_width="match_parent"
+            <Button
+                android:id="@+id/schedule"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/EditEventOrganizers"
-                android:id="@+id/organizers_scroll">
+                android:layout_gravity="start|top"
+                android:text="Schedule"
+                android:padding="10dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="25dp"
+                android:paddingRight="10dp"/>
+
+        <ScrollView
+            android:id="@+id/organizers_scroll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/EditEventOrganizers">
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/organizers_recycler_view"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-            </ScrollView>
+                android:layout_height="wrap_content" />
+        </ScrollView>
 
         <Button
             android:id="@+id/invite_organizer_button"
@@ -218,17 +254,6 @@
             android:visibility="invisible"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@id/event_details_submit"/>
-
-            <Button
-                android:id="@+id/schedule"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start|top"
-                android:text="Schedule"
-                android:padding="10dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginStart="25dp"
-                android:paddingRight="10dp"/>
     </RelativeLayout>
     </ScrollView>
 

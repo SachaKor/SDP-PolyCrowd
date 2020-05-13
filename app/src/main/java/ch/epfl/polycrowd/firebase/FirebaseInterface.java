@@ -464,12 +464,12 @@ public class FirebaseInterface implements DatabaseInterface {
     @Override
     public void uploadEventImage(Event event, byte[] image, EventHandler handler) {
         String imageUri = EVENT_IMAGES + "/" + event.getId() + ".jpg";
-        event.setImageUri(imageUri);
         StorageReference imgRef = getStorageInstance(true).getReference().child(imageUri);
         UploadTask uploadTask = imgRef.putBytes(image);
         uploadTask
                 .addOnSuccessListener(taskSnapshot -> {
-                        Log.d(TAG, "Image for the event " + event.getId() + " is successfully uploaded");
+                        event.setImageUri(imageUri);
+                        Log.d(TAG, "Image for the event " + event.getId() + " is successfully uploaded" + ", imgUri: " + event.getImageUri());
                         handler.handle(event);
                 })
                 .addOnFailureListener(e ->
@@ -478,8 +478,8 @@ public class FirebaseInterface implements DatabaseInterface {
 
     @Override
     public void uploadEventMap(Event event, byte[] map, EventHandler handler) {
-        String mapPath = EVENT_MAPS + "/" + event.getMapUri();
-        //event.setMapUri(mapPath);
+        String mapPath = EVENT_MAPS + "/" + event.getId() + ".kml";
+        event.setMapUri(mapPath);
         StorageReference imgRef = getStorageInstance(true).getReference().child(mapPath);
 
         UploadTask uploadTask = imgRef.putBytes(map);
