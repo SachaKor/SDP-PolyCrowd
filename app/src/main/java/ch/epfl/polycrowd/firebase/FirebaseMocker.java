@@ -11,7 +11,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -22,13 +21,11 @@ import java.util.Objects;
 import ch.epfl.polycrowd.firebase.handlers.DynamicLinkHandler;
 import ch.epfl.polycrowd.firebase.handlers.EmptyHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventHandler;
+import ch.epfl.polycrowd.firebase.handlers.EventMemberHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
 import ch.epfl.polycrowd.firebase.handlers.GroupHandler;
-
 import ch.epfl.polycrowd.firebase.handlers.Handler;
-
 import ch.epfl.polycrowd.firebase.handlers.ImageHandler;
-import ch.epfl.polycrowd.firebase.handlers.EventMemberHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
@@ -46,6 +43,7 @@ public class FirebaseMocker implements DatabaseInterface {
     private Map<String, Group> groupIdGroupPairs ;
     private byte[] userImg;
     private String uriString;
+    private final String connectionId;
 
     public FirebaseMocker(Map<String, Pair<User, String>> defaultMailAndUserPassPair, List<Event> defaultEvents) {
         Log.d(TAG, "Database mocker init");
@@ -56,6 +54,7 @@ public class FirebaseMocker implements DatabaseInterface {
         events = new ArrayList<>();
         events.addAll(defaultEvents);
         groupIdGroupPairs = new HashMap<>() ;
+        connectionId = "MOCK_CONNECTION_ID" ;
     }
 
     public FirebaseMocker(Map<String, Pair<User, String>> defaultMailAndUserPassPair, List<Event> defaultEvents, String uriString) {
@@ -381,5 +380,10 @@ public class FirebaseMocker implements DatabaseInterface {
             }
         }
         usersHandler.handle(users);
+    }
+
+    @Override
+    public String getConnectionId() {
+        return connectionId;
     }
 }

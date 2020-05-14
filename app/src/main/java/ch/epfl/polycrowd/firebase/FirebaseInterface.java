@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -26,41 +25,30 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import ch.epfl.polycrowd.R;
-import ch.epfl.polycrowd.Utils;
 import ch.epfl.polycrowd.firebase.handlers.DynamicLinkHandler;
 import ch.epfl.polycrowd.firebase.handlers.EmptyHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventHandler;
+import ch.epfl.polycrowd.firebase.handlers.EventMemberHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
 import ch.epfl.polycrowd.firebase.handlers.GroupHandler;
-
 import ch.epfl.polycrowd.firebase.handlers.Handler;
-
 import ch.epfl.polycrowd.firebase.handlers.ImageHandler;
-import ch.epfl.polycrowd.firebase.handlers.EventMemberHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
-
 import ch.epfl.polycrowd.logic.PolyContext;
-
 import ch.epfl.polycrowd.logic.User;
 
 import static ch.epfl.polycrowd.logic.PolyContext.convertObjectToList;
@@ -75,6 +63,7 @@ public class FirebaseInterface implements DatabaseInterface {
     private DatabaseReference cachedDbRef;
     private FirebaseFirestore cachedFirestore;
     private FirebaseStorage storage;
+    private FirebaseInstanceId cachedFirebaseInstanceId ;
 
     private static final String EVENTS = "polyevents";
     private static final String ORGANIZERS = "organizers";
@@ -111,6 +100,18 @@ public class FirebaseInterface implements DatabaseInterface {
             this.cachedFirestore = FirebaseFirestore.getInstance();
         }
         return this.cachedFirestore;
+    }
+
+    private FirebaseInstanceId getFirebaseInstanceId(){
+        if(this.cachedFirebaseInstanceId == null)
+            cachedFirebaseInstanceId = FirebaseInstanceId.getInstance() ;
+        return cachedFirebaseInstanceId ;
+
+    }
+
+    @Override
+    public String getConnectionId(){
+        return getFirebaseInstanceId().getId() ;
     }
 
     private FirebaseStorage getStorageInstance(boolean refresh) {
