@@ -1,9 +1,11 @@
 package ch.epfl.polycrowd.frontPage;
 
+import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -15,7 +17,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.viewpager.widget.ViewPager;
+
 
 import java.io.File;
 import java.util.Date;
@@ -24,17 +28,20 @@ import java.util.List;
 import ch.epfl.polycrowd.ActivityHelper;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.authentification.LoginActivity;
+import ch.epfl.polycrowd.eventMemberInvite.EventMemberInviteActivity;
 import ch.epfl.polycrowd.groupPage.GroupInviteActivity;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
-import ch.epfl.polycrowd.eventMemberInvite.EventMemberInviteActivity;
+import ch.epfl.polycrowd.logic.UserLocator;
 import ch.epfl.polycrowd.userProfile.UserProfilePageActivity;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class FrontPageActivity extends AppCompatActivity {
 
     private static final String TAG = FrontPageActivity.class.getSimpleName();
+    private static final long LOCATION_REFRESH_TIME = 5000; //5s
+    private static final float LOCATION_REFRESH_DISTANCE = 10; //10 meters
 
     ViewPager viewPager;
     EventPagerAdaptor adapter;
@@ -54,16 +61,25 @@ public class FrontPageActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //The Front page should ve no event assigned
-        ActivityHelper.checkActivityRequirment(false , false , false , true);
+        ActivityHelper.checkActivityRequirment(false, false, false, true);
 
         super.onCreate(savedInstanceState);
         fixGoogleMapBug();
         setContentView(R.layout.activity_front_page);
 
-
-
         // front page should dispatch the dynamic links
         receiveDynamicLink();
+
+        //Initialize the UserLocator and locationManager objects to start location tracking
+        UserLocator userLocator = new UserLocator(PolyContext.getDBI().getConnectionId());
+        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        PolyContext.setUserLocator(userLocator);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
+                LOCATION_REFRESH_DISTANCE, userLocator);
+        //TODO Implement a cleanup method of realtime DB either here, or maybe in the onLocationChanged of the UserLocator
     }
     // --------------------------------------------------------------------------------
 
