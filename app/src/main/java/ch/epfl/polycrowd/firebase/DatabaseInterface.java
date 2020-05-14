@@ -7,6 +7,8 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.util.List;
 import java.util.Map;
 
@@ -112,6 +114,8 @@ public interface DatabaseInterface {
     void getGroupByGroupId(String groupId, Handler<Group> groupHandler);
 
     void getUserCollectionByEmails(List<String> userEmails, Handler<List<User>> usersHandler) ;
+
+    void updateUserLocation(String id, LatLng location);
 
     String getConnectionId() ;
 

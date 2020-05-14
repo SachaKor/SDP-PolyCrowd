@@ -4,6 +4,8 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
 
+import com.google.android.gms.maps.model.LatLng;
+
 public class UserLocator implements LocationListener {
 
     private User registeredUser ;
@@ -25,6 +27,8 @@ public class UserLocator implements LocationListener {
     @Override
     public void onLocationChanged(Location location) {
         this.location = location ;
+        PolyContext.getDBI().updateUserLocation(connectionId, new LatLng(this.location.getLatitude(),
+                this.location.getLongitude()));
         //TODO Call to the Realtime database to update the location
         //TODO Sthg like PolyContext.getRealtimeDB().updateUserLocation(connectionId)
     }

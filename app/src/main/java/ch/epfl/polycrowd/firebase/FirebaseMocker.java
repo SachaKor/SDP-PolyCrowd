@@ -11,6 +11,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -380,6 +382,11 @@ public class FirebaseMocker implements DatabaseInterface {
             }
         }
         usersHandler.handle(users);
+    }
+
+    @Override
+    public void updateUserLocation(String id, LatLng location) {
+        //do nothing
     }
 
     @Override
