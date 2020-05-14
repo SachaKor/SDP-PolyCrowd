@@ -57,8 +57,6 @@ import ch.epfl.polycrowd.logic.Group;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 
-import static ch.epfl.polycrowd.logic.PolyContext.convertObjectToList;
-
 /**
  * @codeCoverageIgnore
  * Excluded in build.gradle
@@ -431,7 +429,7 @@ public class FirebaseInterface implements DatabaseInterface {
         final String TAG1 = "addPersonToEvent";
         getFirestoreInstance(false).collection(EVENTS)
                 .document(eventId).get().addOnSuccessListener(documentSnapshot -> {
-            List<String> users = convertObjectToList(documentSnapshot.get(role));
+            List<String> users = (List<String>) (documentSnapshot.get(role));
             // if security is not in the list, add
             if(!users.contains(email)) {
                 Log.d(TAG, TAG1 + " adding "+ role +"@"+ email + " to the list");
