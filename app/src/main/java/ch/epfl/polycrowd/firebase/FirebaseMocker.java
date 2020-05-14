@@ -2,6 +2,7 @@ package ch.epfl.polycrowd.firebase;
 
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
@@ -387,6 +388,16 @@ public class FirebaseMocker implements DatabaseInterface {
     @Override
     public void updateUserLocation(String id, LatLng location) {
         //do nothing
+    }
+
+    @Override
+    public void FetchAllUserLocations(String id) {
+
+    }
+
+    @Override
+    public LatLng fetchUserLocation(String id) {
+        return null;
     }
 
     @Override

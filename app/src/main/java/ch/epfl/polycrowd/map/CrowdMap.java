@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -18,6 +19,11 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.maps.android.data.Feature;
 import com.google.maps.android.data.kml.KmlContainer;
 import com.google.maps.android.data.kml.KmlLayer;
@@ -62,6 +68,10 @@ public class CrowdMap implements OnMapReadyCallback {
     private Marker currentLocationMarker;
     // Group Markers
     private Map<User , Marker> groupMarkers;
+    //event goer positions
+    List<LatLng> positions;
+    //heatmap
+    HeatmapTileProvider HmTP;
 
 
 
@@ -71,12 +81,8 @@ public class CrowdMap implements OnMapReadyCallback {
         act = act_;
     }
 
-
-
-
     // DEBUG
     private static final String TAG = CrowdMap.class.getSimpleName();
-
 
 
     // ---- HEATMAP -------------------------------------------------
@@ -89,14 +95,12 @@ public class CrowdMap implements OnMapReadyCallback {
             new int[] {Color.rgb(200, 200, 200), Color.rgb(150, 150, 150)} ,
             new float[] {0.2f, 1f} );
 
-
-
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
         mMap = googleMap;
-
+        getEventGoersPositions(); // init postions
         // --- Style map ----------------------------------------------------------
         // to remove buildings 3D effect put false
         mMap.setBuildingsEnabled(true);
@@ -108,13 +112,13 @@ public class CrowdMap implements OnMapReadyCallback {
         }
 
         // --- HeatMap -------------------------------------------------------------
-        HeatmapTileProvider HmTP = null;
+        HmTP = null;
         switch(PolyContext.getRole()) {
             case GUEST:
             case VISITOR:
             case UNKNOWN:
                 HmTP = new HeatmapTileProvider.Builder()
-                        .data(getEventGoersPositions())
+                        .data(positions)
                         .gradient(gradientGrey)
                         .build();
                 break;
@@ -122,21 +126,13 @@ public class CrowdMap implements OnMapReadyCallback {
             case SECURITY:
             case STAFF:
                 HmTP = new HeatmapTileProvider.Builder()
-                        .data(getEventGoersPositions())
+                        .data(positions)
                         .gradient(gradientGreenRed)
                         .build();
                 break;
         }
         // tile overlay
         if(HmTP != null) mMap.addTileOverlay(new TileOverlayOptions().tileProvider(HmTP));
-
-
-
-
-
-
-
-
 
 
         // --- KML layer ---------------------------------------------------------------
@@ -156,17 +152,7 @@ public class CrowdMap implements OnMapReadyCallback {
             }
         );
 
-
         layer.addLayerToMap();
-
-
-
-
-
-
-
-
-
 
         // ------- Move to event /or stand position ---------------------------------------------------------------------
 
@@ -181,9 +167,6 @@ public class CrowdMap implements OnMapReadyCallback {
             accessContainers(layer.getContainers() , this::findAllVertexInPlacemarks );
             mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(getPolygonLatLngBounds(eventVertexList), 150));
         }
-
-
-
 
 
         // ----- ADD Group on map ----------------------------------------------------------------------------
@@ -279,7 +262,7 @@ public class CrowdMap implements OnMapReadyCallback {
 
 
     // --- GET USER DATA (MOCKING) --------------------------------
-    private List<LatLng> getEventGoersPositions(){
+    private void getEventGoersPositions(){
         List<LatLng> l = new LinkedList<>();
         l.add(new LatLng(46.518033, 6.566919));l.add(new LatLng(46.518933, 6.566819));l.add(new LatLng(46.518533, 6.566719));
         l.add(new LatLng(46.518333, 6.566119));l.add(new LatLng(46.518033, 6.566319));l.add(new LatLng(46.518933, 6.566419));
@@ -291,8 +274,43 @@ public class CrowdMap implements OnMapReadyCallback {
         l.add(new LatLng(46.518533, 6.566319));l.add(new LatLng(46.518553, 6.566319));l.add(new LatLng(46.518533, 6.566319));
         l.add(new LatLng(46.518333, 6.566399));l.add(new LatLng(46.518503, 6.566389));l.add(new LatLng(46.518493, 6.566389));
         l.add(new LatLng(46.518533, 6.566379));l.add(new LatLng(46.518363, 6.566359));l.add(new LatLng(46.518233, 6.566359));
-        return l;
+        positions = l;
     }
+    public void getUpdatedEventGoersPositions() {
+        FirebaseDatabase.getInstance().getReference().addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                DataSnapshot locationsSnapshot = dataSnapshot.child("locations");
+                Iterable<DataSnapshot> locationsChildren = locationsSnapshot.getChildren();
+                List<LatLng> locations = new LinkedList<>();
+                //get snapshots of the {id {latitiude.., longitude=..}}
+                for (DataSnapshot snapshot : locationsChildren) {
+                    Log.d("LOCATION", "id : " + snapshot);
+                    String lat = snapshot.child("latitude/").getValue().toString();
+                    String lng = snapshot.child("longitude/").getValue().toString();
+                    LatLng c = new LatLng(Double.parseDouble(lat), Double.parseDouble(lng));
+                    locations.add(c);
+                }
+                Log.d("LOCATION", "3:");
+                positions = locations;
+                Log.d("LOCATION", "positions 3:" + positions);
+
+                //if there are positions then playce tileoverlay with new locations
+                if(positions != null)
+                HmTP = new HeatmapTileProvider.Builder()
+                        .data(positions)
+                        .gradient(gradientGreenRed)
+                        .build();
+                if(HmTP != null) mMap.addTileOverlay(new TileOverlayOptions().tileProvider(HmTP));
+                Log.d("LOCATION", "4:");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+    }
+
 
 
 }

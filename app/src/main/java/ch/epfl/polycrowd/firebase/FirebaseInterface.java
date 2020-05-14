@@ -78,6 +78,8 @@ public class FirebaseInterface implements DatabaseInterface {
     private static final String USERS = "users";
     private static final String EVENT_IMAGES = "event-images";
 
+    private static final String LOCATIONS = "locations";
+
     private static final String USER_IMAGES = "user-images";
 
     private static final String EVENT_MAPS = "event-maps";
@@ -747,24 +749,19 @@ public class FirebaseInterface implements DatabaseInterface {
     //https://firebase.google.com/docs/database/android/read-and-write <-- a good guide on hose to use the realtime database
     public void updateUserLocation(String id, LatLng location) {
         Log.d("LOCATION", "enter updateUserLocation");
-        getFirebaseDatabaseReference().child("Locations").child(id)
+        getFirebaseDatabaseReference().child(LOCATIONS).child(id)
                 .setValue(new GeoPoint(location.latitude, location.longitude));
     }
-    /*public void FetchUserLocations(String connectionId, User user, LatLng location) {
-        getFirebaseDatabaseReference().child("Locations").child(connectionId).setValue(location);
-    }
-    public void FetchUserLocationsByGroup(String groupId){
-        //getFirebaseDatabaseReference().child("Locations").child(groupId).get;
-    }
-    public LatLng fetchUserLocation(User user) {
-        //getFirebaseDatabaseReference().child("Locations").child(connectionId).setValue(location);
-    }*/
 
+    @Override
+    public void FetchAllUserLocations(String id) {
 
-    /*private GeoPoint LatLgnToGeoPoint(LatLng location) {
-        int lat = (int) (location.getLatitude() * 1E6);
-        int lng = (int) (location.getLongitude() * 1E6);
-        GeoPoint point = new GeoPoint(lat, lng);
-    }*/
+    }
+
+    @Override
+    public LatLng fetchUserLocation(String id) {
+        return null;
+    }
+
 }
 

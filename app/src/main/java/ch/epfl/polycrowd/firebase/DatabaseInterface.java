@@ -2,6 +2,7 @@ package ch.epfl.polycrowd.firebase;
 
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
@@ -116,6 +117,13 @@ public interface DatabaseInterface {
     void getUserCollectionByEmails(List<String> userEmails, Handler<List<User>> usersHandler) ;
 
     void updateUserLocation(String id, LatLng location);
+
+    public void FetchAllUserLocations(String id);
+
+    //if one wants to implement fetching locations based on group, would have to slighlty change
+    //all realtime database structure to group users and their locations by groupId's
+    //public void FetchUserLocationsByGroup(String groupId);
+    public LatLng fetchUserLocation(String id);
 
     String getConnectionId() ;
 

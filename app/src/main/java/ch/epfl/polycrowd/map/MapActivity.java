@@ -232,4 +232,7 @@ public class MapActivity extends AppCompatActivity {
         buttonLeft.setOnClickListener(v -> {});
     }
 
+    public void onUpdateLocationsCliked(View view) {
+        mMap.getUpdatedEventGoersPositions();
+    }
 }
