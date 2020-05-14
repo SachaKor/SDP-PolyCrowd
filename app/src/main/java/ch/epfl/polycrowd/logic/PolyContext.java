@@ -136,14 +136,6 @@ public abstract class PolyContext extends Context {
         return dbInterface ;
     }
 
-    public static List<String> convertObjectToList(Object obj) {
-        List<String> list = new ArrayList<>();
-        if (obj != null && obj.getClass().isArray()) {
-            list = Arrays.asList((String[])obj);
-        }
-        return list;
-    }
-
     public static Group getCurrentGroup(){
         return currentGroup ;
     }

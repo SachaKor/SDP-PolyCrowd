@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import ch.epfl.polycrowd.ActivityHelper;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
+import ch.epfl.polycrowd.logic.Activity;
 import ch.epfl.polycrowd.logic.PolyContext;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
@@ -89,7 +90,11 @@ public class SignUpActivity extends AppCompatActivity {
             UserHandler userExistsHandler = user -> ActivityHelper.toastPopup(this, "User already exists");
             UserHandler userDoesNotExistHandler = user -> PolyContext.getDBI().signUp(username.getText().toString(),
                     firstPassword.getText().toString(), email.getText().toString(), 100,
-                    u ->ActivityHelper.toastPopup(this, "Sign up successful") ,
+                    u ->{
+                        PolyContext.setCurrentUser(u);
+                        ActivityHelper.toastPopup(this, "Sign up successful");
+                        ActivityHelper.eventIntentHandler(this, PolyContext.getPreviousPage());
+                    } ,
                     u ->ActivityHelper.toastPopup(this, "Error registering user") );
             //Finally, query database
             //Note that even though user in the second handler will be null, it is not actually referenced anywhere in the lambda expression

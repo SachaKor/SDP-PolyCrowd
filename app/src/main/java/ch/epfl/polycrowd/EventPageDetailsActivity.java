@@ -65,7 +65,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
 
     private ImageView eventImg;
     private ImageView editImg;
-    private Button inviteOrganizerButton, scheduleButton, cancel;
+    private Button inviteOrganizerButton, inviteSecurityButton, scheduleButton, cancel;
     private Button submitChanges;
     private FloatingActionButton editEventButton;
     private TextView eventTitle, start,end, eventDescription, type;
@@ -136,6 +136,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         downloadEventImage();
         editImg = findViewById(R.id.event_details_edit_img);
         inviteOrganizerButton = findViewById(R.id.invite_organizer_button);
+        inviteSecurityButton = findViewById(R.id.invite_security_button);
         submitChanges = findViewById(R.id.event_details_submit);
         editEventButton = findViewById(R.id.event_details_fab);
         cancel = findViewById(R.id.event_details_cancel);
@@ -209,14 +210,15 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     private void initEvent() {
         PolyContext.getDBI().getEventById(PolyContext.getCurrentEvent().getId(), event -> {
 
-            initRecyclerViewOrganizer(event.getOrganizers());
             // Check logged-in user => do not show invite button if user isn't organizer
             if(PolyContext.getRole() == PolyContext.Role.ORGANIZER) {
                 findViewById(R.id.event_details_fab).setVisibility(View.VISIBLE);
+                initRecyclerViewOrganizer(event.getOrganizers());
                 initRecyclerViewSecurity(event.getSecurity());
             } else {
                 Log.d(TAG, "current user is not an organizer");
                 findViewById(R.id.event_details_fab).setVisibility(View.GONE);
+                findViewById(R.id.EditEventOrganizers).setVisibility(View.GONE);
                 findViewById(R.id.EditEventSecurity).setVisibility(View.GONE);
             }
             setUpViews();
@@ -232,17 +234,13 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         //int textInputType = enable ? InputType.TYPE_CLASS_TEXT : InputType.TYPE_NULL;
         // set the "Organizer Invite" button visible
         inviteOrganizerButton.setVisibility(visibilityEdit);
+        inviteSecurityButton.setVisibility(visibilityEdit);
         // set the "Submit Changes" button visible
         submitChanges.setVisibility(visibilityEdit);
         // set the "Edit" floating button invisible until the changes submitted
         editEventButton.setVisibility(visibilityFab);
         editImg.setVisibility(visibilityEdit);
-        /*
-        eventTitle.setInputType(textInputType);
-        eventDescription.setInputType(textInputType);
-        start.setInputType(textInputType);
-        end.setInputType(textInputType);*/
-        //setAllEditTexts(enable);
+
         refreshTextViews();
         setAllEditTexts(visibilityText, visibilityEdit);
     }

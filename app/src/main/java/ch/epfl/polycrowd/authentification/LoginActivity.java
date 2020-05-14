@@ -27,6 +27,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ActivityHelper.checkActivityRequirment(false,true,false,false);
         setContentView(R.layout.activity_login);
 
     }
