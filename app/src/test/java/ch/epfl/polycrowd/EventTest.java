@@ -203,7 +203,7 @@ public class EventTest {
 
    @Test
     public void getSetHashMap(){
-        Map<String,Object> hm = e.toHashMap();
+        Map<String,Object> hm = e.getRawData();
 
         assertEquals(Objects.requireNonNull(hm.get("owner")).toString(), default_owner);
         assertEquals(Event.EventType.valueOf(Objects.requireNonNull(hm.get("type")).toString()), default_type);

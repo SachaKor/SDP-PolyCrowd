@@ -3,10 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="15dp"
-    android:id="@+id/organizer_item_parent">
+    android:id="@+id/member_item_parent">
 
     <TextView
-        android:id="@+id/organizer_name"
+        android:id="@+id/member_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAlignment="center"

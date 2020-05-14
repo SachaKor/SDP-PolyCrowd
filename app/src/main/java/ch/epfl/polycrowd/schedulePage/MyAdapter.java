@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+import ch.epfl.polycrowd.ActivityHelper;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.Utils;
 import ch.epfl.polycrowd.logic.Activity;
@@ -47,7 +48,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyHolder> {
         myHolder.getParentLayout().setOnClickListener(v -> {
             Toast.makeText(c, "Clicked on: " + models.get(i).getSummary(), Toast.LENGTH_SHORT).show();
             PolyContext.setStandId(models.get(i).getLocation());
-            Utils.navigate( c , MapActivity.class );
+            ActivityHelper.eventIntentHandler(c , MapActivity.class);
 
 
         });

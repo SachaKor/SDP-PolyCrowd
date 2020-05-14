@@ -93,6 +93,8 @@ dependencies {
     implementation 'commons-lang:commons-lang:2.6'
     implementation 'org.slf4j:slf4j-nop:1.7.30'
     implementation group: 'org.ehcache', name: 'jcache', version: '1.0.1'
+
+    api 'com.theartofdev.edmodo:android-image-cropper:2.8.+'
 }
 
 

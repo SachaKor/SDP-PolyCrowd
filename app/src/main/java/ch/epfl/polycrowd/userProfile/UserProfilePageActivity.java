@@ -26,6 +26,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -75,7 +77,7 @@ public class UserProfilePageActivity extends AppCompatActivity {
         userImg = findViewById(R.id.imgUser);
         String imgUri = user.getImageUri();
         if(null != imgUri) {
-            PolyContext.getDatabaseInterface().downloadUserProfileImage(user, image -> {
+            PolyContext.getDBI().downloadUserProfileImage(user, image -> {
                 Bitmap bmp = BitmapFactory.decodeByteArray(image, 0, image.length);
                 imageInBytes = image;
                 userImg.setImageBitmap(bmp);
@@ -122,7 +124,7 @@ public class UserProfilePageActivity extends AppCompatActivity {
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        PolyContext.getDatabaseInterface().
+                        PolyContext.getDBI().
                                 updateCurrentUserUsername(newUsernameText.getText().toString(),
                                 ()->{
                                     setUpViews();}  );
@@ -144,13 +146,26 @@ public class UserProfilePageActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode,Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == Activity.RESULT_OK)
-            if(requestCode == PICK_IMAGE) {
-                //data.getData returns the content URI for the selected Image
-                Uri selectedImage = data.getData();
+        if (resultCode == Activity.RESULT_OK  && requestCode == PICK_IMAGE && data!= null) {
+
+            //data.getData returns the content URI for the selected Image
+            Uri imageUri = data.getData();
+            userImg.setImageURI(imageUri);
+            compressAndSetImage();
+            //crop selected image
+            CropImage.activity(imageUri)
+                    .setAspectRatio(1, 1)
+                    .start(this);
+
+        }
+        if(requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE){
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if(resultCode == RESULT_OK) {
+                Uri selectedImage = result.getUri();
                 userImg.setImageURI(selectedImage);
                 compressAndSetImage();
             }
+        }
     }
 
     /**
@@ -181,8 +196,8 @@ public class UserProfilePageActivity extends AppCompatActivity {
         // upload the image to the storage
         //TODO update image stored in user!(so dont have to ask database everytime
         //check how sasha did it !
-        PolyContext.getDatabaseInterface().uploadUserProfileImage(user, imageInBytes, event -> {
-                PolyContext.getDatabaseInterface().updateUser(user, event1 -> {
+        PolyContext.getDBI().uploadUserProfileImage(user, imageInBytes, event -> {
+                PolyContext.getDBI().updateUser(user, event1 -> {
             });
         });
 
@@ -231,7 +246,7 @@ public class UserProfilePageActivity extends AppCompatActivity {
                         Log.d("changePass" , newPasswordText.getText().toString());
                         Log.d("changePass" , newPasswordText2.getText().toString());
                         if(newPasswordText.getText().toString().equals(newPasswordText2.getText().toString())) {
-                            PolyContext.getDatabaseInterface().reauthenticateAndChangePassword(emailText.getText().toString(),
+                            PolyContext.getDBI().reauthenticateAndChangePassword(emailText.getText().toString(),
                                     oldPasswordText.getText().toString(),
                                     newPasswordText.getText().toString(),
                                     getApplicationContext());
@@ -272,7 +287,7 @@ public class UserProfilePageActivity extends AppCompatActivity {
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        PolyContext.getDatabaseInterface().reauthenticateAndChangeEmail(emailText.getText().toString(),
+                        PolyContext.getDBI().reauthenticateAndChangeEmail(emailText.getText().toString(),
                                 passwordText.getText().toString(),
                                 newEmailText.getText().toString(),
                                 ()->{

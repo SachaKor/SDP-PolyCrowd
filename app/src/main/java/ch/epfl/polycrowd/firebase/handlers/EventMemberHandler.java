@@ -1,5 +1,5 @@
 package ch.epfl.polycrowd.firebase.handlers;
 
-public interface OrganizersHandler {
+public interface EventMemberHandler {
     void handle();
 }

@@ -40,7 +40,7 @@ public class userProfileActivityTest {
 
     @Rule
     public final ActivityTestRule<UserProfilePageActivity> userProfileActivityRule =
-            new ActivityTestRule<UserProfilePageActivity>(UserProfilePageActivity.class, true, false);
+            new ActivityTestRule<>(UserProfilePageActivity.class, false, false);
 
     @Before
     public void setUp() {
@@ -109,7 +109,7 @@ public class userProfileActivityTest {
         sleep();
         onView(withId(R.id.editTextChangeEmailEmail)).perform(typeText(AndroidTestHelper.getUser().getEmail()), closeSoftKeyboard());
         onView(withId(R.id.editTextChangeEmailCurPassword)).perform(typeText(AndroidTestHelper.getUserPass()), closeSoftKeyboard());
-        onView(withId(R.id.editTextChangeEmailNewEmail)).perform(typeText("newEmail@haha.com"), closeSoftKeyboard());
+        onView(withId(R.id.editTextChangeEmailNewEmail)).perform(typeText("NEWMAIL@h.net"), closeSoftKeyboard());
         onView(withText("Save"))
                 .inRoot(isDialog()) // <---
                 .check(matches(isDisplayed()))
@@ -118,7 +118,7 @@ public class userProfileActivityTest {
         onView(withText("Successfully changed email"))
                 .inRoot(withDecorView(not(userProfileActivityRule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));
-        onView(withId(R.id.profileEmail)).check(matches(withText(containsString("newEmail@haha.com"))));
+        onView(withId(R.id.profileEmail)).check(matches(withText(containsString("NEWMAIL@h.net"))));
         sleep();
         sleep();
         sleep();
