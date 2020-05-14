@@ -2,8 +2,6 @@ package ch.epfl.polycrowd.firebase;
 
 import android.content.Context;
 import android.content.Intent;
-import android.location.Location;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
@@ -41,7 +39,6 @@ import com.google.firebase.storage.UploadTask;
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -54,7 +51,6 @@ import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
 import ch.epfl.polycrowd.firebase.handlers.GroupHandler;
 import ch.epfl.polycrowd.firebase.handlers.Handler;
 import ch.epfl.polycrowd.firebase.handlers.ImageHandler;
-import ch.epfl.polycrowd.firebase.handlers.LocationHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
@@ -759,7 +755,7 @@ public class FirebaseInterface implements DatabaseInterface {
     }
 
     @Override
-    public void fetchUserLocation(String id, LocationHandler handlerSuccess) {
+    public void fetchUserLocation(String id, Handler<LatLng> handlerSuccess) {
         FirebaseDatabase.getInstance().getReference().addListenerForSingleValueEvent(new ValueEventListener() {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 DataSnapshot snapshot = dataSnapshot.child("locations/" + id);
@@ -769,7 +765,7 @@ public class FirebaseInterface implements DatabaseInterface {
                 //if lat/lng is null the user is not on the firebase
                 if (lat != null && lng != null) {
                     LatLng l  = new LatLng(Double.parseDouble(lat.toString()), Double.parseDouble(lng.toString()));
-                    handlerSuccess.handler(l); //do something with the found location
+                    handlerSuccess.handle(l); //do something with the found location
                 }
             }
             @Override

@@ -2,7 +2,6 @@ package ch.epfl.polycrowd.firebase;
 
 import android.content.Context;
 import android.content.Intent;
-import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
@@ -29,7 +28,6 @@ import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
 import ch.epfl.polycrowd.firebase.handlers.GroupHandler;
 import ch.epfl.polycrowd.firebase.handlers.Handler;
 import ch.epfl.polycrowd.firebase.handlers.ImageHandler;
-import ch.epfl.polycrowd.firebase.handlers.LocationHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
@@ -392,7 +390,7 @@ public class FirebaseMocker implements DatabaseInterface {
     }
 
     @Override
-    public void fetchUserLocation(String id, LocationHandler handlerSuccess) {
+    public void fetchUserLocation(String id, Handler<LatLng> handlerSuccess) {
     }
 
     @Override

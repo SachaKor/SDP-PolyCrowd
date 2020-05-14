@@ -2,7 +2,6 @@ package ch.epfl.polycrowd.firebase;
 
 import android.content.Context;
 import android.content.Intent;
-import android.location.Location;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
@@ -21,7 +20,6 @@ import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
 import ch.epfl.polycrowd.firebase.handlers.GroupHandler;
 import ch.epfl.polycrowd.firebase.handlers.Handler;
 import ch.epfl.polycrowd.firebase.handlers.ImageHandler;
-import ch.epfl.polycrowd.firebase.handlers.LocationHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
@@ -122,7 +120,7 @@ public interface DatabaseInterface {
     //if one wants to implement fetching locations based on group, would have to slighlty change
     //all realtime database structure to group users and their locations by groupId's
     //public void FetchUserLocationsByGroup(String groupId);
-    void fetchUserLocation(String id, LocationHandler handlerSuccess);
+    void fetchUserLocation(String id, Handler<LatLng> handlerSuccess);
 
     String getConnectionId() ;
 
