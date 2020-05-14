@@ -66,12 +66,13 @@ public class GroupsListActivityTest {
         selectGroup(group1);
     }
 
+    /*
     @Test
     public void setsCurrentGroupBeforeLaunchingGroupPageActivityWithPressBack(){
         selectGroup(group0);
         Espresso.pressBack();
         selectGroup(group1);
-    }
+    }*/
 
 
     private void selectGroup(Group group){
