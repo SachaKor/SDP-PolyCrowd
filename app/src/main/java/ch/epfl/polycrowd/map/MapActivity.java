@@ -32,6 +32,7 @@ import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.authentification.LoginActivity;
 import ch.epfl.polycrowd.frontPage.FrontPageActivity;
 import ch.epfl.polycrowd.groupPage.GroupPageActivity;
+import ch.epfl.polycrowd.groupPage.GroupsListActivity;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 
@@ -65,13 +66,12 @@ public class MapActivity extends AppCompatActivity {
 
         createButtons();
 
+        // only show the map if download is successful
         PolyContext.getDBI().downloadEventMap(PolyContext.getCurrentEvent() , ev -> {
             createMap();
             launchLocationRequest();
         });
 
-        // createMap();
-        //launchLocationRequest();
     }
 
     @SuppressLint("NewApi")
@@ -220,7 +220,7 @@ public class MapActivity extends AppCompatActivity {
         buttonLeft.setText("GROUPS");
 
         buttonRight.setOnClickListener(v -> eventIntentHandler(this, EventPageDetailsActivity.class));
-        //buttonLeft.setOnClickListener(v -> clickGroup(v));
+        buttonLeft.setOnClickListener(v -> eventIntentHandler(this , GroupsListActivity.class));
 
     }
 
