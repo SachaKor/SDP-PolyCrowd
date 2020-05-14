@@ -15,9 +15,6 @@ import ch.epfl.polycrowd.ActivityHelper;
 import ch.epfl.polycrowd.EventPageDetailsActivity;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
-import ch.epfl.polycrowd.frontPage.FrontPageActivity;
-import ch.epfl.polycrowd.groupPage.GroupsListActivity;
-import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.map.MapActivity;
 
@@ -77,6 +74,7 @@ public class LoginActivity extends AppCompatActivity {
             //Successful login redirects to front page
 
             PolyContext.setCurrentUser(user);
+            PolyContext.getUserLocator().setRegisteredUser(user);
             /* if the user logs in to accept the organizer invitation, add him/her to the
                 organizers list, then open the event details page for the preview */
             Log.d(TAG, "previous page: " + PolyContext.getPreviousPage());
