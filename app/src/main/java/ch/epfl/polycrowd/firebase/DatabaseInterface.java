@@ -2,14 +2,11 @@ package ch.epfl.polycrowd.firebase;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
-import java.io.InputStream;
-import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -41,7 +38,7 @@ public interface DatabaseInterface {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     void signInWithEmailAndPassword(@NonNull String email, @NonNull String password,
-                                    UserHandler successHandler, UserHandler failureHandler);
+                                    UserHandler successHandler, UserHandler failureHandler) ;
 
     //The success and failure handlers here denote in the case where the query is sucessful,
     // but 1 user is found, or 0 user is found resp. Same applies for getUserByUsername
@@ -115,5 +112,7 @@ public interface DatabaseInterface {
     void getGroupByGroupId(String groupId, Handler<Group> groupHandler);
 
     void getUserCollectionByEmails(List<String> userEmails, Handler<List<User>> usersHandler) ;
+
+    String getConnectionId() ;
 
 }
