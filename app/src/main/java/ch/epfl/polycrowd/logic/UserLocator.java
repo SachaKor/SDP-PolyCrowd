@@ -43,4 +43,8 @@ public class UserLocator implements LocationListener {
     public void onProviderDisabled(String provider) {
 
     }
+
+    public Location getLocation(){
+        return location ;
+    }
 }
