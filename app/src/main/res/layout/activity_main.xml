@@ -22,7 +22,7 @@
         android:id="@+id/butLocations"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="start|bottom"
+        android:layout_gravity="end|bottom"
         android:layout_marginStart="25dp"
         android:layout_marginTop="20dp"
         android:padding="10dp"
