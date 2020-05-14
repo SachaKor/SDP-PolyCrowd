@@ -73,6 +73,7 @@ public class FrontPageActivity extends AppCompatActivity {
         //Initialize the UserLocator and locationManager objects to start location tracking
         UserLocator userLocator = new UserLocator(PolyContext.getDBI().getConnectionId());
         LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        PolyContext.setUserLocator(userLocator);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
