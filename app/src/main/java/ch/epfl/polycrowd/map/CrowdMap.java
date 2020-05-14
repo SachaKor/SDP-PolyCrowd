@@ -277,7 +277,7 @@ public class CrowdMap implements OnMapReadyCallback {
 
     public void getEventGoersPositions() {
         //TODO REMOVE THIS UPLOADT OF FAKE USERLOCATIONS
-        /*uploadFakeUserLocationsForDemo();
+        uploadFakeUserLocationsForDemo();
         //====================================
         FirebaseDatabase.getInstance().getReference().addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -316,8 +316,7 @@ public class CrowdMap implements OnMapReadyCallback {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
-        });*/
-        PolyContext.getDBI().fetchUserLocation(PolyContext.getDBI().getConnectionId());
+        });
     }
 
 
