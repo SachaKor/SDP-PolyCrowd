@@ -21,6 +21,7 @@ import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
 import ch.epfl.polycrowd.firebase.handlers.GroupHandler;
 import ch.epfl.polycrowd.firebase.handlers.Handler;
 import ch.epfl.polycrowd.firebase.handlers.ImageHandler;
+import ch.epfl.polycrowd.firebase.handlers.LocationHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
@@ -118,12 +119,10 @@ public interface DatabaseInterface {
 
     void updateUserLocation(String id, LatLng location);
 
-    public void FetchAllUserLocations(String id);
-
     //if one wants to implement fetching locations based on group, would have to slighlty change
     //all realtime database structure to group users and their locations by groupId's
     //public void FetchUserLocationsByGroup(String groupId);
-    public LatLng fetchUserLocation(String id);
+    void fetchUserLocation(String id, LocationHandler handlerSuccess);
 
     String getConnectionId() ;
 

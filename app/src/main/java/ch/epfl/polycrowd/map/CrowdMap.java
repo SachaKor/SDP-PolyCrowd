@@ -277,7 +277,7 @@ public class CrowdMap implements OnMapReadyCallback {
 
     public void getEventGoersPositions() {
         //TODO REMOVE THIS UPLOADT OF FAKE USERLOCATIONS
-        uploadFakeUserLocationsForDemo();
+        /*uploadFakeUserLocationsForDemo();
         //====================================
         FirebaseDatabase.getInstance().getReference().addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -290,8 +290,10 @@ public class CrowdMap implements OnMapReadyCallback {
                     Log.d("LOCATION", "snapshot: " + snapshot);
                     String lat = snapshot.child("latitude/").getValue().toString();
                     String lng = snapshot.child("longitude/").getValue().toString();
-                    LatLng c = new LatLng(Double.parseDouble(lat), Double.parseDouble(lng));
-                    locations.add(c);
+                    if(lat != null && lng != null) {
+                        LatLng c = new LatLng(Double.parseDouble(lat), Double.parseDouble(lng));
+                        locations.add(c);
+                    }
                 }
                 Log.d("LOCATION", "FINISHED FILLING LOCATIONS LIST");
                 positions = locations;
@@ -314,7 +316,8 @@ public class CrowdMap implements OnMapReadyCallback {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
-        });
+        });*/
+        PolyContext.getDBI().fetchUserLocation(PolyContext.getDBI().getConnectionId());
     }
 
 

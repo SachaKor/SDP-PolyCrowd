@@ -3,6 +3,7 @@ package ch.epfl.polycrowd.firebase;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
@@ -20,8 +21,11 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -37,6 +41,7 @@ import com.google.firebase.storage.UploadTask;
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -49,6 +54,7 @@ import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
 import ch.epfl.polycrowd.firebase.handlers.GroupHandler;
 import ch.epfl.polycrowd.firebase.handlers.Handler;
 import ch.epfl.polycrowd.firebase.handlers.ImageHandler;
+import ch.epfl.polycrowd.firebase.handlers.LocationHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
@@ -748,20 +754,27 @@ public class FirebaseInterface implements DatabaseInterface {
 
     //https://firebase.google.com/docs/database/android/read-and-write <-- a good guide on hose to use the realtime database
     public void updateUserLocation(String id, LatLng location) {
-        Log.d("LOCATION", "enter updateUserLocation");
         getFirebaseDatabaseReference().child(LOCATIONS).child(id)
                 .setValue(new GeoPoint(location.latitude, location.longitude));
     }
 
     @Override
-    public void FetchAllUserLocations(String id) {
-
+    public void fetchUserLocation(String id, LocationHandler handlerSuccess) {
+        FirebaseDatabase.getInstance().getReference().addListenerForSingleValueEvent(new ValueEventListener() {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                DataSnapshot snapshot = dataSnapshot.child("locations/" + id);
+                Log.d("LOCATION", "get user snapshot: " + snapshot);
+                Object lat = snapshot.child("latitude/").getValue();
+                Object lng = snapshot.child("longitude/").getValue();
+                //if lat/lng is null the user is not on the firebase
+                if (lat != null && lng != null) {
+                    LatLng l  = new LatLng(Double.parseDouble(lat.toString()), Double.parseDouble(lng.toString()));
+                    handlerSuccess.handler(l); //do something with the found location
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) { }
+        });
     }
-
-    @Override
-    public LatLng fetchUserLocation(String id) {
-        return null;
-    }
-
 }
 
