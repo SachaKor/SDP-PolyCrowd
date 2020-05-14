@@ -26,7 +26,7 @@ public class UserLocator implements LocationListener {
     public void onLocationChanged(Location location) {
         this.location = location ;
         //TODO Call to the Realtime database to update the location
-        //TODO Sthg like PolyContext.getRealtimeDB().updateUserLocation(connectionId) 
+        //TODO Sthg like PolyContext.getRealtimeDB().updateUserLocation(connectionId)
     }
 
     @Override
