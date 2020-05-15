@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
-import android.provider.ContactsContract;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -50,7 +49,6 @@ import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
 import ch.epfl.polycrowd.firebase.handlers.GroupHandler;
 import ch.epfl.polycrowd.firebase.handlers.Handler;
 import ch.epfl.polycrowd.firebase.handlers.ImageHandler;
-import ch.epfl.polycrowd.firebase.handlers.MessagesHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
@@ -753,7 +751,7 @@ public class FirebaseInterface implements DatabaseInterface {
     }
 
     @Override
-    public void getAllFeedForEvent(String eventId, MessagesHandler successHandler){
+    public void getAllFeedForEvent(String eventId, Handler<List<Message>> successHandler){
         DatabaseReference dbref = getDbRef(true);
         dbref.child("events").child(eventId).child("security_feed").addListenerForSingleValueEvent(
                 new ValueEventListener() {

@@ -26,7 +26,6 @@ import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
 import ch.epfl.polycrowd.firebase.handlers.GroupHandler;
 import ch.epfl.polycrowd.firebase.handlers.Handler;
 import ch.epfl.polycrowd.firebase.handlers.ImageHandler;
-import ch.epfl.polycrowd.firebase.handlers.MessagesHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
@@ -391,7 +390,7 @@ public class FirebaseMocker implements DatabaseInterface {
     }
 
     @Override
-    public void getAllFeedForEvent(String eventId, MessagesHandler handler) {
+    public void getAllFeedForEvent(String eventId, Handler<List<Message>> handler) {
         handler.handle(new ArrayList<>());
         //TODO mock realtime db
     }

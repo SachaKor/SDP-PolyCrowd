@@ -18,7 +18,6 @@ import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
 import ch.epfl.polycrowd.firebase.handlers.GroupHandler;
 import ch.epfl.polycrowd.firebase.handlers.Handler;
 import ch.epfl.polycrowd.firebase.handlers.ImageHandler;
-import ch.epfl.polycrowd.firebase.handlers.MessagesHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
@@ -117,7 +116,7 @@ public interface DatabaseInterface {
 
     void sendMessageFeed(String eventId, Message m, EmptyHandler handler);
 
-    void getAllFeedForEvent(String eventId, MessagesHandler handler);
+    void getAllFeedForEvent(String eventId, Handler<List<Message>> handler);
 
     String getConnectionId() ;
 
