@@ -174,6 +174,7 @@ public class visitorFlow {
     @Test
     public void testProfilePage() {
         onView(withId(R.id.goToUserProfileButton)).perform(ViewActions.click());
+        sleep();
 
         onView(withId(R.id.imgUser)).check(matches(isDisplayed()));
         onView(withId(R.id.profileImgEditButton)).check(matches(isDisplayed()));
