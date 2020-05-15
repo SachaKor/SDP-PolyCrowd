@@ -23,6 +23,7 @@ import ch.epfl.polycrowd.firebase.handlers.ImageHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
+import ch.epfl.polycrowd.logic.Message;
 import ch.epfl.polycrowd.logic.User;
 
 
@@ -121,6 +122,11 @@ public interface DatabaseInterface {
     //all realtime database structure to group users and their locations by groupId's
     //public void FetchUserLocationsByGroup(String groupId);
     void fetchUserLocation(String id, Handler<LatLng> handlerSuccess);
+
+    void sendMessageFeed(String eventId, Message m, EmptyHandler handler);
+
+    void getAllFeedForEvent(String eventId, Handler<List<Message>> handler);
+
 
     String getConnectionId() ;
 

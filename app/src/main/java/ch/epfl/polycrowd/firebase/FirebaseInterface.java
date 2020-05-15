@@ -54,6 +54,7 @@ import ch.epfl.polycrowd.firebase.handlers.ImageHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
+import ch.epfl.polycrowd.logic.Message;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 
@@ -107,6 +108,13 @@ public class FirebaseInterface implements DatabaseInterface {
             this.cachedFirestore = FirebaseFirestore.getInstance();
         }
         return this.cachedFirestore;
+    }
+
+    private DatabaseReference getDbRef(boolean refresh){
+        if (this.cachedDbRef == null || refresh){
+            this.cachedDbRef = FirebaseDatabase.getInstance("https://polycrowd-e8d9e.firebaseio.com/").getReference();
+        }
+        return this.cachedDbRef;
     }
 
     private FirebaseInstanceId getFirebaseInstanceId(){
@@ -746,6 +754,7 @@ public class FirebaseInterface implements DatabaseInterface {
                 .addOnFailureListener(e -> Log.w(TAG, "Error downloading image " + imageUri + " from firebase storage"));
     }
 
+
     //https://firebase.google.com/docs/database/android/read-and-write <-- a good guide on hose to use the realtime database
     public void updateUserLocation(String id, LatLng location) {
         getFirebaseDatabaseReference().child(LOCATIONS).child(id)
@@ -769,6 +778,34 @@ public class FirebaseInterface implements DatabaseInterface {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) { }
         });
+
+    @Override
+    public void sendMessageFeed(String eventId, Message m, EmptyHandler handler){
+        DatabaseReference dbref= getDbRef(true);
+        dbref.child("events").child(eventId).child("security_feed").push().setValue(m.toData()).addOnSuccessListener( e-> handler.handle() );
+    }
+
+    @Override
+    public void getAllFeedForEvent(String eventId, Handler<List<Message>> successHandler){
+        DatabaseReference dbref = getDbRef(true);
+        dbref.child("events").child(eventId).child("security_feed").addListenerForSingleValueEvent(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        List<Message> ms = new ArrayList<>();
+                        for (DataSnapshot ds : dataSnapshot.getChildren()){
+                            ms.add(Message.fromData((Map<String,String>) ds.getValue()));
+                        }
+                        successHandler.handle(ms);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Log.e("Reading feed failed for event ", eventId);
+                    }
+                }
+        );
+
     }
 }
 

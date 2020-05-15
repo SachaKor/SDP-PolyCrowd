@@ -31,6 +31,7 @@ import ch.epfl.polycrowd.firebase.handlers.ImageHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
+import ch.epfl.polycrowd.logic.Message;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 
@@ -385,12 +386,24 @@ public class FirebaseMocker implements DatabaseInterface {
     }
 
     @Override
+
     public void updateUserLocation(String id, LatLng location) {
         //do nothing
     }
 
     @Override
     public void fetchUserLocation(String id, Handler<LatLng> handlerSuccess) {
+
+    public void sendMessageFeed(String eventId, Message m, EmptyHandler handler) {
+        //TODO: mock realtime db
+        handler.handle();
+    }
+
+    @Override
+    public void getAllFeedForEvent(String eventId, Handler<List<Message>> handler) {
+        handler.handle(new ArrayList<>());
+        //TODO mock realtime db
+
     }
 
     @Override

@@ -28,6 +28,7 @@ import ch.epfl.polycrowd.ActivityHelper;
 import ch.epfl.polycrowd.EmergencyActivity;
 import ch.epfl.polycrowd.EventEditActivity;
 import ch.epfl.polycrowd.EventPageDetailsActivity;
+import ch.epfl.polycrowd.FeedActivity;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.authentification.LoginActivity;
 import ch.epfl.polycrowd.frontPage.FrontPageActivity;
@@ -205,6 +206,10 @@ public class MapActivity extends AppCompatActivity {
         return true;
     }
 
+    public void onFeedClicked(View view){
+        Intent intent = new Intent(this, FeedActivity.class);
+        startActivity(intent);
+    }
 
     void setGuestButtons(Button buttonLeft, Button buttonRight) {
         buttonRight.setText("EVENT DETAILS");
