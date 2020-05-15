@@ -74,8 +74,10 @@ public class EventPagerAdaptor extends PagerAdapter {
         } else {
             Log.d(TAG, "event " + event.getName() + " image uri: " + event.getImageUri());
             PolyContext.getDBI().downloadEventImage(event, image -> {
-                Bitmap bmp = BitmapFactory.decodeByteArray(image, 0, image.length);
-                imageView.setImageBitmap(bmp);
+                if(image != null) {
+                    Bitmap bmp = BitmapFactory.decodeByteArray(image, 0, image.length);
+                    imageView.setImageBitmap(bmp);
+                }
             });
         }
     }

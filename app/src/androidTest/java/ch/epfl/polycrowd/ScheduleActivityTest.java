@@ -47,6 +47,7 @@ public class ScheduleActivityTest {
         ///PolyContext.getCurrentEvent().getActivities();
         AndroidTestHelper.sleep();
         onView(withText("thisActivityDoesNotExist")).check(doesNotExist());
+        AndroidTestHelper.sleep();
         onView(withText("summary")).check(matches(isDisplayed()));
         AndroidTestHelper.sleep();
     }
