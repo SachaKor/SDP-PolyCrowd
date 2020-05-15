@@ -747,9 +747,9 @@ public class FirebaseInterface implements DatabaseInterface {
     }
 
     @Override
-    public void sendMessageFeed(String eventId, Message m){
+    public void sendMessageFeed(String eventId, Message m, EmptyHandler handler){
         DatabaseReference dbref= getDbRef(true);
-        dbref.child("events").child(eventId).child("security_feed").push().setValue(m.toData());
+        dbref.child("events").child(eventId).child("security_feed").push().setValue(m.toData()).addOnSuccessListener( e-> handler.handle() );
     }
 
     @Override
