@@ -63,10 +63,7 @@ public class EventPageDetailsGalleryTest {
     @Before
     public void startIntent() {
         AndroidTestHelper.SetupMockDBI();
-
-        PolyContext.setCurrentUser(AndroidTestHelper.getOwner());
-        PolyContext.setCurrentEvent(AndroidTestHelper.getDebugEvent());
-
+        PolyContext.setCurrentUser(AndroidTestHelper.getOrganiser());
         // launch the intent
         Intent intent = new Intent();
         mActivityTestRule.launchActivity(intent);
@@ -74,6 +71,7 @@ public class EventPageDetailsGalleryTest {
 
     @Test
     public void galleryTest() {
+        AndroidTestHelper.sleep();
         savePickedImage(mActivityTestRule.getActivity());
         Instrumentation.ActivityResult imgGalleryResult = createImageGallerySetResultStub(mActivityTestRule.getActivity());
         onView(withId(R.id.event_details_fab)).perform(click());

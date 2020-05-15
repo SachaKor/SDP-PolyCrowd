@@ -280,6 +280,9 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         int streamLength = ONE_MEGABYTE;
         int compressQuality = 105;
         Bitmap bitmap = bitmapDrawable.getBitmap();
+//        if(bitmap == null)  { // TODO: fix
+//            return;
+//        }
         ByteArrayOutputStream bmpStream = new ByteArrayOutputStream();
         while (streamLength >= ONE_MEGABYTE && compressQuality > 5) {
             try {

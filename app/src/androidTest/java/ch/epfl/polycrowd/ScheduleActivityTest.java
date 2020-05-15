@@ -19,7 +19,6 @@ import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static ch.epfl.polycrowd.AndroidTestHelper.sleep;
 
 public class ScheduleActivityTest {
 
@@ -46,9 +45,9 @@ public class ScheduleActivityTest {
     @Test
     public void testScheduleLoading(){
         ///PolyContext.getCurrentEvent().getActivities();
-        sleep();
+        AndroidTestHelper.sleep();
         onView(withText("thisActivityDoesNotExist")).check(doesNotExist());
         onView(withText("summary")).check(matches(isDisplayed()));
-        sleep();
+        AndroidTestHelper.sleep();
     }
 }
