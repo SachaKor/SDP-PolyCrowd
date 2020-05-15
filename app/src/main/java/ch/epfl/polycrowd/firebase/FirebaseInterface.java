@@ -10,6 +10,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -27,6 +28,7 @@ import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -65,6 +67,7 @@ public class FirebaseInterface implements DatabaseInterface {
     private FirebaseAuth cachedAuth;
     private DatabaseReference cachedDbRef;
     private FirebaseFirestore cachedFirestore;
+    private DatabaseReference cachedFirebaseDatabaseRef; //used for realtime database
     private FirebaseStorage storage;
     private FirebaseInstanceId cachedFirebaseInstanceId ;
 
@@ -75,6 +78,8 @@ public class FirebaseInterface implements DatabaseInterface {
     private static final String GROUPS = "groups";
     private static final String USERS = "users";
     private static final String EVENT_IMAGES = "event-images";
+
+    private static final String LOCATIONS = "locations";
 
     private static final String USER_IMAGES = "user-images";
 
@@ -119,6 +124,11 @@ public class FirebaseInterface implements DatabaseInterface {
 
     }
 
+    private DatabaseReference getFirebaseDatabaseReference() {
+        if(this.cachedFirebaseDatabaseRef == null)
+            cachedFirebaseDatabaseRef = FirebaseDatabase.getInstance().getReference() ;
+        return cachedFirebaseDatabaseRef ;
+    }
     @Override
     public String getConnectionId(){
         return getFirebaseInstanceId().getId() ;
@@ -770,6 +780,33 @@ public class FirebaseInterface implements DatabaseInterface {
                 .addOnFailureListener(e -> Log.w(TAG, "Error downloading image " + imageUri + " from firebase storage"));
     }
 
+
+    //https://firebase.google.com/docs/database/android/read-and-write <-- a good guide on hose to use the realtime database
+    public void updateUserLocation(String id, LatLng location) {
+        getFirebaseDatabaseReference().child(LOCATIONS).child(id)
+                .setValue(new GeoPoint(location.latitude, location.longitude));
+    }
+
+    @Override
+    public void fetchUserLocation(String id, Handler<LatLng> handlerSuccess) {
+        FirebaseDatabase.getInstance().getReference().addListenerForSingleValueEvent(new ValueEventListener() {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                DataSnapshot snapshot = dataSnapshot.child("locations/" + id);
+                Log.d("LOCATION", "get user snapshot: " + snapshot);
+                Object lat = snapshot.child("latitude/").getValue();
+                Object lng = snapshot.child("longitude/").getValue();
+                //if lat/lng is null the user is not on the firebase
+                if (lat != null && lng != null) {
+                    LatLng l = new LatLng(Double.parseDouble(lat.toString()), Double.parseDouble(lng.toString()));
+                    handlerSuccess.handle(l); //do something with the found location
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+    }
     @Override
     public void sendMessageFeed(String eventId, Message m, EmptyHandler handler){
         DatabaseReference dbref= getDbRef(true);
@@ -796,6 +833,7 @@ public class FirebaseInterface implements DatabaseInterface {
                     }
                 }
         );
+
     }
 }
 
