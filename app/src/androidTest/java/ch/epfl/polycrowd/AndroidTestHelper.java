@@ -1,6 +1,7 @@
 package ch.epfl.polycrowd;
 
 import android.util.Pair;
+import android.widget.ScrollView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,7 +28,9 @@ public abstract class AndroidTestHelper {
         }
     }
 
+    private static final String OwnerId="3";
     private static final String OwnerEmail = "OWNER@h.net";
+    private static final String SecurityEmail= "SEC@h.net";
     private static final String UserEmail = "USER@h.net";
     private static final String NewUserEmail = "NEW_USER@h.net";
     private static final String OrganiserEmail = "ORGA@h.net";
@@ -44,14 +47,17 @@ public abstract class AndroidTestHelper {
     private static List<Event> SetupEvents(){
         Date oldStartDate = new Date(1), oldEndDate = new Date(2),
                 newStartDate = new Date(2586946985399L), newEndDate = new Date(2586947985399L);
-
+        List<String> secs = new ArrayList<>();
+        secs.add(SecurityEmail);
+        List<String> orgs = new ArrayList<>();
+        orgs.add(OwnerEmail);
         Event[] ev = {
-                new Event(OwnerEmail, "OLD EVENT", true, CONCERT,
-                        oldStartDate, oldEndDate, CalURL, "old debug event ... ", false),
-                new Event("3", "DEBUG EVENT", true, FESTIVAL,
-                        newStartDate, newEndDate, CalURL, "this is only a debug event ... ", false),
-                new Event(OwnerEmail, "HIDDEN EVENT", false, FESTIVAL,
-                        newStartDate, newEndDate, CalURL, "hidden debug event ... ", false)};
+                new Event(OwnerId, "OLD EVENT", true, CONCERT,
+                        oldStartDate, oldEndDate, CalURL, "old debug event ... ", false, orgs, secs),
+                new Event(OwnerId, "DEBUG EVENT", true, FESTIVAL,
+                        newStartDate, newEndDate, CalURL, "this is only a debug event ... ", false, orgs, secs),
+                new Event(OwnerId, "HIDDEN EVENT", false, FESTIVAL,
+                        newStartDate, newEndDate, CalURL, "hidden debug event ... ", false, orgs, secs)};
 
         ev[0].setId("1");
         ev[1].setId("2");
@@ -63,8 +69,8 @@ public abstract class AndroidTestHelper {
         Map<String, Pair<User,String>> mailAndUsersPassPair = new HashMap<>();
         mailAndUsersPassPair.put(UserEmail, new Pair<>(new User(UserEmail, "1", "fakeUser", 3), "1234567"));
         mailAndUsersPassPair.put(OrganiserEmail, new Pair<>(new User(OrganiserEmail, "2", "fakeOrganiser", 4), "12345678"));
-        mailAndUsersPassPair.put(OwnerEmail, new Pair<>(new User(OwnerEmail, "3", "fakeOwner", 5), "12345679"));
-
+        mailAndUsersPassPair.put(OwnerEmail, new Pair<>(new User(OwnerEmail, OwnerId, "fakeOwner", 5), "12345679"));
+        mailAndUsersPassPair.put(SecurityEmail, new Pair<>(new User(SecurityEmail,"4", "fakeSec", 6), "123456"));
         return mailAndUsersPassPair;
     }
 
@@ -74,10 +80,22 @@ public abstract class AndroidTestHelper {
         ev.get(1).addOrganizer(OrganiserEmail);
 
         DatabaseInterface dbi = new FirebaseMocker(mailAndUsersPassPair, ev);
-        PolyContext.setDbInterface(dbi);
+        PolyContext.setDBI(dbi);
 
         PolyContext.setCurrentEvent(ev.get(1));
     }
+
+    static void SetupMockDBI(String uriString) {
+
+        ev.get(1).addOrganizer(OrganiserEmail);
+
+        DatabaseInterface dbi = new FirebaseMocker(mailAndUsersPassPair, ev, uriString);
+        PolyContext.setDBI(dbi);
+
+        PolyContext.setCurrentEvent(ev.get(1));
+    }
+
+
 
     private static Event getEvent(String id){
         List<Event> nev = new ArrayList<>(ev);
@@ -120,4 +138,5 @@ public abstract class AndroidTestHelper {
     static User getOrganiser(){
         return getUser(OrganiserEmail);
     }
+    static User getSecurity(){return getUser(SecurityEmail);}
 }

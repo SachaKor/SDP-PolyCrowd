@@ -40,7 +40,9 @@ import static androidx.test.espresso.action.ViewActions.swipeLeft;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intending;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static ch.epfl.polycrowd.AndroidTestHelper.sleep;
 
 /**
  * Mocking the gallery intent & image pick:
@@ -61,7 +63,7 @@ public class EventPageDetailsGalleryTest {
             GrantPermissionRule.grant(Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
     @Rule
-    public IntentsTestRule<EventPageDetailsActivity> mActivityTestRule =
+    public final IntentsTestRule<EventPageDetailsActivity> mActivityTestRule =
             new IntentsTestRule<>(EventPageDetailsActivity.class, true, false);
 
     @Before
@@ -78,11 +80,14 @@ public class EventPageDetailsGalleryTest {
 
     @Test
     public void galleryTest() {
+        sleep();
         savePickedImage(mActivityTestRule.getActivity());
         Instrumentation.ActivityResult imgGalleryResult = createImageGallerySetResultStub(mActivityTestRule.getActivity());
+        sleep();
+        onView(withId(R.id.event_details_fab)).check(matches(isDisplayed()));
         onView(withId(R.id.event_details_fab)).perform(click());
         intending(hasAction(Intent.ACTION_CHOOSER)).respondWith(imgGalleryResult);
-        AndroidTestHelper.sleep();
+        sleep();
         onView(withId(R.id.event_details_edit_img)).perform(scrollTo());
         onView(withId(R.id.event_details_edit_img)).perform(click());
         onView(withId(R.id.event_details_img)).check(matches(hasImageSet()));
@@ -108,7 +113,9 @@ public class EventPageDetailsGalleryTest {
 
 
     private void savePickedImage(Context context) {
-        Bitmap bm = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher1);
+        Bitmap bm = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher);
+        if(bm == null)
+            return;
         File dir = context.getExternalCacheDir(); // /storage/sdcard/Android/data/ch.epfl.polycrowd/cache
         Log.d(TAG, "save image, cache dir: " + dir.getPath());
         File file = new File(dir.getPath(), "pickImageResult.jpeg");
@@ -135,7 +142,7 @@ public class EventPageDetailsGalleryTest {
         Log.d(TAG, "create stub : external cache path: " + dir.getPath());
         File file = new File(dir.getPath(), "pickImageResult.jpeg");
         Uri uri = Uri.fromFile(file);
-        parcels.add((Parcelable) uri);
+        parcels.add(uri);
         bundle.putParcelableArrayList(Intent.EXTRA_STREAM, parcels);
         resultData.putExtras(bundle);
         // Activity.RESULT_OK const value i -1

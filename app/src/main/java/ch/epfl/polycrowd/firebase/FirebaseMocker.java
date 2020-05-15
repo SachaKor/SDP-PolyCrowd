@@ -11,7 +11,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -22,19 +21,19 @@ import java.util.Objects;
 import ch.epfl.polycrowd.firebase.handlers.DynamicLinkHandler;
 import ch.epfl.polycrowd.firebase.handlers.EmptyHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventHandler;
+import ch.epfl.polycrowd.firebase.handlers.EventMemberHandler;
 import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
 import ch.epfl.polycrowd.firebase.handlers.GroupHandler;
-
 import ch.epfl.polycrowd.firebase.handlers.Handler;
-
 import ch.epfl.polycrowd.firebase.handlers.ImageHandler;
-import ch.epfl.polycrowd.firebase.handlers.OrganizersHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
+import ch.epfl.polycrowd.logic.Message;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class FirebaseMocker implements DatabaseInterface {
 
     private static final String TAG = "FirebaseMocker";
@@ -44,6 +43,8 @@ public class FirebaseMocker implements DatabaseInterface {
     private byte[] image;
     private Map<String, Group> groupIdGroupPairs ;
     private byte[] userImg;
+    private String uriString;
+    private final String connectionId;
 
     public FirebaseMocker(Map<String, Pair<User, String>> defaultMailAndUserPassPair, List<Event> defaultEvents) {
         Log.d(TAG, "Database mocker init");
@@ -55,10 +56,15 @@ public class FirebaseMocker implements DatabaseInterface {
         events.addAll(defaultEvents);
         groupIdGroupPairs = new HashMap<>() ;
         image = new byte[100];
+        connectionId = "MOCK_CONNECTION_ID" ;
+    }
+
+    public FirebaseMocker(Map<String, Pair<User, String>> defaultMailAndUserPassPair, List<Event> defaultEvents, String uriString) {
+        this(defaultMailAndUserPassPair,defaultEvents);
+        this.uriString = uriString;
     }
 
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void signInWithEmailAndPassword(@NonNull String email, @NonNull String password, UserHandler successHandler, UserHandler failureHandler) {
         boolean foundRegisteredUser = false;
@@ -135,7 +141,7 @@ public class FirebaseMocker implements DatabaseInterface {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
-    public void addOrganizerToEvent(String eventId, String organizerEmail, OrganizersHandler handler) {
+    public void addOrganizerToEvent(String eventId, String organizerEmail, EventMemberHandler handler) {
         //getEventById(eventId, organizerEmail);
         Event event = findEventWithId(eventId);
         if (event != null) {
@@ -145,10 +151,19 @@ public class FirebaseMocker implements DatabaseInterface {
     }
 
     @Override
-    public void removeOrganizerFromEvent(String eventId, String organizerEmail, OrganizersHandler handler) {
+    public void removeOrganizerFromEvent(String eventId, String organizerEmail, EmptyHandler handler) {
         Event event = findEventWithId(eventId);
         if (event != null){
             event.getOrganizers().remove(organizerEmail);
+            handler.handle();
+        }
+    }
+
+    public void addSecurityToEvent(String eventId, String securityEmail, EventMemberHandler handler) {
+        Event event = findEventWithId(eventId);
+        if(event != null){
+            event.addSecurity(securityEmail);
+
             handler.handle();
         }
     }
@@ -169,9 +184,9 @@ public class FirebaseMocker implements DatabaseInterface {
 
     @Override
     public void receiveDynamicLink(DynamicLinkHandler handler, Intent intent) {
-        Uri link = Uri.parse("https://www.example.com/invite/?eventId=K3Zy20id3fUgjDFaRqYA&eventName=testaze");
-        if (PolyContext.getMockDynamicLink()) {
-            handler.handle(link);
+        if(uriString != null) {
+            Uri uri = Uri.parse(uriString);
+            handler.handle(uri);
         }
     }
 
@@ -376,5 +391,22 @@ public class FirebaseMocker implements DatabaseInterface {
             }
         }
         usersHandler.handle(users);
+    }
+
+    @Override
+    public void sendMessageFeed(String eventId, Message m, EmptyHandler handler) {
+        //TODO: mock realtime db
+        handler.handle();
+    }
+
+    @Override
+    public void getAllFeedForEvent(String eventId, Handler<List<Message>> handler) {
+        handler.handle(new ArrayList<>());
+        //TODO mock realtime db
+    }
+
+    @Override
+    public String getConnectionId() {
+        return connectionId;
     }
 }

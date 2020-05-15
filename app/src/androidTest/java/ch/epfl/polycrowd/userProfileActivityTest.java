@@ -16,6 +16,7 @@ import androidx.test.rule.ActivityTestRule;
 import ch.epfl.polycrowd.userProfile.UserProfilePageActivity;
 import ch.epfl.polycrowd.logic.PolyContext;
 
+import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.typeText;
@@ -40,7 +41,7 @@ public class userProfileActivityTest {
 
     @Rule
     public final ActivityTestRule<UserProfilePageActivity> userProfileActivityRule =
-            new ActivityTestRule<UserProfilePageActivity>(UserProfilePageActivity.class, true, false);
+            new ActivityTestRule<>(UserProfilePageActivity.class, false, false);
 
     @Before
     public void setUp() {
@@ -109,7 +110,7 @@ public class userProfileActivityTest {
         sleep();
         onView(withId(R.id.editTextChangeEmailEmail)).perform(typeText(AndroidTestHelper.getUser().getEmail()), closeSoftKeyboard());
         onView(withId(R.id.editTextChangeEmailCurPassword)).perform(typeText(AndroidTestHelper.getUserPass()), closeSoftKeyboard());
-        onView(withId(R.id.editTextChangeEmailNewEmail)).perform(typeText("newEmail@haha.com"), closeSoftKeyboard());
+        onView(withId(R.id.editTextChangeEmailNewEmail)).perform(typeText("NEWMAIL@h.net"), closeSoftKeyboard());
         onView(withText("Save"))
                 .inRoot(isDialog()) // <---
                 .check(matches(isDisplayed()))
@@ -118,7 +119,7 @@ public class userProfileActivityTest {
         onView(withText("Successfully changed email"))
                 .inRoot(withDecorView(not(userProfileActivityRule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));
-        onView(withId(R.id.profileEmail)).check(matches(withText(containsString("newEmail@haha.com"))));
+        onView(withId(R.id.profileEmail)).check(matches(withText(containsString("NEWMAIL@h.net"))));
         sleep();
         sleep();
         sleep();
@@ -150,7 +151,11 @@ public class userProfileActivityTest {
     public void myEventsButtonsWorksAndDisplayEventsIamOrganiserOf(){
         onView(withId(R.id.EventsOrganiseButton)).perform(click());
         sleep();
-        onView(withId(R.id.titleTv)).check(matches(withText(containsString("DEBUG EVENT"))));
+        onView(withText("DEBUG EVENT")).check(matches(isDisplayed()));
+        //onData(withId(R.id.titleTv)).inAdapterView(withId(R.id.userEventListRecyclerView))
+        //        .atPosition(1)
+        //        .check(matches(withText(containsString("DEBUG EVENT"))));
+        //onView(withId(R.id.titleTv)).check(matches(withText(containsString("DEBUG EVENT"))));
 }
 }
 

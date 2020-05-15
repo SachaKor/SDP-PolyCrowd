@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="ch.epfl.polycrowd">
+
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -16,15 +17,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".groupPage.GroupsListActivity"></activity>
+        <activity android:name=".FeedActivity"></activity>
+        <activity android:name=".groupPage.GroupsListActivity" />
         <activity android:name=".userProfile.UserProfilePageActivity" />
         <activity android:name=".userProfile.UserEventListActivity" />
         <activity android:name=".groupPage.GroupPageActivity" />
         <activity android:name=".authentification.ResetPasswordActivity" />
         <activity android:name=".authentification.SignUpActivity" />
-        <activity android:name=".EventPageDetailsActivity"
-            android:windowSoftInputMode="adjustPan"/>
-        <activity android:name="com.google.firebase.auth.internal.FederatedSignInActivity"
+        <activity
+            android:name=".EventPageDetailsActivity"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name="com.google.firebase.auth.internal.FederatedSignInActivity"
             android:launchMode="standard"
             tools:replace="android:launchMode" />
         <activity android:name=".authentification.LoginActivity" />
@@ -53,11 +57,12 @@
                     android:scheme="http" />
             </intent-filter>
         </activity>
-        <activity android:name=".organizerInvite.OrganizerInviteActivity" />
-        <activity
-            android:name=".map.MapActivity"
+        <activity android:name=".eventMemberInvite.EventMemberInviteActivity" />
+        <activity android:name=".map.MapActivity"
             android:label="@string/title_activity_main" />
         <activity android:name=".EmergencyActivity" />
+        <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+            android:theme="@style/Base.Theme.AppCompat"/> <!-- optional (needed if default theme has no action bar) -->
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").

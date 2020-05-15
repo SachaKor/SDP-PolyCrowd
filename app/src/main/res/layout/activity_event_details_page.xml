@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
-    android:background="#fff"
     tools:context=".EventPageDetailsActivity">
 
     <ScrollView
@@ -42,7 +41,7 @@
                     android:background="@color/white_transparent"
                     android:layout_marginBottom="5dp"
                     android:layout_marginHorizontal="5dp"
-                    android:visibility="invisible"
+                    android:visibility="gone"
                     android:id="@+id/event_details_edit_img"
                     android:onClick="onEditImageClicked"/>
 
@@ -216,12 +215,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/organizers_scroll"
-            android:onClick="inviteLinkClicked"
-            android:padding="10dp"
+            android:layout_marginTop="10dp"
             android:text="@string/invite_organizer"
-            android:visibility="invisible"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+
+            android:onClick="organizerInviteLinkClicked"
+            android:visibility="invisible"/>
         <Button
             android:id="@+id/revoke_organizer_button"
             android:layout_width="match_parent"
@@ -234,6 +232,35 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <TextView
+            android:id="@+id/EditEventSecurity"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:text="@string/security"
+            android:padding="10dp"
+            android:ems="10"
+            android:layout_below="@id/invite_organizer_button"/>
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/EditEventSecurity"
+            android:id="@+id/security_scroll">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/security_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        </ScrollView>
+        <Button
+            android:id="@+id/invite_security_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/security_scroll"
+            android:layout_marginTop="10dp"
+            android:text="@string/invite_security"
+            android:onClick="securityInviteLinkClicked"
+            android:visibility="invisible"/>
         <Button
             android:id="@+id/event_details_submit"
             android:layout_width="match_parent"
@@ -276,12 +303,12 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
         android:layout_margin="16dp"
-        android:src="@drawable/ic_edit_white_24dp"
+        android:src="@drawable/ic_edit_white"
         tools:ignore="PrivateResource"
         app:fabSize="normal"
         app:backgroundTint="@color/color2"
         android:id="@+id/event_details_fab"
-        android:visibility="visible"
+        android:visibility="gone"
         android:onClick="onEditClicked"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

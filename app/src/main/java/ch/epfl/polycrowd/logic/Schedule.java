@@ -9,8 +9,6 @@ import androidx.annotation.RequiresApi;
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.Calendar;
-import net.fortuna.ical4j.model.Property;
-import net.fortuna.ical4j.model.component.CalendarComponent;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,45 +18,42 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import java.security.InvalidParameterException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class Schedule {
-
-
 
     private List<Activity> activities;
     private String downloadPath;
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public Schedule(@NonNull String url , @NonNull File f){
-
-        this.downloadPath = downloadIcsFile(url, f);
-        this.activities = loadIcs(f);
+    public Schedule(@NonNull String url, @NonNull File f){
+        downloadPath = downloadIcsFile(url, f);
+        if(downloadPath != null)
+            activities = loadIcs(f);
     }
     public String getDownloadPath(){
         return this.downloadPath;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private static String downloadIcsFile(String url, File f){
 
-        if (url.equals("url") || url.length() == 0){
+        if (url == null || url.length() == 0 || !url.contains("://")){
             return null;
         }
-        else if ( !url.contains("://") ){
-            throw new IllegalArgumentException(url +" is not a url");
-        }
+
         try {
             URL downloadUrl = new URL(url.replace("webcal://","https://"));
             HttpURLConnection c = (HttpURLConnection) downloadUrl.openConnection();
             c.setRequestMethod("GET");
             c.connect();
 
-            if (!f.exists() && (!f.getParentFile().mkdirs() && !f.createNewFile())){
+            if (!f.exists() && (f.getParentFile()!= null &&!f.getParentFile().mkdirs() && !f.createNewFile())){
                 throw new IOException("File does not exist and can't be created");
             }
             FileOutputStream fos = new FileOutputStream(f);
@@ -76,37 +71,31 @@ public class Schedule {
         return f.getAbsolutePath();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private List<Activity> loadIcs(File path) {
-        if ( downloadPath == null){
-            return  null;
-        }
-        List<Activity> activities = new ArrayList<>();
-
         System.setProperty("net.fortuna.ical4j.timezone.cache.impl", "net.fortuna.ical4j.util.MapTimeZoneCache");
-        CalendarBuilder builder = new CalendarBuilder();
 
+        Calendar calendar;
+        FileInputStream fin;
         try {
-            FileInputStream fin = new FileInputStream(path);
-            Calendar calendar = builder.build(fin);
-            if(calendar == null)
-                throw new IOException("Null Calendar");
-            for (CalendarComponent cc : calendar.getComponents()) {
-                if (cc.getName().equalsIgnoreCase("VEVENT")) {
-                    Map<String, String> calendarEntry = new HashMap<>();
-                    for (Property property : cc.getProperties()) {
-                        calendarEntry.put(property.getName(), property.getValue());
-                    }
+            fin = new FileInputStream(path);
+            calendar = new CalendarBuilder().build(fin);
 
-                    activities.add(new Activity(calendarEntry));
-                }
-            }
-        } catch (IOException | ParserException e) {
-            e.printStackTrace();
+            List<Activity> activities = new ArrayList<>();
+            calendar.getComponents().forEach(cc->{
+                try {
+                    if (cc.getName().equalsIgnoreCase("VEVENT")) {
+                        Map<String, String> calendarEntry = new HashMap<>();
+                        cc.getProperties().forEach(p -> calendarEntry.put(p.getName(), p.getValue()));
+                        activities.add(new Activity(calendarEntry));
+                    }
+                }catch (ParseException | InvalidParameterException ignored) {}
+            });
+            fin.close();
+            return activities;
+        } catch (IOException | ParserException ex) {
+            activities = null;
             return null;
         }
-
-        return activities;
     }
 
     public List<Activity> getActivities(){
