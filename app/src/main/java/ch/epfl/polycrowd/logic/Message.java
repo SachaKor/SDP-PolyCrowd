@@ -7,9 +7,9 @@ import java.util.Map;
 
 public class Message {
 
-    private String content, senderName, messageId;
-    private int severity;
-    public Message(String content, String senderName, int severity){
+    private String content, senderName, severity, messageId;
+
+    public Message(String content, String senderName, String severity){
         this.content = content;
         this.senderName = senderName;
         this.severity = severity;
@@ -21,11 +21,11 @@ public class Message {
         Map<String, String> map = new HashMap<>();
         map.put("Content", this.content);
         map.put("Sender", this.senderName);
-        map.put("Severity", String.valueOf(this.severity));
+        map.put("Severity", this.severity);
         return map;
     }
     public static Message fromData(Map<String,String> map){
-        return new Message(map.get("Content"), map.get("Sender"), Integer.valueOf(map.get("Severity")));
+        return new Message(map.get("Content"), map.get("Sender"), map.get("Severity"));
     }
 
 
