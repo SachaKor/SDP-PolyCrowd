@@ -132,7 +132,7 @@ public class MapActivity extends AppCompatActivity {
                     buttonSOS.setOnLongClickListener(v-> {
                         eventIntentHandler(this, EmergencyActivity.class);
                         return true;
-                    }); //TODO: hold for 5 seconds + animation ?
+                    });
                 }
 
                 break;

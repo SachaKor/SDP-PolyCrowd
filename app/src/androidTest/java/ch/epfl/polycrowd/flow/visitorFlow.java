@@ -2,6 +2,7 @@ package ch.epfl.polycrowd.flow;
 
 import android.Manifest;
 import android.content.Intent;
+import android.view.View;
 
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.matcher.ViewMatchers;
@@ -12,6 +13,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import ch.epfl.polycrowd.ActivityHelper;
 import ch.epfl.polycrowd.AndroidTestHelper;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.frontPage.FrontPageActivity;
@@ -26,7 +28,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static ch.epfl.polycrowd.AndroidTestHelper.sleep;
 import static org.hamcrest.core.StringContains.containsString;
 
-public class guestFlow {
+public class visitorFlow {
 
     @Rule
     public final ActivityTestRule<FrontPageActivity> frontPageActivityRule =
@@ -39,7 +41,7 @@ public class guestFlow {
     @Before
     public void setUp() {
         AndroidTestHelper.SetupMockDBI();
-        PolyContext.setCurrentUser(null);
+        PolyContext.setCurrentUser(AndroidTestHelper.getUser());
 
         Intent intent = new Intent();
         frontPageActivityRule.launchActivity(intent);
@@ -50,8 +52,9 @@ public class guestFlow {
         onView(withId(R.id.frontPageTitle)).check(matches(withText("POLY CROWD")));
 
         onView(withId(R.id.button)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-        onView(withId(R.id.goToUserProfileButton)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
-        onView(withId(R.id.button)).check(matches(withText(containsString("LOGIN"))));
+        onView(withId(R.id.goToUserProfileButton)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+        onView(withId(R.id.goToUserProfileButton)).check(matches(withText(containsString("Profile"))));
+        onView(withId(R.id.button)).check(matches(withText(containsString("LOGOUT"))));
 
         onView(withId(R.id.viewPager)).perform(ViewActions.swipeRight());
         onView(withId(R.id.eventTitle)).check(matches(withText(containsString("Create an EVENT"))));
@@ -74,9 +77,10 @@ public class guestFlow {
         onView(withId(R.id.butRight)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
         onView(withId(R.id.butRight)).check(matches(withText(containsString("EVENT DETAILS"))));
         onView(withId(R.id.butLeft)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-        onView(withId(R.id.butLeft)).check(matches(withText(containsString("LOGIN"))));
+        onView(withId(R.id.butLeft)).check(matches(withText(containsString("GROUPS"))));
 
-        onView(withId(R.id.butSOS)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
+        onView(withId(R.id.butSOS)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+        onView(withId(R.id.butSOS)).check(matches(withText(containsString("Emergency"))));
     }
 
     @Test
@@ -160,6 +164,37 @@ public class guestFlow {
                 .atPosition(2).check(matches(withText(containsString("PArty"))));
         onData(withId(R.id.descriptionTv)).inAdapterView(withId(R.id.recyclerView))
                 .atPosition(2).check(matches(withText(containsString("Party"))));*/
+    }
+
+    @Test
+    public void testGroupPage() {
+
+    }
+
+    @Test
+    public void testProfilePage() {
+        onView(withId(R.id.goToUserProfileButton)).perform(ViewActions.click());
+
+        onView(withId(R.id.imgUser)).check(matches(isDisplayed()));
+        onView(withId(R.id.profileImgEditButton)).check(matches(isDisplayed()));
+
+        onView(withId(R.id.profileUserName)).check(matches(isDisplayed()));
+        onView(withId(R.id.profileUserName)).check(matches(withText(containsString(AndroidTestHelper.getUser().getName()))));
+        onView(withId(R.id.usernameEditButton)).check(matches(isDisplayed()));
+
+        onView(withId(R.id.profileEmail)).check(matches(isDisplayed()));
+        onView(withId(R.id.profileEmail)).check(matches(withText(containsString(AndroidTestHelper.getUser().getEmail()))));
+        onView(withId(R.id.profileEditEmailButton)).check(matches(isDisplayed()));
+
+        onView(withId(R.id.profilePassword)).check(matches(isDisplayed()));
+        onView(withId(R.id.profilePassword)).check(matches(withText(containsString("########"))));
+        onView(withId(R.id.profileEditPasswordButton)).check(matches(isDisplayed()));
+
+        onView(withId(R.id.EventsOrganiseButton)).check(matches(isDisplayed()));
+        onView(withId(R.id.EventsOrganiseButton)).check(matches(withText(containsString("Events I Organize"))));
+
+        onView(withId(R.id.myGroupsButton)).check(matches(isDisplayed()));
+        onView(withId(R.id.myGroupsButton)).check(matches(withText(containsString("MyGroups"))));
     }
 
 }

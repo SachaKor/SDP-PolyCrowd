@@ -50,7 +50,7 @@ public abstract class AndroidTestHelper {
                 new Event(OwnerEmail, "OLD EVENT", true, CONCERT,
                         oldStartDate, oldEndDate, CalURL, "old debug event ... ", false),
                 new Event(OwnerEmail, "DEBUG EVENT", true, FESTIVAL,
-                        newStartDate, newEndDate, CalURL, "this is only a debug event ... ", false),
+                        newStartDate, newEndDate, CalURL, "this is only a debug event ... ", true),
                 new Event(OwnerEmail, "HIDDEN EVENT", false, FESTIVAL,
                         newStartDate, newEndDate, CalURL, "hidden debug event ... ", false)};
 
