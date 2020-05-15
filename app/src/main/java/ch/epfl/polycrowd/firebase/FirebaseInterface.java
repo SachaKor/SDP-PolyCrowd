@@ -42,16 +42,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 
-import ch.epfl.polycrowd.firebase.handlers.DynamicLinkHandler;
-import ch.epfl.polycrowd.firebase.handlers.EmptyHandler;
-import ch.epfl.polycrowd.firebase.handlers.EventHandler;
-import ch.epfl.polycrowd.firebase.handlers.EventMemberHandler;
-import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
-import ch.epfl.polycrowd.firebase.handlers.GroupHandler;
-import ch.epfl.polycrowd.firebase.handlers.Handler;
-import ch.epfl.polycrowd.firebase.handlers.ImageHandler;
-import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
 import ch.epfl.polycrowd.logic.Message;
@@ -62,6 +54,7 @@ import ch.epfl.polycrowd.logic.User;
  * @codeCoverageIgnore
  * Excluded in build.gradle
  */
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class FirebaseInterface implements DatabaseInterface {
 
     private FirebaseAuth cachedAuth;
@@ -142,37 +135,30 @@ public class FirebaseInterface implements DatabaseInterface {
     }
 
     @Override
-    @RequiresApi(api = Build.VERSION_CODES.N)
     public void signInWithEmailAndPassword(@NonNull final String email, @NonNull final String password,
-                                           UserHandler successHandler, UserHandler failureHandler){
+                                           Handler<User> successHandler, EmptyHandler failureHandler){
             this.getAuthInstance(true).signInWithEmailAndPassword(email,password)
                     .addOnCompleteListener(taskc -> {
                         if(taskc.isSuccessful()) {
                             // TODO: use getUserByEmail, clean up firestore first
-                            getUserByEmail(email, u-> {
-                                User user = new User(email, taskc.getResult().getUser().getUid(), u.getName(), u.getAge(), u.getImageUri());
-                                successHandler.handle(user);
-                            }, u->{failureHandler.handle(null);});
+                            getUserByEmail(email, successHandler, failureHandler);
                         } else {
-                            failureHandler.handle(null);
+                            failureHandler.handle();
                         }
                     });
     }
 
     @Override
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    public void getUserByEmail(String email, UserHandler successHandler, UserHandler failureHandler) {
+    public void getUserByEmail(String email, Handler<User> successHandler, EmptyHandler failureHandler) {
             getUserByField("email", email, successHandler, failureHandler);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
-    public void getUserByUsername(String username, UserHandler successHandler, UserHandler failureHandler) {
+    public void getUserByUsername(String username, Handler<User> successHandler, EmptyHandler failureHandler) {
         getUserByField("username", username, successHandler, failureHandler);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    private void getUserByField(String fieldName, String fieldValue, UserHandler successHandler, UserHandler failureHandler){
+    private void getUserByField(String fieldName, String fieldValue, Handler<User> successHandler, EmptyHandler failureHandler){
         getFirestoreInstance(false).collection(USERS)
                 .whereEqualTo(fieldName, fieldValue).get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -185,7 +171,7 @@ public class FirebaseInterface implements DatabaseInterface {
                         });
                     } else if(queryDocumentSnapshots.size() == 0){
                         //User doesn't exist yet
-                        failureHandler.handle(null);
+                        failureHandler.handle();
                     } else if(queryDocumentSnapshots.size()  > 1){
                         Log.e(TAG, " multiple users with fieldName " +fieldName);
                     }
@@ -198,8 +184,7 @@ public class FirebaseInterface implements DatabaseInterface {
     }
 
     @Override
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public void getAllEvents(EventsHandler handler) {
+    public void getAllEvents(Handler<List<Event>> handler) {
             getFirestoreInstance(false).collection(EVENTS).get().addOnSuccessListener(queryDocumentSnapshots -> {
                 List<Event> events = new ArrayList<>();
                 queryDocumentSnapshots.forEach(queryDocumentSnapshot -> {
@@ -212,8 +197,7 @@ public class FirebaseInterface implements DatabaseInterface {
     }
 
     @Override
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public void addEvent(Event event, EventHandler successHandler, EventHandler failureHandler){
+    public void addEvent(Event event, Handler<Event> successHandler, Handler<Event> failureHandler){
             getFirestoreInstance(false).collection(EVENTS)
                     .add(event.getRawData())
                     .addOnSuccessListener(documentReference -> {
@@ -228,8 +212,7 @@ public class FirebaseInterface implements DatabaseInterface {
     }
 
     @Override
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public void patchEventByID(String eventId, Event event, EventHandler successHandler, EventHandler failureHandler){
+    public void patchEventByID(String eventId, Event event, Handler<Event> successHandler, Handler<Event> failureHandler){
         getFirestoreInstance(false).collection(EVENTS).document(eventId)
                 .update(event.getRawData())
                 .addOnSuccessListener(documentReference -> {
@@ -243,8 +226,7 @@ public class FirebaseInterface implements DatabaseInterface {
     }
 
     @Override
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public void getEventById(String eventId, EventHandler eventHandler) {
+    public void getEventById(String eventId, Handler<Event> eventHandler) {
         final String TAG1 = "getEventById";
             Log.d(TAG, TAG1 + " is not mocked");
             Log.d(TAG, TAG1 + " event id: " + eventId);
@@ -293,23 +275,22 @@ public class FirebaseInterface implements DatabaseInterface {
                         if (queryDocumentSnapshots.size() == 1){
                             DocumentSnapshot groupDoc = queryDocumentSnapshots.getDocuments().get(0) ;
                             Map<String, Object> data = groupDoc.getData() ;
-                            List<String> userEmails = (List<String>) data.get(MEMBERS) ;
+                            List<String> userEmails = (List<String>) data.get(MEMBERS);
 
-                            PolyContext.getDBI().getUserCollectionByEmails(userEmails,
-                                    fetchedUsers -> {
-                                        Map<String, Object> groupData = new HashMap<>() ;
-                                        groupData.put("groupId", data.get("groupId")) ;
-                                        groupData.put("eventId", data.get("eventId")) ;
-                                        groupData.put("members", fetchedUsers) ;
-                                        Group group = Group.getFromDocument(groupData) ;
-                                        groupHandler.handle(group);
-                                    }) ;
+                            PolyContext.getDBI().getUserCollectionByEmails(userEmails, gu -> {
+                                Map<String, Object> groupData = new HashMap<>() ;
+                                groupData.put("groupId", data.get("groupId")) ;
+                                groupData.put("eventId", data.get("eventId")) ;
+                                groupData.put("members", gu) ;
+                                groupHandler.handle(Group.getFromDocument(groupData));
+                            }) ;
                         } else{
                             groupHandler.handle(null);
                         }
 
                     } ).addOnFailureListener(e -> groupHandler.handle(null)) ;
     }
+
 
     public void getUserCollectionByEmails(List<String> userEmails, Handler<List<User>> usersHandler) {
         getFirestoreInstance(false).collection(USERS).whereIn("email", userEmails).get().addOnSuccessListener(queryDocumentSnapshots -> {
@@ -327,7 +308,7 @@ public class FirebaseInterface implements DatabaseInterface {
     //TODO
     //What's the diff between someCallback(String arg1, Handler<E> arg2) rather than specifiying E ?
     @Override
-    public void createGroup(Group group, GroupHandler handler){
+    public void createGroup(Group group, Handler<Group> handler){
         final String TAG1 = "createGroup";
         if(group.getEventId() == null) {
             Log.w(TAG, TAG1 + " eventId id is null");
@@ -400,7 +381,7 @@ public class FirebaseInterface implements DatabaseInterface {
 
     }
 
-    public void removeGroupIfEmpty(String gid, GroupHandler handler){
+    public void removeGroupIfEmpty(String gid, Handler<Group> handler){
         final String TAG1 = "removeGroupIfEmpty";
         if(gid == null) {
             Log.w(TAG, TAG1 + " group id is null");
@@ -422,18 +403,18 @@ public class FirebaseInterface implements DatabaseInterface {
 
     @Override
     public void addOrganizerToEvent(@NonNull String eventId, String organizerEmail,
-                                    EventMemberHandler handler) {
+                                    EmptyHandler handler) {
         addPersonToEvent(eventId,organizerEmail,handler,ORGANIZERS);
     }
 
     @Override
     public void addSecurityToEvent(@NonNull String eventId, String securityEmail,
-                                   EventMemberHandler handler) {
+                                   EmptyHandler handler) {
         addPersonToEvent(eventId,securityEmail,handler,SECURITY);
     }
 
     private void addPersonToEvent(@NonNull String eventId, String email,
-                                  EventMemberHandler handler, String role){
+                                  EmptyHandler handler, String role){
         final String TAG1 = "addPersonToEvent";
         getFirestoreInstance(false).collection(EVENTS)
                 .document(eventId).get().addOnSuccessListener(documentSnapshot -> {
@@ -482,7 +463,7 @@ public class FirebaseInterface implements DatabaseInterface {
     }
 
     @Override
-    public void signUp(String username, String firstPassword, String email, Integer age, UserHandler successHandler, UserHandler failureHandler) {
+    public void signUp(String username, String firstPassword, String email, Integer age, Handler<User> successHandler, Handler<User> failureHandler) {
             CollectionReference usersRef = getFirestoreInstance(false).collection("users");
             Query queryUsernames = usersRef.whereEqualTo("username", username);
             //Query queryEmails = usersRef.whereEqualTo("email", email);
@@ -497,7 +478,7 @@ public class FirebaseInterface implements DatabaseInterface {
             );
     }
 
-    private void addUserToDatabase(String email, String firstPassword, String username, Integer age, UserHandler successHandler, UserHandler failureHandler){
+    private void addUserToDatabase(String email, String firstPassword, String username, Integer age, Handler<User> successHandler, Handler<User> failureHandler){
         getAuthInstance(false).createUserWithEmailAndPassword(email, firstPassword) ;
         Map<String, Object> user = new HashMap<>();
         user.put("username", username);
@@ -513,7 +494,7 @@ public class FirebaseInterface implements DatabaseInterface {
     }
 
     @Override
-    public void resetPassword(String email, UserHandler successHandler, UserHandler failureHandler){
+    public void resetPassword(String email, Handler<User> successHandler, Handler<User> failureHandler){
         getAuthInstance(false).sendPasswordResetEmail(email).addOnCompleteListener(
                 task ->  {
                     if (task.isSuccessful()) {
@@ -527,7 +508,7 @@ public class FirebaseInterface implements DatabaseInterface {
     }
 
     @Override
-    public void receiveDynamicLink(DynamicLinkHandler handler, Intent intent) {
+    public void receiveDynamicLink(Handler<Uri> handler, Intent intent) {
             FirebaseDynamicLinks.getInstance()
                     .getDynamicLink(intent)
                     .addOnSuccessListener(pendingDynamicLinkData -> {
@@ -553,7 +534,7 @@ public class FirebaseInterface implements DatabaseInterface {
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
-    public void uploadEventImage(Event event, byte[] image, EventHandler handler) {
+    public void uploadEventImage(Event event, byte[] image, Handler<Event> handler) {
         String imageUri = EVENT_IMAGES + "/" + event.getId() + ".jpg";
         event.setImageUri(imageUri);
         StorageReference imgRef = getStorageInstance(true).getReference().child(imageUri);
@@ -568,7 +549,7 @@ public class FirebaseInterface implements DatabaseInterface {
     }
 
     @Override
-    public void uploadEventMap(Event event, byte[] map, EventHandler handler) {
+    public void uploadEventMap(Event event, byte[] map, Handler<Event> handler) {
         String mapPath = EVENT_MAPS + "/" + event.getMapUri();
         //event.setMapUri(mapPath);
         StorageReference imgRef = getStorageInstance(true).getReference().child(mapPath);
@@ -584,7 +565,7 @@ public class FirebaseInterface implements DatabaseInterface {
     }
 
     @Override
-    public void downloadEventMap(Event event, EventHandler handler) {
+    public void downloadEventMap(Event event, Handler<Event> handler) {
         // dowload event map from its uri and then set its data into inputstream
         if(event.getMapUri() == null){
             return;
@@ -607,7 +588,7 @@ public class FirebaseInterface implements DatabaseInterface {
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public void downloadEventImage(Event event, ImageHandler handler) {
+    public void downloadEventImage(Event event, Handler<byte[]> handler) {
         String eventId = event.getId();
         String imageUri = event.getImageUri();
         if(event.getImageUri() == null) {
@@ -626,9 +607,8 @@ public class FirebaseInterface implements DatabaseInterface {
      * Updates the Event in the Firestore.
      * The data contained in the event will be merged with already existing data for this event
      */
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
-    public void updateEvent(Event event, EventHandler eventHandler) {
+    public void updateEvent(Event event, Handler<Event> eventHandler) {
         getFirestoreInstance(false).collection(EVENTS).document(event.getId())
                 .set(event.getRawData())
                 .addOnSuccessListener(aVoid -> eventHandler.handle(event))
@@ -639,16 +619,14 @@ public class FirebaseInterface implements DatabaseInterface {
      * Updates the Event in the Firestore.
      * The data contained in the event will be merged with already existing data for this event
      */
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
-    public void updateUser(User user, UserHandler userHandler) {
+    public void updateUser(User user, Handler<User> userHandler) {
         getFirestoreInstance(false).collection(USERS).document(user.getUid())
                 .set(user.toHashMap())
                 .addOnSuccessListener(aVoid -> userHandler.handle(user))
                 .addOnFailureListener(e -> Log.w(TAG, "Error updating the event with id: " + user.getUid()));
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void addSOS(@NonNull String userId, @NonNull String eventId, @NonNull String reason) {
         getFirestoreInstance(false).collection(EVENTS).document(eventId).update("sos."+userId,reason).addOnFailureListener(e-> Log.w(TAG, "addSOS:onFailure",e));
@@ -751,7 +729,7 @@ public class FirebaseInterface implements DatabaseInterface {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public void uploadUserProfileImage(User user, byte[] image, UserHandler handler) {
+    public void uploadUserProfileImage(User user, byte[] image, Handler<User> handler) {
         String imageUri = USER_IMAGES + "/" + user.getUid() + ".jpg";
         user.setImageUri(imageUri);
         StorageReference imgRef = getStorageInstance(true).getReference().child(imageUri);
@@ -765,7 +743,7 @@ public class FirebaseInterface implements DatabaseInterface {
                         Log.w(TAG, "Error occurred during the upload of the image for the event " + user.getUid()));
     }
 
-    public void downloadUserProfileImage(User user, ImageHandler handler) {
+    public void downloadUserProfileImage(User user, Handler<byte[]> handler) {
         String eventId = user.getUid();
         String imageUri = user.getImageUri();
         if(user.getImageUri() == null) {
@@ -776,7 +754,7 @@ public class FirebaseInterface implements DatabaseInterface {
         final long ONE_MEGABYTE = 1024 * 1024;
         StorageReference eventImageRef = getStorageInstance(false).getReference().child(imageUri);
         eventImageRef.getBytes(ONE_MEGABYTE)
-                .addOnSuccessListener(handler::handle)
+                .addOnSuccessListener(r ->handler.handle(r))
                 .addOnFailureListener(e -> Log.w(TAG, "Error downloading image " + imageUri + " from firebase storage"));
     }
 
@@ -810,7 +788,7 @@ public class FirebaseInterface implements DatabaseInterface {
     @Override
     public void sendMessageFeed(String eventId, Message m, EmptyHandler handler){
         DatabaseReference dbref= getDbRef(true);
-        dbref.child("events").child(eventId).child("security_feed").push().setValue(m.toData()).addOnSuccessListener( e-> handler.handle() );
+        dbref.child("events").child(eventId).child("security_feed").push().setValue(m.toData()).addOnSuccessListener(r -> handler.handle());
     }
 
     @Override

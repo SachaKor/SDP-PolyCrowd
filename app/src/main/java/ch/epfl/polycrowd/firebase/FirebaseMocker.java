@@ -20,15 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import ch.epfl.polycrowd.firebase.handlers.DynamicLinkHandler;
-import ch.epfl.polycrowd.firebase.handlers.EmptyHandler;
-import ch.epfl.polycrowd.firebase.handlers.EventHandler;
-import ch.epfl.polycrowd.firebase.handlers.EventMemberHandler;
-import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
-import ch.epfl.polycrowd.firebase.handlers.GroupHandler;
-import ch.epfl.polycrowd.firebase.handlers.Handler;
-import ch.epfl.polycrowd.firebase.handlers.ImageHandler;
-import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
 import ch.epfl.polycrowd.logic.Message;
@@ -68,7 +59,7 @@ public class FirebaseMocker implements DatabaseInterface {
 
 
     @Override
-    public void signInWithEmailAndPassword(@NonNull String email, @NonNull String password, UserHandler successHandler, UserHandler failureHandler) {
+    public void signInWithEmailAndPassword(@NonNull String email, @NonNull String password, Handler<User> successHandler, EmptyHandler failureHandler) {
         boolean foundRegisteredUser = false;
         Iterator<User> usersIterator = usersAndPasswords.keySet().iterator();
         while (!foundRegisteredUser && usersIterator.hasNext()) {
@@ -79,34 +70,34 @@ public class FirebaseMocker implements DatabaseInterface {
                 if (Objects.equals(usersAndPasswords.get(user), password)) {
                     successHandler.handle(user);
                 } else {
-                    failureHandler.handle(null);
+                    failureHandler.handle();
                 }
             }
         }
 
         if (!foundRegisteredUser) {
             //User not registered, will simply display in our case incorrect email or password
-            failureHandler.handle(null);
+            failureHandler.handle();
         }
     }
 
     @Override
-    public void getUserByEmail(String email, UserHandler successHandler, UserHandler failureHandler) {
+    public void getUserByEmail(String email, Handler<User> successHandler, EmptyHandler failureHandler) {
         User user = findUserByEmail(email);
         if (user != null) {
             successHandler.handle(user);
         } else {
-            failureHandler.handle(user);
+            failureHandler.handle();
         }
     }
 
     @Override
-    public void getUserByUsername(String username, UserHandler successHandler, UserHandler failureHandler) {
+    public void getUserByUsername(String username, Handler<User> successHandler, EmptyHandler failureHandler) {
         User user = findUserByUsername(username);
         if (user != null) {
             successHandler.handle(user);
         } else {
-            failureHandler.handle(user);
+            failureHandler.handle();
         }
     }
 
@@ -116,25 +107,25 @@ public class FirebaseMocker implements DatabaseInterface {
     }
 
     @Override
-    public void getAllEvents(EventsHandler handler) {
+    public void getAllEvents(Handler<List<Event>> handler) {
         handler.handle(events);
     }
 
     @Override
-    public void addEvent(Event event, EventHandler successHandler, EventHandler failureHandler) {
+    public void addEvent(Event event, Handler<Event> successHandler, Handler<Event> failureHandler) {
         if (event.getId() == null) event.setId(String.valueOf(events.size()));
         events.add(event) ;
         successHandler.handle(event);
     }
 
     @Override
-    public void patchEventByID(String eventId, Event event, EventHandler successHandler, EventHandler failureHandler) {
+    public void patchEventByID(String eventId, Event event, Handler<Event> successHandler, Handler<Event> failureHandler) {
         this.addEvent(event, successHandler, failureHandler);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
-    public void getEventById(String eventId, EventHandler eventHandler) {
+    public void getEventById(String eventId, Handler<Event> eventHandler) {
         Event event = findEventWithId(eventId);
         if (event != null) {
             eventHandler.handle(event);
@@ -143,7 +134,7 @@ public class FirebaseMocker implements DatabaseInterface {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
-    public void addOrganizerToEvent(String eventId, String organizerEmail, EventMemberHandler handler) {
+    public void addOrganizerToEvent(String eventId, String organizerEmail, EmptyHandler handler) {
         //getEventById(eventId, organizerEmail);
         Event event = findEventWithId(eventId);
         if (event != null) {
@@ -161,17 +152,16 @@ public class FirebaseMocker implements DatabaseInterface {
         }
     }
 
-    public void addSecurityToEvent(String eventId, String securityEmail, EventMemberHandler handler) {
+    public void addSecurityToEvent(String eventId, String securityEmail, EmptyHandler handler) {
         Event event = findEventWithId(eventId);
         if(event != null){
             event.addSecurity(securityEmail);
-
             handler.handle();
         }
     }
 
     @Override
-    public void signUp(String username, String firstPassword, String email, Integer age, UserHandler successHandler, UserHandler failureHandler) {
+    public void signUp(String username, String firstPassword, String email, Integer age, Handler<User> successHandler, Handler<User> failureHandler) {
         User newUser = new User(username, "1", email, age);
         //Search for existing user handled by calling class
         usersAndPasswords.put(newUser, firstPassword);
@@ -179,13 +169,13 @@ public class FirebaseMocker implements DatabaseInterface {
     }
 
     @Override
-    public void resetPassword(String email, UserHandler successHandler, UserHandler failureHandler) {
+    public void resetPassword(String email, Handler<User> successHandler, Handler<User> failureHandler) {
         //Need external dependency for this, so just call failureHandler
         failureHandler.handle(null);
     }
 
     @Override
-    public void receiveDynamicLink(DynamicLinkHandler handler, Intent intent) {
+    public void receiveDynamicLink(Handler<Uri> handler, Intent intent) {
         if(uriString != null) {
             Uri uri = Uri.parse(uriString);
             handler.handle(uri);
@@ -206,7 +196,7 @@ public class FirebaseMocker implements DatabaseInterface {
     }
 
     @Override
-    public void removeGroupIfEmpty(String gid, GroupHandler handler) {
+    public void removeGroupIfEmpty(String gid, Handler<Group> handler) {
 
     }
 
@@ -216,7 +206,7 @@ public class FirebaseMocker implements DatabaseInterface {
     }
 
     @Override
-    public void createGroup(Group group, GroupHandler handler) {
+    public void createGroup(Group group, Handler<Group> handler) {
         Group newGroup = new Group(group.getGid(), group.getEventId(), group.getMembers()) ;
         newGroup.addMember(PolyContext.getCurrentUser());
         groupIdGroupPairs.put(newGroup.getGid(), newGroup) ;
@@ -225,7 +215,7 @@ public class FirebaseMocker implements DatabaseInterface {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
-    public void uploadEventImage(Event event, byte[] image, EventHandler handler) {
+    public void uploadEventImage(Event event, byte[] image, Handler<Event> handler) {
         Log.d(TAG, "uploading the image");
         // save the image
         this.image = image;
@@ -236,7 +226,7 @@ public class FirebaseMocker implements DatabaseInterface {
     }
 
     @Override
-    public void uploadEventMap(Event event, byte[] file, EventHandler handler) {
+    public void uploadEventMap(Event event, byte[] file, Handler<Event> handler) {
 
         // TODO : load file maybe ?
         //event.setMapUri(file.getPath());
@@ -245,13 +235,13 @@ public class FirebaseMocker implements DatabaseInterface {
     }
 
     @Override
-    public void downloadEventMap(Event event, EventHandler handler) {
+    public void downloadEventMap(Event event, Handler<Event> handler) {
         // todo
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
-    public void downloadEventImage(Event event, ImageHandler handler) {
+    public void downloadEventImage(Event event, Handler<byte[]> handler) {
         Log.d(TAG, "downloading the image");
         // check if the imageUri isn't null
         if (event.getImageUri() == null) {
@@ -263,7 +253,7 @@ public class FirebaseMocker implements DatabaseInterface {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
-    public void updateEvent(Event event, EventHandler eventHandler) {
+    public void updateEvent(Event event, Handler<Event> eventHandler) {
         Log.d(TAG, "updating the event");
         int i = 0;
         for (Event e : events) {
@@ -277,7 +267,7 @@ public class FirebaseMocker implements DatabaseInterface {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
-    public void updateUser(User user, UserHandler eventHandler) {
+    public void updateUser(User user, Handler<User> eventHandler) {
         eventHandler.handle(user);
     }
 
@@ -340,7 +330,7 @@ public class FirebaseMocker implements DatabaseInterface {
     }
 
     @Override
-    public void downloadUserProfileImage(User user, ImageHandler handler) {
+    public void downloadUserProfileImage(User user, Handler<byte[]> handler) {
         Log.d(TAG, "downloading the image");
         // check if the imageUri isn't null
         if (user.getImageUri() == null) {
@@ -352,7 +342,7 @@ public class FirebaseMocker implements DatabaseInterface {
 
 
     @Override
-    public void uploadUserProfileImage(User user, byte[] image, UserHandler handler) {
+    public void uploadUserProfileImage(User user, byte[] image, Handler<User> handler) {
         Log.d(TAG, "uploading the image");
         // save the image
         this.userImg = image;

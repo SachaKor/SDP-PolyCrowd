@@ -10,9 +10,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import ch.epfl.polycrowd.ActivityHelper;
 import ch.epfl.polycrowd.R;
-import ch.epfl.polycrowd.firebase.handlers.UserHandler;
-import ch.epfl.polycrowd.logic.Activity;
+import ch.epfl.polycrowd.firebase.EmptyHandler;
+import ch.epfl.polycrowd.firebase.Handler;
 import ch.epfl.polycrowd.logic.PolyContext;
+import ch.epfl.polycrowd.logic.User;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class SignUpActivity extends AppCompatActivity {
@@ -87,8 +88,8 @@ public class SignUpActivity extends AppCompatActivity {
 
         if(registrationFieldsValid(firstPassword, secondPassword, username, email)){
             // check if the user with a given username exists already
-            UserHandler userExistsHandler = user -> ActivityHelper.toastPopup(this, "User already exists");
-            UserHandler userDoesNotExistHandler = user -> PolyContext.getDBI().signUp(username.getText().toString(),
+            Handler<User> userExistsHandler = user -> ActivityHelper.toastPopup(this, "User already exists");
+            EmptyHandler userDoesNotExistHandler = () -> PolyContext.getDBI().signUp(username.getText().toString(),
                     firstPassword.getText().toString(), email.getText().toString(), 100,
                     u ->{
                         PolyContext.setCurrentUser(u);
@@ -100,7 +101,7 @@ public class SignUpActivity extends AppCompatActivity {
             //Note that even though user in the second handler will be null, it is not actually referenced anywhere in the lambda expression
             //For now, we use the same type of success and failure handlers
             PolyContext.getDBI().getUserByEmail(email.getText().toString(), userExistsHandler,
-                    user -> PolyContext.getDBI().getUserByUsername(username.getText().toString(), userExistsHandler, userDoesNotExistHandler));
+                    () -> PolyContext.getDBI().getUserByUsername(username.getText().toString(), userExistsHandler, userDoesNotExistHandler));
 
         }
 
