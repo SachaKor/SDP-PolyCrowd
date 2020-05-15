@@ -2,6 +2,7 @@ package ch.epfl.polycrowd.firebase;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
@@ -12,21 +13,12 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.List;
 import java.util.Map;
 
-import ch.epfl.polycrowd.firebase.handlers.DynamicLinkHandler;
-import ch.epfl.polycrowd.firebase.handlers.EmptyHandler;
-import ch.epfl.polycrowd.firebase.handlers.EventHandler;
-import ch.epfl.polycrowd.firebase.handlers.EventMemberHandler;
-import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
-import ch.epfl.polycrowd.firebase.handlers.GroupHandler;
-import ch.epfl.polycrowd.firebase.handlers.Handler;
-import ch.epfl.polycrowd.firebase.handlers.ImageHandler;
-import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
 import ch.epfl.polycrowd.logic.Message;
 import ch.epfl.polycrowd.logic.User;
 
-
+@RequiresApi(api = Build.VERSION_CODES.O)
 public interface DatabaseInterface {
 
     /***
@@ -39,65 +31,60 @@ public interface DatabaseInterface {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     void signInWithEmailAndPassword(@NonNull String email, @NonNull String password,
-                                    UserHandler successHandler, UserHandler failureHandler) ;
+                                    Handler<User> successHandler, EmptyHandler failureHandler) ;
 
     //The success and failure handlers here denote in the case where the query is sucessful,
     // but 1 user is found, or 0 user is found resp. Same applies for getUserByUsername
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    void getUserByEmail(String email, UserHandler successHandler, UserHandler failureHandler);
+    void getUserByEmail(String email, Handler<User> successHandler, EmptyHandler failureHandler);
 
-    void getUserByUsername(String username, UserHandler successHandler, UserHandler failureHandler);
+    void getUserByUsername(String username, Handler<User> successHandler, EmptyHandler failureHandler);
 
     void signOut();
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    void getAllEvents(EventsHandler handler);
+    void getAllEvents(Handler<List<Event>> handler);
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    void addEvent(Event event, EventHandler successHandler, EventHandler failureHandler);
+    void addEvent(Event event, Handler<Event> successHandler, Handler<Event> failureHandler);
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    void patchEventByID(String eventId, Event event, EventHandler successHandler, EventHandler failureHandler);
+    void patchEventByID(String eventId, Event event, Handler<Event> successHandler, Handler<Event> failureHandler);
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    void getEventById(String eventId, EventHandler eventHandler);
+
+    void getEventById(String eventId, Handler<Event> eventHandler);
 
     void addOrganizerToEvent(String eventId, String organizerEmail,
-                             EventMemberHandler handler);
+                             EmptyHandler handler);
 
     void addSecurityToEvent(String eventId, String securityEmail,
-                            EventMemberHandler handler);
+                            EmptyHandler handler);
 
     void removeOrganizerFromEvent(String eventId, String organizerEmail, EmptyHandler handler);
 
     //Checking for existing username or email not handled in signUp call, but via other async. requests
-    void signUp(String username, String firstPassword, String email, Integer age, UserHandler successHandler, UserHandler failureHandler);
+    void signUp(String username, String firstPassword, String email, Integer age, Handler<User> successHandler, Handler<User> failureHandler);
 
-    void resetPassword(String email, UserHandler successHandler, UserHandler failureHandler);
+    void resetPassword(String email, Handler<User> successHandler, Handler<User> failureHandler);
 
-    void receiveDynamicLink(DynamicLinkHandler handler, Intent intent);
+    void receiveDynamicLink(Handler<Uri> handler, Intent intent);
 
-    void uploadEventImage(Event event, byte[] image, EventHandler handler);
+    void uploadEventImage(Event event, byte[] image, Handler<Event> handler);
 
-    void uploadEventMap(Event event , byte[] file , EventHandler handler );
+    void uploadEventMap(Event event , byte[] file , Handler<Event> handler );
 
-    void downloadEventMap( Event event , EventHandler handler );
+    void downloadEventMap( Event event , Handler<Event> handler );
 
-    void downloadEventImage(Event event, ImageHandler handler);
+    void downloadEventImage(Event event, Handler<byte[]> handler);
 
-    void updateEvent(Event event, EventHandler eventHandler);
+    void updateEvent(Event event, Handler<Event> eventHandler);
     void addSOS(String userId, String eventId, String reason);
 
     void addUserToGroup(String inviteGroupId, String userEmail, EmptyHandler emptyHandler);
 
-    void removeGroupIfEmpty(String gid, GroupHandler handler) ;
+    void removeGroupIfEmpty(String gid, Handler<Group> handler) ;
 
     void removeUserFromGroup(String gid, String uid, EmptyHandler handler) ;
 
     //TODO, should the argument be a group or the raw arguments of a group in the database?
-    void createGroup(Group group, GroupHandler handler) ;
+    void createGroup(Group group, Handler<Group> handler) ;
 
     void reauthenticateAndChangePassword(String email, String curPassword, String newPassword, Context appContext);
 
@@ -106,11 +93,11 @@ public interface DatabaseInterface {
     void reauthenticateAndChangeEmail(String email, String curPassword, String newEmail,
                                       EmptyHandler emptyHandler, Context appContext);
 
-    void uploadUserProfileImage(User user, byte[] image, UserHandler handler);
+    void uploadUserProfileImage(User user, byte[] image, Handler<User> handler);
 
-    void downloadUserProfileImage(User user, ImageHandler handler);
+    void downloadUserProfileImage(User user, Handler<byte[]> handler);
 
-    void updateUser(User user, UserHandler userHandler);
+    void updateUser(User user, Handler<User> userHandler);
 
     void getUserGroupIds(String userEmail, Handler<Map<String, String>> groupIdEventIdPairsHandler);
 

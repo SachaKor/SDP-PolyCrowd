@@ -14,8 +14,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import ch.epfl.polycrowd.ActivityHelper;
 import ch.epfl.polycrowd.EventPageDetailsActivity;
 import ch.epfl.polycrowd.R;
-import ch.epfl.polycrowd.firebase.handlers.UserHandler;
+import ch.epfl.polycrowd.firebase.EmptyHandler;
+import ch.epfl.polycrowd.firebase.Handler;
 import ch.epfl.polycrowd.logic.PolyContext;
+import ch.epfl.polycrowd.logic.User;
 import ch.epfl.polycrowd.map.MapActivity;
 
 
@@ -62,12 +64,12 @@ public class LoginActivity extends AppCompatActivity {
         ActivityHelper.eventIntentHandler(this,ResetPasswordActivity.class);
     }
 
-    private UserHandler failureHandler(){
-        return user -> ActivityHelper.toastPopup(this,"Incorrect email or password");
+    private EmptyHandler failureHandler(){
+        return () -> ActivityHelper.toastPopup(this,"Incorrect email or password");
     }
 
 
-    private UserHandler successHandler(){
+    private Handler<User> successHandler(){
         return user->{
             ActivityHelper.toastPopup(this,"Sign in success");
 
