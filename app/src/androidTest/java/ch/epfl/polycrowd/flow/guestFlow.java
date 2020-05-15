@@ -19,6 +19,7 @@ import ch.epfl.polycrowd.logic.PolyContext;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -63,22 +64,77 @@ public class guestFlow {
         onView(withId(R.id.viewPager)).perform(ViewActions.swipeLeft());
         onView(withId(R.id.eventTitle)).check(matches(withText(containsString("DEBUG EVENT"))));
         onView(withId(R.id.description)).check(matches(withText(containsString("this is only a debug event ..."))));
-
-        testMapViewEventPage();
     }
 
+    @Test
     public void testMapViewEventPage() {
         onView(withId(R.id.viewPager)).perform(ViewActions.click());
         sleep();
+        onView(withId(R.id.map)).check(matches(isDisplayed()));
         onView(withId(R.id.butRight)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-        onView(withId(R.id.butRight)).check(matches(withText(R.string.event_details)));
+        onView(withId(R.id.butRight)).check(matches(withText(containsString("EVENT DETAILS"))));
         onView(withId(R.id.butLeft)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-        onView(withId(R.id.butLeft)).check(matches(withText(R.string.sign_in)));
+        onView(withId(R.id.butLeft)).check(matches(withText(containsString("LOGIN"))));
 
         onView(withId(R.id.butSOS)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
     }
 
+    @Test
     public void testEventPage() {
+        onView(withId(R.id.viewPager)).perform(ViewActions.click());
+        onView(withId(R.id.butRight)).perform(ViewActions.click());
+        sleep();
 
+
+        onView(withId(R.id.event_details_img)).perform(ViewActions.scrollTo()).check(matches(isDisplayed()));
+        onView(withId(R.id.event_details_img)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+        onView(withId(R.id.event_img_layout)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+
+        onView(withId(R.id.event_details_title)).perform(ViewActions.scrollTo()).check(matches(isDisplayed()));
+        onView(withId(R.id.event_details_title)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+        onView(withId(R.id.event_details_title_edit)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
+        onView(withId(R.id.event_details_title)).check(matches(withText(containsString("DEBUG EVENT"))));
+
+        onView(withId(R.id.event_details_description)).perform(ViewActions.scrollTo()).check(matches(isDisplayed()));
+        onView(withId(R.id.event_details_description)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+        onView(withId(R.id.event_details_description_edit)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
+        onView(withId(R.id.event_details_description)).check(matches(withText(containsString("this is only a debug event ..."))));
+
+        onView(withId(R.id.event_details_url_edit)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
+
+        onView(withId(R.id.event_details_start)).perform(ViewActions.scrollTo()).check(matches(isDisplayed()));
+        onView(withId(R.id.event_details_start)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+        onView(withId(R.id.event_details_start_edit)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
+        onView(withId(R.id.event_details_start)).check(matches(withText(containsString("23-12-2051"))));
+
+        onView(withId(R.id.event_details_end)).perform(ViewActions.scrollTo()).check(matches(isDisplayed()));
+        onView(withId(R.id.event_details_end)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+        onView(withId(R.id.event_details_end_edit)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
+        onView(withId(R.id.event_details_end)).check(matches(withText(containsString("23-12-2051"))));
+
+        onView(withId(R.id.event_type)).perform(ViewActions.scrollTo()).check(matches(isDisplayed()));
+        onView(withId(R.id.event_type)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+        onView(withId(R.id.event_type_edit)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
+        onView(withId(R.id.event_type)).check(matches(withText(containsString("Festival"))));
+
+
+        onView(withId(R.id.event_public_edit)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
+        onView(withId(R.id.event_sos_edit)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
+
+        onView(withId(R.id.EditEventOrganizers)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
+        onView(withId(R.id.organizers_scroll)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
+        onView(withId(R.id.organizers_recycler_view)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
+        onView(withId(R.id.invite_organizer_button)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
+
+        onView(withId(R.id.EditEventSecurity)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
+        onView(withId(R.id.EditEventSecurity)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
+        onView(withId(R.id.security_recycler_view)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
+        onView(withId(R.id.invite_security_button)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
+
+        onView(withId(R.id.event_details_submit)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
+        onView(withId(R.id.event_details_cancel)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
+        onView(withId(R.id.event_details_fab)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
+
+        onView(withId(R.id.schedule)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
     }
 }

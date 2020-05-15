@@ -65,25 +65,20 @@ public class FirebaseMocker implements DatabaseInterface {
 
     @Override
     public void signInWithEmailAndPassword(@NonNull String email, @NonNull String password, UserHandler successHandler, UserHandler failureHandler) {
-        boolean foundRegisteredUser = false;
-        Iterator<User> usersIterator = usersAndPasswords.keySet().iterator();
-        while (!foundRegisteredUser && usersIterator.hasNext()) {
-            User user = usersIterator.next();
+        for(User user : usersAndPasswords.keySet()){
             if (user.getEmail().equals(email)) {
-                foundRegisteredUser = true;
                 Log.d("MOCKER", "USER PASSWORD IS " + usersAndPasswords.get(user));
                 if (Objects.equals(usersAndPasswords.get(user), password)) {
                     successHandler.handle(user);
+                    return;
                 } else {
                     failureHandler.handle(null);
+                    return;
                 }
             }
         }
 
-        if (!foundRegisteredUser) {
-            //User not registered, will simply display in our case incorrect email or password
-            failureHandler.handle(null);
-        }
+        failureHandler.handle(null);
     }
 
     @Override

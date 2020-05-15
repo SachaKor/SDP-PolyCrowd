@@ -14,6 +14,7 @@ import ch.epfl.polycrowd.firebase.FirebaseMocker;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
+import ch.epfl.polycrowd.logic.UserLocator;
 
 import static ch.epfl.polycrowd.logic.Event.EventType.*;
 
@@ -77,6 +78,7 @@ public abstract class AndroidTestHelper {
         PolyContext.setDBI(dbi);
 
         PolyContext.setCurrentEvent(ev.get(1));
+         PolyContext.setUserLocator(new UserLocator("TESTLOCATOR"));
     }
 
     public static void SetupMockDBI(String uriString) {
@@ -87,6 +89,7 @@ public abstract class AndroidTestHelper {
         PolyContext.setDBI(dbi);
 
         PolyContext.setCurrentEvent(ev.get(1));
+        PolyContext.setUserLocator(new UserLocator("TESTLOCATOR"));
     }
 
 
