@@ -40,7 +40,16 @@
         android:text="@string/sos_main"
         android:visibility="invisible" />
 
-
+    <Button
+        android:id="@+id/butFeed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|bottom"
+        android:layout_marginStart="25dp"
+        android:layout_marginBottom="20dp"
+        android:padding="10dp"
+        android:text="Feed"
+        android:onClick="onFeedClicked"/>
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
