@@ -24,8 +24,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.espresso.matcher.BoundedMatcher;
+import androidx.test.espresso.matcher.RootMatchers;
+import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.GrantPermissionRule;
 
@@ -41,7 +44,9 @@ import static androidx.test.espresso.action.ViewActions.swipeLeft;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intending;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static ch.epfl.polycrowd.AndroidTestHelper.sleep;
 
 /**
  * Mocking the gallery intent & image pick:
@@ -79,15 +84,37 @@ public class EventPageDetailsGalleryTest {
 
     @Test
     public void galleryTest() {
+        sleep();
         savePickedImage(mActivityTestRule.getActivity());
         Instrumentation.ActivityResult imgGalleryResult = createImageGallerySetResultStub(mActivityTestRule.getActivity());
+        sleep();
+        onView(withId(R.id.event_details_fab)).check(matches(isDisplayed()));
         onView(withId(R.id.event_details_fab)).perform(click());
         intending(hasAction(Intent.ACTION_CHOOSER)).respondWith(imgGalleryResult);
-        AndroidTestHelper.sleep();
+        sleep();
         onView(withId(R.id.event_details_edit_img)).perform(scrollTo());
         onView(withId(R.id.event_details_edit_img)).perform(click());
         onView(withId(R.id.event_details_img)).check(matches(hasImageSet()));
     }
+    @Test
+    public void clickRevokeUser(){
+        onView(withId(R.id.event_details_fab)).perform(click());
+        onView(withId(R.id.revoke_organizer_button)).perform(scrollTo(), click());
+
+    }
+    @Test
+    public void clickSubmit(){
+        onView(withId(R.id.event_details_fab)).perform(click());
+        //TODO change values
+        onView(withId(R.id.event_details_submit)).perform(scrollTo(), click());
+        //TODO check values integrety
+    }
+    @Test
+    public void clickCancel(){
+        onView(withId(R.id.event_details_fab)).perform(click());
+        onView(withId(R.id.event_details_cancel)).perform(scrollTo(), click());
+    }
+
 
     private void savePickedImage(Context context) {
         Bitmap bm = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher);
@@ -139,4 +166,5 @@ public class EventPageDetailsGalleryTest {
             }
         };
     }
+
 }

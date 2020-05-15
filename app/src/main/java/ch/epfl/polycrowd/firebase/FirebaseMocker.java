@@ -11,6 +11,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -29,6 +31,7 @@ import ch.epfl.polycrowd.firebase.handlers.ImageHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
+import ch.epfl.polycrowd.logic.Message;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 
@@ -54,6 +57,7 @@ public class FirebaseMocker implements DatabaseInterface {
         events = new ArrayList<>();
         events.addAll(defaultEvents);
         groupIdGroupPairs = new HashMap<>() ;
+        image = new byte[100];
         connectionId = "MOCK_CONNECTION_ID" ;
     }
 
@@ -144,10 +148,19 @@ public class FirebaseMocker implements DatabaseInterface {
     }
 
     @Override
+    public void removeOrganizerFromEvent(String eventId, String organizerEmail, EmptyHandler handler) {
+        Event event = findEventWithId(eventId);
+        if (event != null){
+            event.getOrganizers().remove(organizerEmail);
+            handler.handle();
+        }
+    }
+
     public void addSecurityToEvent(String eventId, String securityEmail, EventMemberHandler handler) {
         Event event = findEventWithId(eventId);
         if(event != null){
             event.addSecurity(securityEmail);
+
             handler.handle();
         }
     }
@@ -375,6 +388,24 @@ public class FirebaseMocker implements DatabaseInterface {
             }
         }
         usersHandler.handle(users);
+    }
+
+    @Override
+    public void updateUserLocation(String id, LatLng location) { }
+
+    @Override
+    public void fetchUserLocation(String id, Handler<LatLng> handlerSuccess) {}
+
+    public void sendMessageFeed(String eventId, Message m, EmptyHandler handler) {
+        //TODO: mock realtime db
+        handler.handle();
+    }
+
+    @Override
+    public void getAllFeedForEvent(String eventId, Handler<List<Message>> handler) {
+        handler.handle(new ArrayList<>());
+        //TODO mock realtime db
+
     }
 
     @Override

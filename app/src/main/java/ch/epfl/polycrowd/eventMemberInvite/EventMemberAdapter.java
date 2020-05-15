@@ -39,6 +39,7 @@ public class EventMemberAdapter extends RecyclerView.Adapter<EventMemberAdapter.
 
     @Override
     public int getItemCount() {
+        if (this.people == null) return 0;
         return people.size();
     }
 

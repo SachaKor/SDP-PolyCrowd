@@ -10,6 +10,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -18,11 +19,16 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -48,6 +54,7 @@ import ch.epfl.polycrowd.firebase.handlers.ImageHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
+import ch.epfl.polycrowd.logic.Message;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 
@@ -60,6 +67,7 @@ public class FirebaseInterface implements DatabaseInterface {
     private FirebaseAuth cachedAuth;
     private DatabaseReference cachedDbRef;
     private FirebaseFirestore cachedFirestore;
+    private DatabaseReference cachedFirebaseDatabaseRef; //used for realtime database
     private FirebaseStorage storage;
     private FirebaseInstanceId cachedFirebaseInstanceId ;
 
@@ -70,6 +78,8 @@ public class FirebaseInterface implements DatabaseInterface {
     private static final String GROUPS = "groups";
     private static final String USERS = "users";
     private static final String EVENT_IMAGES = "event-images";
+
+    private static final String LOCATIONS = "locations";
 
     private static final String USER_IMAGES = "user-images";
 
@@ -100,6 +110,13 @@ public class FirebaseInterface implements DatabaseInterface {
         return this.cachedFirestore;
     }
 
+    private DatabaseReference getDbRef(boolean refresh){
+        if (this.cachedDbRef == null || refresh){
+            this.cachedDbRef = FirebaseDatabase.getInstance("https://polycrowd-e8d9e.firebaseio.com/").getReference();
+        }
+        return this.cachedDbRef;
+    }
+
     private FirebaseInstanceId getFirebaseInstanceId(){
         if(this.cachedFirebaseInstanceId == null)
             cachedFirebaseInstanceId = FirebaseInstanceId.getInstance() ;
@@ -107,6 +124,11 @@ public class FirebaseInterface implements DatabaseInterface {
 
     }
 
+    private DatabaseReference getFirebaseDatabaseReference() {
+        if(this.cachedFirebaseDatabaseRef == null)
+            cachedFirebaseDatabaseRef = FirebaseDatabase.getInstance().getReference() ;
+        return cachedFirebaseDatabaseRef ;
+    }
     @Override
     public String getConnectionId(){
         return getFirebaseInstanceId().getId() ;
@@ -128,7 +150,7 @@ public class FirebaseInterface implements DatabaseInterface {
                         if(taskc.isSuccessful()) {
                             // TODO: use getUserByEmail, clean up firestore first
                             getUserByEmail(email, u-> {
-                                User user = new User(email, u.getUid(), u.getName(), u.getAge(), u.getImageUri());
+                                User user = new User(email, taskc.getResult().getUser().getUid(), u.getName(), u.getAge(), u.getImageUri());
                                 successHandler.handle(user);
                             }, u->{failureHandler.handle(null);});
                         } else {
@@ -434,6 +456,32 @@ public class FirebaseInterface implements DatabaseInterface {
     }
 
     @Override
+    public void removeOrganizerFromEvent(@NonNull String eventId, String organizerEmail,
+                                         EmptyHandler handler){
+        final String TAG1 = "removeOrganizerToEvent";
+        Log.d(TAG, TAG1 + " is not mocked");
+        // check if the organizer is already in the list
+        getFirestoreInstance(false).collection(EVENTS)
+                .document(eventId).get().addOnSuccessListener(documentSnapshot -> {
+            List<String> organizers = new ArrayList<>((List<String>) documentSnapshot.get(ORGANIZERS));
+            // if organizer is not in the list, add
+            if(organizers.contains(organizerEmail)) {
+                Log.d(TAG, TAG1 + " removing organizer " + organizerEmail + " from the list");
+                organizers.remove(organizerEmail);
+                Map<String, Object> data = new HashMap<>();
+                data.put(ORGANIZERS, organizers);
+                getFirestoreInstance(false).collection(EVENTS).document(eventId)
+                        .set(data, SetOptions.merge())
+                        .addOnSuccessListener(e -> handler.handle())
+                        .addOnFailureListener(e -> Log.w(TAG, "Error updating " + ORGANIZERS + " list"));
+            } else {
+                Log.d(TAG, TAG1 + " user " + organizerEmail + " is not an organizer");
+                handler.handle();
+            }
+        }).addOnFailureListener(e -> Log.w(TAG, "Error retrieving event with id" + eventId));
+    }
+
+    @Override
     public void signUp(String username, String firstPassword, String email, Integer age, UserHandler successHandler, UserHandler failureHandler) {
             CollectionReference usersRef = getFirestoreInstance(false).collection("users");
             Query queryUsernames = usersRef.whereEqualTo("username", username);
@@ -730,6 +778,62 @@ public class FirebaseInterface implements DatabaseInterface {
         eventImageRef.getBytes(ONE_MEGABYTE)
                 .addOnSuccessListener(handler::handle)
                 .addOnFailureListener(e -> Log.w(TAG, "Error downloading image " + imageUri + " from firebase storage"));
+    }
+
+
+    //https://firebase.google.com/docs/database/android/read-and-write <-- a good guide on hose to use the realtime database
+    public void updateUserLocation(String id, LatLng location) {
+        getFirebaseDatabaseReference().child(LOCATIONS).child(id)
+                .setValue(new GeoPoint(location.latitude, location.longitude));
+    }
+
+    @Override
+    public void fetchUserLocation(String id, Handler<LatLng> handlerSuccess) {
+        FirebaseDatabase.getInstance().getReference().addListenerForSingleValueEvent(new ValueEventListener() {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                DataSnapshot snapshot = dataSnapshot.child("locations/" + id);
+                Log.d("LOCATION", "get user snapshot: " + snapshot);
+                Object lat = snapshot.child("latitude/").getValue();
+                Object lng = snapshot.child("longitude/").getValue();
+                //if lat/lng is null the user is not on the firebase
+                if (lat != null && lng != null) {
+                    LatLng l = new LatLng(Double.parseDouble(lat.toString()), Double.parseDouble(lng.toString()));
+                    handlerSuccess.handle(l); //do something with the found location
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+    }
+    @Override
+    public void sendMessageFeed(String eventId, Message m, EmptyHandler handler){
+        DatabaseReference dbref= getDbRef(true);
+        dbref.child("events").child(eventId).child("security_feed").push().setValue(m.toData()).addOnSuccessListener( e-> handler.handle() );
+    }
+
+    @Override
+    public void getAllFeedForEvent(String eventId, Handler<List<Message>> successHandler){
+        DatabaseReference dbref = getDbRef(true);
+        dbref.child("events").child(eventId).child("security_feed").addListenerForSingleValueEvent(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        List<Message> ms = new ArrayList<>();
+                        for (DataSnapshot ds : dataSnapshot.getChildren()){
+                            ms.add(Message.fromData((Map<String,String>) ds.getValue()));
+                        }
+                        successHandler.handle(ms);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Log.e("Reading feed failed for event ", eventId);
+                    }
+                }
+        );
+
     }
 }
 

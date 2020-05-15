@@ -7,6 +7,8 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +23,7 @@ import ch.epfl.polycrowd.firebase.handlers.ImageHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
+import ch.epfl.polycrowd.logic.Message;
 import ch.epfl.polycrowd.logic.User;
 
 
@@ -67,6 +70,8 @@ public interface DatabaseInterface {
     void addSecurityToEvent(String eventId, String securityEmail,
                             EventMemberHandler handler);
 
+    void removeOrganizerFromEvent(String eventId, String organizerEmail, EmptyHandler handler);
+
     //Checking for existing username or email not handled in signUp call, but via other async. requests
     void signUp(String username, String firstPassword, String email, Integer age, UserHandler successHandler, UserHandler failureHandler);
 
@@ -112,6 +117,18 @@ public interface DatabaseInterface {
     void getGroupByGroupId(String groupId, Handler<Group> groupHandler);
 
     void getUserCollectionByEmails(List<String> userEmails, Handler<List<User>> usersHandler) ;
+
+    void updateUserLocation(String id, LatLng location);
+
+    //if one wants to implement fetching locations based on group, would have to slighlty change
+    //all realtime database structure to group users and their locations by groupId's
+    //public void FetchUserLocationsByGroup(String groupId);
+    void fetchUserLocation(String id, Handler<LatLng> handlerSuccess);
+
+    void sendMessageFeed(String eventId, Message m, EmptyHandler handler);
+
+    void getAllFeedForEvent(String eventId, Handler<List<Message>> handler);
+
 
     String getConnectionId() ;
 
