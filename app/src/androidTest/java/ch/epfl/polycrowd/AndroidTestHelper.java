@@ -28,6 +28,7 @@ public abstract class AndroidTestHelper {
         }
     }
 
+    private static final String OwnerId="3";
     private static final String OwnerEmail = "OWNER@h.net";
     private static final String SecurityEmail= "SEC@h.net";
     private static final String UserEmail = "USER@h.net";
@@ -51,11 +52,11 @@ public abstract class AndroidTestHelper {
         List<String> orgs = new ArrayList<>();
         orgs.add(OwnerEmail);
         Event[] ev = {
-                new Event(OwnerEmail, "OLD EVENT", true, CONCERT,
+                new Event(OwnerId, "OLD EVENT", true, CONCERT,
                         oldStartDate, oldEndDate, CalURL, "old debug event ... ", false, orgs, secs),
-                new Event(OwnerEmail, "DEBUG EVENT", true, FESTIVAL,
+                new Event(OwnerId, "DEBUG EVENT", true, FESTIVAL,
                         newStartDate, newEndDate, CalURL, "this is only a debug event ... ", false, orgs, secs),
-                new Event(OwnerEmail, "HIDDEN EVENT", false, FESTIVAL,
+                new Event(OwnerId, "HIDDEN EVENT", false, FESTIVAL,
                         newStartDate, newEndDate, CalURL, "hidden debug event ... ", false, orgs, secs)};
 
         ev[0].setId("1");
@@ -68,7 +69,7 @@ public abstract class AndroidTestHelper {
         Map<String, Pair<User,String>> mailAndUsersPassPair = new HashMap<>();
         mailAndUsersPassPair.put(UserEmail, new Pair<>(new User(UserEmail, "1", "fakeUser", 3), "1234567"));
         mailAndUsersPassPair.put(OrganiserEmail, new Pair<>(new User(OrganiserEmail, "2", "fakeOrganiser", 4), "12345678"));
-        mailAndUsersPassPair.put(OwnerEmail, new Pair<>(new User(OwnerEmail, "3", "fakeOwner", 5), "12345679"));
+        mailAndUsersPassPair.put(OwnerEmail, new Pair<>(new User(OwnerEmail, OwnerId, "fakeOwner", 5), "12345679"));
         mailAndUsersPassPair.put(SecurityEmail, new Pair<>(new User(SecurityEmail,"4", "fakeSec", 6), "123456"));
         return mailAndUsersPassPair;
     }

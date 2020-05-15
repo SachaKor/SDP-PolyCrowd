@@ -12,6 +12,7 @@ import ch.epfl.polycrowd.logic.PolyContext;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -75,6 +76,9 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     private Set<View> textFields;
     private Set<EditText> editFields;
 
+    private boolean isOwner;
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,7 +90,12 @@ public class EventPageDetailsActivity extends AppCompatActivity {
 
         initEvent();
         scheduleButton = findViewById(R.id.schedule);
+        if(PolyContext.getCurrentUser() != null) isOwner = curEvent.getOwner().equals(PolyContext.getCurrentUser().getUid());
+        else isOwner = false;
+        if (!isOwner) findViewById(R.id.event_details_fab).setVisibility(View.GONE);
+
         scheduleButton.setOnClickListener(v -> ActivityHelper.eventIntentHandler(this,ScheduleActivity.class));
+
 
     }
 
@@ -178,6 +187,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         String imgUri = PolyContext.getCurrentEvent().getImageUri();
         Log.d(TAG, "event img uri: " + imgUri);
         if(null != imgUri) {
+
             PolyContext.getDBI().downloadEventImage(curEvent, image -> {
                 Bitmap bmp = BitmapFactory.decodeByteArray(image, 0, image.length);
                 imageInBytes = image;
@@ -228,9 +238,27 @@ public class EventPageDetailsActivity extends AppCompatActivity {
 
     private void setEditing(boolean enable) {
         Log.d(TAG, "setting editing mode to " + enable);
-        int visibilityEdit = enable ? View.VISIBLE : View.GONE;
-        int visibilityText = enable? View.GONE: View.VISIBLE;
-        int visibilityFab = enable ? View.GONE : View.VISIBLE;
+        int visibilityEdit = enable ? View.VISIBLE : View.INVISIBLE;
+        int visibilityText = enable? View.INVISIBLE: View.VISIBLE;
+
+        int visibilityOwner, visibilityFab;
+
+
+        if(enable){
+            if (isOwner){
+                visibilityOwner = View.VISIBLE;
+                visibilityFab = View.INVISIBLE;
+            }
+            else{
+                visibilityOwner= View.GONE;
+                visibilityFab = View.GONE;
+            }
+        } else{
+            visibilityOwner = View.INVISIBLE;
+            visibilityFab = isOwner? View.VISIBLE: View.GONE;
+        }
+
+
         //int textInputType = enable ? InputType.TYPE_CLASS_TEXT : InputType.TYPE_NULL;
         // set the "Organizer Invite" button visible
         inviteOrganizerButton.setVisibility(visibilityEdit);
@@ -238,8 +266,16 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         // set the "Submit Changes" button visible
         submitChanges.setVisibility(visibilityEdit);
         // set the "Edit" floating button invisible until the changes submitted
-        editEventButton.setVisibility(visibilityFab);
+        editEventButton.setVisibility(View.VISIBLE);
         editImg.setVisibility(visibilityEdit);
+
+        findViewById(R.id.revoke_organizer_button).setVisibility(visibilityOwner);
+        /*
+        eventTitle.setInputType(textInputType);
+        eventDescription.setInputType(textInputType);
+        start.setInputType(textInputType);
+        end.setInputType(textInputType);*/
+        //setAllEditTexts(enable);
 
         refreshTextViews();
         setAllEditTexts(visibilityText, visibilityEdit);
@@ -277,21 +313,22 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         int streamLength = ONE_MEGABYTE;
         int compressQuality = 105;
         Bitmap bitmap = bitmapDrawable.getBitmap();
-        ByteArrayOutputStream bmpStream = new ByteArrayOutputStream();
-        while (streamLength >= ONE_MEGABYTE && compressQuality > 5) {
-            try {
-                bmpStream.flush();//to avoid out of memory error
-                bmpStream.reset();
-            } catch (IOException e) {
-                e.printStackTrace();
+        if (bitmap != null){
+            ByteArrayOutputStream bmpStream = new ByteArrayOutputStream();
+            while (streamLength >= ONE_MEGABYTE && compressQuality > 5) {
+                try {
+                    bmpStream.flush();//to avoid out of memory error
+                    bmpStream.reset();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                compressQuality -= 5;
+                bitmap.compress(Bitmap.CompressFormat.JPEG, compressQuality, bmpStream);
+                byte[] bmpPicByteArray = bmpStream.toByteArray();
+                streamLength = bmpPicByteArray.length;
             }
-            compressQuality -= 5;
-            bitmap.compress(Bitmap.CompressFormat.JPEG, compressQuality, bmpStream);
-            byte[] bmpPicByteArray = bmpStream.toByteArray();
-            streamLength = bmpPicByteArray.length;
+            imageInBytes = bmpStream.toByteArray();
         }
-
-        imageInBytes = bmpStream.toByteArray();
 
     }
 
@@ -378,4 +415,32 @@ public class EventPageDetailsActivity extends AppCompatActivity {
                 .setPositiveButton("OK", (dialog, which) -> dialog.cancel())
                 .show();
     }
+
+    public void revokeClicked(View view){
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+        alert.setTitle("Revoke an organizer");
+        alert.setMessage("Please enter the email of the organizer you want to remove from your event");
+
+// Set an EditText view to get user input
+        final EditText input = new EditText(this);
+        alert.setView(input);
+
+        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+
+                String revoked_email = input.getText().toString();
+                PolyContext.getDBI().removeOrganizerFromEvent(curEvent.getId(), revoked_email, ()->{curEvent.getOrganizers().remove(revoked_email);});
+            }
+        });
+
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                // Canceled.
+            }
+        });
+
+        alert.show();
+    }
+
 }

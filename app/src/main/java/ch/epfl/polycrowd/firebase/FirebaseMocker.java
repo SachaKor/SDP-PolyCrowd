@@ -57,6 +57,7 @@ public class FirebaseMocker implements DatabaseInterface {
         events = new ArrayList<>();
         events.addAll(defaultEvents);
         groupIdGroupPairs = new HashMap<>() ;
+        image = new byte[100];
         connectionId = "MOCK_CONNECTION_ID" ;
     }
 
@@ -152,10 +153,19 @@ public class FirebaseMocker implements DatabaseInterface {
     }
 
     @Override
+    public void removeOrganizerFromEvent(String eventId, String organizerEmail, EmptyHandler handler) {
+        Event event = findEventWithId(eventId);
+        if (event != null){
+            event.getOrganizers().remove(organizerEmail);
+            handler.handle();
+        }
+    }
+
     public void addSecurityToEvent(String eventId, String securityEmail, EventMemberHandler handler) {
         Event event = findEventWithId(eventId);
         if(event != null){
             event.addSecurity(securityEmail);
+
             handler.handle();
         }
     }

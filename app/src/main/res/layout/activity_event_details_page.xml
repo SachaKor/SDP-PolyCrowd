@@ -217,8 +217,20 @@
             android:layout_below="@+id/organizers_scroll"
             android:layout_marginTop="10dp"
             android:text="@string/invite_organizer"
+
             android:onClick="organizerInviteLinkClicked"
             android:visibility="invisible"/>
+        <Button
+            android:id="@+id/revoke_organizer_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/invite_organizer_button"
+            android:onClick="revokeClicked"
+            android:padding="10dp"
+            android:text="@string/revoke_organizer"
+            android:visibility="invisible"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/EditEventSecurity"
@@ -253,7 +265,7 @@
             android:id="@+id/event_details_submit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/invite_organizer_button"
+            android:layout_below="@+id/revoke_organizer_button"
             android:onClick="onSubmitChangesClicked"
             android:padding="10dp"
             android:text="Submit Changes"
