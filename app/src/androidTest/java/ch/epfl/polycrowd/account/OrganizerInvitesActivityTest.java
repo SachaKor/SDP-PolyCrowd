@@ -1,4 +1,4 @@
-package ch.epfl.polycrowd;
+package ch.epfl.polycrowd.account;
 
 import android.content.Intent;
 
@@ -8,6 +8,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import androidx.test.rule.ActivityTestRule;
 
+import ch.epfl.polycrowd.AndroidTestHelper;
+import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.eventMemberInvite.EventMemberInviteActivity;
 

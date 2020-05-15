@@ -1,4 +1,4 @@
-package ch.epfl.polycrowd;
+package ch.epfl.polycrowd.userProfile;
 
 //import com.google.android.gms.tasks.OnSuccessListener;
 //import com.google.firebase.auth.AuthResult;
@@ -13,6 +13,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import androidx.test.rule.ActivityTestRule;
 
+import ch.epfl.polycrowd.AndroidTestHelper;
+import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.userProfile.UserProfilePageActivity;
 import ch.epfl.polycrowd.logic.PolyContext;
 

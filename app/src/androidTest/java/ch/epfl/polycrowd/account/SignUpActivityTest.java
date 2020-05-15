@@ -1,4 +1,4 @@
-package ch.epfl.polycrowd;
+package ch.epfl.polycrowd.account;
 
 import android.Manifest;
 import android.content.Intent;
@@ -11,6 +11,8 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
+import ch.epfl.polycrowd.AndroidTestHelper;
+import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.authentification.SignUpActivity;
 import ch.epfl.polycrowd.logic.PolyContext;
 

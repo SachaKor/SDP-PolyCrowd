@@ -1,4 +1,4 @@
-package ch.epfl.polycrowd;
+package ch.epfl.polycrowd.groups;
 
 import android.content.Intent;
 
@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import java.util.HashSet;
 
+import ch.epfl.polycrowd.AndroidTestHelper;
 import ch.epfl.polycrowd.groupPage.GroupsListActivity;
 import ch.epfl.polycrowd.logic.Group;
 import ch.epfl.polycrowd.logic.PolyContext;

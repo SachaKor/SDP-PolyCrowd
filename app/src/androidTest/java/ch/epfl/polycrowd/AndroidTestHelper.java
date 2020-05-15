@@ -19,7 +19,7 @@ import static ch.epfl.polycrowd.logic.Event.EventType.*;
 
 public abstract class AndroidTestHelper {
 
-    static void sleep(){
+    public static void sleep(){
         try{
             Thread.sleep(1000);
         } catch (InterruptedException e) {
@@ -69,7 +69,7 @@ public abstract class AndroidTestHelper {
     }
 
 
-     static void SetupMockDBI() {
+     public static void SetupMockDBI() {
 
         ev.get(1).addOrganizer(OrganiserEmail);
 
@@ -79,7 +79,7 @@ public abstract class AndroidTestHelper {
         PolyContext.setCurrentEvent(ev.get(1));
     }
 
-    static void SetupMockDBI(String uriString) {
+    public static void SetupMockDBI(String uriString) {
 
         ev.get(1).addOrganizer(OrganiserEmail);
 
@@ -101,35 +101,35 @@ public abstract class AndroidTestHelper {
         return getEvent("2");
     }
 
-    private static User getUser(String mail){
+    public static User getUser(String mail){
         Pair<User,String> up =mailAndUsersPassPair.get(mail);
         assert up != null;
         return up.first;
     }
 
-    private static String getUserPass(String mail){
+    public static String getUserPass(String mail){
         Pair<User,String> up =mailAndUsersPassPair.get(mail);
         assert up != null;
         return up.second;
     }
 
-    static User getUser(){
+    public static User getUser(){
         return getUser(UserEmail);
     }
 
-    static User getNewUser(){
+    public static User getNewUser(){
         return newUser;
     }
 
-    static String getUserPass(){
+    public static String getUserPass(){
         return getUserPass(UserEmail);
     }
 
-    static User getOwner(){
+    public static User getOwner(){
         return getUser(OwnerEmail);
     }
 
-    static User getOrganiser(){
+    public static User getOrganiser(){
         return getUser(OrganiserEmail);
     }
 }
