@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -18,7 +19,11 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -45,9 +50,11 @@ import ch.epfl.polycrowd.firebase.handlers.EventsHandler;
 import ch.epfl.polycrowd.firebase.handlers.GroupHandler;
 import ch.epfl.polycrowd.firebase.handlers.Handler;
 import ch.epfl.polycrowd.firebase.handlers.ImageHandler;
+import ch.epfl.polycrowd.firebase.handlers.MessagesHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
+import ch.epfl.polycrowd.logic.Message;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 
@@ -98,6 +105,13 @@ public class FirebaseInterface implements DatabaseInterface {
             this.cachedFirestore = FirebaseFirestore.getInstance();
         }
         return this.cachedFirestore;
+    }
+
+    private DatabaseReference getDbRef(boolean refresh){
+        if (this.cachedDbRef == null || refresh){
+            this.cachedDbRef = FirebaseDatabase.getInstance().getReference();
+        }
+        return this.cachedDbRef;
     }
 
     private FirebaseInstanceId getFirebaseInstanceId(){
@@ -730,6 +744,34 @@ public class FirebaseInterface implements DatabaseInterface {
         eventImageRef.getBytes(ONE_MEGABYTE)
                 .addOnSuccessListener(handler::handle)
                 .addOnFailureListener(e -> Log.w(TAG, "Error downloading image " + imageUri + " from firebase storage"));
+    }
+
+    @Override
+    public void sendMessageFeed(String eventId, Message m){
+        DatabaseReference dbref= getDbRef(true);
+        dbref.child(eventId).child("security_feed").push().setValue(m.toData());
+    }
+
+    @Override
+    public void getAllFeedForEvent(String eventId, MessagesHandler successHandler){
+        DatabaseReference dbref = getDbRef(true);
+        dbref.child(eventId).child("security_feed").addListenerForSingleValueEvent(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        List<Message> ms = new ArrayList<>();
+                        for (DataSnapshot ds : dataSnapshot.getChildren()){
+                            ms.add(Message.fromData(ds.getValue(Map.class)));
+                        }
+                        successHandler.handle(ms);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Log.e("Reading feed failed for event ", eventId);
+                    }
+                }
+        );
     }
 }
 
