@@ -59,7 +59,7 @@ public class FirebaseMocker implements DatabaseInterface {
 
 
     @Override
-    public void signInWithEmailAndPassword(@NonNull String email, @NonNull String password, UserHandler successHandler, UserHandler failureHandler) {
+    public void signInWithEmailAndPassword(@NonNull String email, @NonNull String password, Handler<User> successHandler, EmptyHandler failureHandler) {
         for(User user : usersAndPasswords.keySet()){
             if (user.getEmail().equals(email)) {
                 Log.d("MOCKER", "USER PASSWORD IS " + usersAndPasswords.get(user));
@@ -67,12 +67,12 @@ public class FirebaseMocker implements DatabaseInterface {
                     successHandler.handle(user);
                     return;
                 } else {
-                    failureHandler.handle(null);
+                    failureHandler.handle();
                     return;
                 }
             }
         }
-        failureHandler.handle(null);
+        failureHandler.handle();
     }
 
     @Override
