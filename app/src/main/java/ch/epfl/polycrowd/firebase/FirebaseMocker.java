@@ -386,13 +386,10 @@ public class FirebaseMocker implements DatabaseInterface {
     }
 
     @Override
-
-    public void updateUserLocation(String id, LatLng location) {
-        //do nothing
-    }
+    public void updateUserLocation(String id, LatLng location) { }
 
     @Override
-    public void fetchUserLocation(String id, Handler<LatLng> handlerSuccess) {
+    public void fetchUserLocation(String id, Handler<LatLng> handlerSuccess) {}
 
     public void sendMessageFeed(String eventId, Message m, EmptyHandler handler) {
         //TODO: mock realtime db

@@ -771,14 +771,16 @@ public class FirebaseInterface implements DatabaseInterface {
                 Object lng = snapshot.child("longitude/").getValue();
                 //if lat/lng is null the user is not on the firebase
                 if (lat != null && lng != null) {
-                    LatLng l  = new LatLng(Double.parseDouble(lat.toString()), Double.parseDouble(lng.toString()));
+                    LatLng l = new LatLng(Double.parseDouble(lat.toString()), Double.parseDouble(lng.toString()));
                     handlerSuccess.handle(l); //do something with the found location
                 }
             }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) { }
-        });
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+    }
     @Override
     public void sendMessageFeed(String eventId, Message m, EmptyHandler handler){
         DatabaseReference dbref= getDbRef(true);
