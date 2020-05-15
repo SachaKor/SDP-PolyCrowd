@@ -2,14 +2,22 @@ package ch.epfl.polycrowd;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import ch.epfl.polycrowd.firebase.FirebaseInterface;
 import ch.epfl.polycrowd.logic.Event;
+import ch.epfl.polycrowd.logic.Message;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 import ch.epfl.polycrowd.map.MapActivity;
@@ -24,12 +32,21 @@ public class FeedActivity extends AppCompatActivity {
     }
 
     public level status;
-
+    private EditText messageInput;
+    private FirebaseInterface fbi;
+    private Button messageSend;
     private static final String TAG = "FeedActivity";
+
+    private RecyclerView rv;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager layoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setStatusOfUser();
+        initView();
+        this.fbi = new FirebaseInterface();
         setContentView(R.layout.activity_feed);
     }
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -45,10 +62,38 @@ public class FeedActivity extends AppCompatActivity {
             Event event = PolyContext.getCurrentEvent();
             List<String> organizerEmails = event.getOrganizers();
             if(organizerEmails.indexOf(user.getEmail()) == -1){
-                status = FeedActivity.level.VISITOR;
+                if( event.getSecurity().indexOf(user.getEmail()) == -1) {
+                    status = FeedActivity.level.VISITOR;
+                }
+                else{
+                    status= level.SECURITY;
+                }
             } else {
                 status = FeedActivity.level.ORGANISER;
             }
         }
+    }
+
+    private void initView(){
+        this.messageInput = findViewById(R.id.feed_message_input);
+        this.messageSend = findViewById(R.id.feed_send_button);
+        this.rv = findViewById(R.id.feedListRecyclerView);
+        if (this.status != level.SECURITY){
+            messageInput.setVisibility(View.GONE);
+            messageSend.setVisibility(View.GONE);
+        }
+        layoutManager = new LinearLayoutManager(this);
+        rv.setLayoutManager(layoutManager);
+
+
+        this.fbi.getAllFeedForEvent(PolyContext.getCurrentEvent().getId(), l ->{mAdapter = new MessageFeedAdapter(l);});
+
+        rv.setAdapter(mAdapter);
+    }
+    public void onSend(View view){
+        String message = messageInput.getText().toString();
+        messageInput.clearComposingText();
+        Message m = new Message(message, PolyContext.getCurrentUser().getEmail(),0);
+        this.fbi.sendMessageFeed(PolyContext.getCurrentEvent().getId(), m);
     }
 }
