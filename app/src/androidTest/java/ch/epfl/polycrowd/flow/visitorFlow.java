@@ -32,7 +32,7 @@ public class visitorFlow {
 
     @Rule
     public final ActivityTestRule<FrontPageActivity> frontPageActivityRule =
-            new ActivityTestRule<>(FrontPageActivity.class, true, false);
+            new ActivityTestRule<>(FrontPageActivity.class, false, false);
 
     @Rule
     public GrantPermissionRule grantFineLocation =
