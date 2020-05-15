@@ -1,8 +1,8 @@
 package ch.epfl.polycrowd.logic;
 
 import android.os.Build;
-import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
 import java.security.InvalidParameterException;
@@ -12,12 +12,17 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class Activity {
-    private String location, uid, summary, description, organizer;
-    private Date start,end;
+    private final String location;
+    private final String uid;
+    private final String summary;
+    private final String description;
+    private final String organizer;
+    private final Date start,end;
 
-    public Activity(String location , String uid ,String summary ,
-                    String description , String organizer , Date start , Date end) {
+    public Activity(@NonNull String location , @NonNull String uid , String summary ,
+                    String description , @NonNull String organizer , @NonNull Date start , @NonNull Date end) {
         this.location = location;
         this.uid = uid;
         this.summary = summary;
@@ -27,8 +32,8 @@ public class Activity {
         this.end = end;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public Activity (Map<String,String> data)  {
+    @SuppressWarnings("ConstantConditions")
+    public Activity (Map<String,String> data) throws ParseException {
         this.location = data.get("LOCATION");
         this.uid = data.get("UID");
         this.summary = data.get("SUMMARY");
@@ -36,15 +41,12 @@ public class Activity {
         this.organizer = data.get("ORGANIZER");
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd'T'HHmmss", Locale.ENGLISH);
-        try{
-            if(data.containsKey("DTSTART") && data.containsKey("DTEND")) {
-                this.start = formatter.parse(data.get("DTSTART"));
-                this.end = formatter.parse(data.get("DTEND"));
-            }else{
-                throw (new InvalidParameterException("Fields DTSTART and/or DTEND do not exist"));
-            }
-        }catch(NullPointerException | ParseException e){
-            Log.e("Error Parsing", "No or Invalid DTSTART and/or DTEND in the field ");
+        if(data.containsKey("DTSTART") &&
+                data.containsKey("DTEND")) {
+            this.start = formatter.parse(data.get("DTSTART"));
+            this.end = formatter.parse(data.get("DTEND"));
+        }else {
+            throw (new InvalidParameterException("Fields DTSTART and/or DTEND do not exist"));
         }
     }
 
@@ -70,8 +72,7 @@ public class Activity {
         return this.end;
     }
 
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    @NonNull
     @Override
     public String toString(){
         return

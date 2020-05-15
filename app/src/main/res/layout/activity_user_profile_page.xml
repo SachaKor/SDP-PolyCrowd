@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".userProfile.UserProfilePageActivity"
+    >
+
+    <RelativeLayout
+        android:id = "@+id/rellay"
+        android:layout_width="match_parent"
+        android:background="@drawable/grad"
+        android:paddingBottom="20dp"
+        android:layout_height="wrap_content">
+
+
+        <RelativeLayout
+            android:id = "@+id/imgUserRellay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            >
+            
+            <ImageView
+                android:id="@+id/imgUser"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:adjustViewBounds="true"
+                android:layout_margin="9dp"
+                android:padding ="3dp"
+                android:layout_centerHorizontal="true"
+                android:scaleType="centerCrop"
+                android:background="@drawable/circle"
+                android:src="@drawable/default_user_pic"/>
+
+            <ImageView
+                android:id="@+id/profileImgEditButton"
+                android:layout_width="70dp"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="0dp"
+                android:layout_height="70dp"
+                android:onClick="OnUserProfileEditImgClick"
+                android:src="@drawable/ic_camera_alt_light_grey"
+                android:adjustViewBounds="true"
+                android:scaleType="centerInside"
+                />
+
+        </RelativeLayout>
+        
+        <TextView
+            android:id="@+id/profileUserName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/imgUserRellay"
+            android:layout_centerHorizontal="true"
+            android:text ="Nani Haha"
+            android:height="50dp"
+            android:textSize="32sp"
+            android:fontFamily="sans-serif-light"
+            android:textColor="@color/white"
+
+            />
+        <ImageView
+            android:id="@+id/usernameEditButton"
+            android:layout_below="@id/imgUserRellay"
+            android:layout_width="50dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="0dp"
+            android:layout_height="50dp"
+            android:onClick="OnUserProfileEditUsernameButtonClick"
+            android:src="@drawable/ic_edit_white"
+            android:adjustViewBounds="true"
+            android:scaleType="centerInside"
+            android:layout_marginLeft="0dp"
+            />
+
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_below="@+id/rellay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:id="@+id/userDetails"
+            android:layout_width="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="5dp"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+                <LinearLayout
+                    android:layout_marginBottom="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="7"
+                    android:layout_gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/userHeadings"
+                        android:textSize="13sp"
+                        android:text="Email"/>
+                    <TextView
+                        android:id="@+id/profileEmail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#000000"
+                        android:fontFamily="sans-serif-light"
+                        android:textSize="18sp"
+                        android:text="nani@haha.com" />
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/profileEditEmailButton"
+                    android:layout_weight="0"
+                    android:clickable="true"
+                    android:layout_width="50dp"
+                    android:onClick="OnUserProfileEditEmailButtonClick"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginBottom="0dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/ic_edit"
+                    android:scaleType="centerInside"
+                    />
+
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="15dp"
+                android:background="@color/grey" />
+            <LinearLayout
+                android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+                <LinearLayout
+                    android:layout_marginBottom="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="7"
+                    android:layout_gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/userHeadings"
+                        android:textSize="13sp"
+                        android:text="Password"/>
+                    <TextView
+                        android:id="@+id/profilePassword"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#000000"
+                        android:fontFamily="sans-serif-light"
+                        android:textSize="18sp"
+                        android:text="########" />
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/profileEditPasswordButton"
+                    android:layout_weight="0"
+                    android:clickable="true"
+                    android:layout_width="50dp"
+                    android:onClick="OnUserProfileEditPasswordButtonClick"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginBottom="0dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/ic_edit"
+                    android:scaleType="centerInside"
+                    />
+
+            </LinearLayout>
+        </LinearLayout>
+    <RelativeLayout
+        android:layout_below="@+id/userDetails"
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_alignParentBottom="true"
+            android:gravity="bottom"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_gravity="bottom"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <Button
+                    android:id="@+id/EventsOrganiseButton"
+                    android:layout_width="match_parent"
+                    android:onClick="onEventsListClick"
+                    android:text="Events I Organize"
+                    android:orientation="vertical"
+                    android:layout_height="wrap_content">
+                </Button>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_gravity="bottom"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <Button
+                    android:id="@+id/myGroupsButton"
+                    android:layout_width="match_parent"
+                    android:onClick="onMyGroupsButtonClick"
+                    android:text="MyGroups"
+                    android:orientation="vertical"
+                    android:layout_height="wrap_content">
+                </Button>
+            </LinearLayout>
+        </LinearLayout>
+    </RelativeLayout>
+
+
+    </RelativeLayout>
+
+</RelativeLayout>
