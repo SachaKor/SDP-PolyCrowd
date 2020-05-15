@@ -21,6 +21,7 @@ import ch.epfl.polycrowd.firebase.handlers.ImageHandler;
 import ch.epfl.polycrowd.firebase.handlers.UserHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
+import ch.epfl.polycrowd.logic.Message;
 import ch.epfl.polycrowd.logic.User;
 
 
@@ -112,6 +113,10 @@ public interface DatabaseInterface {
     void getGroupByGroupId(String groupId, Handler<Group> groupHandler);
 
     void getUserCollectionByEmails(List<String> userEmails, Handler<List<User>> usersHandler) ;
+
+    void sendMessageFeed(String eventId, Message m, EmptyHandler handler);
+
+    void getAllFeedForEvent(String eventId, Handler<List<Message>> handler);
 
     String getConnectionId() ;
 
