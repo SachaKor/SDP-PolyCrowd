@@ -44,10 +44,12 @@ public class FeedActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_feed);
+        this.fbi = new FirebaseInterface();
         setStatusOfUser();
         initView();
-        this.fbi = new FirebaseInterface();
-        setContentView(R.layout.activity_feed);
+
+
     }
     @RequiresApi(api = Build.VERSION_CODES.O)
     void setStatusOfUser() {
@@ -86,14 +88,16 @@ public class FeedActivity extends AppCompatActivity {
         rv.setLayoutManager(layoutManager);
 
 
-        this.fbi.getAllFeedForEvent(PolyContext.getCurrentEvent().getId(), l ->{mAdapter = new MessageFeedAdapter(l);});
+        this.fbi.getAllFeedForEvent(PolyContext.getCurrentEvent().getId(), l ->{mAdapter = new MessageFeedAdapter(l);
+            rv.setAdapter(mAdapter);
+        });
 
-        rv.setAdapter(mAdapter);
+
     }
     public void onSend(View view){
         String message = messageInput.getText().toString();
         messageInput.clearComposingText();
-        Message m = new Message(message, PolyContext.getCurrentUser().getEmail(),0);
+        Message m = new Message(message, PolyContext.getCurrentUser().getEmail(),"warning");
         this.fbi.sendMessageFeed(PolyContext.getCurrentEvent().getId(), m);
     }
 }
