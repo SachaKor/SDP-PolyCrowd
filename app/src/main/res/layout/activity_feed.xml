@@ -32,18 +32,18 @@
         android:layout_height="match_parent"
         android:layout_marginTop="100dp"
         android:layout_marginBottom="60dp"
-        app:layout_constraintBottom_toTopOf="@+id/message_input"
+        app:layout_constraintBottom_toTopOf="@+id/feed_message_input"
         app:layout_constraintTop_toBottomOf="@+id/feed_explanation">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/groupsListRecyclerView"
+            android:id="@+id/feedListRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp" />
     </ScrollView>
 
     <EditText
-        android:id="@+id/message_input"
+        android:id="@+id/feed_message_input"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:hint="Message"
@@ -51,6 +51,7 @@
         app:layout_constraintBottom_toBottomOf="parent"/>
     <Button
         android:id="@+id/feed_send_button"
+        android:onClick="onSend"
         android:text="SEND"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
