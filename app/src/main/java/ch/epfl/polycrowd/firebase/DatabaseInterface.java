@@ -115,7 +115,7 @@ public interface DatabaseInterface {
 
     void getUserCollectionByEmails(List<String> userEmails, Handler<List<User>> usersHandler) ;
 
-    void sendMessageFeed(String eventId, Message m);
+    void sendMessageFeed(String eventId, Message m, EmptyHandler handler);
 
     void getAllFeedForEvent(String eventId, MessagesHandler handler);
 
