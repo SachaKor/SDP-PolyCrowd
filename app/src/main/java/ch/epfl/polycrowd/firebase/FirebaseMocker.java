@@ -385,12 +385,14 @@ public class FirebaseMocker implements DatabaseInterface {
     }
 
     @Override
-    public void sendMessageFeed(String eventId, Message m) {
+    public void sendMessageFeed(String eventId, Message m, EmptyHandler handler) {
         //TODO: mock realtime db
+        handler.handle();
     }
 
     @Override
     public void getAllFeedForEvent(String eventId, MessagesHandler handler) {
+        handler.handle(new ArrayList<>());
         //TODO mock realtime db
     }
 
