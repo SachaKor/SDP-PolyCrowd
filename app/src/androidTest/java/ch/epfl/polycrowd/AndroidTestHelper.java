@@ -11,6 +11,7 @@ import java.util.Map;
 
 import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.firebase.FirebaseMocker;
+import ch.epfl.polycrowd.firebase.handlers.EventHandler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
@@ -74,6 +75,9 @@ public abstract class AndroidTestHelper {
         ev.get(1).addOrganizer(OrganiserEmail);
 
         DatabaseInterface dbi = new FirebaseMocker(mailAndUsersPassPair, ev);
+        for (Event e: ev) {
+            dbi.uploadEventImage(e, new byte[100], event -> { });
+        }
         PolyContext.setDBI(dbi);
 
         PolyContext.setCurrentEvent(ev.get(1));

@@ -174,9 +174,11 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         String imgUri = curEvent.getImageUri();
         if(null != imgUri) {
             PolyContext.getDBI().downloadEventImage(curEvent, image -> {
-                Bitmap bmp = BitmapFactory.decodeByteArray(image, 0, image.length);
-                imageInBytes = image;
-                eventImg.setImageBitmap(bmp);
+                if(image != null) { // TODO: fix the dialogWithInviteLinkOpensWhenInviteClicked test
+                    Bitmap bmp = BitmapFactory.decodeByteArray(image, 0, image.length);
+                    imageInBytes = image;
+                    eventImg.setImageBitmap(bmp);
+                }
             });
         } else {
             eventImg.setImageResource(R.drawable.balelec);
