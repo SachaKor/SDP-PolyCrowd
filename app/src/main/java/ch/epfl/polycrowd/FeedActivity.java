@@ -13,8 +13,10 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Message;
@@ -33,7 +35,7 @@ public class FeedActivity extends AppCompatActivity {
 
     public level status;
     private EditText messageInput;
-    private FirebaseInterface fbi;
+    private DatabaseInterface fbi;
     private Button messageSend;
     private static final String TAG = "FeedActivity";
 
@@ -45,7 +47,7 @@ public class FeedActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feed);
-        this.fbi = new FirebaseInterface();
+        this.fbi = PolyContext.getDBI();
         setStatusOfUser();
         initView();
 
@@ -88,16 +90,25 @@ public class FeedActivity extends AppCompatActivity {
         rv.setLayoutManager(layoutManager);
 
 
-        this.fbi.getAllFeedForEvent(PolyContext.getCurrentEvent().getId(), l ->{mAdapter = new MessageFeedAdapter(l);
+
+        refreshFeed();
+
+    }
+
+    public void onRefreshClicked(View view){
+        refreshFeed();
+    }
+    private void refreshFeed(){
+        this.fbi.getAllFeedForEvent(PolyContext.getCurrentEvent().getId(), l ->{
+            Collections.reverse(l);
+            mAdapter = new MessageFeedAdapter(l);
             rv.setAdapter(mAdapter);
         });
-
-
     }
     public void onSend(View view){
         String message = messageInput.getText().toString();
-        messageInput.clearComposingText();
+        messageInput.setText("");
         Message m = new Message(message, PolyContext.getCurrentUser().getEmail(),"warning");
-        this.fbi.sendMessageFeed(PolyContext.getCurrentEvent().getId(), m);
+        this.fbi.sendMessageFeed(PolyContext.getCurrentEvent().getId(), m, this::refreshFeed);
     }
 }
