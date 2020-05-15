@@ -109,7 +109,7 @@ public class FirebaseInterface implements DatabaseInterface {
 
     private DatabaseReference getDbRef(boolean refresh){
         if (this.cachedDbRef == null || refresh){
-            this.cachedDbRef = FirebaseDatabase.getInstance().getReference();
+            this.cachedDbRef = FirebaseDatabase.getInstance("https://polycrowd-e8d9e.firebaseio.com/").getReference();
         }
         return this.cachedDbRef;
     }
@@ -749,19 +749,19 @@ public class FirebaseInterface implements DatabaseInterface {
     @Override
     public void sendMessageFeed(String eventId, Message m){
         DatabaseReference dbref= getDbRef(true);
-        dbref.child(eventId).child("security_feed").push().setValue(m.toData());
+        dbref.child("events").child(eventId).child("security_feed").push().setValue(m.toData());
     }
 
     @Override
     public void getAllFeedForEvent(String eventId, MessagesHandler successHandler){
         DatabaseReference dbref = getDbRef(true);
-        dbref.child(eventId).child("security_feed").addListenerForSingleValueEvent(
+        dbref.child("events").child(eventId).child("security_feed").addListenerForSingleValueEvent(
                 new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         List<Message> ms = new ArrayList<>();
                         for (DataSnapshot ds : dataSnapshot.getChildren()){
-                            ms.add(Message.fromData(ds.getValue(Map.class)));
+                            ms.add(Message.fromData((Map<String,String>) ds.getValue()));
                         }
                         successHandler.handle(ms);
                     }
