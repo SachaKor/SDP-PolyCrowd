@@ -11,6 +11,8 @@ import androidx.test.espresso.matcher.BoundedMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -72,6 +74,10 @@ public abstract class AndroidTestHelper {
         ev[0].setId("1");
         ev[1].setId("2");
         ev[2].setId("3");
+
+        byte[] emptyMap = {};
+        ev[1].setMapStream(new ByteArrayInputStream(emptyMap));
+
         return Arrays.asList(ev);
     }
 
