@@ -112,7 +112,7 @@ task jacocoTestReport(type: JacocoReport) {
         html.enabled = true
     }
 
-    def mockedClasses = ['**/**/FirebaseInterface.*']
+    def mockedClasses = ['**/*FirebaseInterface*.*']
     def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', '**/*Test*.*', 'android/**/*.*', '**/test/**','**/androidTest/**', ]
     def debugTree = fileTree(dir: "$project.buildDir/intermediates/javac/debug/classes", excludes: fileFilter + mockedClasses)
     def mainSrc = "$project.projectDir/src/main/java"
