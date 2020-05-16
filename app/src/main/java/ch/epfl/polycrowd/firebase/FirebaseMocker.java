@@ -15,6 +15,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +39,8 @@ public class FirebaseMocker implements DatabaseInterface {
     private byte[] userImg;
     private String uriString;
     private final String connectionId;
+    private Map<String,List<Message>> eventMessages;
+    private LatLng position;
 
     public FirebaseMocker(Map<String, Pair<User, String>> defaultMailAndUserPassPair, List<Event> defaultEvents) {
         Log.d(TAG, "Database mocker init");
@@ -49,7 +52,9 @@ public class FirebaseMocker implements DatabaseInterface {
         events.addAll(defaultEvents);
         groupIdGroupPairs = new HashMap<>() ;
         image = new byte[100];
-        connectionId = "MOCK_CONNECTION_ID" ;
+        connectionId = "MOCK_CONNECTION_ID";
+        eventMessages = new HashMap<>();
+        position = new LatLng(0,0);
     }
 
     public FirebaseMocker(Map<String, Pair<User, String>> defaultMailAndUserPassPair, List<Event> defaultEvents, String uriString) {
@@ -183,20 +188,28 @@ public class FirebaseMocker implements DatabaseInterface {
 
     @Override
     public void addUserToGroup(String inviteGroupId, String userEmail, EmptyHandler emptyHandler) {
-        Group group = groupIdGroupPairs.get(inviteGroupId) ;
+        groupIdGroupPairs.putIfAbsent(inviteGroupId, new Group());
+        Group group = groupIdGroupPairs.getOrDefault(inviteGroupId,null);
         User user = findUserByEmail(userEmail) ;
+        if(group == null || user == null){
+            emptyHandler.handle();
+        }
         group.addMember(user);
         emptyHandler.handle();
     }
 
     @Override
     public void removeGroupIfEmpty(String gid, Handler<Group> handler) {
+        Group g = groupIdGroupPairs.getOrDefault(gid, null);
+        if(g == null || g.getMembers().size() == 0)
+            groupIdGroupPairs.remove(gid);
 
+        handler.handle(groupIdGroupPairs.getOrDefault(gid, null));
     }
 
     @Override
     public void removeUserFromGroup(String gid, String uid, EmptyHandler handler) {
-
+        handler.handle();
     }
 
     @Override
@@ -380,21 +393,24 @@ public class FirebaseMocker implements DatabaseInterface {
     }
 
     @Override
-    public void updateUserLocation(String id, LatLng location) { }
+    public void updateUserLocation(String id, LatLng location) {
+        position = location;
+    }
 
     @Override
-    public void fetchUserLocation(String id, Handler<LatLng> handlerSuccess) {}
+    public void fetchUserLocation(String id, Handler<LatLng> handlerSuccess) {
+        handlerSuccess.handle(position);
+    }
 
     public void sendMessageFeed(String eventId, Message m, EmptyHandler handler) {
-        //TODO: mock realtime db
+        eventMessages.putIfAbsent(eventId,new ArrayList<>());
+        eventMessages.get(eventId).add(m);
         handler.handle();
     }
 
     @Override
     public void getAllFeedForEvent(String eventId, Handler<List<Message>> handler) {
-        handler.handle(new ArrayList<>());
-        //TODO mock realtime db
-
+        handler.handle(eventMessages.getOrDefault(eventId, new ArrayList<>()));
     }
 
     @Override
