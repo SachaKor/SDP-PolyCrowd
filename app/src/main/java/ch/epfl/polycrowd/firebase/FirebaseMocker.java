@@ -13,6 +13,7 @@ import androidx.annotation.RequiresApi;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -234,16 +235,14 @@ public class FirebaseMocker implements DatabaseInterface {
 
     @Override
     public void uploadEventMap(Event event, byte[] file, Handler<Event> handler) {
-
-        // TODO : load file maybe ?
-        //event.setMapUri(file.getPath());
+        event.setMapStream(new ByteArrayInputStream(file));
         handler.handle(event);
-
     }
 
     @Override
     public void downloadEventMap(Event event, Handler<Event> handler) {
-        // todo
+        if(event.getMapStream() != null)
+            handler.handle(event);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
