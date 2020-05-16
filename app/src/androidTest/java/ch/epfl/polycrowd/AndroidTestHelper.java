@@ -32,7 +32,7 @@ public abstract class AndroidTestHelper {
 
     public static void sleep(){
         try{
-            Thread.sleep(500);
+            Thread.sleep(800);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
