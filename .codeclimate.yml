@@ -1,5 +1,6 @@
 ## We dont want to analyse the CC or CD of our tests themselves...
 exclude_patterns:
 - "**/*Test*.*"
-- "**/*test*.*"
+- "**/test/**"
+- "**/androidTest/**"
 - "**/android/**/*.*"
