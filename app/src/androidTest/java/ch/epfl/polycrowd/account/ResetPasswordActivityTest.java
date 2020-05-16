@@ -28,11 +28,6 @@ import static org.hamcrest.Matchers.not;
 
 public class ResetPasswordActivityTest {
 
-    @BeforeClass
-    public static void setUpBeforeActivityLaunch(){
-        PolyContext.reset();
-    }
-
     @Rule
     public final ActivityTestRule<ResetPasswordActivity> resetPasswordActivityActivityTestRule =
             new ActivityTestRule<>(ResetPasswordActivity.class,false , false);

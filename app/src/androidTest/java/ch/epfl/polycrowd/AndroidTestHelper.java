@@ -1,7 +1,15 @@
 package ch.epfl.polycrowd;
 
 import android.util.Pair;
+import android.view.View;
 import android.widget.ScrollView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.espresso.matcher.BoundedMatcher;
+
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,6 +25,7 @@ import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 import ch.epfl.polycrowd.logic.UserLocator;
 
+import static androidx.core.util.Preconditions.checkNotNull;
 import static ch.epfl.polycrowd.logic.Event.EventType.*;
 
 public abstract class AndroidTestHelper {
@@ -142,4 +151,25 @@ public abstract class AndroidTestHelper {
         return getUser(OrganiserEmail);
     }
     static User getSecurity(){return getUser(SecurityEmail);}
+
+    public static Matcher<View> atPosition(final int position, @NonNull final Matcher<View> itemMatcher) {
+        checkNotNull(itemMatcher);
+        return new BoundedMatcher<View, RecyclerView>(RecyclerView.class) {
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("has item at position " + position + ": ");
+                itemMatcher.describeTo(description);
+            }
+
+            @Override
+            protected boolean matchesSafely(final RecyclerView view) {
+                RecyclerView.ViewHolder viewHolder = view.findViewHolderForAdapterPosition(position);
+                if (viewHolder == null) {
+                    // has no item on such position
+                    return false;
+                }
+                return itemMatcher.matches(viewHolder.itemView);
+            }
+        };
+    }
 }

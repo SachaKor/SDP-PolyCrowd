@@ -2,18 +2,17 @@ package ch.epfl.polycrowd.flow;
 
 import android.Manifest;
 import android.content.Intent;
-import android.view.View;
-
 import androidx.test.espresso.action.ViewActions;
+import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
+
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import ch.epfl.polycrowd.ActivityHelper;
 import ch.epfl.polycrowd.AndroidTestHelper;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.frontPage.FrontPageActivity;
@@ -21,6 +20,7 @@ import ch.epfl.polycrowd.logic.PolyContext;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -150,20 +150,27 @@ public class visitorFlow {
         onView(withId(R.id.recyclerView)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
 
         // Android RecyclerView needs to be tested differently ...
-        /*onData(withId(R.id.titleTv)).inAdapterView(withId(R.id.recyclerView))
-                .atPosition(0).check(matches(withText(containsString("Party"))));
-        onData(withId(R.id.descriptionTv)).inAdapterView(withId(R.id.recyclerView))
-                .atPosition(0).check(matches(withText(containsString("Party at EPFL"))));
+        onView(withId(R.id.recyclerView))
+                .perform(RecyclerViewActions.scrollToPosition(0))
+                .check(matches(AndroidTestHelper.atPosition(0, hasDescendant(withText("Party")))));
+        onView(withId(R.id.recyclerView))
+                .perform(RecyclerViewActions.scrollToPosition(0))
+                .check(matches(AndroidTestHelper.atPosition(0, hasDescendant(withText("Party at EPFL")))));
 
-        onData(withId(R.id.titleTv)).inAdapterView(withId(R.id.recyclerView))
-                .atPosition(1).check(matches(withText(containsString("summary"))));
-        onData(withId(R.id.descriptionTv)).inAdapterView(withId(R.id.recyclerView))
-                .atPosition(1).check(matches(withText(containsString("<pre>summary</pre>"))));
 
-        onData(withId(R.id.titleTv)).inAdapterView(withId(R.id.recyclerView))
-                .atPosition(2).check(matches(withText(containsString("PArty"))));
-        onData(withId(R.id.descriptionTv)).inAdapterView(withId(R.id.recyclerView))
-                .atPosition(2).check(matches(withText(containsString("Party"))));*/
+        onView(withId(R.id.recyclerView))
+                .perform(RecyclerViewActions.scrollToPosition(1))
+                .check(matches(AndroidTestHelper.atPosition(1, hasDescendant(withText("summary")))));
+        onView(withId(R.id.recyclerView))
+                .perform(RecyclerViewActions.scrollToPosition(1))
+                .check(matches(AndroidTestHelper.atPosition(1, hasDescendant(withText("<pre>summary</pre>")))));
+
+        onView(withId(R.id.recyclerView))
+                .perform(RecyclerViewActions.scrollToPosition(2))
+                .check(matches(AndroidTestHelper.atPosition(2, hasDescendant(withText("PArty")))));
+        onView(withId(R.id.recyclerView))
+                .perform(RecyclerViewActions.scrollToPosition(2))
+                .check(matches(AndroidTestHelper.atPosition(2, hasDescendant(withText("Party")))));
     }
 
     @Test
