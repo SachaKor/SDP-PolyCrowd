@@ -49,7 +49,7 @@ public class ResetPasswordActivityTest {
     @Test
     public void testToastWhenEmailIsEmpty(){
         onView(withId(R.id.forgot_password_button)).perform(click());
-        sleep();
+        //sleep();
         onView(withText("Please enter an email"))
                 .inRoot(withDecorView(not(resetPasswordActivityActivityTestRule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));
@@ -60,7 +60,7 @@ public class ResetPasswordActivityTest {
     public void testToastWhenNonExistingEmail(){
         onView(withId(R.id.reset_email)).perform(typeText("UNKNOWN@h.net"), closeSoftKeyboard());
         onView(withId(R.id.forgot_password_button)).perform(click());
-        sleep();
+        //sleep();
         onView(withText("Email not found, please sign up"))
                 .inRoot(withDecorView(not(resetPasswordActivityActivityTestRule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));

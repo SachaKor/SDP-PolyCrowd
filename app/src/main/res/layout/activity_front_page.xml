@@ -22,7 +22,7 @@
         android:layout_width="match_parent"
         android:layout_height="256dp"
         android:layout_below="@+id/frontPageTitle"
-        android:layout_marginTop="29dp"
+        android:layout_marginTop="0dp"
         android:background="@android:color/transparent"
         android:clipToPadding="false"
         android:foregroundGravity="center"
