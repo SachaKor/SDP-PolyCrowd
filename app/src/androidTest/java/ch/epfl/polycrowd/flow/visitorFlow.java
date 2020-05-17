@@ -149,14 +149,12 @@ public class visitorFlow {
 
         onView(withId(R.id.recyclerView)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
 
-        // Android RecyclerView needs to be tested differently ...
         onView(withId(R.id.recyclerView))
                 .perform(RecyclerViewActions.scrollToPosition(0))
                 .check(matches(AndroidTestHelper.atPosition(0, hasDescendant(withText("Party")))));
         onView(withId(R.id.recyclerView))
                 .perform(RecyclerViewActions.scrollToPosition(0))
                 .check(matches(AndroidTestHelper.atPosition(0, hasDescendant(withText("Party at EPFL")))));
-
 
         onView(withId(R.id.recyclerView))
                 .perform(RecyclerViewActions.scrollToPosition(1))
