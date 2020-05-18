@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -28,7 +29,7 @@ import ch.epfl.polycrowd.userProfile.ItemClickListener;
 import static ch.epfl.polycrowd.ActivityHelper.eventIntentHandler;
 import static ch.epfl.polycrowd.ActivityHelper.toastPopup;
 
-public class GroupsListActivity extends AppCompatActivity {
+public class GroupsListActivity extends AppCompatActivity implements CreateGroupDialogFragment.CreateGroupDialogListener {
 
     private static final String TAG = "GroupsListActivity" ;
 
@@ -57,6 +58,20 @@ public class GroupsListActivity extends AppCompatActivity {
                 mAdapter.notifyAdapterDatasetChanged();
             }
         });
+
+    }
+
+    public void onCreateGroupClicked(View view) {
+        showNoticeDialog(); 
+    }
+
+    private void showNoticeDialog() {
+        // Create an instance of the dialog fragment and show it
+        DialogFragment dialog = new CreateGroupDialogFragment();
+        dialog.show(getSupportFragmentManager(), "CreateGroupDialogFragment");
+    }
+    @Override
+    public void onOKCreateGroupClick(DialogFragment dialog, String groupName, String eventId) {
 
     }
 
