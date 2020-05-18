@@ -4,6 +4,7 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -18,7 +19,6 @@ public class Group extends Storable {
     private String gid;
     private String eventId;
 
-    //TODO Make this a set instead of a list
     private Set<User> members;
 
     public Group(String gid, String eventId, Set<User> members){
@@ -37,7 +37,7 @@ public class Group extends Storable {
     @Override
     public Map<String, Object> getRawData() {
         Map<String,Object> m = new HashMap<>();
-        m.put("members", members);
+        m.put("members", new ArrayList<>(members));
         m.put("eventId", eventId);
         return m;
     }
