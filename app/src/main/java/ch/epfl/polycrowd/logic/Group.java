@@ -64,7 +64,6 @@ public class Group extends Storable {
 
     public static Group getFromDocument(Map<String, Object> data) {
         Set<User> members = new HashSet<>((List<User>) Objects.requireNonNull(data.get("members")));
-        String gid = Objects.requireNonNull(data.get("groupId")).toString();
         String eventId = Objects.requireNonNull(data.get("eventId")).toString();
         String name = Objects.requireNonNull(data.get("name")).toString();
 
