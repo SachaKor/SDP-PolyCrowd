@@ -306,6 +306,7 @@ public class FirebaseInterface implements DatabaseInterface {
     }
 
     //TODO
+    //TODO should we make the errors in the onFailureListener be propagated to the calling class?
     //What's the diff between someCallback(String arg1, Handler<E> arg2) rather than specifiying E ?
     @Override
     public void createGroup(Group group, Handler<Group> handler){
@@ -314,7 +315,6 @@ public class FirebaseInterface implements DatabaseInterface {
             Log.w(TAG, TAG1 + " eventId id is null");
             return;
         }
-            group.addMember(PolyContext.getCurrentUser());
             getFirestoreInstance(false).collection(GROUPS)
                     .add(group.getRawData())
                     .addOnSuccessListener(documentReference -> {
@@ -324,6 +324,7 @@ public class FirebaseInterface implements DatabaseInterface {
             }).addOnFailureListener(e -> Log.e(TAG, "Error adding new group : " + e));
 
     }
+
 
     public void addUserToGroup(String gid, String userEmail, EmptyHandler handler){
         final String TAG1 = "addUserToGroup";
