@@ -21,8 +21,10 @@ public class Group extends Storable {
 
     private Set<User> members;
 
-    public Group(String gid, String eventId, Set<User> members){
-        this.gid = gid;
+    private String name ;
+
+    public Group(String name, String eventId, Set<User> members){
+        this.name = name;
         this.eventId = eventId;
         this.members = members;
     }
@@ -37,6 +39,7 @@ public class Group extends Storable {
     @Override
     public Map<String, Object> getRawData() {
         Map<String,Object> m = new HashMap<>();
+        m.put("name", name) ;
         m.put("members", new ArrayList<>(members));
         m.put("eventId", eventId);
         return m;
@@ -63,8 +66,9 @@ public class Group extends Storable {
         Set<User> members = new HashSet<>((List<User>) Objects.requireNonNull(data.get("members")));
         String gid = Objects.requireNonNull(data.get("groupId")).toString();
         String eventId = Objects.requireNonNull(data.get("eventId")).toString();
+        String name = Objects.requireNonNull(data.get("name")).toString();
 
-        Group ret = new Group(gid, eventId, members);
+        Group ret = new Group(name, eventId, members);
         return ret;
     }
 
