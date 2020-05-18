@@ -206,11 +206,11 @@ public class FirebaseMocker implements DatabaseInterface {
     }
 
     @Override
-    public void createGroup(Group group, Handler<Group> handler) {
-        Group newGroup = new Group(group.getGid(), group.getEventId(), group.getMembers()) ;
-        newGroup.addMember(PolyContext.getCurrentUser());
-        groupIdGroupPairs.put(newGroup.getGid(), newGroup) ;
-        handler.handle(newGroup);
+    public void createGroup(Map<String, Object> groupRawData, Handler<String> handler) {
+        Group newGroup =  Group.getFromDocument(groupRawData);
+        String newGroupId  = Integer.toString(groupIdGroupPairs.keySet().size()) ;
+        groupIdGroupPairs.put(newGroupId, newGroup) ;
+        handler.handle(newGroupId);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)

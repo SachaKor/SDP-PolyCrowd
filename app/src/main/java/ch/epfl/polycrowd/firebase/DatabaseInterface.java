@@ -84,7 +84,8 @@ public interface DatabaseInterface {
     void removeUserFromGroup(String gid, String uid, EmptyHandler handler) ;
 
     //TODO, should the argument be a group or the raw arguments of a group in the database?
-    void createGroup(Group group, Handler<Group> handler) ;
+    //the String handler is to handle the DocumentReferenceId which is used as the GroupId
+    public void createGroup(Map<String, Object> groupRawData, Handler<String> handler) ;
 
     void reauthenticateAndChangePassword(String email, String curPassword, String newPassword, Context appContext);
 
