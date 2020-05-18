@@ -24,6 +24,7 @@ import com.google.firebase.dynamiclinks.DynamicLink.SocialMetaTagParameters;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import ch.epfl.polycrowd.ActivityHelper;
@@ -162,13 +163,14 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
    public void createLinkClicked(View view){
         Context c = this;
         User user = PolyContext.getCurrentUser();
-        PolyContext.getDBI().createGroup(group, gr -> {
+        Map<String, Object> groupRawData = group.getRawData() ;
+        /*PolyContext.getDBI().createGroup(groupRawData, gr -> {
             groupId = group.getGid();
             PolyContext.getDBI().addUserToGroup(groupId, PolyContext.getCurrentUser().getEmail(), () -> {
                 Log.w("createLinkClicked", "group " + groupId + " user " + PolyContext.getCurrentUser().getEmail() + " event " + PolyContext.getCurrentEvent().getId());
                 ActivityHelper.eventIntentHandler(this,GroupPageActivity.class);
             });
-        });
+        });*/
     }
 
     @Override
