@@ -81,6 +81,8 @@ public interface DatabaseInterface {
 
     void removeGroupIfEmpty(String gid, Handler<Group> handler) ;
 
+    void updateGroup(Group group,EmptyHandler handler) ;
+
     void removeUserFromGroup(String gid, String uid, EmptyHandler handler) ;
 
     //TODO, should the argument be a group or the raw arguments of a group in the database?

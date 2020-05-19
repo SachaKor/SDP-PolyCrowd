@@ -201,6 +201,11 @@ public class FirebaseMocker implements DatabaseInterface {
     }
 
     @Override
+    public void updateGroup(Group group, EmptyHandler handler) {
+
+    }
+
+    @Override
     public void removeUserFromGroup(String gid, String uid, EmptyHandler handler) {
 
     }

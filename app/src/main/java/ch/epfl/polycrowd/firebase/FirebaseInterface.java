@@ -397,6 +397,19 @@ public class FirebaseInterface implements DatabaseInterface {
                     handler.handle();
                 }
             }).addOnFailureListener(e -> Log.w(TAG, "Error retrieving group with id" + gid));
+    }
+
+    public void updateGroup(Group group, EmptyHandler handler){
+        if( group == null | group.getGid() == null | handler == null) {
+                Log.w(TAG,  "Null group or handler");
+                return;
+        }
+
+        getFirestoreInstance(false).collection(GROUPS).document(group.getGid()).set(group.getRawData()).addOnSuccessListener(
+                documentSnapshot -> {
+                    handler.handle();
+                }
+        ) ;
 
     }
 
