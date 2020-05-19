@@ -13,16 +13,20 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.DialogFragment;
 
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import ch.epfl.polycrowd.ActivityHelper;
 import ch.epfl.polycrowd.EmergencyActivity;
@@ -32,15 +36,18 @@ import ch.epfl.polycrowd.FeedActivity;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.authentification.LoginActivity;
 import ch.epfl.polycrowd.frontPage.FrontPageActivity;
+import ch.epfl.polycrowd.groupPage.CreateGroupDialogFragment;
 import ch.epfl.polycrowd.groupPage.GroupPageActivity;
 import ch.epfl.polycrowd.groupPage.GroupsListActivity;
 import ch.epfl.polycrowd.logic.Event;
+import ch.epfl.polycrowd.logic.Group;
 import ch.epfl.polycrowd.logic.PolyContext;
+import ch.epfl.polycrowd.logic.User;
 
 import static ch.epfl.polycrowd.ActivityHelper.eventIntentHandler;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
-public class MapActivity extends AppCompatActivity {
+public class MapActivity extends AppCompatActivity implements CreateGroupDialogFragment.CreateGroupDialogListener  {
 
     // map displayed
     public CrowdMap mMap;
@@ -222,7 +229,7 @@ public class MapActivity extends AppCompatActivity {
 
     void setVisitorButtons(Button buttonLeft, Button buttonRight) {
         buttonRight.setText("EVENT DETAILS");
-        buttonLeft.setText("GROUPS");
+        buttonLeft.setText("CREATE GROUP");
 
         buttonRight.setOnClickListener(v -> eventIntentHandler(this, EventPageDetailsActivity.class));
         buttonLeft.setOnClickListener(v -> eventIntentHandler(this , GroupsListActivity.class));
@@ -239,5 +246,37 @@ public class MapActivity extends AppCompatActivity {
 
     public void onUpdateLocationsCliked(View view) {
         mMap.getEventGoersPositions();
+    }
+
+    @Override
+    public void onOKCreateGroupClick(DialogFragment dialog, String groupName, String eventId) {
+
+        if(groupName == null || groupName.isEmpty() || eventId == null || eventId.isEmpty())
+            return ;
+        //TODO does it make a difference whether this user set is initialized inside of the callback or not?
+        //What if the user logs out before the callback's been executed?
+        Set<User> memberSet = new HashSet<>() ;
+        memberSet.add(PolyContext.getCurrentUser()) ;
+
+        //Toasts for error handling
+        Toast eventNotFoundToast = Toast.makeText(this, "Event not found!", Toast.LENGTH_LONG) ;
+        Toast generalErrorToast = Toast.makeText(this, "Error creating group, try again later", Toast.LENGTH_LONG) ;
+        Toast createGroupSuccessToast = Toast.makeText(this, "Group" + groupName+" created successfully!", Toast.LENGTH_LONG) ;
+            PolyContext.getDBI().getEventById(eventId, ev -> {
+
+                if(ev == null){
+                    generalErrorToast.show();
+                } else {
+                    //Setup new group
+                    Group group = new Group(groupName, PolyContext.getCurrentEvent(), memberSet) ;
+                    PolyContext.getUserGroups().add(group) ;
+                    PolyContext.getDBI().createGroup(group.getRawData(), groupId -> {
+                        group.setGid(groupId);
+                        createGroupSuccessToast.show();
+                    });
+                }
+            });
+
+
     }
 }
