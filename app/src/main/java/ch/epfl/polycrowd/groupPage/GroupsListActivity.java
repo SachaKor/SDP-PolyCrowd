@@ -68,15 +68,19 @@ public class GroupsListActivity extends AppCompatActivity {
         public void onBindViewHolder(@NonNull GroupsListHolder holder, int position) {
 
             String groupName = userGroups.get(position).getGroupName() ;
-            String groupEvent = userGroups.get(position).getEvent().getName();
+            String groupEvent = userGroups.get(position).getEventName();
             holder.groupNameTv.setText(groupName);
             holder.groupEventIdTv.setText(groupEvent);
 
             holder.itemClickListener = (v,p) -> {
                 //TODO use p or position?
-               PolyContext.setCurrentGroup(userGroups.get(p));
-               Intent intent = new Intent(c, GroupPageActivity.class) ;
-               c.startActivity(intent);
+               PolyContext.setCurrentGroup(userGroups.get(position));
+               PolyContext.getDBI().getEventById(userGroups.get(position).getEventId(), fetchedEvent -> {
+                   PolyContext.setCurrentEvent(fetchedEvent);
+                   Intent intent = new Intent(c, GroupPageActivity.class) ;
+                   c.startActivity(intent);
+               });
+
             } ;
         }
 
