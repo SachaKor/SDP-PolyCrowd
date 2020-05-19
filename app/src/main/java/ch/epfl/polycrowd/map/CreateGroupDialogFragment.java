@@ -17,7 +17,7 @@ import ch.epfl.polycrowd.R;
 public class CreateGroupDialogFragment extends DialogFragment {
 
     public interface CreateGroupDialogListener{
-        public void onOKCreateGroupClick(DialogFragment dialog, String groupName, String eventId) ;
+        public void onOKCreateGroupClick(DialogFragment dialog, String groupName) ;
     }
 
     CreateGroupDialogListener listener;
@@ -47,8 +47,7 @@ public class CreateGroupDialogFragment extends DialogFragment {
         // Pass null as the parent view because its going in the dialog layout
         builder.setView(view).setPositiveButton(R.string.group_submit, (dialog, which) -> {
             String groupName = ((EditText)view.findViewById(R.id.groupNameEditText)).getText().toString() ;
-            String eventId = ((EditText)view.findViewById(R.id.eventIdEditText)).getText().toString() ;
-            listener.onOKCreateGroupClick(this, groupName, eventId);
+            listener.onOKCreateGroupClick(this, groupName);
         }) ;
 
         return builder.create();
