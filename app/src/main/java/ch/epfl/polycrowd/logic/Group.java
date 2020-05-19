@@ -1,6 +1,7 @@
 package ch.epfl.polycrowd.logic;
 
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 
 public class Group extends Storable {
 
+    private static final String TAG = "GROUP CLASS" ;
     public String eventName ;
     public String eventId ;
     public String gid;
@@ -51,7 +53,7 @@ public class Group extends Storable {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public List<String> getMembersNames() {
-        return members.stream().map(User::getName).collect(Collectors.toList());
+        return members.stream().map(User::getusername).collect(Collectors.toList());
     }
 
     public void setGid(String gid) {
@@ -73,7 +75,13 @@ public class Group extends Storable {
     }
 
     public static Group getFromDocument(Map<String, Object> data) {
-        Set<User> members = new HashSet<>((List<User>) Objects.requireNonNull(data.get("members")));
+        Set<User> members = new HashSet<>();
+        List<Map<String, Object>> usersRawDatas = (List<Map<String, Object>>) data.get("members");
+        for(Map<String, Object> userRawData: usersRawDatas){
+            User user = User.getFromDocument(userRawData) ;
+            members.add(user) ;
+            Log.d(TAG, "user, "+ user.toString() ) ;
+        }
         String groupName = Objects.requireNonNull(data.get("groupName")).toString();
         String eventName = Objects.requireNonNull(data.get("eventName")).toString() ;
         String eventId = Objects.requireNonNull(data.get("eventId")).toString() ;
