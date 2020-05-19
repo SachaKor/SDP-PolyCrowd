@@ -72,7 +72,7 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
 
 
         Set<User> members = group.getMembers();
-        requestMemberLocations(members);
+        //requestMemberLocations(members);
     }
 
     @Override
@@ -207,23 +207,4 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
         viewPager.setCurrentItem(0);;
     }
 
-    private void requestMemberLocations(Set<User> members) {
-        LocationManager mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        for (User u : members) {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                return;
-            }
-            //TODO use PASSIVE_PROVIDER instead?
-            //TODO what time and distance are suitable ?
-            //https://stackoverflow.com/questions/17591147/how-to-get-current-location-in-android
-            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
-                    LOCATION_REFRESH_DISTANCE, u);
-        }
-    }
 }
