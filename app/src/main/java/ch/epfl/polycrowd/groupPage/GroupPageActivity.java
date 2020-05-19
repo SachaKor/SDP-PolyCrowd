@@ -34,6 +34,7 @@ import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
+import ch.epfl.polycrowd.userProfile.UserProfilePageActivity;
 
 public class GroupPageActivity extends AppCompatActivity implements TabLayout.OnTabSelectedListener {
 
@@ -113,8 +114,8 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
             Log.e(TAG, "initGroup : current user is null ?!");
             return;
         }
-        groupId = PolyContext.getCurrentGroupId();
         group = PolyContext.getCurrentGroup() ;
+        groupId = group.getGid() ;
     }
     /**
      * OnClick "INVITE TO GROUP"
@@ -150,27 +151,15 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
                 .show();
     }
 
-    public void leaveLinkClicked(View view) {
-        PolyContext.getDBI().removeUserFromGroup(groupId, PolyContext.getCurrentUser().getEmail(), () ->
+    public void onLeaveLinkClick(View view) {
+
+        group.removeMember(PolyContext.getCurrentUser()) ;
+        PolyContext.getDBI().updateGroup(group, () ->
             PolyContext.getDBI().removeGroupIfEmpty(groupId, group -> {
-                Intent map = new Intent(this, GroupPageActivity.class);
-                startActivity(map);
+                Intent intent = new Intent(this, UserProfilePageActivity.class);
+                startActivity(intent);
             }
         ));
-    }
-
-    //TODO
-   public void createLinkClicked(View view){
-        Context c = this;
-        User user = PolyContext.getCurrentUser();
-        Map<String, Object> groupRawData = group.getRawData() ;
-        /*PolyContext.getDBI().createGroup(groupRawData, gr -> {
-            groupId = group.getGid();
-            PolyContext.getDBI().addUserToGroup(groupId, PolyContext.getCurrentUser().getEmail(), () -> {
-                Log.w("createLinkClicked", "group " + groupId + " user " + PolyContext.getCurrentUser().getEmail() + " event " + PolyContext.getCurrentEvent().getId());
-                ActivityHelper.eventIntentHandler(this,GroupPageActivity.class);
-            });
-        });*/
     }
 
     @Override
