@@ -34,6 +34,7 @@ import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
+import ch.epfl.polycrowd.map.MapActivity;
 import ch.epfl.polycrowd.userProfile.UserProfilePageActivity;
 
 public class GroupPageActivity extends AppCompatActivity implements TabLayout.OnTabSelectedListener {
@@ -160,6 +161,13 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
                 startActivity(intent);
             }
         ));
+    }
+
+    public void onGoToMapClick(View view) {
+
+        Intent intent = new Intent(this, MapActivity.class );
+        startActivity(intent);
+
     }
 
     @Override
