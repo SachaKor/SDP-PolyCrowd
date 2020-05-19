@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,20 +15,16 @@ import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.logic.Group;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
-import ch.epfl.polycrowd.map.MapActivity;
 import ch.epfl.polycrowd.userProfile.ItemClickListener;
 
-import static ch.epfl.polycrowd.ActivityHelper.eventIntentHandler;
 import static ch.epfl.polycrowd.ActivityHelper.toastPopup;
 
 public class GroupsListActivity extends AppCompatActivity implements CreateGroupDialogFragment.CreateGroupDialogListener {
@@ -64,15 +61,41 @@ public class GroupsListActivity extends AppCompatActivity implements CreateGroup
 
         if(groupName == null || groupName.isEmpty() || eventId == null || eventId.isEmpty())
             return ;
+
+
+        //TODO does it make a difference whether this user set is initialized inside of the callback or not?
+        //What if the user logs out before the callback's been executed?
         Set<User> memberSet = new HashSet<>() ;
         memberSet.add(PolyContext.getCurrentUser()) ;
-        Group group = new Group(groupName, eventId, memberSet) ;
-        PolyContext.getUserGroups().add(group) ;
 
-        PolyContext.getDBI().createGroup(group.getRawData(), groupId -> {
-            group.setGid(groupId);
-            mAdapter.notifyAdapterDatasetChanged(PolyContext.getUserGroups());
+        //Toasts for error handling
+        Toast eventNotFoundToast = Toast.makeText(this, "Event not found!", Toast.LENGTH_LONG) ;
+        Toast generalErrorToast = Toast.makeText(this, "Error creating group, try again later", Toast.LENGTH_LONG) ;
+
+        try {
+
+            PolyContext.getDBI().getEventById(eventId, ev -> {
+
+                if(ev == null){
+                    generalErrorToast.show();
+                } else {
+                    //Setup new group
+                    Group group = new Group(groupName, eventId, memberSet) ;
+                    PolyContext.getUserGroups().add(group) ;
+                    PolyContext.getDBI().createGroup(group.getRawData(), groupId -> {
+                        group.setEvent(ev);
+                        group.setGid(groupId);
+                        mAdapter.notifyAdapterDatasetChanged(PolyContext.getUserGroups());
+                });
+            }
         });
+
+        } catch (IllegalArgumentException e){
+            eventNotFoundToast.show();
+        } catch (Exception e ){
+            generalErrorToast.show();
+        }
+
 
     }
 
@@ -98,8 +121,8 @@ public class GroupsListActivity extends AppCompatActivity implements CreateGroup
         @Override
         public void onBindViewHolder(@NonNull GroupsListHolder holder, int position) {
 
-            String groupName = userGroups.get(position).getName() ;
-            String groupEvent = userGroups.get(position).getEventId();
+            String groupName = userGroups.get(position).getGroupName() ;
+            String groupEvent = userGroups.get(position).getEvent().getName();
             holder.groupNameTv.setText(groupName);
             holder.groupEventIdTv.setText(groupEvent);
 
