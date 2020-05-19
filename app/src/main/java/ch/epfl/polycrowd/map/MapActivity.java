@@ -248,6 +248,16 @@ public class MapActivity extends AppCompatActivity implements CreateGroupDialogF
         mMap.getEventGoersPositions();
     }
 
+    public void onCreateGroupClicked(View view) {
+        showNoticeDialog();
+    }
+
+    private void showNoticeDialog() {
+        // Create an instance of the dialog fragment and show it
+        DialogFragment dialog = new CreateGroupDialogFragment();
+        dialog.show(getSupportFragmentManager(), "CreateGroupDialogFragment");
+    }
+
     @Override
     public void onOKCreateGroupClick(DialogFragment dialog, String groupName, String eventId) {
 
