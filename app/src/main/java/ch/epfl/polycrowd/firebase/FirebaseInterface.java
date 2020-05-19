@@ -269,6 +269,25 @@ public class FirebaseInterface implements DatabaseInterface {
     }
 
     @Override
+    public void getUserGroups(User user, Handler<List<Group>> groupsHandler) {
+        final String TAG1 = "getGroupByUserAndEvent";
+        Log.d(TAG, TAG1 + " is not mocked");
+        getFirestoreInstance(false).collection(GROUPS)
+                .whereArrayContains("members", user)
+                .get()
+                .addOnSuccessListener(documentSnapshots -> {
+                    List<Group> groupList = new ArrayList<>();
+                    for(DocumentSnapshot d: documentSnapshots){
+                        Map<String, Object> groupRawData = d.getData() ;
+                        Group group = Group.getFromDocument(groupRawData) ;
+                        group.setGid(d.getId());
+                        groupList.add(group) ;
+                    }
+                    groupsHandler.handle(groupList);
+                }) ;
+    }
+
+    @Override
     public void getGroupByGroupId(String groupId, Handler<Group> groupHandler) {
             getFirestoreInstance(false).collection(GROUPS).whereEqualTo("groupId", groupId).get().addOnSuccessListener(
                     queryDocumentSnapshots ->{

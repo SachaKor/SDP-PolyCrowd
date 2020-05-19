@@ -365,6 +365,11 @@ public class FirebaseMocker implements DatabaseInterface {
     }
 
     @Override
+    public void getUserGroups(User user, Handler<List<Group>> userGroups) {
+            //TODO
+    }
+
+    @Override
     public void getGroupByGroupId(String groupId, Handler<Group> groupHandler) {
         for(Group g: groupIdGroupPairs.values()){
             if(g.getGid().equals(groupId)){

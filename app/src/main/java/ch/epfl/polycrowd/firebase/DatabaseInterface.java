@@ -102,6 +102,8 @@ public interface DatabaseInterface {
 
     void getUserGroupIds(String userEmail, Handler<Map<String, String>> groupIdEventIdPairsHandler);
 
+    void getUserGroups(User user, Handler<List<Group>> userGroups) ;
+
     void getGroupByGroupId(String groupId, Handler<Group> groupHandler);
 
     void getUserCollectionByEmails(List<String> userEmails, Handler<List<User>> usersHandler) ;
