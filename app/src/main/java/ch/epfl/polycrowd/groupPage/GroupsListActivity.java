@@ -3,7 +3,6 @@ package ch.epfl.polycrowd.groupPage;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,12 +14,14 @@ import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import ch.epfl.polycrowd.R;
+import ch.epfl.polycrowd.logic.Group;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 import ch.epfl.polycrowd.map.MapActivity;
@@ -41,28 +42,16 @@ public class GroupsListActivity extends AppCompatActivity implements CreateGroup
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_groups_list);
 
+        // ---- setup adapter and recycler view --------------------------------------------------
+        List<Group> groupList  = PolyContext.getUserGroups() ;
         RecyclerView mRecyclerView = findViewById(R.id.groupsListRecyclerView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-
-        // ---- setup adapter --------------------------------------------------
-        Map<String, String> gidEids = new HashMap<>() ;
-        mAdapter = new GroupsListAdapter(gidEids, this) ;
+        mAdapter = new GroupsListAdapter(groupList, this) ;
         mRecyclerView.setAdapter(mAdapter);
-
-
-        // ---- update adapter values -----------------------------------------
-        PolyContext.getDBI().getUserGroupIds(PolyContext.getCurrentUser().getEmail(), fetchedPairs -> {
-            if(fetchedPairs != null) {
-                gidEids.putAll(fetchedPairs);
-                mAdapter.notifyAdapterDatasetChanged();
-            }
-        });
-
     }
 
     public void onCreateGroupClicked(View view) {
-        showNoticeDialog(); 
+        showNoticeDialog();
     }
 
     private void showNoticeDialog() {
@@ -73,19 +62,29 @@ public class GroupsListActivity extends AppCompatActivity implements CreateGroup
     @Override
     public void onOKCreateGroupClick(DialogFragment dialog, String groupName, String eventId) {
 
+        if(groupName == null || groupName.isEmpty() || eventId == null || eventId.isEmpty())
+            return ;
+        Set<User> memberSet = new HashSet<>() ;
+        memberSet.add(PolyContext.getCurrentUser()) ;
+        Group group = new Group(groupName, eventId, memberSet) ;
+        PolyContext.getUserGroups().add(group) ;
+
+        PolyContext.getDBI().createGroup(group.getRawData(), groupId -> {
+            group.setGid(groupId);
+            mAdapter.notifyAdapterDatasetChanged(PolyContext.getUserGroups());
+        });
+
     }
 
 
     private class GroupsListAdapter extends RecyclerView.Adapter<GroupsListHolder> {
 
-        Map<String, String> gidEidPairs;
-        List<String> gIds ;
+        List<Group> userGroups;
         Context c ;
 
-        GroupsListAdapter(Map<String, String> gidEidPairs, Context c){
-            this.gidEidPairs = gidEidPairs ;
+        GroupsListAdapter(List<Group> groups, Context c){
+            this.userGroups = groups ;
             this.c = c ;
-            initGids();
         }
 
 
@@ -99,52 +98,45 @@ public class GroupsListActivity extends AppCompatActivity implements CreateGroup
         @Override
         public void onBindViewHolder(@NonNull GroupsListHolder holder, int position) {
 
-            String groupId = gIds.get(position) ;
-            String groupEvent = gidEidPairs.get(groupId);
-            holder.groupIdTv.setText(groupId);
-            holder.groupEventTv.setText(groupEvent);
+            String groupName = userGroups.get(position).getName() ;
+            String groupEvent = userGroups.get(position).getEventId();
+            holder.groupNameTv.setText(groupName);
+            holder.groupEventIdTv.setText(groupEvent);
 
             holder.itemClickListener = (v,p) -> {
-                PolyContext.setCurrentGroupId(groupId);
-                PolyContext.getDBI().getGroupByGroupId(groupId, fetchedGroup -> {
-                    PolyContext.setCurrentGroup(fetchedGroup) ;
-                    if(PolyContext.getCurrentEvent() != null) {
-                        if(PolyContext.getCurrentEvent().getId().equals(groupEvent))
-                            eventIntentHandler(c, MapActivity.class);
-                        else
-                            toastPopup(c , "group not part of the current event");
-                    }
-                    else eventIntentHandler( c , GroupPageActivity.class);
-                } ) ;
+                //TODO use p or position?
+               PolyContext.setCurrentGroup(userGroups.get(p));
+               Intent intent = new Intent(c, GroupPageActivity.class) ;
+               c.startActivity(intent);
             } ;
         }
 
         @Override
         public int getItemCount() {
-            return gIds.size();
+            return userGroups.size();
         }
 
-        void notifyAdapterDatasetChanged(){
-          initGids();
+        public void notifyAdapterDatasetChanged(List<Group> groups){
+          setUserGroups(groups) ;
           notifyDataSetChanged();
         }
 
-        void initGids(){
-            gIds = new ArrayList<>() ;
-            gIds.addAll(gidEidPairs.keySet());
+        private void setUserGroups(List<Group> groups){
+            this.userGroups = groups ;
         }
+
     }
 
 
      private class GroupsListHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView groupIdTv ;
-        TextView groupEventTv ;
+        TextView groupNameTv;
+        TextView groupEventIdTv;
         ItemClickListener itemClickListener ;
 
         GroupsListHolder(@NonNull View itemView) {
             super(itemView);
-            groupIdTv = itemView.findViewById(R.id.groupNameTv) ;
-            groupEventTv = itemView.findViewById(R.id.groupEventTv) ;
+            groupNameTv = itemView.findViewById(R.id.groupNameTv) ;
+            groupEventIdTv = itemView.findViewById(R.id.groupEventTv) ;
             itemView.setOnClickListener(this);
         }
 
