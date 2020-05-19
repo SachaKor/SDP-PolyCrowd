@@ -269,7 +269,7 @@ public class MapActivity extends AppCompatActivity implements CreateGroupDialogF
 
         //Toasts for error handling
         Toast generalErrorToast = Toast.makeText(this, "Error creating group, try again later", Toast.LENGTH_LONG) ;
-        Toast createGroupSuccessToast = Toast.makeText(this, "Group" + groupName+" created successfully!", Toast.LENGTH_LONG) ;
+        Toast createGroupSuccessToast = Toast.makeText(this, groupName+" created successfully!", Toast.LENGTH_LONG) ;
         //Setup new group
         Group group = new Group(groupName, PolyContext.getCurrentEvent().getName(), PolyContext.getCurrentEvent().getId(), memberSet) ;
         PolyContext.getDBI().createGroup(group.getRawData(), groupId -> {
