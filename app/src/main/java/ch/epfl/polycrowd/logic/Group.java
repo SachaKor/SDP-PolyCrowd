@@ -99,4 +99,7 @@ public class Group extends Storable {
     }
 
 
+    public void removeMember(User user) {
+        members.remove(user) ;
+    }
 }
