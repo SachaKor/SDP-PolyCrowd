@@ -16,15 +16,11 @@ import java.util.stream.Collectors;
 
 public class Group extends Storable {
 
-    private Event event ;
-    private String eventId;
-
-    private String gid;
-    private String groupName;
-
-    private Set<User> members;
-
-
+    public String eventName ;
+    public String eventId ;
+    public String gid;
+    public String groupName;
+    public Set<User> members;
 
     /*
        The groupId is only set by the DatabaseInterface when a new
@@ -35,26 +31,18 @@ public class Group extends Storable {
        in which case the event being viewed can be passed as an argument to Group instead of just the id
      */
 
-    public Group(String groupName, Event event, Set<User> members){
+    public Group(String groupName, String eventName, String eventId, Set<User> members){
         this.groupName = groupName;
-        this.eventId = eventId;
+        this.eventId  = eventId ;
+        this.eventName = eventName ;
         this.members = members;
     }
 
     // Testing constructor
     public Group()  {
-        this.eventId = "DEBUGEVENTIDWHAT";
+        //this.eventId = "DEBUGEVENTIDWHAT";
         this.members = new HashSet<>();
         members.add(new User("fake@fake.com", "FAKEFAKEFAKEFAKE", "Fake John", 1));
-    }
-  
-    @Override
-    public Map<String, Object> getRawData() {
-        Map<String,Object> m = new HashMap<>();
-        m.put("name", groupName) ;
-        m.put("members", new ArrayList<>(members));
-        m.put("event", event);
-        return m;
     }
 
     public Set<User> getMembers() {
@@ -66,11 +54,15 @@ public class Group extends Storable {
         return members.stream().map(User::getName).collect(Collectors.toList());
     }
 
+    public void setGid(String gid) {
+        this.gid = gid;
+    }
+
     public String getGid() { return gid; }
 
     public String getEventId() { return eventId; }
 
-    public Event getEvent() { return event ; }
+    public String getEventName() { return eventName ; }
 
     public String getGroupName() {
         return groupName;
@@ -82,19 +74,23 @@ public class Group extends Storable {
 
     public static Group getFromDocument(Map<String, Object> data) {
         Set<User> members = new HashSet<>((List<User>) Objects.requireNonNull(data.get("members")));
-        Event event = (Event) Objects.requireNonNull(data.get("eventId"));
-        String name = Objects.requireNonNull(data.get("name")).toString();
-
-        Group ret = new Group(name, event, members);
+        String groupName = Objects.requireNonNull(data.get("groupName")).toString();
+        String eventName = Objects.requireNonNull(data.get("eventName")).toString() ;
+        String eventId = Objects.requireNonNull(data.get("eventId")).toString() ;
+        Group ret = new Group(groupName, eventName, eventId, members);
         return ret;
     }
 
-    public void setGid(String gid) {
-        this.gid = gid;
+
+    @Override
+    public Map<String, Object> getRawData() {
+        Map<String,Object> m = new HashMap<>();
+        m.put("groupName", groupName) ;
+        m.put("eventName", eventName);
+        m.put("eventId", eventId) ;
+        m.put("members", new ArrayList<>(members));
+        return m;
     }
 
-    public void setEvent(Event event){
-        this.event = event ;
-    }
 
 }
