@@ -38,7 +38,7 @@
         android:layout_below="@+id/invite_group_button"
         android:layout_marginTop="10dp"
         android:text="@string/leave_group"
-        android:onClick="leaveLinkClicked"/>
+        android:onClick="onLeaveLinkClick"/>
 
 
 </LinearLayout>
