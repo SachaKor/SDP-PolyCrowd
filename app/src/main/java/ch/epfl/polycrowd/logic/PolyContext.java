@@ -31,6 +31,7 @@ public abstract class PolyContext extends Context {
     private static String standId = null;
     private static DatabaseInterface dbInterface  = new FirebaseInterface();
     private static UserLocator userLocator ;
+    private static List<Group> userGroupList ;
 
     public static void reset(){
         currentEvent = null;
@@ -128,12 +129,13 @@ public abstract class PolyContext extends Context {
     public static void setDBI(DatabaseInterface dbInterfaceInject){
         dbInterface = dbInterfaceInject ;
     }
-    public static void setCurrentGroup(Group gr){
-        currentGroup = gr ;
-    }
 
     public static DatabaseInterface getDBI(){
         return dbInterface ;
+    }
+
+    public static void setCurrentGroup(Group gr){
+        currentGroup = gr ;
     }
 
     public static Group getCurrentGroup(){
@@ -147,4 +149,8 @@ public abstract class PolyContext extends Context {
     public static UserLocator getUserLocator(){
         return userLocator ;
     }
+
+    public static void setUserGroups(List<Group> groups ){ userGroupList = groups ; }
+
+    public static List<Group> getUserGroups(){ return userGroupList ; }
 }
