@@ -36,8 +36,7 @@ import ch.epfl.polycrowd.FeedActivity;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.authentification.LoginActivity;
 import ch.epfl.polycrowd.frontPage.FrontPageActivity;
-import ch.epfl.polycrowd.groupPage.CreateGroupDialogFragment;
-import ch.epfl.polycrowd.groupPage.GroupPageActivity;
+import ch.epfl.polycrowd.map.CreateGroupDialogFragment;
 import ch.epfl.polycrowd.groupPage.GroupsListActivity;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
@@ -47,7 +46,7 @@ import ch.epfl.polycrowd.logic.User;
 import static ch.epfl.polycrowd.ActivityHelper.eventIntentHandler;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
-public class MapActivity extends AppCompatActivity implements CreateGroupDialogFragment.CreateGroupDialogListener  {
+public class MapActivity extends AppCompatActivity implements CreateGroupDialogFragment.CreateGroupDialogListener {
 
     // map displayed
     public CrowdMap mMap;
@@ -259,9 +258,9 @@ public class MapActivity extends AppCompatActivity implements CreateGroupDialogF
     }
 
     @Override
-    public void onOKCreateGroupClick(DialogFragment dialog, String groupName, String eventId) {
+    public void onOKCreateGroupClick(DialogFragment dialog, String groupName) {
 
-        if(groupName == null || groupName.isEmpty() || eventId == null || eventId.isEmpty())
+        if(groupName == null || groupName.isEmpty())
             return ;
         //TODO does it make a difference whether this user set is initialized inside of the callback or not?
         //What if the user logs out before the callback's been executed?
@@ -280,4 +279,6 @@ public class MapActivity extends AppCompatActivity implements CreateGroupDialogF
         });
 
     }
+
+
 }
