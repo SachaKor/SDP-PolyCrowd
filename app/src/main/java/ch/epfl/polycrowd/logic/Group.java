@@ -58,6 +58,10 @@ public class Group extends Storable {
 
     public String getEventId() { return eventId; }
 
+    public String getName() {
+        return name ;
+    }
+
     public void addMember(User u){
         members.add(u);
     }
@@ -74,4 +78,5 @@ public class Group extends Storable {
     public void setGid(String gid) {
         this.gid = gid;
     }
+
 }
