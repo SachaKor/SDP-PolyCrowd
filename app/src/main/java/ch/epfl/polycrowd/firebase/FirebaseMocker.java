@@ -304,7 +304,7 @@ public class FirebaseMocker implements DatabaseInterface {
         Iterator<User> userIterator = usersAndPasswords.keySet().iterator();
         while (!userFound && userIterator.hasNext()) {
             user = userIterator.next();
-            if (user.getName().equals(username)) {
+            if (user.getUsername().equals(username)) {
                 userFound = true;
             }
         }

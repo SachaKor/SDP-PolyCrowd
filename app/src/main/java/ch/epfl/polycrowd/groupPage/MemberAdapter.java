@@ -33,7 +33,7 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberListHolder>{
 
     @Override
     public void onBindViewHolder(@NonNull MemberListHolder holder, int position) {
-        holder.mTitle.setText(members.get(position).getName());
+        holder.mTitle.setText(members.get(position).getUsername());
         holder.mImaeView.setImageResource(R.drawable.default_user_pic);
         holder.mDes.setText(members.get(position).getEmail());
         holder.itemClickListener = (v,p) -> {

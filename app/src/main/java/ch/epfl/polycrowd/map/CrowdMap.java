@@ -21,10 +21,8 @@ import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.maps.android.data.Feature;
 import com.google.maps.android.data.kml.KmlContainer;
 import com.google.maps.android.data.kml.KmlLayer;
 import com.google.maps.android.data.kml.KmlPlacemark;
@@ -35,27 +33,18 @@ import com.google.maps.android.heatmaps.HeatmapTileProvider;
 
 import org.xmlpull.v1.XmlPullParserException;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
-import java.util.Set;
 import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 
 import ch.epfl.polycrowd.ActivityHelper;
 import ch.epfl.polycrowd.R;
-import ch.epfl.polycrowd.Utils;
 import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
@@ -190,7 +179,7 @@ public class CrowdMap implements OnMapReadyCallback {
             for(User groupMember : PolyContext.getCurrentGroup().getMembers()){
                 groupMarkers.put(groupMember , googleMap.addMarker(
                         new MarkerOptions().position(groupMember.getLocation())
-                                           .title(groupMember.getName())
+                                           .title(groupMember.getUsername())
                                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.pointred))));
             }
         }

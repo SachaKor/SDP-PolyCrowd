@@ -25,7 +25,7 @@ public class UserTest {
 
     @Test
     public void testGetName(){
-        assertEquals(testUser.getName(),"fakeUser");
+        assertEquals(testUser.getUsername(),"fakeUser");
     }
     @Test
     public void testGetEmail(){
@@ -48,7 +48,7 @@ public class UserTest {
         assertEquals(User.getFromDocument(data).getUid() , "1" );
         assertEquals(User.getFromDocument(data).getEmail() , "test@test" );
         assertEquals((User.getFromDocument(data).getAge()), new Integer(3));
-        assertEquals((User.getFromDocument(data).getName()), "test");
+        assertEquals((User.getFromDocument(data).getUsername()), "test");
 
 
     }

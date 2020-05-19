@@ -106,7 +106,7 @@ public class GroupMapFragment extends Fragment implements OnMapReadyCallback  {
             for (User u : gr.getMembers()) {
                 LatLng location = u.getLocation();
                 memberLocationsMap.put(u, location);
-                memberMarkersMap.put(u, new MarkerOptions().position(location).title(u.getName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.pointred)));
+                memberMarkersMap.put(u, new MarkerOptions().position(location).title(u.getUsername()).icon(BitmapDescriptorFactory.fromResource(R.drawable.pointred)));
             }
         }
     }

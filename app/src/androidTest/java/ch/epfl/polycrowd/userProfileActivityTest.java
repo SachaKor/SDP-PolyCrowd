@@ -16,7 +16,6 @@ import androidx.test.rule.ActivityTestRule;
 import ch.epfl.polycrowd.userProfile.UserProfilePageActivity;
 import ch.epfl.polycrowd.logic.PolyContext;
 
-import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.typeText;
@@ -63,7 +62,7 @@ public class userProfileActivityTest {
     @Test
     public void testCorrectlyLoadsDataFromUser(){
         onView(withId(R.id.profileUserName)).check(matches(withText
-                (containsString(PolyContext.getCurrentUser().getName()))));
+                (containsString(PolyContext.getCurrentUser().getUsername()))));
         onView(withId(R.id.profileEmail)).check(matches
                 (withText(containsString(PolyContext.getCurrentUser().getEmail()))));
     }

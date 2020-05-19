@@ -58,8 +58,8 @@ public class GroupPageActivityTest {
         navigateToFragment(false);
         onView(withText(testUser0.getEmail())).check(matches((isDisplayed()))) ;
         onView(withText(testUser1.getEmail())).check(matches((isDisplayed()))) ;
-        onView(withText(testUser0.getName())).check(matches((isDisplayed()))) ;
-        onView(withText(testUser1.getName())).check(matches((isDisplayed()))) ;
+        onView(withText(testUser0.getUsername())).check(matches((isDisplayed()))) ;
+        onView(withText(testUser1.getUsername())).check(matches((isDisplayed()))) ;
     }
 
     /*@Test

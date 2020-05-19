@@ -27,7 +27,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.theartofdev.edmodo.cropper.CropImage;
-import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -65,7 +64,7 @@ public class UserProfilePageActivity extends AppCompatActivity {
     void setUpViews() {
         user = PolyContext.getCurrentUser();
         TextView usernameField = view.findViewById(R.id.profileUserName);
-        usernameField.setText(user.getName());
+        usernameField.setText(user.getUsername());
         TextView emailField = view.findViewById(R.id.profileEmail);
         emailField.setText(user.getEmail());
         downloadUserImage();
