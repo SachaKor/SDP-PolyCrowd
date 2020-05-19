@@ -16,22 +16,27 @@ import java.util.stream.Collectors;
 
 public class Group extends Storable {
 
-    private String gid;
+    private Event event ;
     private String eventId;
+
+    private String gid;
+    private String groupName;
 
     private Set<User> members;
 
-    private String name ;
+
 
     /*
-       The constructor only takes values that can be set by the user,
-       such as the group name, member-list, and eventId.
        The groupId is only set by the DatabaseInterface when a new
-       document/storage entry has been made for this group
+       document/storage entry has been made for this group. For events,
+       since only way to distinguish events is by eventId (i.e, the documentReferenceId for
+       event), it has to be passed as a constructor argument. This can be
+       changed if the create group button is moved to the EventPageDetails,
+       in which case the event being viewed can be passed as an argument to Group instead of just the id
      */
 
-    public Group(String name, String eventId, Set<User> members){
-        this.name = name;
+    public Group(String groupName, Event event, Set<User> members){
+        this.groupName = groupName;
         this.eventId = eventId;
         this.members = members;
     }
@@ -46,9 +51,9 @@ public class Group extends Storable {
     @Override
     public Map<String, Object> getRawData() {
         Map<String,Object> m = new HashMap<>();
-        m.put("name", name) ;
+        m.put("name", groupName) ;
         m.put("members", new ArrayList<>(members));
-        m.put("eventId", eventId);
+        m.put("event", event);
         return m;
     }
 
@@ -65,8 +70,10 @@ public class Group extends Storable {
 
     public String getEventId() { return eventId; }
 
-    public String getName() {
-        return name ;
+    public Event getEvent() { return event ; }
+
+    public String getGroupName() {
+        return groupName;
     }
 
     public void addMember(User u){
@@ -75,15 +82,19 @@ public class Group extends Storable {
 
     public static Group getFromDocument(Map<String, Object> data) {
         Set<User> members = new HashSet<>((List<User>) Objects.requireNonNull(data.get("members")));
-        String eventId = Objects.requireNonNull(data.get("eventId")).toString();
+        Event event = (Event) Objects.requireNonNull(data.get("eventId"));
         String name = Objects.requireNonNull(data.get("name")).toString();
 
-        Group ret = new Group(name, eventId, members);
+        Group ret = new Group(name, event, members);
         return ret;
     }
 
     public void setGid(String gid) {
         this.gid = gid;
+    }
+
+    public void setEvent(Event event){
+        this.event = event ;
     }
 
 }
