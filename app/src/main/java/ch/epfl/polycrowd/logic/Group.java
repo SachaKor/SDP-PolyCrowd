@@ -28,9 +28,7 @@ public class Group extends Storable {
        The groupId is only set by the DatabaseInterface when a new
        document/storage entry has been made for this group. For events,
        since only way to distinguish events is by eventId (i.e, the documentReferenceId for
-       event), it has to be passed as a constructor argument. This can be
-       changed if the create group button is moved to the EventPageDetails,
-       in which case the event being viewed can be passed as an argument to Group instead of just the id
+       event), it has to be passed as a constructor argument.
      */
 
     public Group(String groupName, String eventName, String eventId, Set<User> members){
