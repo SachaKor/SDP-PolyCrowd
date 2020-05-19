@@ -23,6 +23,13 @@ public class Group extends Storable {
 
     private String name ;
 
+    /*
+       The constructor only takes values that can be set by the user,
+       such as the group name, member-list, and eventId.
+       The groupId is only set by the DatabaseInterface when a new
+       document/storage entry has been made for this group
+     */
+
     public Group(String name, String eventId, Set<User> members){
         this.name = name;
         this.eventId = eventId;
