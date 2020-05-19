@@ -27,7 +27,7 @@ import ch.epfl.polycrowd.userProfile.ItemClickListener;
 
 import static ch.epfl.polycrowd.ActivityHelper.toastPopup;
 
-public class GroupsListActivity extends AppCompatActivity implements CreateGroupDialogFragment.CreateGroupDialogListener {
+public class GroupsListActivity extends AppCompatActivity {
 
     private static final String TAG = "GroupsListActivity" ;
 
@@ -56,48 +56,6 @@ public class GroupsListActivity extends AppCompatActivity implements CreateGroup
         DialogFragment dialog = new CreateGroupDialogFragment();
         dialog.show(getSupportFragmentManager(), "CreateGroupDialogFragment");
     }
-    @Override
-    public void onOKCreateGroupClick(DialogFragment dialog, String groupName, String eventId) {
-
-        if(groupName == null || groupName.isEmpty() || eventId == null || eventId.isEmpty())
-            return ;
-
-
-        //TODO does it make a difference whether this user set is initialized inside of the callback or not?
-        //What if the user logs out before the callback's been executed?
-        Set<User> memberSet = new HashSet<>() ;
-        memberSet.add(PolyContext.getCurrentUser()) ;
-
-        //Toasts for error handling
-        Toast eventNotFoundToast = Toast.makeText(this, "Event not found!", Toast.LENGTH_LONG) ;
-        Toast generalErrorToast = Toast.makeText(this, "Error creating group, try again later", Toast.LENGTH_LONG) ;
-
-        try {
-
-            PolyContext.getDBI().getEventById(eventId, ev -> {
-
-                if(ev == null){
-                    generalErrorToast.show();
-                } else {
-                    //Setup new group
-                    Group group = new Group(groupName, eventId, memberSet) ;
-                    PolyContext.getUserGroups().add(group) ;
-                    PolyContext.getDBI().createGroup(group.getRawData(), groupId -> {
-                        group.setEvent(ev);
-                        group.setGid(groupId);
-                        mAdapter.notifyAdapterDatasetChanged(PolyContext.getUserGroups());
-                });
-            }
-        });
-
-        } catch (IllegalArgumentException e){
-            eventNotFoundToast.show();
-        } catch (Exception e ){
-            generalErrorToast.show();
-        }
-
-
-    }
 
 
     private class GroupsListAdapter extends RecyclerView.Adapter<GroupsListHolder> {
@@ -109,7 +67,6 @@ public class GroupsListActivity extends AppCompatActivity implements CreateGroup
             this.userGroups = groups ;
             this.c = c ;
         }
-
 
         @NonNull
         @Override
