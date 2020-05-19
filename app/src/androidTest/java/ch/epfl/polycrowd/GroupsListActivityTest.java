@@ -32,7 +32,7 @@ public class GroupsListActivityTest {
     Group group0, group1 ;
     User testUser ;
 
-    @Before
+   /* @Before
     public void setUp(){
         AndroidTestHelper.SetupMockDBI();
         testUser = AndroidTestHelper.getNewUser() ;

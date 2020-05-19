@@ -33,7 +33,7 @@ public class GroupPageActivityTest {
     private final String SECOND_FRAG_TITLE = "SECONDSEGMENT" ;
     private final String FIRST_FRAG_TITLE =   "FIRSTSEGMENT" ;
 
-    @Before
+   /*| @Before
     public void setUp(){
         AndroidTestHelper.SetupMockDBI();
         testUser0 = AndroidTestHelper.getNewUser() ;
