@@ -235,6 +235,7 @@ public class FirebaseInterface implements DatabaseInterface {
                     .document(eventId).get()
                     .addOnSuccessListener(documentSnapshot -> {
                         Log.d(TAG, TAG1 + " success");
+                        Log.d(TAG, "Document data: " + documentSnapshot.getData().toString()) ;
                         Event event = Event.getFromDocument(Objects.requireNonNull(documentSnapshot.getData()));
                         event.setId(eventId);
                         eventHandler.handle(event);
@@ -287,6 +288,24 @@ public class FirebaseInterface implements DatabaseInterface {
                 }) ;
     }
 
+
+    //TODO should we make the errors in the onFailureListener be propagated to the calling class?
+    //What's the diff between someCallback(String arg1, Handler<E> arg2) rather than specifiying E ?
+    @Override
+    public void createGroup(Map<String, Object> groupRawData, Handler<String> handler){
+        final String TAG1 = "createGroup";
+        if(groupRawData == null) {
+            Log.w(TAG, TAG1 + " eventId id is null");
+            return;
+        }
+        getFirestoreInstance(false).collection(GROUPS)
+                .add(groupRawData)
+                .addOnSuccessListener(documentReference -> {
+                    Log.e("CREATE GROUP",documentReference.getId());
+                    handler.handle(documentReference.getId());
+                }).addOnFailureListener(e -> Log.e(TAG, "Error adding new group : " + e));
+    }
+
     @Override
     public void getGroupByGroupId(String groupId, Handler<Group> groupHandler) {
             getFirestoreInstance(false).collection(GROUPS).whereEqualTo("groupId", groupId).get().addOnSuccessListener(
@@ -322,25 +341,6 @@ public class FirebaseInterface implements DatabaseInterface {
             }
             usersHandler.handle(users);
         }) ;
-    }
-
-
-    //TODO should we make the errors in the onFailureListener be propagated to the calling class?
-    //What's the diff between someCallback(String arg1, Handler<E> arg2) rather than specifiying E ?
-    @Override
-    public void createGroup(Map<String, Object> groupRawData, Handler<String> handler){
-        final String TAG1 = "createGroup";
-        if(groupRawData == null) {
-            Log.w(TAG, TAG1 + " eventId id is null");
-            return;
-        }
-            getFirestoreInstance(false).collection(GROUPS)
-                    .add(groupRawData)
-                    .addOnSuccessListener(documentReference -> {
-                        Log.e("CREATE GROUP",documentReference.getId());
-                        handler.handle(documentReference.getId());
-            }).addOnFailureListener(e -> Log.e(TAG, "Error adding new group : " + e));
-
     }
 
 
