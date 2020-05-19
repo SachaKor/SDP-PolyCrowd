@@ -47,17 +47,6 @@ public class GroupsListActivity extends AppCompatActivity {
         mRecyclerView.setAdapter(mAdapter);
     }
 
-    public void onCreateGroupClicked(View view) {
-        showNoticeDialog();
-    }
-
-    private void showNoticeDialog() {
-        // Create an instance of the dialog fragment and show it
-        DialogFragment dialog = new CreateGroupDialogFragment();
-        dialog.show(getSupportFragmentManager(), "CreateGroupDialogFragment");
-    }
-
-
     private class GroupsListAdapter extends RecyclerView.Adapter<GroupsListHolder> {
 
         List<Group> userGroups;
