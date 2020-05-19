@@ -93,8 +93,11 @@ public class UserProfilePageActivity extends AppCompatActivity {
     }
 
     public void onMyGroupsButtonClick(View view) {
-        Intent intent = new Intent(this, GroupsListActivity.class) ;
-        startActivity(intent);
+        PolyContext.getDBI().getUserGroups(PolyContext.getCurrentUser(), groupsList -> {
+            PolyContext.setUserGroups(groupsList);
+            Intent intent = new Intent(this, GroupsListActivity.class) ;
+            startActivity(intent);
+        });
     }
 
     public void OnUserProfileEditPasswordButtonClick(View view) {
