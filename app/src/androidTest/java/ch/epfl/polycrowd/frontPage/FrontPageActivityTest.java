@@ -1,4 +1,4 @@
-package ch.epfl.polycrowd;
+package ch.epfl.polycrowd.frontPage;
 
 import android.Manifest;
 import android.content.Intent;
@@ -19,6 +19,9 @@ import java.util.List;
 import java.util.Map;
 
 import androidx.test.rule.GrantPermissionRule;
+
+import ch.epfl.polycrowd.AndroidTestHelper;
+import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.firebase.FirebaseMocker;
 import ch.epfl.polycrowd.frontPage.FrontPageActivity;

@@ -1,4 +1,4 @@
-package ch.epfl.polycrowd;
+package ch.epfl.polycrowd.account;
 
 //import com.google.android.gms.tasks.OnSuccessListener;
 //import com.google.firebase.auth.AuthResult;
@@ -13,6 +13,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import androidx.test.rule.ActivityTestRule;
 
+import ch.epfl.polycrowd.AndroidTestHelper;
+import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.authentification.LoginActivity;
 import ch.epfl.polycrowd.logic.PolyContext;
 
@@ -32,14 +34,9 @@ import static org.hamcrest.core.StringContains.containsString;
 
 public class LoginActivityTest {
 
-    @BeforeClass
-    public static void setUpBeforeActivityLaunch(){
-        PolyContext.reset();
-    }
-
     @Rule
     public final ActivityTestRule<LoginActivity> loginActivityRule =
-            new ActivityTestRule<>(LoginActivity.class, true, false);
+            new ActivityTestRule<>(LoginActivity.class, false, false);
 
     @Before
     public void setUp() {
@@ -53,12 +50,8 @@ public class LoginActivityTest {
 
     @Test
     public void testClickForgotPassword(){
-        /*
         onView(withId(R.id.forgot_password_button)).perform(click());
-        sleep();
         onView(withId(R.id.send_reset_link_logo)).check(matches(isDisplayed()));
-
-         */
     }
 
     @Test
@@ -70,7 +63,6 @@ public class LoginActivityTest {
     public void testSuccessfulSignIn() {
         onView(withId(R.id.sign_in_email)).perform(typeText(AndroidTestHelper.getUser().getEmail()), closeSoftKeyboard());
         onView(withId(R.id.sign_in_pswd)).perform(typeText(AndroidTestHelper.getUserPass()), closeSoftKeyboard());
-        sleep();
         onView(withId(R.id.sign_in_button)).perform(click());
         onView(withText("Sign in success"))
                 .inRoot(withDecorView(not(loginActivityRule.getActivity().getWindow().getDecorView())))
@@ -79,13 +71,11 @@ public class LoginActivityTest {
 
     @Test
     public void testUnsuccessfulSignIn() {
-        sleep();
         onView(withId(R.id.sign_in_email))
                 .perform(typeText("Hopefully_Does_Not_Exist_!$#%&$"), closeSoftKeyboard());
         onView(withId(R.id.sign_in_pswd))
                 .perform(typeText("password"), closeSoftKeyboard());
         onView(withId(R.id.sign_in_button)).perform(click());
-        sleep();
         onView(withText("Incorrect email or password"))
                 .inRoot(withDecorView(not(loginActivityRule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));
@@ -94,9 +84,7 @@ public class LoginActivityTest {
 
     @Test
     public void testEmailFieldEmpty() {
-        sleep();
         onView(withId(R.id.sign_in_button)).perform(click());
-        sleep();
         onView(withText("Enter your email"))
                 .inRoot(withDecorView(not(loginActivityRule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));
@@ -104,10 +92,8 @@ public class LoginActivityTest {
 
    @Test
     public void testPasswordFieldEmpty() {
-        sleep();
         onView(withId(R.id.sign_in_email)).perform(typeText(AndroidTestHelper.getUser().getEmail()), closeSoftKeyboard());
         onView(withId(R.id.sign_in_button)).perform(click());
-        sleep();
         onView(withText("Enter your password"))
                 .inRoot(withDecorView(not(loginActivityRule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));
