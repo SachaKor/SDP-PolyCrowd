@@ -71,16 +71,13 @@ public class LoginActivity extends AppCompatActivity {
 
     private Handler<User> successHandler(){
         return user->{
-               //When would the currentUser be null if signin was successful?
             ActivityHelper.toastPopup(this,"Sign in success");
-
-            //Successful login redirects to front page
 
             PolyContext.setCurrentUser(user);
             PolyContext.getUserLocator().setRegisteredUser(user);
+
             /* if the user logs in to accept the organizer invitation, add him/her to the
                 organizers list, then open the event details page for the preview */
-            Log.d(TAG, "previous page: " + PolyContext.getPreviousPage());
             switch (PolyContext.getInviteRole()) {
                 case ORGANIZER:
                         if (PolyContext.getCurrentEvent() == null) {
