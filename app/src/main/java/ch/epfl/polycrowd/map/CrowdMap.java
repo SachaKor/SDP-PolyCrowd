@@ -318,10 +318,11 @@ public class CrowdMap implements OnMapReadyCallback {
                 if(emergencies != null){
                     for(String user : emergencies.keySet()){
                         LatLng pos = positions.get(user);
-                        MarkerOptions mrko = new MarkerOptions().position(pos).title("!").snippet(emergencies.get(user));
-                        Marker m = mMap.addMarker(mrko);
-                        emergencyMarkers.put(m.getId(),user);
-
+                        if(pos != null) {
+                            MarkerOptions mrko = new MarkerOptions().position(pos).title("!").snippet(emergencies.get(user));
+                            Marker m = mMap.addMarker(mrko);
+                            emergencyMarkers.put(m.getId(), user);
+                        }
                     }
                 }
                 mMap.setOnMarkerClickListener(marker -> {
