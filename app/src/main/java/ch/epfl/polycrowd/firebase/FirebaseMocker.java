@@ -31,28 +31,24 @@ public class FirebaseMocker implements DatabaseInterface {
 
     private static final String TAG = "FirebaseMocker";
 
-    private Map<User, String> usersAndPasswords;
-    private List<Event> events;
+    private Map<User, String> usersAndPasswords = new HashMap<>();
+    private List<Event> events = new ArrayList<>();
     private byte[] image;
-    private Map<String, Group> groupIdGroupPairs ;
+    private Map<String, Group> groupIdGroupPairs = new HashMap<>();
     private byte[] userImg;
     private String uriString;
-    private final String connectionId;
+    private final String connectionId = "MOCK_CONNECTION_ID";
 
-    private Map<String, String> userEmergencies;
-    private Map<String, LatLng> userPositions;
+    private Map<String, String> userEmergencies = new HashMap<>();
+    private Map<String, LatLng> userPositions = new HashMap<>();
 
     public FirebaseMocker(Map<String, Pair<User, String>> defaultMailAndUserPassPair, List<Event> defaultEvents) {
         Log.d(TAG, "Database mocker init");
-        usersAndPasswords = new HashMap<>();
         for (Map.Entry<String, Pair<User, String>> entry : defaultMailAndUserPassPair.entrySet()) {
             usersAndPasswords.put(entry.getValue().first, entry.getValue().second);
         }
-        events = new ArrayList<>();
         events.addAll(defaultEvents);
-        groupIdGroupPairs = new HashMap<>() ;
         image = new byte[100];
-        connectionId = "MOCK_CONNECTION_ID" ;
     }
 
     public FirebaseMocker(Map<String, Pair<User, String>> defaultMailAndUserPassPair, List<Event> defaultEvents, String uriString) {
@@ -403,6 +399,7 @@ public class FirebaseMocker implements DatabaseInterface {
 
     @Override
     public void updateUserLocation(String id, LatLng location) {
+        if(id==null) return;
         userPositions.put(id,location);
     }
 
