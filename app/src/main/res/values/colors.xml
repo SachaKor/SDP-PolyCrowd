@@ -20,6 +20,7 @@
     <color name="userFollowersBg">#65DCE5</color>
     <color name="userProfileButtonColor">#49BEFF</color>
     <color name="grey">#BFC3C7</color>
+    <color name="red">#FF0000</color>
     <color name="white_transparent">#88FFFFFF</color>
 
 </resources>

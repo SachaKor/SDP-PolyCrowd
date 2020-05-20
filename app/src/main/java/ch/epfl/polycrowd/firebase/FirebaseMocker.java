@@ -39,6 +39,9 @@ public class FirebaseMocker implements DatabaseInterface {
     private String uriString;
     private final String connectionId;
 
+    private Map<String, String> userEmergencies;
+    private Map<String, LatLng> userPositions;
+
     public FirebaseMocker(Map<String, Pair<User, String>> defaultMailAndUserPassPair, List<Event> defaultEvents) {
         Log.d(TAG, "Database mocker init");
         usersAndPasswords = new HashMap<>();
@@ -183,8 +186,21 @@ public class FirebaseMocker implements DatabaseInterface {
     }
 
     @Override
-    public void addSOS(String userId, String eventId, String reason) {
-        //TODO ???
+    public void addSOS(String userId, String reason, EmptyHandler handler) {
+        userEmergencies.put(userId,reason);
+        handler.handle();
+    }
+
+    @Override
+    public void getSOS(String userId, Handler<String> handler){
+        if(userEmergencies.containsKey(userId))
+            handler.handle(userEmergencies.get(userId));
+    }
+
+    @Override
+    public void deleteSOS(String userId, EmptyHandler handler){
+        userEmergencies.remove(userId);
+        handler.handle();
     }
 
     @Override
@@ -386,10 +402,15 @@ public class FirebaseMocker implements DatabaseInterface {
     }
 
     @Override
-    public void updateUserLocation(String id, LatLng location) { }
+    public void updateUserLocation(String id, LatLng location) {
+        userPositions.put(id,location);
+    }
 
     @Override
-    public void fetchUserLocation(String id, Handler<LatLng> handlerSuccess) {}
+    public void fetchUserLocation(String id, Handler<LatLng> handlerSuccess) {
+        if(userPositions.containsKey(id))
+            handlerSuccess.handle(userPositions.get(id));
+    }
 
     public void sendMessageFeed(String eventId, Message m, EmptyHandler handler) {
         //TODO: mock realtime db

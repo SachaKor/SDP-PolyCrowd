@@ -75,7 +75,9 @@ public interface DatabaseInterface {
     void downloadEventImage(Event event, Handler<byte[]> handler);
 
     void updateEvent(Event event, Handler<Event> eventHandler);
-    void addSOS(String userId, String eventId, String reason);
+    void addSOS(String userId, String reason, EmptyHandler handler);
+    void getSOS(String userId, Handler<String> handler);
+    void deleteSOS(String userId, EmptyHandler handler);
 
     void addUserToGroup(String inviteGroupId, String userEmail, EmptyHandler emptyHandler);
 
