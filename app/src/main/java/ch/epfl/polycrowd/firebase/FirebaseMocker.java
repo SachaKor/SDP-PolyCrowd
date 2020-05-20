@@ -40,6 +40,8 @@ public class FirebaseMocker implements DatabaseInterface {
     private byte[] userImg;
     private String uriString;
     private final String connectionId;
+    private Map<String,String> userEmergencies = new HashMap<>();
+    private Map<String,LatLng> userPositions = new HashMap<>();
     private Map<String,List<Message>> eventMessages = new HashMap<>();
 
     public FirebaseMocker(Map<String, Pair<User, String>> defaultMailAndUserPassPair, List<Event> defaultEvents) {
