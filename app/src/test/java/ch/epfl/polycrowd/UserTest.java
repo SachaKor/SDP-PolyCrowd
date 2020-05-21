@@ -15,7 +15,7 @@ public class UserTest {
 
     @Test
     public void testGetRawData(){
-        assertEquals(testUser.getRawData().get("name"),"fakeUser");
+        assertEquals(testUser.getRawData().get(User.userNameTag),"fakeUser");
     }
 
     @Test
@@ -40,10 +40,10 @@ public class UserTest {
     @Test
     public void testGetFromDocument(){
         Map<String, Object> data = new HashMap<>();
-        data.put("username", "test");
-        data.put("email" , "test@test");
-        data.put("age" , 3L);
-        data.put("uid" , "1");
+        data.put(User.userNameTag, "test");
+        data.put(User.emailTag , "test@test");
+        data.put(User.ageTag , 3L);
+        data.put(User.uidTag, "1");
 
         assertEquals(User.getFromDocument(data).getUid() , "1" );
         assertEquals(User.getFromDocument(data).getEmail() , "test@test" );
