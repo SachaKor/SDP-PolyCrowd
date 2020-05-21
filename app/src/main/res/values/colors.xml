@@ -22,5 +22,8 @@
     <color name="grey">#BFC3C7</color>
     <color name="red">#FF0000</color>
     <color name="white_transparent">#88FFFFFF</color>
-
+    <color name="bluedark">#2f333f</color>
+    <color name="bluelight">#49acd5</color>
+    <color name="green">#45bc62</color>
+    <color name="orange">#eaad43</color>
 </resources>

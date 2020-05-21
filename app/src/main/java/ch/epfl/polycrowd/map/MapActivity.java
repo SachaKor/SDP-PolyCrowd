@@ -2,8 +2,11 @@ package ch.epfl.polycrowd.map;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -13,6 +16,7 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -47,7 +51,8 @@ public class MapActivity extends AppCompatActivity {
 
     // DEBUG
     private static final String TAG = MapActivity.class.getSimpleName();
-
+    //activity details dialogs
+    Dialog myDialog;
 
     //create buttons for testing location
     private LocationManager locationManager;
@@ -60,7 +65,7 @@ public class MapActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        myDialog = new Dialog(this);
         if(PolyContext.getCurrentEvent() == null){
             eventIntentHandler(this, FrontPageActivity.class);
         }
@@ -239,5 +244,22 @@ public class MapActivity extends AppCompatActivity {
 
     public void onUpdateLocationsCliked(View view) {
         mMap.getEventGoersPositions();
+    }
+
+    public void onClickShowPopup(View view) {
+        TextView txtclose;
+        Button btnFollow;
+        myDialog.setContentView(R.layout.popup_activity_details);
+        txtclose =(TextView) myDialog.findViewById(R.id.txtclose);
+        txtclose.setText("M");
+        btnFollow = (Button) myDialog.findViewById(R.id.btnfollow);
+        txtclose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myDialog.dismiss();
+            }
+        });
+        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        myDialog.show();
     }
 }
