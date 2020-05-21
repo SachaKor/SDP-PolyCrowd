@@ -94,7 +94,12 @@ public class Group extends Storable {
         m.put("groupName", groupName) ;
         m.put("eventName", eventName);
         m.put("eventId", eventId) ;
-        m.put("members", new ArrayList<>(members));
+        //m.put("members", new ArrayList<>(members));
+        List<Map<String, Object>> membersRawData = new ArrayList<>() ;
+        for(User u: members){
+            membersRawData.add(u.getRawData()) ;
+        }
+        m.put("members", membersRawData) ;
         return m;
     }
 
