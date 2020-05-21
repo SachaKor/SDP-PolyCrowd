@@ -203,4 +203,17 @@ public class visitorFlow {
         onView(withId(R.id.myGroupsButton)).check(matches(withText(containsString("MyGroups"))));
     }
 
+    @Test
+    public void testEmergencyPage() {
+        onView(withId(R.id.viewPager)).perform(ViewActions.click());
+
+        onView(withId(R.id.butSOS)).perform(ViewActions.click());
+        onView(withId(R.id.butSOS)).perform(ViewActions.longClick());
+        sleep();
+        onView(withId(R.id.sos_main)).check(matches(withText(R.string.sos_type)));
+        onView(withId(R.id.b0)).check(matches(withText(containsString("Accident"))));
+        onView(withId(R.id.b1)).check(matches(withText(containsString("Lost Minor"))));
+        onView(withId(R.id.b0)).perform(ViewActions.longClick());
+    }
+
 }
