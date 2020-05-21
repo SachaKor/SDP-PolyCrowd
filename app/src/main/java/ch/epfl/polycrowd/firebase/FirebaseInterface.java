@@ -271,7 +271,7 @@ public class FirebaseInterface implements DatabaseInterface {
 
     @Override
     public void getUserGroups(User user, Handler<List<Group>> groupsHandler) {
-        final String TAG1 = "getGroupByUserAndEvent";
+        final String TAG1 = "getUserGroups";
         Log.d(TAG, TAG1 + " is not mocked");
         getFirestoreInstance(false).collection(GROUPS)
                 .whereArrayContains("members", user)
@@ -295,7 +295,7 @@ public class FirebaseInterface implements DatabaseInterface {
     public void createGroup(Map<String, Object> groupRawData, Handler<String> handler){
         final String TAG1 = "createGroup";
         if(groupRawData == null) {
-            Log.w(TAG, TAG1 + " eventId id is null");
+            Log.w(TAG, TAG1 + " group raw data is null");
             return;
         }
         getFirestoreInstance(false).collection(GROUPS)
