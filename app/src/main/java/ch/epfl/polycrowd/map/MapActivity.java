@@ -25,20 +25,17 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import ch.epfl.polycrowd.ActivityHelper;
 import ch.epfl.polycrowd.EmergencyActivity;
-import ch.epfl.polycrowd.EventEditActivity;
 import ch.epfl.polycrowd.EventPageDetailsActivity;
 import ch.epfl.polycrowd.FeedActivity;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.authentification.LoginActivity;
 import ch.epfl.polycrowd.frontPage.FrontPageActivity;
-import ch.epfl.polycrowd.map.CreateGroupDialogFragment;
+import ch.epfl.polycrowd.groupPage.CreateGroupDialogFragment;
 import ch.epfl.polycrowd.groupPage.GroupsListActivity;
-import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
@@ -46,7 +43,7 @@ import ch.epfl.polycrowd.logic.User;
 import static ch.epfl.polycrowd.ActivityHelper.eventIntentHandler;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
-public class MapActivity extends AppCompatActivity implements CreateGroupDialogFragment.CreateGroupDialogListener {
+public class MapActivity extends AppCompatActivity {
 
     // map displayed
     public CrowdMap mMap;
@@ -258,38 +255,5 @@ public class MapActivity extends AppCompatActivity implements CreateGroupDialogF
     public void onUpdateLocationsCliked(View view) {
         mMap.getEventGoersPositions();
     }
-
-    public void onCreateGroupClicked(View view) {
-        showNoticeDialog();
-    }
-
-    private void showNoticeDialog() {
-        // Create an instance of the dialog fragment and show it
-        DialogFragment dialog = new CreateGroupDialogFragment();
-        dialog.show(getSupportFragmentManager(), "CreateGroupDialogFragment");
-    }
-
-    @Override
-    public void onOKCreateGroupClick(DialogFragment dialog, String groupName) {
-
-        if(groupName == null || groupName.isEmpty())
-            return ;
-        //TODO does it make a difference whether this user set is initialized inside of the callback or not?
-        //What if the user logs out before the callback's been executed?
-        Set<User> memberSet = new HashSet<>() ;
-        memberSet.add(PolyContext.getCurrentUser()) ;
-
-        //Toasts for error handling
-        Toast generalErrorToast = Toast.makeText(this, "Error creating group, try again later", Toast.LENGTH_LONG) ;
-        Toast createGroupSuccessToast = Toast.makeText(this, groupName+" created successfully!", Toast.LENGTH_LONG) ;
-        //Setup new group
-        Group group = new Group(groupName, PolyContext.getCurrentEvent().getName(), PolyContext.getCurrentEvent().getId(), memberSet) ;
-        PolyContext.getDBI().createGroup(group.getRawData(), groupId -> {
-            group.setGid(groupId);
-            createGroupSuccessToast.show();
-        });
-
-    }
-
 
 }
