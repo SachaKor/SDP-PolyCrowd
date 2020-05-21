@@ -24,7 +24,9 @@ import androidx.fragment.app.DialogFragment;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import ch.epfl.polycrowd.ActivityHelper;
@@ -231,7 +233,7 @@ public class MapActivity extends AppCompatActivity {
         buttonLeft.setOnClickListener(v -> {
             if(PolyContext.getCurrentUser() != null){
                 PolyContext.getDBI().getUserGroups(PolyContext.getCurrentUser(), groups->{
-                    PolyContext.setUserGroups(groups);
+                    PolyContext.setUserGroups(new ArrayList<>(groups));
                     for(Group g: groups){
                         if(!g.getEventId().equals(PolyContext.getCurrentEvent().getId())){
                             PolyContext.getUserGroups().remove(g) ;
