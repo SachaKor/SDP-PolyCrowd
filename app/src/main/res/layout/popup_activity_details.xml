@@ -1,125 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:layout_width="350dp"
-    android:layout_height="475dp"
-    android:background="@color/colorPrimaryDark"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:padding="5dp"
-    android:layout_gravity="center">
-    <TextView
-        android:id="@+id/txtclose"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:textColor="@color/white"
-        android:text="X"
-        android:textStyle="bold"
-        android:layout_gravity="end"
-        android:gravity="center"/>
-        //android:background="@drawable/r"/>
-    <LinearLayout
+    android:background="@drawable/layout_bg"
+    android:layout_gravity="top">
+
+    <RelativeLayout
+        android:id="@+id/rellay_title"
+        android:layout_gravity="top"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-            //android:src="@drawable/default_user_pic"
-            android:layout_gravity="center"
-            android:layout_marginTop="15dp"/>
         <TextView
+            android:id="@+id/Activity_details_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Elina Grofild"
-            android:textStyle="bold"
-            android:textColor="@color/white"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="5dp"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Montreal,Canada"
-            android:textColor="@color/white"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="5dp"/>
-    </LinearLayout>
-    <LinearLayout
+            android:layout_below="@+id/imgUserRellay"
+            android:text ="Error(Title)"
+            android:height="50dp"
+            android:textSize="32sp"
+            android:fontFamily="sans-serif-light"
+            />
+
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_below="@id/rellay_title"
         android:layout_marginTop="15dp"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <LinearLayout
-            android:background="@color/orange"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="100dp">
+        <TextView
+            android:id="@+id/description_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Description :"
+            android:textSize="20sp"/>
+        <TextView
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/description_title"
+            android:id="@+id/activity_popup_description_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Blablablablablablablabla"
+            android:textSize="20sp" />
+        <TextView
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/activity_popup_description_content"
+            android:id="@+id/open_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Open :"
+            android:textSize="20sp" />
+        <TextView
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/open_time"
+            android:id="@+id/activity_popup_organizedBy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Organized by: "
+            android:textSize="20sp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="150"
-                android:textSize="18sp"
-                android:textColor="@color/white"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Followers"
-                android:textSize="18sp"
-                android:textColor="@color/white"/>
-        </LinearLayout>
-        <LinearLayout
-            android:background="@color/green"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="100dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="19"
-                android:textSize="18sp"
-                android:textColor="@color/white"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Cities"
-                android:textSize="18sp"
-                android:textColor="@color/white"/>
-        </LinearLayout>
-        <LinearLayout
-            android:background="@color/bluelight"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="100dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="50"
-                android:textSize="18sp"
-                android:textColor="@color/white"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Posts"
-                android:textSize="18sp"
-                android:textColor="@color/white"/>
-        </LinearLayout>
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/btnfollow"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Follow Me"
-        android:layout_marginTop="25dp"
-        android:layout_gravity="center_horizontal"/>
-        //android:background="@drawable/"
-        android:textColor="@color/white"/>
-
-</LinearLayout>
+    </RelativeLayout>
+</RelativeLayout>

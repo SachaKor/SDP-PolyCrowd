@@ -51,8 +51,7 @@ public class MapActivity extends AppCompatActivity {
 
     // DEBUG
     private static final String TAG = MapActivity.class.getSimpleName();
-    //activity details dialogs
-    Dialog myDialog;
+
 
     //create buttons for testing location
     private LocationManager locationManager;
@@ -65,7 +64,7 @@ public class MapActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        myDialog = new Dialog(this);
+
         if(PolyContext.getCurrentEvent() == null){
             eventIntentHandler(this, FrontPageActivity.class);
         }
@@ -78,6 +77,8 @@ public class MapActivity extends AppCompatActivity {
             launchLocationRequest();
         });
 
+        //LOAD CALENDAR(IE ACTIVITIES) so i can select them by clicking on them
+        PolyContext.getCurrentEvent().loadCalendar(getApplicationContext().getFilesDir());
     }
 
     @SuppressLint("NewApi")
@@ -246,20 +247,4 @@ public class MapActivity extends AppCompatActivity {
         mMap.getEventGoersPositions();
     }
 
-    public void onClickShowPopup(View view) {
-        TextView txtclose;
-        Button btnFollow;
-        myDialog.setContentView(R.layout.popup_activity_details);
-        txtclose =(TextView) myDialog.findViewById(R.id.txtclose);
-        txtclose.setText("M");
-        btnFollow = (Button) myDialog.findViewById(R.id.btnfollow);
-        txtclose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                myDialog.dismiss();
-            }
-        });
-        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        myDialog.show();
-    }
 }

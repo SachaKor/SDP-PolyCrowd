@@ -1,9 +1,14 @@
 package ch.epfl.polycrowd.map;
 
+import android.app.Dialog;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -31,6 +36,7 @@ import com.google.maps.android.data.kml.KmlPolygon;
 import com.google.maps.android.heatmaps.Gradient;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
 
+import org.w3c.dom.Text;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
@@ -44,6 +50,7 @@ import java.util.function.Consumer;
 import ch.epfl.polycrowd.ActivityHelper;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.firebase.DatabaseInterface;
+import ch.epfl.polycrowd.logic.Activity;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 
@@ -71,7 +78,8 @@ public class CrowdMap implements OnMapReadyCallback {
     double offset =0.0001;
 
 
-
+    //activity details dialogs
+    Dialog myDialog;
 
     // ------ Constructor ---------------------------------------------
     public CrowdMap(MapActivity act_){
@@ -152,7 +160,35 @@ public class CrowdMap implements OnMapReadyCallback {
         // Set a listener for geometry clicked events.
         layer.setOnFeatureClickListener( feature -> {
                 ActivityHelper.toastPopup(act.getApplicationContext() ,feature.getProperty("name") );
-                // TODO : move to corresponding Activity
+                //FOR NOW ONLY DISPLAY FIRST ACTIVITY TODO: how to link kml polygon to an activity?(matching names, or location?)
+                List<Activity> activities = PolyContext.getCurrentEvent().getActivities();
+                //get get latlngbounds n see if its including
+
+                Activity activity = null;
+                for(Activity a : PolyContext.getCurrentEvent().getActivities()) {
+                    Log.d("ACTIVITY DETAILS", a.getLocation());
+                    Log.d("ACTIVITY DETAILS", feature.getProperty("name"));
+                    if(a.getLocation().equals(feature.getProperty("name"))){
+                        activity = a;
+                    }
+                }
+
+                if(activity != null) {
+                    myDialog = new Dialog(act);
+                    myDialog.setContentView(R.layout.popup_activity_details);
+                    TextView tv =  (TextView) myDialog.findViewById(R.id.Activity_details_title);
+                    tv.setText(activity.getSummary());
+                    tv = (TextView) myDialog.findViewById(R.id.activity_popup_description_content);
+                    tv.setText(activity.getDescription());
+                    tv = (TextView) myDialog.findViewById(R.id.open_time);
+                    tv.setText("open : " + activity.getStart().toString() + " - " + activity.getEnd().toString());
+                    tv = (TextView) myDialog.findViewById(R.id.activity_popup_organizedBy);
+                    if(activity.getOrganizer() != null) {
+                        tv.setText("Organized by : " + activity.getOrganizer());
+                    }
+                    myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    myDialog.show();
+                }
             }
         );
 
