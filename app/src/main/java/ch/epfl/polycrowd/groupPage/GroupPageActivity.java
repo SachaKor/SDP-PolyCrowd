@@ -175,9 +175,6 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
         int index = tab.getPosition() ;
         if(index == 0){
             Log.d(TAG, "TAB SELECTED FOR MAPS") ;
-            //TODO Move the showUserOnMap call here?
-            //Or drawMap has condition on which user to highlight?
-            //((GroupMapFragment)fragmentAdapter.getItem(index)).drawMap() ;
         }
     }
 
@@ -185,8 +182,7 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
     public void onTabUnselected(TabLayout.Tab tab) {
         int index = tab.getPosition() ;
         if(index == 0){
-            Log.d(TAG, "TAB UN-SELECTED FOR MAPS") ;
-            ((GroupMapFragment)fragmentAdapter.getItem(index)).resetMap() ;
+
         }
     }
 
@@ -194,14 +190,7 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
     public void onTabReselected(TabLayout.Tab tab) {
         int index = tab.getPosition() ;
         if(index == 0){
-            Log.d(TAG, "TAB RE-SELECTED FOR MAPS") ;
-            ((GroupMapFragment)fragmentAdapter.getItem(index)).resetMap() ;
         }
-    }
-
-    public void showUserOnMap(User user){
-        ((GroupMapFragment)fragmentAdapter.getItem(0)).highlightUserMarker(user);
-        viewPager.setCurrentItem(0);;
     }
 
 }

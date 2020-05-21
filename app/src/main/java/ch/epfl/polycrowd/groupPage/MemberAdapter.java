@@ -37,11 +37,7 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberListHolder>{
         holder.mImaeView.setImageResource(R.drawable.default_user_pic);
         holder.mDes.setText(members.get(position).getEmail());
         holder.itemClickListener = (v,p) -> {
-            //ViewPager vp = (ViewPager)  v.findViewById(R.id.viewPager) ;
-            //vp.setCurrentItem(0); //0 for MapFragment index
-            //the "v" is which view? the holder view?
-            ((GroupPageActivity)c).showUserOnMap(members.get(position));
-            //((GroupPageActivity)c).selectViewPagerIndex(0);
+
         } ;
     }
 
