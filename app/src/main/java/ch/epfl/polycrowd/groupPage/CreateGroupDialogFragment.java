@@ -1,4 +1,4 @@
-package ch.epfl.polycrowd.map;
+package ch.epfl.polycrowd.groupPage;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
