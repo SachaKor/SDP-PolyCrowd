@@ -52,6 +52,7 @@ public class User extends Storable {
         user.put(emailTag, this.email);
         user.put(userNameTag, this.userName);
         user.put(imageUriTag, imageUri);
+        user.put(uidTag, uid);
         return user;
     }
 
