@@ -234,6 +234,7 @@ public class MapActivity extends AppCompatActivity implements CreateGroupDialogF
         buttonLeft.setOnClickListener(v -> {
             if(PolyContext.getCurrentUser() != null){
                 PolyContext.getDBI().getUserGroups(PolyContext.getCurrentUser(), groups->{
+                    PolyContext.setUserGroups(groups);
                     for(Group g: groups){
                         if(g.getEventId().equals(PolyContext.getCurrentEvent().getId())){
                             PolyContext.getUserGroups().add(g) ;
