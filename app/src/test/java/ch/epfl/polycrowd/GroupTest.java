@@ -39,7 +39,6 @@ public class GroupTest {
         List<Map<String, Object>> usersRawData = new ArrayList<>() ;
         Map<String, Object> userRd = user.getRawData();
         userRd.put("age", 20L);
-        userRd.put(User.uidTag, "1") ;
         usersRawData.add(userRd) ;
         document.put("members", usersRawData) ;
         document.put("groupName", groupName) ;
