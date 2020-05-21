@@ -68,7 +68,7 @@
         android:gravity="center"
         android:onClick="onCreateGroupClicked"
         android:text="@string/create_new_group_button"
-        android:visibility="invisible"/>
+        android:visibility="visible"/>
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
