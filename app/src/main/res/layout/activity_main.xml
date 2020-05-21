@@ -67,7 +67,8 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:onClick="onCreateGroupClicked"
-        android:text="@string/create_new_group_button" />
+        android:text="@string/create_new_group_button"
+        android:visibility="invisible"/>
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
