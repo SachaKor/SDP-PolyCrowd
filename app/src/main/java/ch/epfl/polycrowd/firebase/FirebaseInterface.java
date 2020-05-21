@@ -274,7 +274,7 @@ public class FirebaseInterface implements DatabaseInterface {
         final String TAG1 = "getUserGroups";
         Log.d(TAG, TAG1 + " is not mocked");
         getFirestoreInstance(false).collection(GROUPS)
-                .whereArrayContains("members", user)
+                .whereArrayContains("members", user.getRawData())
                 .get()
                 .addOnSuccessListener(documentSnapshots -> {
                     List<Group> groupList = new ArrayList<>();
