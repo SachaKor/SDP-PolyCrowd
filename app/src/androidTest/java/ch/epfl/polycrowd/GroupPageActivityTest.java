@@ -9,6 +9,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.HashSet;
 
 import ch.epfl.polycrowd.groupPage.GroupPageActivity;
@@ -35,6 +37,7 @@ public class GroupPageActivityTest {
 
     @Before
     public void setUp(){
+        PolyContext.reset();
         AndroidTestHelper.SetupMockDBI();
         testUser0 = new User("anotherUser@mail.com", "2", "new_fakeUser2", 20);
         PolyContext.setCurrentUser(testUser0) ;
@@ -51,7 +54,7 @@ public class GroupPageActivityTest {
     @Test
     public void userListShowsCorrectlyMembersOfGroup(){
         //First navigate to user-list fragment
-        navigateToFragment(false);
+        // navigateToFragment(false);
         onView(withText(testUser0.getEmail())).check(matches((isDisplayed()))) ;
         onView(withText(testUser0.getUsername())).check(matches((isDisplayed()))) ;
     }
@@ -81,7 +84,9 @@ public class GroupPageActivityTest {
     private void navigateToFragment(boolean isMapFrag){
         assert(PolyContext.getCurrentGroup() == group0) ;
         assert(PolyContext.getCurrentUser() == testUser0) ;
-        AndroidTestHelper.sleep();
+        for(int i : Arrays.asList(1 ,23, 4, 5, 5))
+            AndroidTestHelper.sleep();
+
         if(isMapFrag){
             onView(withText(FIRST_FRAG_TITLE)).perform(ViewActions.click()) ;
         } else{
