@@ -61,15 +61,6 @@
         android:text="Feed"
         android:onClick="onFeedClicked"/>
 
-    <Button
-        android:id="@+id/createGroupButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:onClick="onCreateGroupClicked"
-        android:text="@string/create_new_group_button"
-        android:visibility="visible"/>
-
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
         android:layout_width="wrap_content"
