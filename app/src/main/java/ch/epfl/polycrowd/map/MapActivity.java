@@ -228,7 +228,7 @@ public class MapActivity extends AppCompatActivity implements CreateGroupDialogF
 
     void setVisitorButtons(Button buttonLeft, Button buttonRight) {
         buttonRight.setText("EVENT DETAILS");
-        buttonLeft.setText("CREATE GROUP");
+        buttonLeft.setText("GROUPS");
 
         buttonRight.setOnClickListener(v -> eventIntentHandler(this, EventPageDetailsActivity.class));
         buttonLeft.setOnClickListener(v -> eventIntentHandler(this , GroupsListActivity.class));
