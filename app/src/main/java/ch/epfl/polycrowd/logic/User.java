@@ -9,6 +9,7 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.IntToLongFunction;
 
 import static java.lang.Math.toIntExact;
 
@@ -16,9 +17,14 @@ import static java.lang.Math.toIntExact;
 public class User extends Storable {
 
     //TODO: add necessary attributes and methods
+    public static String userNameTag = "username" ;
+    public static String emailTag = "email" ;
+    public static String ageTag = "age" ;
+    public static String imageUriTag = "imgUri" ;
+    public static String uidTag = "uid" ;
 
     //Sample attributes
-    private String userName, email, uid, gid;
+    private String userName, email, uid;
     private Integer age;
     private String imageUri = null;
     private LatLng location ;
@@ -41,10 +47,12 @@ public class User extends Storable {
 
     @Override
     public Map<String, Object> getRawData() {
-        Map<String,Object> m = new HashMap<>();
-        m.put("name", userName);
-        m.put("age", age);
-        return m;
+        Map<String, Object> user = new HashMap<>();
+        user.put(ageTag, Long.valueOf(this.age));
+        user.put(emailTag, this.email);
+        user.put(userNameTag, this.userName);
+        user.put(imageUriTag, imageUri);
+        return user;
     }
 
     public Integer getAge() {
@@ -77,15 +85,15 @@ public class User extends Storable {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public static User getFromDocument(Map<String, Object> data) {
-        String username = Objects.requireNonNull(data.get("username")).toString();
-        String email = Objects.requireNonNull(data.get("email")).toString();
+        String username = Objects.requireNonNull(data.get(userNameTag)).toString();
+        String email = Objects.requireNonNull(data.get(emailTag)).toString();
 
-        Object age = Objects.requireNonNull(data.get("age"));
+        Object age = Objects.requireNonNull(data.get(ageTag));
         Integer real_age = toIntExact((Long)age);
 
-        String uid = Objects.requireNonNull(data.get("uid")).toString();
+        String uid = Objects.requireNonNull(data.get(uidTag)).toString();
 
-        Object obj = data.get("imgUri");
+        Object obj = data.get(imageUriTag);
         String imgUri = (obj == null)? null : obj.toString();
 
         return new User(email, uid, username, real_age, imgUri);
@@ -93,10 +101,10 @@ public class User extends Storable {
 
     public Map<String, Object> toHashMap(){
         Map<String, Object> user = new HashMap<>();
-        user.put("age", this.age);
-        user.put("email", this.email);
-        user.put("username", this.userName);
-        user.put("imgUri", imageUri);
+        user.put(ageTag, this.age);
+        user.put(emailTag, this.email);
+        user.put(userNameTag, this.userName);
+        user.put(imageUriTag, imageUri);
         return user;
     }
 
