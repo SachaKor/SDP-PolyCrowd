@@ -27,29 +27,25 @@ public class GroupPageActivityTest {
             new ActivityTestRule<GroupPageActivity>(GroupPageActivity.class, true, false);
 
 
-    Group group0, group1 ;
-    User testUser0, testUser1;
+    Group group0 ;
+    User testUser0;
 
     private final String SECOND_FRAG_TITLE = "SECONDSEGMENT" ;
     private final String FIRST_FRAG_TITLE =   "FIRSTSEGMENT" ;
 
-   /*| @Before
+    @Before
     public void setUp(){
         AndroidTestHelper.SetupMockDBI();
-        testUser0 = AndroidTestHelper.getNewUser() ;
-        //TODO maybe add a more general aux. method to TestHelper?
-        testUser1 = new User("anotherUser@mail.com", "2", "new_fakeUser2", 20);
+        testUser0 = new User("anotherUser@mail.com", "2", "new_fakeUser2", 20);
         PolyContext.setCurrentUser(testUser0) ;
-        group0 = new Group("testGid0", "testEvent0", new HashSet<>()) ;
+        Group group0 = new Group("testGid0", "testEvent" ,"testEventId0", new HashSet<>()) ;
         group0.addMember(testUser0);
-        group1 = new Group("testGid1", "testEvent1", new HashSet<>()) ;
-        group1.addMember(testUser0);
-        group1.addMember(testUser1);
-        PolyContext.getDBI().createGroup(group0, gr -> {});
-        PolyContext.getDBI().createGroup(group1, gr -> {});
-        PolyContext.setCurrentGroup(group1);
-        Intent intent = new Intent() ;
-        groupPageActivityRule.launchActivity(intent) ;
+        PolyContext.getDBI().createGroup(group0.getRawData(), gr -> {
+            PolyContext.setCurrentGroup(group0);
+            Intent intent = new Intent() ;
+            groupPageActivityRule.launchActivity(intent) ;
+        });
+
     }
 
     @Test
@@ -57,9 +53,7 @@ public class GroupPageActivityTest {
         //First navigate to user-list fragment
         navigateToFragment(false);
         onView(withText(testUser0.getEmail())).check(matches((isDisplayed()))) ;
-        onView(withText(testUser1.getEmail())).check(matches((isDisplayed()))) ;
         onView(withText(testUser0.getUsername())).check(matches((isDisplayed()))) ;
-        onView(withText(testUser1.getUsername())).check(matches((isDisplayed()))) ;
     }
 
     /*@Test
@@ -85,7 +79,7 @@ public class GroupPageActivityTest {
     }*/
 
     private void navigateToFragment(boolean isMapFrag){
-        assert(PolyContext.getCurrentGroup() == group1) ;
+        assert(PolyContext.getCurrentGroup() == group0) ;
         assert(PolyContext.getCurrentUser() == testUser0) ;
         AndroidTestHelper.sleep();
         if(isMapFrag){
