@@ -209,11 +209,29 @@ public class FirebaseMocker implements DatabaseInterface {
 
     @Override
     public void removeGroupIfEmpty(String gid, Handler<Group> handler) {
-        Group g = groupIdGroupPairs.getOrDefault(gid, null);
-        if(g == null || g.getMembers().size() == 0)
-            groupIdGroupPairs.remove(gid);
+        for(String groupId: groupIdGroupPairs.keySet()){
+            if(groupId.equals(gid)){
+                if(groupIdGroupPairs.get(groupId).getMembers().size() == 0){
+                    groupIdGroupPairs.remove(groupId) ;
+                    handler.handle(null);
+                    return ;
+                } else{
+                    handler.handle(groupIdGroupPairs.get(groupId));
+                }
+;
+            }
+        }
+    }
 
-        handler.handle(groupIdGroupPairs.getOrDefault(gid, null));
+    @Override
+    public void updateGroup(Group group, EmptyHandler handler) {
+        for(String groupId: groupIdGroupPairs.keySet()){
+            if(groupId.equals(group.getGid())){
+                groupIdGroupPairs.put(group.getGid(), group) ;
+                handler.handle();
+                return;
+            }
+        }
     }
 
     @Override
@@ -222,11 +240,11 @@ public class FirebaseMocker implements DatabaseInterface {
     }
 
     @Override
-    public void createGroup(Group group, Handler<Group> handler) {
-        Group newGroup = new Group(group.getGid(), group.getEventId(), group.getMembers()) ;
-        newGroup.addMember(PolyContext.getCurrentUser());
-        groupIdGroupPairs.put(newGroup.getGid(), newGroup) ;
-        handler.handle(newGroup);
+    public void createGroup(Map<String, Object> groupRawData, Handler<String> handler) {
+        Group newGroup =  Group.getFromDocument(groupRawData);
+        String newGroupId  = Integer.toString(groupIdGroupPairs.keySet().size()) ;
+        groupIdGroupPairs.put(newGroupId, newGroup) ;
+        handler.handle(newGroupId);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -318,7 +336,7 @@ public class FirebaseMocker implements DatabaseInterface {
         Iterator<User> userIterator = usersAndPasswords.keySet().iterator();
         while (!userFound && userIterator.hasNext()) {
             user = userIterator.next();
-            if (user.getName().equals(username)) {
+            if (user.getUsername().equals(username)) {
                 userFound = true;
             }
         }
@@ -376,6 +394,11 @@ public class FirebaseMocker implements DatabaseInterface {
             });
         });
         groupIdEventIdPairsHandler.handle(groupIdEventPairs);
+    }
+
+    @Override
+    public void getUserGroups(User user, Handler<List<Group>> userGroups) {
+            //TODO
     }
 
     @Override

@@ -48,11 +48,6 @@ public class GroupMemberListFragment extends Fragment {
     public void onViewCreated(View view,Bundle savedInstanceState){
         RecyclerView mRecyclerView = view.findViewById(R.id.members_recycler_view) ;
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        //TODO remove hard-coded members later
-        /*List<User> members = new ArrayList<>() ;
-        members.add(new User("user_email@mail", "123", "user", 23)) ;
-        members.add(new User("user_email@mail", "123", "user", 23)) ;
-        members.add(new User("user_email@mail", "123", "user", 23)) ; */
         if (PolyContext.getCurrentGroup() != null) {
             Set<User> members = PolyContext.getCurrentGroup().getMembers();
             Log.d(TAG, "Number of members is" + members.size()) ;

@@ -79,7 +79,7 @@ public class SignUpActivityTest {
                 .inRoot(withDecorView(not(mActivityRule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));
 
-        typeTextAndCloseKeyboard(R.id.sign_up_username, getNewUser().getName());
+        typeTextAndCloseKeyboard(R.id.sign_up_username, getNewUser().getUsername());
         typeTextAndCloseKeyboard(R.id.sign_up_pswd, "123");
         sleep();
 
@@ -90,7 +90,7 @@ public class SignUpActivityTest {
 
         sleep();
 
-        typeTextAndCloseKeyboard(R.id.sign_up_username, getNewUser().getName());
+        typeTextAndCloseKeyboard(R.id.sign_up_username, getNewUser().getUsername());
         typeTextAndCloseKeyboard(R.id.sign_up_pswd, "123456");
         sleep();
 
@@ -114,7 +114,7 @@ public class SignUpActivityTest {
     public void testToastIsDisplayedWhenPasswordsDoNotMatch() {
         sleep();
         typeTextAndCloseKeyboard(R.id.sign_up_email, getNewUser().getEmail());
-        typeTextAndCloseKeyboard(R.id.sign_up_username, getNewUser().getName());
+        typeTextAndCloseKeyboard(R.id.sign_up_username, getNewUser().getUsername());
         typeTextAndCloseKeyboard(R.id.sign_up_pswd, "1234567");
         typeTextAndCloseKeyboard(R.id.repeat_pswd, "4560000");
         onView(withId(R.id.sign_up_button)).perform(click());
@@ -127,7 +127,7 @@ public class SignUpActivityTest {
     @Test
     public void testIncorrectEmailToast() {
 
-        typeTextAndCloseKeyboard(R.id.sign_up_username, getNewUser().getName());
+        typeTextAndCloseKeyboard(R.id.sign_up_username, getNewUser().getUsername());
         typeTextAndCloseKeyboard(R.id.sign_up_pswd, "123");
         typeTextAndCloseKeyboard(R.id.repeat_pswd, "123");
         sleep();
@@ -141,7 +141,7 @@ public class SignUpActivityTest {
     @Test
     public void testUsernameExistsToast(){
         typeTextAndCloseKeyboard(R.id.sign_up_email, getNewUser().getEmail());
-        typeTextAndCloseKeyboard(R.id.sign_up_username, getUser().getName());
+        typeTextAndCloseKeyboard(R.id.sign_up_username, getUser().getUsername());
         typeTextAndCloseKeyboard(R.id.sign_up_pswd, "123456");
         typeTextAndCloseKeyboard(R.id.repeat_pswd, "123456");
 
@@ -156,7 +156,7 @@ public class SignUpActivityTest {
     @Test
     public void testEmailExistsToast(){
         typeTextAndCloseKeyboard(R.id.sign_up_email, getUser().getEmail());
-        typeTextAndCloseKeyboard(R.id.sign_up_username, getNewUser().getName());
+        typeTextAndCloseKeyboard(R.id.sign_up_username, getNewUser().getUsername());
         typeTextAndCloseKeyboard(R.id.sign_up_pswd, "123456");
         typeTextAndCloseKeyboard(R.id.repeat_pswd, "123456");
 
@@ -171,7 +171,7 @@ public class SignUpActivityTest {
     @Test
     public void testSuccessfulSignUp() {
         typeTextAndCloseKeyboard(R.id.sign_up_email, getNewUser().getEmail());
-        typeTextAndCloseKeyboard(R.id.sign_up_username, getNewUser().getName());
+        typeTextAndCloseKeyboard(R.id.sign_up_username, getNewUser().getUsername());
         typeTextAndCloseKeyboard(R.id.sign_up_pswd, "123456");
         typeTextAndCloseKeyboard(R.id.repeat_pswd, "123456");
 

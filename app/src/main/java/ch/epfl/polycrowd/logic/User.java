@@ -1,28 +1,30 @@
 package ch.epfl.polycrowd.logic;
 
-import android.location.Location;
-import android.location.LocationListener;
 import android.os.Build;
-import android.os.Bundle;
 
 import androidx.annotation.RequiresApi;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.google.firebase.Timestamp;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.IntToLongFunction;
 
 import static java.lang.Math.toIntExact;
 
 
-public class User extends Storable implements LocationListener {
+public class User extends Storable {
 
     //TODO: add necessary attributes and methods
+    public static String userNameTag = "username" ;
+    public static String emailTag = "email" ;
+    public static String ageTag = "age" ;
+    public static String imageUriTag = "imgUri" ;
+    public static String uidTag = "uid" ;
 
     //Sample attributes
-    private String name, email, uid, gid;
+    private String userName, email, uid;
     private Integer age;
     private String imageUri = null;
     private LatLng location ;
@@ -30,8 +32,8 @@ public class User extends Storable implements LocationListener {
 
     //https://stackoverflow.com/questions/17591147/how-to-get-current-location-in-android
 
-    public User(String email, String uid, String name, Integer age, String uri){
-        this.name = name;
+    public User(String email, String uid, String userName, Integer age, String uri){
+        this.userName = userName;
         this.age = age;
         this.email = email;
         this.uid = uid;
@@ -39,24 +41,27 @@ public class User extends Storable implements LocationListener {
         //groupIdEventIdPairs = new HashMap<>() ;
     }
 
-    public User(String email, String uid, String name, Integer age){
-        this(email, uid, name, age, null);
+    public User(String email, String uid, String userName, Integer age){
+        this(email, uid, userName, age, null);
     }
 
     @Override
     public Map<String, Object> getRawData() {
-        Map<String,Object> m = new HashMap<>();
-        m.put("name", name);
-        m.put("age", age);
-        return m;
+        Map<String, Object> user = new HashMap<>();
+        user.put(ageTag, Long.valueOf(this.age));
+        user.put(emailTag, this.email);
+        user.put(userNameTag, this.userName);
+        user.put(imageUriTag, imageUri);
+        user.put(uidTag, uid);
+        return user;
     }
 
     public Integer getAge() {
         return age;
     }
 
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return userName;
     }
 
     public String getEmail() {
@@ -70,7 +75,7 @@ public class User extends Storable implements LocationListener {
     public String getImageUri() { return imageUri; }
 
     public void setUsername(String username) {
-        this.name = username;
+        this.userName = username;
     }
 
     public void setEmail(String email) {
@@ -79,32 +84,17 @@ public class User extends Storable implements LocationListener {
 
     public void setImageUri(String imageUri) { this.imageUri = imageUri; }
 
-
-    /*public Map<String, String> getGroupIdEventIdPairs() {
-        return groupIdEventIdPairs ;
-    }
-
-    public void addGroup(@NonNull String groupId, @NonNull String eventId){
-        //TODO also update in  firestore
-        groupIdEventIdPairs.put(groupId, eventId) ;
-    }
-
-    public void removeGroup(@NonNull String groupId){
-        //TODO also update in  firestore
-        groupIdEventIdPairs.remove(groupId) ;
-    }*/
-
     @RequiresApi(api = Build.VERSION_CODES.N)
     public static User getFromDocument(Map<String, Object> data) {
-        String username = Objects.requireNonNull(data.get("username")).toString();
-        String email = Objects.requireNonNull(data.get("email")).toString();
+        String username = Objects.requireNonNull(data.get(userNameTag)).toString();
+        String email = Objects.requireNonNull(data.get(emailTag)).toString();
 
-        Object age = Objects.requireNonNull(data.get("age"));
+        Object age = Objects.requireNonNull(data.get(ageTag));
         Integer real_age = toIntExact((Long)age);
 
-        String uid = Objects.requireNonNull(data.get("uid")).toString();
+        String uid = Objects.requireNonNull(data.get(uidTag)).toString();
 
-        Object obj = data.get("imgUri");
+        Object obj = data.get(imageUriTag);
         String imgUri = (obj == null)? null : obj.toString();
 
         return new User(email, uid, username, real_age, imgUri);
@@ -112,36 +102,21 @@ public class User extends Storable implements LocationListener {
 
     public Map<String, Object> toHashMap(){
         Map<String, Object> user = new HashMap<>();
-        user.put("age", this.age);
-        user.put("email", this.email);
-        user.put("username", this.name);
-        user.put("imgUri", imageUri);
+        user.put(ageTag, this.age);
+        user.put(emailTag, this.email);
+        user.put(userNameTag, this.userName);
+        user.put(imageUriTag, imageUri);
         return user;
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-       this.location = new LatLng(location.getLongitude(), location.getLatitude()) ;
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
     }
 
     public LatLng getLocation(){
         //TODO remove hard-coded location
         return new LatLng(46.5183369,6.565701) ;
+    }
+
+    @Override
+    public String toString(){
+        return getUsername() +  ", " + getEmail() ;
     }
 
 }
