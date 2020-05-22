@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import ch.epfl.polycrowd.R;
+import ch.epfl.polycrowd.Utils;
 import ch.epfl.polycrowd.logic.Activity;
 import ch.epfl.polycrowd.logic.PolyContext;
 
@@ -24,7 +25,7 @@ public class ScheduleActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
 
-        giveHttpRequestPermissions();
+        Utils.giveHttpRequestPermissions();
 
         setContentView(R.layout.activity_schedule_page);
 
@@ -38,11 +39,6 @@ public class ScheduleActivity extends AppCompatActivity {
                     mRecyclerView.setAdapter( new MyAdapter(this, activities));
                 }
             }
-    }
-
-    private void giveHttpRequestPermissions(){
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
     }
 
 }

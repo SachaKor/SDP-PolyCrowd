@@ -211,6 +211,10 @@ public class MapActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void addPointOfInterest(View view){
+
+    }
+
     void setGuestButtons(Button buttonLeft, Button buttonRight) {
         buttonRight.setText("EVENT DETAILS");
         buttonLeft.setText("LOGIN");

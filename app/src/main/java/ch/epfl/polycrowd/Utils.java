@@ -3,6 +3,7 @@ package ch.epfl.polycrowd;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.StrictMode;
 import android.provider.OpenableColumns;
 import android.view.Gravity;
 import android.widget.Toast;
@@ -23,6 +24,10 @@ import ch.epfl.polycrowd.logic.PolyContext;
 
 public class Utils {
 
+    public static void giveHttpRequestPermissions(){
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+    }
 
     public static String getFileNameFromUri(Uri uri) {
         File file= new File(uri.getPath());

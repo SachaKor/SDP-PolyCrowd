@@ -1,9 +1,21 @@
 package ch.epfl.polycrowd.map;
 
+import ch.epfl.polycrowd.logic.Activity;
+
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Build;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -34,16 +46,20 @@ import com.google.maps.android.heatmaps.HeatmapTileProvider;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 
 import ch.epfl.polycrowd.ActivityHelper;
 import ch.epfl.polycrowd.R;
+import ch.epfl.polycrowd.Utils;
 import ch.epfl.polycrowd.firebase.DatabaseInterface;
+import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 
@@ -69,8 +85,6 @@ public class CrowdMap implements OnMapReadyCallback {
 
      //demo fake movement offset
     double offset =0.0001;
-
-
 
 
     // ------ Constructor ---------------------------------------------
@@ -151,8 +165,27 @@ public class CrowdMap implements OnMapReadyCallback {
 
         // Set a listener for geometry clicked events.
         layer.setOnFeatureClickListener( feature -> {
-                ActivityHelper.toastPopup(act.getApplicationContext() ,feature.getProperty("name") );
-                // TODO : move to corresponding Activity
+
+                Utils.giveHttpRequestPermissions();
+                Event ev = PolyContext.getCurrentEvent();
+                List<Activity> acts = null;
+                if (ev!= null ){
+                    if (ev.getSchedule() == null) ev.loadCalendar(act.getApplicationContext().getFilesDir());
+                     acts = ev.getSchedule().getActivities().stream().filter( a ->
+                        a.getLocation().trim().toLowerCase().equals(feature.getProperty("name")))
+                            .collect(Collectors.toList());
+
+                }
+
+                String info = feature.getProperty("name")+"\n"+ getAggregatedSchedules(acts);
+            AlertDialog.Builder alert = new AlertDialog.Builder(act);
+            alert.setTitle(feature.getProperty("name"));
+            alert.setMessage(getAggregatedSchedules(acts));
+            alert.setNeutralButton("Back",new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    // Return.
+                }});
+            alert.show();
             }
         );
 
@@ -337,4 +370,14 @@ public class CrowdMap implements OnMapReadyCallback {
         });
     }
 
+    private String getAggregatedSchedules(List<Activity> acts){
+        if (acts == null) return "";
+        else {
+            StringBuilder sb = new StringBuilder();
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+            acts.stream().forEach(a -> sb.append("- " + a.getSummary() + ": "
+                    + Event.dateToString(a.getStart(), sdf) + " -> " + Event.dateToString(a.getEnd(),sdf) + "\n"));
+            return sb.toString();
+        }
+    }
 }
