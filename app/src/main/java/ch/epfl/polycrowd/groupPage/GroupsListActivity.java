@@ -79,8 +79,8 @@ public class GroupsListActivity extends AppCompatActivity  implements CreateGrou
         memberSet.add(PolyContext.getCurrentUser()) ;
 
         //Toasts for error handling
-        Toast generalErrorToast = Toast.makeText(this, "Error creating group, try again later", Toast.LENGTH_LONG) ;
-        Toast createGroupSuccessToast = Toast.makeText(this, groupName+" created successfully!", Toast.LENGTH_LONG) ;
+        Toast generalErrorToast = Toast.makeText(this, "Error creating group, try again later", Toast.LENGTH_SHORT) ;
+        Toast createGroupSuccessToast = Toast.makeText(this, groupName+" created successfully!", Toast.LENGTH_SHORT) ;
         //Setup new group
         Group group = new Group(groupName, PolyContext.getCurrentEvent().getName(), PolyContext.getCurrentEvent().getId(), memberSet) ;
         PolyContext.getDBI().createGroup(group.getRawData(), groupId -> {
