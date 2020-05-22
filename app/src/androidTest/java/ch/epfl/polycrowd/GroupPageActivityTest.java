@@ -20,6 +20,7 @@ import ch.epfl.polycrowd.logic.Group;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 import ch.epfl.polycrowd.map.MapActivity;
+import ch.epfl.polycrowd.userProfile.UserProfilePageActivity;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -53,9 +54,10 @@ public class GroupPageActivityTest {
         PolyContext.setCurrentUser(testUser0) ;
         Group group0 = new Group("testGid0", "testEvent" ,"testEventId0", new HashSet<>()) ;
         group0.addMember(testUser0);
-        PolyContext.getDBI().createGroup(group0.getRawData(), gr -> {
+        PolyContext.getDBI().createGroup(group0.getRawData(), groupId -> {
             event = AndroidTestHelper.getDebugEvent() ;
             PolyContext.setCurrentEvent(event);
+            group0.setGid(groupId);
             PolyContext.setCurrentGroup(group0);
             Intent intent = new Intent() ;
             groupPageActivityRule.launchActivity(intent) ;
@@ -82,6 +84,17 @@ public class GroupPageActivityTest {
          onView(withId(R.id.go_to_map_button)).
                  perform(click());
          intended(hasComponent(MapActivity.class.getName())) ;
+         Intents.release();
+     }
+
+     @Test
+     public void goesToUserProfilePageOnLeaveClick(){
+         Intents.init() ;
+         onView(withId(R.id.leave_group_button)).
+                 perform(click());
+         AndroidTestHelper.sleep();
+         intended(hasComponent(UserProfilePageActivity.class.getName())) ;
+         Intents.release();
      }
 
 
