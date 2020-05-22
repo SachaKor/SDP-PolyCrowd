@@ -77,7 +77,6 @@ public class LoginActivity extends AppCompatActivity {
             //Successful login redirects to front page
 
             PolyContext.setCurrentUser(user);
-            PolyContext.getUserLocator().setRegisteredUser(user);
             /* if the user logs in to accept the organizer invitation, add him/her to the
                 organizers list, then open the event details page for the preview */
             Log.d(TAG, "previous page: " + PolyContext.getPreviousPage());
