@@ -24,10 +24,10 @@ public abstract class ActivityHelper {
         assert(! ( needLogin && needNoLogin ) && ! (needEvent && needNoEvent));
 
         if(needEvent) assert (PolyContext.getCurrentEvent() != null);
-        if(needNoEvent) assert  (PolyContext.getCurrentEvent() == null);
+        if(needNoEvent) PolyContext.setCurrentEvent(null);
 
         if(needLogin) assert ( PolyContext.getCurrentUser() != null);
-        if(needNoLogin) assert  (PolyContext.getCurrentUser() == null);
+        if(needNoLogin) PolyContext.setCurrentUser(null);
     }
 
 

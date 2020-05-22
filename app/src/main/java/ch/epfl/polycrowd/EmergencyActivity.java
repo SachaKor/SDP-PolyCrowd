@@ -31,9 +31,9 @@ public class EmergencyActivity extends AppCompatActivity {
     public boolean SOSClicked(String reason) {
         Log.d(LOG_TAG, "Send SOS type Button Clicked: "+ reason);
 
-        PolyContext.getDBI().addSOS(PolyContext.getCurrentUser().getUid(),PolyContext.getCurrentEvent().getId(), reason);
-
-        ActivityHelper.eventIntentHandler(this, MapActivity.class);
+        PolyContext.getDBI().addSOS(PolyContext.getCurrentUser().getUid(), reason,()->{
+            ActivityHelper.eventIntentHandler(this, MapActivity.class);
+        });
         return true;
     }
 }

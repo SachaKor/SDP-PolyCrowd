@@ -3,6 +3,7 @@ package ch.epfl.polycrowd;
 import android.Manifest;
 import android.content.Intent;
 
+import androidx.test.espresso.action.ViewActions;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
 
@@ -40,11 +41,15 @@ public class EmergencyActivityTest {
     }
 
 
+    @Test
+    public void testEmergency1() {
+        onView(withId(R.id.b0)).check(matches(withText(containsString("Accident"))));
+        onView(withId(R.id.b0)).perform(ViewActions.longClick());
+    }
 
     @Test
-    public void testEmergency() {
-        onView(withId(R.id.b0)).check(matches(withText(containsString("Accident"))));
+    public void testEmergency2() {
         onView(withId(R.id.b1)).check(matches(withText(containsString("Lost Minor"))));
-
+        onView(withId(R.id.b1)).perform(ViewActions.longClick());
     }
 }

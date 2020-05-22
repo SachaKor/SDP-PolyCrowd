@@ -16,6 +16,8 @@ import ch.epfl.polycrowd.firebase.Handler;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 
+import static android.widget.Toast.LENGTH_LONG;
+
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class ResetPasswordActivity extends AppCompatActivity {
@@ -29,13 +31,13 @@ public class ResetPasswordActivity extends AppCompatActivity {
     public void sendResetLinkClicked(View view) {
         String email = ((EditText) findViewById(R.id.reset_email)).getText().toString();
         if (email.isEmpty()) {
-            ActivityHelper.toastPopup(this,"Please enter an email");
+            ActivityHelper.toastPopup(this,"Please enter an email", LENGTH_LONG);
         } else{
             //First need to query the database to exclude that this email is not registered
-            Handler<User> pwResetSuccess = user -> ActivityHelper.toastPopup(this, "A reset link has been sent to your email") ;
-            Handler<User> pwResetFailure = user -> ActivityHelper.toastPopup(this, "Connection error, please try again later") ;
+            Handler<User> pwResetSuccess = user -> ActivityHelper.toastPopup(this, "A reset link has been sent to your email", LENGTH_LONG) ;
+            Handler<User> pwResetFailure = user -> ActivityHelper.toastPopup(this, "Connection error, please try again later", LENGTH_LONG) ;
             Handler<User> emailFoundHandler = user -> PolyContext.getDBI().resetPassword(email, pwResetSuccess, pwResetFailure);
-            EmptyHandler emailNotFoundHandler = () -> ActivityHelper.toastPopup(this, "Email not found, please sign up") ;
+            EmptyHandler emailNotFoundHandler = () -> ActivityHelper.toastPopup(this, "Email not found, please sign up", LENGTH_LONG) ;
             //Finally put everything together
             PolyContext.getDBI().getUserByEmail(email, emailFoundHandler, emailNotFoundHandler);
         }

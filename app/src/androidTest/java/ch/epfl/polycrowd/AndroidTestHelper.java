@@ -1,8 +1,18 @@
 package ch.epfl.polycrowd;
 
 import android.util.Pair;
+import android.view.View;
 import android.widget.ScrollView;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.espresso.matcher.BoundedMatcher;
+
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -15,14 +25,16 @@ import ch.epfl.polycrowd.firebase.FirebaseMocker;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
+import ch.epfl.polycrowd.logic.UserLocator;
 
+import static androidx.core.util.Preconditions.checkNotNull;
 import static ch.epfl.polycrowd.logic.Event.EventType.*;
 
 public abstract class AndroidTestHelper {
 
-    static void sleep(){
+    public static void sleep(){
         try{
-            Thread.sleep(1000);
+            Thread.sleep(800);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -55,13 +67,17 @@ public abstract class AndroidTestHelper {
                 new Event(OwnerId, "OLD EVENT", true, CONCERT,
                         oldStartDate, oldEndDate, CalURL, "old debug event ... ", false, orgs, secs),
                 new Event(OwnerId, "DEBUG EVENT", true, FESTIVAL,
-                        newStartDate, newEndDate, CalURL, "this is only a debug event ... ", false, orgs, secs),
+                        newStartDate, newEndDate, CalURL, "this is only a debug event ... ", true, orgs, secs),
                 new Event(OwnerId, "HIDDEN EVENT", false, FESTIVAL,
                         newStartDate, newEndDate, CalURL, "hidden debug event ... ", false, orgs, secs)};
 
         ev[0].setId("1");
         ev[1].setId("2");
         ev[2].setId("3");
+
+        byte[] emptyMap = {};
+        ev[1].setMapStream(new ByteArrayInputStream(emptyMap));
+
         return Arrays.asList(ev);
     }
 
@@ -75,7 +91,7 @@ public abstract class AndroidTestHelper {
     }
 
 
-     static void SetupMockDBI() {
+     public static void SetupMockDBI() {
 
         ev.get(1).addOrganizer(OrganiserEmail);
 
@@ -83,9 +99,10 @@ public abstract class AndroidTestHelper {
         PolyContext.setDBI(dbi);
 
         PolyContext.setCurrentEvent(ev.get(1));
+         PolyContext.setUserLocator(new UserLocator("TESTLOCATOR"));
     }
 
-    static void SetupMockDBI(String uriString) {
+    public static void SetupMockDBI(String uriString) {
 
         ev.get(1).addOrganizer(OrganiserEmail);
 
@@ -93,6 +110,7 @@ public abstract class AndroidTestHelper {
         PolyContext.setDBI(dbi);
 
         PolyContext.setCurrentEvent(ev.get(1));
+        PolyContext.setUserLocator(new UserLocator("TESTLOCATOR"));
     }
 
 
@@ -107,36 +125,57 @@ public abstract class AndroidTestHelper {
         return getEvent("2");
     }
 
-    private static User getUser(String mail){
+    public static User getUser(String mail){
         Pair<User,String> up =mailAndUsersPassPair.get(mail);
         assert up != null;
         return up.first;
     }
 
-    private static String getUserPass(String mail){
+    public static String getUserPass(String mail){
         Pair<User,String> up =mailAndUsersPassPair.get(mail);
         assert up != null;
         return up.second;
     }
 
-    static User getUser(){
+    public static User getUser(){
         return getUser(UserEmail);
     }
 
-    static User getNewUser(){
+    public static User getNewUser(){
         return newUser;
     }
 
-    static String getUserPass(){
+    public static String getUserPass(){
         return getUserPass(UserEmail);
     }
 
-    static User getOwner(){
+    public static User getOwner(){
         return getUser(OwnerEmail);
     }
 
-    static User getOrganiser(){
+    public static User getOrganiser(){
         return getUser(OrganiserEmail);
     }
     static User getSecurity(){return getUser(SecurityEmail);}
+
+    public static Matcher<View> atPosition(final int position, @NonNull final Matcher<View> itemMatcher) {
+        checkNotNull(itemMatcher);
+        return new BoundedMatcher<View, RecyclerView>(RecyclerView.class) {
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("has item at position " + position + ": ");
+                itemMatcher.describeTo(description);
+            }
+
+            @Override
+            protected boolean matchesSafely(final RecyclerView view) {
+                RecyclerView.ViewHolder viewHolder = view.findViewHolderForAdapterPosition(position);
+                if (viewHolder == null) {
+                    // has no item on such position
+                    return false;
+                }
+                return itemMatcher.matches(viewHolder.itemView);
+            }
+        };
+    }
 }

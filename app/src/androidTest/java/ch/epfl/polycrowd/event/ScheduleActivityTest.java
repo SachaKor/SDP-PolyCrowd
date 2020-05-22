@@ -1,4 +1,4 @@
-package ch.epfl.polycrowd;
+package ch.epfl.polycrowd.event;
 
 
 import android.Manifest;
@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import ch.epfl.polycrowd.AndroidTestHelper;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.schedulePage.ScheduleActivity;
 

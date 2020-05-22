@@ -30,8 +30,10 @@ public abstract class PolyContext extends Context {
     private static Class<? extends android.app.Activity> previousPage = null;
     private static String standId = null;
     private static DatabaseInterface dbInterface  = new FirebaseInterface();
+
     private static UserLocator userLocator ;
     private static List<Group> userGroupList ;
+
 
     public static void reset(){
         currentEvent = null;

@@ -42,7 +42,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
 
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
@@ -73,6 +72,7 @@ public class FirebaseInterface implements DatabaseInterface {
     private static final String EVENT_IMAGES = "event-images";
 
     private static final String LOCATIONS = "locations";
+    private static final String SOS = "sos";
 
     private static final String USER_IMAGES = "user-images";
 
@@ -119,7 +119,7 @@ public class FirebaseInterface implements DatabaseInterface {
 
     private DatabaseReference getFirebaseDatabaseReference() {
         if(this.cachedFirebaseDatabaseRef == null)
-            cachedFirebaseDatabaseRef = FirebaseDatabase.getInstance().getReference() ;
+            cachedFirebaseDatabaseRef = FirebaseDatabase.getInstance().getReference();
         return cachedFirebaseDatabaseRef ;
     }
     @Override
@@ -660,8 +660,30 @@ public class FirebaseInterface implements DatabaseInterface {
     }
 
     @Override
-    public void addSOS(@NonNull String userId, @NonNull String eventId, @NonNull String reason) {
-        getFirestoreInstance(false).collection(EVENTS).document(eventId).update("sos."+userId,reason).addOnFailureListener(e-> Log.w(TAG, "addSOS:onFailure",e));
+    public void addSOS(@NonNull String userId, @NonNull String reason, EmptyHandler handler) {
+        getFirebaseDatabaseReference().child(SOS).child(userId)
+                .setValue(reason).addOnCompleteListener(v->handler.handle());
+    }
+
+    @Override
+    public void getSOS(String userId, Handler<String> handler) {
+        getFirebaseDatabaseReference().child(SOS).child(userId).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String reason = dataSnapshot.getValue(String.class);
+                handler.handle(reason);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+            }
+        });
+    }
+
+    public void deleteSOS(String userId, EmptyHandler handler){
+        getFirebaseDatabaseReference().child(SOS).child(userId).removeValue((a,b)-> handler.handle());
+
     }
 
     public void reauthenticateAndChangePassword(String email, String curPassword, String newPassword, Context appContext) {
