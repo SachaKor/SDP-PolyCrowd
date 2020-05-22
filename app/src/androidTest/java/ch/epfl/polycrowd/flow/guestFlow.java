@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.Intent;
 
 import androidx.test.espresso.action.ViewActions;
-import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
@@ -27,6 +26,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static ch.epfl.polycrowd.AndroidTestHelper.sleep;
 import static org.hamcrest.core.StringContains.containsString;
+import androidx.test.espresso.contrib.RecyclerViewActions;
 
 public class guestFlow {
 
@@ -93,30 +93,30 @@ public class guestFlow {
 
         onView(withId(R.id.event_details_title)).perform(ViewActions.scrollTo()).check(matches(isDisplayed()));
         onView(withId(R.id.event_details_title)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-        onView(withId(R.id.event_details_title_edit)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
+        onView(withId(R.id.event_details_title)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
         onView(withId(R.id.event_details_title)).check(matches(withText(containsString("DEBUG EVENT"))));
 
         onView(withId(R.id.event_details_description)).perform(ViewActions.scrollTo()).check(matches(isDisplayed()));
         onView(withId(R.id.event_details_description)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-        onView(withId(R.id.event_details_description_edit)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
+        onView(withId(R.id.event_details_description)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
         onView(withId(R.id.event_details_description)).check(matches(withText(containsString("this is only a debug event ..."))));
 
         onView(withId(R.id.event_details_url_edit)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
 
         onView(withId(R.id.event_details_start)).perform(ViewActions.scrollTo()).check(matches(isDisplayed()));
         onView(withId(R.id.event_details_start)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-        onView(withId(R.id.event_details_start_edit)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
+        onView(withId(R.id.event_details_start)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
         onView(withId(R.id.event_details_start)).check(matches(withText(containsString("23-12-2051"))));
 
         onView(withId(R.id.event_details_end)).perform(ViewActions.scrollTo()).check(matches(isDisplayed()));
         onView(withId(R.id.event_details_end)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-        onView(withId(R.id.event_details_end_edit)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
+        onView(withId(R.id.event_details_end)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
         onView(withId(R.id.event_details_end)).check(matches(withText(containsString("23-12-2051"))));
 
-        onView(withId(R.id.event_type)).perform(ViewActions.scrollTo()).check(matches(isDisplayed()));
-        onView(withId(R.id.event_type)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+        onView(withId(R.id.event_type_edit)).perform(ViewActions.scrollTo()).check(matches(isDisplayed()));
+        onView(withId(R.id.event_type_edit)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
         onView(withId(R.id.event_type_edit)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
-        onView(withId(R.id.event_type)).check(matches(withText(containsString("Festival"))));
+        onView(withId(R.id.event_type_edit)).check(matches(withText(containsString("Festival"))));
 
 
         onView(withId(R.id.event_public_edit)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));

@@ -23,7 +23,6 @@ import com.google.firebase.dynamiclinks.DynamicLink;
 import com.google.firebase.dynamiclinks.DynamicLink.SocialMetaTagParameters;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
-import java.util.List;
 import java.util.Set;
 
 import ch.epfl.polycrowd.ActivityHelper;

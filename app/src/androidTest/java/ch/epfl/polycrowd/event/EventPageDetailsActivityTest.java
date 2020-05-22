@@ -15,6 +15,7 @@ import androidx.test.rule.GrantPermissionRule;
 
 import ch.epfl.polycrowd.AndroidTestHelper;
 import ch.epfl.polycrowd.EventPageDetailsActivity;
+import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.logic.PolyContext;
 
 import static androidx.test.espresso.Espresso.onView;
