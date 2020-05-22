@@ -199,7 +199,7 @@ public class FirebaseMocker implements DatabaseInterface {
         groupIdGroupPairs.putIfAbsent(inviteGroupId, new Group());
         Group group = groupIdGroupPairs.getOrDefault(inviteGroupId,null);
         User user = findUserByEmail(userEmail) ;
-        if(group != null || user != null){
+        if(group != null && user != null){
             group.addMember(user);
         }
         emptyHandler.handle();
