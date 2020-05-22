@@ -19,9 +19,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import static ch.epfl.polycrowd.logic.PolyContext.convertObjectToList;
-
-
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class Event extends Storable{
 
@@ -245,8 +242,8 @@ public class Event extends Storable{
         EventType type = EventType.valueOf(((String) data.get("type")));
         String desc = (String) data.get("description");
         Boolean emergency = Boolean.parseBoolean((String) data.get("isEmergencyEnabled"));
-        List<String> organizers = convertObjectToList(data.get("organizers"));
-        List<String> security = convertObjectToList(data.get("security"));
+        List<String> organizers = (List<String>) (data.get("organizers"));
+        List<String> security = (List<String>) (data.get("security"));
         String imageUri = (String) data.get("imageUri"); // can be null but this is ok
         if(owner == null || name == null || sStamp == null || eStamp == null)
             return null;

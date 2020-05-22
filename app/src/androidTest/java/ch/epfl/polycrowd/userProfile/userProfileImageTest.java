@@ -1,4 +1,4 @@
-package ch.epfl.polycrowd;
+package ch.epfl.polycrowd.userProfile;
 
 import android.Manifest;
 import android.app.Instrumentation;
@@ -27,6 +27,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import ch.epfl.polycrowd.AndroidTestHelper;
+import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 import ch.epfl.polycrowd.userProfile.UserProfilePageActivity;

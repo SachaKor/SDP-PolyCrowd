@@ -1,4 +1,4 @@
-package ch.epfl.polycrowd;
+package ch.epfl.polycrowd.event;
 
 import android.Manifest;
 import android.content.Intent;
@@ -16,6 +16,9 @@ import androidx.test.rule.GrantPermissionRule;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import ch.epfl.polycrowd.AndroidTestHelper;
+import ch.epfl.polycrowd.EventEditActivity;
+import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 

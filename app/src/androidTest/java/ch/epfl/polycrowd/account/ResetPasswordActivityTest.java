@@ -1,4 +1,4 @@
-package ch.epfl.polycrowd;
+package ch.epfl.polycrowd.account;
 
 import android.content.Intent;
 
@@ -9,6 +9,8 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
+import ch.epfl.polycrowd.AndroidTestHelper;
+import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.authentification.ResetPasswordActivity;
 import ch.epfl.polycrowd.logic.PolyContext;
 
@@ -21,14 +23,10 @@ import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static ch.epfl.polycrowd.AndroidTestHelper.sleep;
 import static org.hamcrest.Matchers.not;
 
 public class ResetPasswordActivityTest {
-
-    @BeforeClass
-    public static void setUpBeforeActivityLaunch(){
-        PolyContext.reset();
-    }
 
     @Rule
     public final ActivityTestRule<ResetPasswordActivity> resetPasswordActivityActivityTestRule =
@@ -46,6 +44,7 @@ public class ResetPasswordActivityTest {
     @Test
     public void testToastWhenEmailIsEmpty(){
         onView(withId(R.id.forgot_password_button)).perform(click());
+        sleep();
         onView(withText("Please enter an email"))
                 .inRoot(withDecorView(not(resetPasswordActivityActivityTestRule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));
@@ -56,11 +55,10 @@ public class ResetPasswordActivityTest {
     public void testToastWhenNonExistingEmail(){
         onView(withId(R.id.reset_email)).perform(typeText("UNKNOWN@h.net"), closeSoftKeyboard());
         onView(withId(R.id.forgot_password_button)).perform(click());
+        sleep();
         onView(withText("Email not found, please sign up"))
                 .inRoot(withDecorView(not(resetPasswordActivityActivityTestRule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));
 
     }
-
-
 }

@@ -1,12 +1,8 @@
 package ch.epfl.polycrowd;
 
-import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -20,28 +16,16 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Array;
-
-import com.google.maps.android.PolyUtil;
-
-
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import ch.epfl.polycrowd.firebase.handlers.EventHandler;
-import ch.epfl.polycrowd.logic.Activity;
+import ch.epfl.polycrowd.firebase.EmptyHandler;
+import ch.epfl.polycrowd.firebase.Handler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
@@ -126,7 +110,7 @@ public class EventEditActivity extends AppCompatActivity {
 
         if (PolyContext.getCurrentEvent() != null){
 
-            EventHandler eventHandler = ev -> {
+            Handler<Event> eventHandler = ev -> {
                 eventName.setText(ev.getName());
                 SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
                 startDate.setText(sdf.format(ev.getStart()));
@@ -221,28 +205,21 @@ public class EventEditActivity extends AppCompatActivity {
 
 
         // upload the Event to Firebase
-        EventHandler successHandler = e -> {
+        Handler<Event> successHandler = e -> {
             PolyContext.setCurrentEvent(e);
-
-
-
 
             if(kmlBytes != null){
                 // downlaod path to firebase
                 PolyContext.getDBI().uploadEventMap( ev , kmlBytes , evv -> {
-
                         Toast.makeText(this, "Event added", Toast.LENGTH_LONG).show();
                         ActivityHelper.eventIntentHandler(this, MapActivity.class);
 
                 } );
             }
-
-
-
         };
-        EventHandler failureHandler = e -> {
-            Toast.makeText(this, "Error occurred while adding the event", Toast.LENGTH_LONG).show();
-        };
+
+        Handler<Event> failureHandler =  (e) -> Toast.makeText(this, "Error occurred while adding the event", Toast.LENGTH_LONG).show();
+
         if( PolyContext.getCurrentEvent() == null) {
             PolyContext.getDBI().addEvent(ev, successHandler, failureHandler);
         }else {

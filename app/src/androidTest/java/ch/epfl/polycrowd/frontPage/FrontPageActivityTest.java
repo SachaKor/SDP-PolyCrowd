@@ -1,4 +1,4 @@
-package ch.epfl.polycrowd;
+package ch.epfl.polycrowd.frontPage;
 
 import android.Manifest;
 import android.content.Intent;
@@ -13,7 +13,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import androidx.test.rule.GrantPermissionRule;
-import ch.epfl.polycrowd.frontPage.FrontPageActivity;
+
+import ch.epfl.polycrowd.AndroidTestHelper;
+import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.logic.PolyContext;
 
 import static androidx.test.espresso.Espresso.onView;

@@ -1,4 +1,4 @@
-package ch.epfl.polycrowd;
+package ch.epfl.polycrowd.userProfile;
 
 //import com.google.android.gms.tasks.OnSuccessListener;
 //import com.google.firebase.auth.AuthResult;
@@ -13,9 +13,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import androidx.test.rule.ActivityTestRule;
 
+import ch.epfl.polycrowd.AndroidTestHelper;
+import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.userProfile.UserProfilePageActivity;
 import ch.epfl.polycrowd.logic.PolyContext;
 
+import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.typeText;
@@ -150,7 +153,11 @@ public class userProfileActivityTest {
     public void myEventsButtonsWorksAndDisplayEventsIamOrganiserOf(){
         onView(withId(R.id.EventsOrganiseButton)).perform(click());
         sleep();
-        onView(withId(R.id.titleTv)).check(matches(withText(containsString("DEBUG EVENT"))));
+        onView(withText("DEBUG EVENT")).check(matches(isDisplayed()));
+        //onData(withId(R.id.titleTv)).inAdapterView(withId(R.id.userEventListRecyclerView))
+        //        .atPosition(1)
+        //        .check(matches(withText(containsString("DEBUG EVENT"))));
+        //onView(withId(R.id.titleTv)).check(matches(withText(containsString("DEBUG EVENT"))));
 }
 }
 

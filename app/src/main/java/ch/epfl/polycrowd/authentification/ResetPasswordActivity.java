@@ -11,8 +11,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import ch.epfl.polycrowd.ActivityHelper;
 import ch.epfl.polycrowd.R;
-import ch.epfl.polycrowd.firebase.handlers.UserHandler;
+import ch.epfl.polycrowd.firebase.EmptyHandler;
+import ch.epfl.polycrowd.firebase.Handler;
 import ch.epfl.polycrowd.logic.PolyContext;
+import ch.epfl.polycrowd.logic.User;
+
+import static android.widget.Toast.LENGTH_LONG;
 
 
 @RequiresApi(api = Build.VERSION_CODES.O)
@@ -27,13 +31,13 @@ public class ResetPasswordActivity extends AppCompatActivity {
     public void sendResetLinkClicked(View view) {
         String email = ((EditText) findViewById(R.id.reset_email)).getText().toString();
         if (email.isEmpty()) {
-            ActivityHelper.toastPopup(this,"Please enter an email");
+            ActivityHelper.toastPopup(this,"Please enter an email", LENGTH_LONG);
         } else{
             //First need to query the database to exclude that this email is not registered
-            UserHandler pwResetSuccess = user -> ActivityHelper.toastPopup(this, "A reset link has been sent to your email") ;
-            UserHandler pwResetFailure = user -> ActivityHelper.toastPopup(this, "Connection error, please try again later") ;
-            UserHandler emailFoundHandler = user -> PolyContext.getDBI().resetPassword(email, pwResetSuccess, pwResetFailure);
-            UserHandler emailNotFoundHandler = u -> ActivityHelper.toastPopup(this, "Email not found, please sign up") ;
+            Handler<User> pwResetSuccess = user -> ActivityHelper.toastPopup(this, "A reset link has been sent to your email", LENGTH_LONG) ;
+            Handler<User> pwResetFailure = user -> ActivityHelper.toastPopup(this, "Connection error, please try again later", LENGTH_LONG) ;
+            Handler<User> emailFoundHandler = user -> PolyContext.getDBI().resetPassword(email, pwResetSuccess, pwResetFailure);
+            EmptyHandler emailNotFoundHandler = () -> ActivityHelper.toastPopup(this, "Email not found, please sign up", LENGTH_LONG) ;
             //Finally put everything together
             PolyContext.getDBI().getUserByEmail(email, emailFoundHandler, emailNotFoundHandler);
         }

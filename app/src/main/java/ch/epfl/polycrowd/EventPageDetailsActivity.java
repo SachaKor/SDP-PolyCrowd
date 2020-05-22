@@ -6,14 +6,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import ch.epfl.polycrowd.firebase.DatabaseInterface;
-import ch.epfl.polycrowd.firebase.handlers.EventHandler;
-
-import ch.epfl.polycrowd.frontPage.FrontPageActivity;
+import ch.epfl.polycrowd.firebase.Handler;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.PolyContext;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -75,7 +74,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
 
     private ImageView eventImg;
     private ImageView editImg;
-    private Button inviteOrganizerButton, scheduleButton, cancel;
+    private Button inviteOrganizerButton, inviteSecurityButton, scheduleButton, cancel;
     private Button submitChanges;
     private FloatingActionButton editEventButton;
     private EditText eventTitle, start,end, eventDescription, scheduleUrl;
@@ -85,6 +84,9 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     private Button mapUpload;
     private Set<EditText> textFields;
 
+    private boolean isOwner;
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -110,7 +112,12 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         }
 
         scheduleButton = findViewById(R.id.schedule);
+        if(PolyContext.getCurrentUser() != null) isOwner = curEvent.getOwner().equals(PolyContext.getCurrentUser().getUid());
+        else isOwner = false;
+        if (!isOwner) findViewById(R.id.event_details_fab).setVisibility(View.GONE);
+
         scheduleButton.setOnClickListener(v -> ActivityHelper.eventIntentHandler(this,ScheduleActivity.class));
+
 
     }
 
@@ -162,6 +169,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         isPublicSwitch = findViewById(R.id.event_public_edit);
         editImg = findViewById(R.id.event_details_edit_img);
         inviteOrganizerButton = findViewById(R.id.invite_organizer_button);
+        inviteSecurityButton = findViewById(R.id.invite_security_button);
         submitChanges = findViewById(R.id.event_details_submit);
         editEventButton = findViewById(R.id.event_details_fab);
         cancel = findViewById(R.id.event_details_cancel);
@@ -173,6 +181,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
     private void downloadEventImage() {
         String imgUri = curEvent.getImageUri();
         if(null != imgUri) {
+
             PolyContext.getDBI().downloadEventImage(curEvent, image -> {
                 if(image != null) { // TODO: fix the dialogWithInviteLinkOpensWhenInviteClicked test
                     Bitmap bmp = BitmapFactory.decodeByteArray(image, 0, image.length);
@@ -280,24 +289,22 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         int streamLength = ONE_MEGABYTE;
         int compressQuality = 105;
         Bitmap bitmap = bitmapDrawable.getBitmap();
-//        if(bitmap == null)  { // TODO: fix
-//            return;
-//        }
-        ByteArrayOutputStream bmpStream = new ByteArrayOutputStream();
-        while (streamLength >= ONE_MEGABYTE && compressQuality > 5) {
-            try {
-                bmpStream.flush();//to avoid out of memory error
-                bmpStream.reset();
-            } catch (IOException e) {
-                e.printStackTrace();
+        if (bitmap != null){
+            ByteArrayOutputStream bmpStream = new ByteArrayOutputStream();
+            while (streamLength >= ONE_MEGABYTE && compressQuality > 5) {
+                try {
+                    bmpStream.flush();//to avoid out of memory error
+                    bmpStream.reset();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                compressQuality -= 5;
+                bitmap.compress(Bitmap.CompressFormat.JPEG, compressQuality, bmpStream);
+                byte[] bmpPicByteArray = bmpStream.toByteArray();
+                streamLength = bmpPicByteArray.length;
             }
-            compressQuality -= 5;
-            bitmap.compress(Bitmap.CompressFormat.JPEG, compressQuality, bmpStream);
-            byte[] bmpPicByteArray = bmpStream.toByteArray();
-            streamLength = bmpPicByteArray.length;
+            imageInBytes = bmpStream.toByteArray();
         }
-
-        imageInBytes = bmpStream.toByteArray();
 
     }
 
@@ -338,14 +345,14 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         if(!canEditEvent())
             return;
 
-        EventHandler successHandler = event -> dbi.uploadEventImage(event, imageInBytes, event14 -> {
+        Handler<Event> successHandler = event -> dbi.uploadEventImage(event, imageInBytes, event14 -> {
             if(kmlInBytes != null) {
                 dbi.uploadEventMap(event14, kmlInBytes, event12 -> updateEvent(event12));
             } else {
                 updateEvent(event14);
             }
         });
-        EventHandler failureHandler = event -> Toast.makeText(this, "Error occurred while adding the event", Toast.LENGTH_SHORT);
+        Handler<Event> failureHandler = event -> Toast.makeText(this, "Error occurred while adding the event", Toast.LENGTH_SHORT);
         if(curEvent != null) { // update the event
             updateCurrentEvent();
             dbi.updateEvent(curEvent, successHandler);
@@ -485,7 +492,33 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         Intent fileIntent = new Intent(Intent.ACTION_GET_CONTENT);
         fileIntent.setType("*/*");
         startActivityForResult(fileIntent, PICK_MAP);
+    }
 
+    public void revokeClicked(View view){
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+        alert.setTitle("Revoke an organizer");
+        alert.setMessage("Please enter the email of the organizer you want to remove from your event");
+
+        // Set an EditText view to get user input
+        final EditText input = new EditText(this);
+        alert.setView(input);
+
+        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+
+                String revoked_email = input.getText().toString();
+                PolyContext.getDBI().removeOrganizerFromEvent(curEvent.getId(), revoked_email, ()->{curEvent.getOrganizers().remove(revoked_email);});
+            }
+        });
+
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                // Canceled.
+            }
+        });
+
+        alert.show();
     }
 
 }

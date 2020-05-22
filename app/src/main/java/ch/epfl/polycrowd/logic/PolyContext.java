@@ -14,6 +14,7 @@ import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.firebase.FirebaseInterface;
 
 
+
 @RequiresApi(api = Build.VERSION_CODES.O)
 public abstract class PolyContext extends Context {
 
@@ -28,8 +29,8 @@ public abstract class PolyContext extends Context {
     private static String groupId = null;
     private static Class<? extends android.app.Activity> previousPage = null;
     private static String standId = null;
-  
     private static DatabaseInterface dbInterface  = new FirebaseInterface();
+    private static UserLocator userLocator;
 
     public static void reset(){
         currentEvent = null;
@@ -135,15 +136,15 @@ public abstract class PolyContext extends Context {
         return dbInterface ;
     }
 
-    public static List<String> convertObjectToList(Object obj) {
-        List<String> list = new ArrayList<>();
-        if (obj != null && obj.getClass().isArray()) {
-            list = Arrays.asList((String[])obj);
-        }
-        return list;
-    }
-
     public static Group getCurrentGroup(){
         return currentGroup ;
+    }
+
+    public static void setUserLocator(UserLocator ul){
+        userLocator = ul ;
+    }
+
+    public static UserLocator getUserLocator(){
+        return userLocator ;
     }
 }

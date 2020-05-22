@@ -14,11 +14,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import ch.epfl.polycrowd.ActivityHelper;
 import ch.epfl.polycrowd.EventPageDetailsActivity;
 import ch.epfl.polycrowd.R;
-import ch.epfl.polycrowd.firebase.handlers.UserHandler;
-import ch.epfl.polycrowd.frontPage.FrontPageActivity;
-import ch.epfl.polycrowd.groupPage.GroupsListActivity;
-import ch.epfl.polycrowd.logic.Event;
+import ch.epfl.polycrowd.firebase.EmptyHandler;
+import ch.epfl.polycrowd.firebase.Handler;
 import ch.epfl.polycrowd.logic.PolyContext;
+import ch.epfl.polycrowd.logic.User;
 import ch.epfl.polycrowd.map.MapActivity;
 
 
@@ -30,6 +29,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ActivityHelper.checkActivityRequirment(false,true,false,false);
         setContentView(R.layout.activity_login);
 
     }
@@ -64,22 +64,20 @@ public class LoginActivity extends AppCompatActivity {
         ActivityHelper.eventIntentHandler(this,ResetPasswordActivity.class);
     }
 
-    private UserHandler failureHandler(){
-        return user -> ActivityHelper.toastPopup(this,"Incorrect email or password");
+    private EmptyHandler failureHandler(){
+        return () -> ActivityHelper.toastPopup(this,"Incorrect email or password");
     }
 
 
-    private UserHandler successHandler(){
+    private Handler<User> successHandler(){
         return user->{
-               //When would the currentUser be null if signin was successful?
             ActivityHelper.toastPopup(this,"Sign in success");
 
-            //Successful login redirects to front page
-
             PolyContext.setCurrentUser(user);
+            PolyContext.getUserLocator().setRegisteredUser(user);
+
             /* if the user logs in to accept the organizer invitation, add him/her to the
                 organizers list, then open the event details page for the preview */
-            Log.d(TAG, "previous page: " + PolyContext.getPreviousPage());
             switch (PolyContext.getInviteRole()) {
                 case ORGANIZER:
                         if (PolyContext.getCurrentEvent() == null) {
