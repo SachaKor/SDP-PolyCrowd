@@ -119,7 +119,6 @@ public class FirebaseMocker implements DatabaseInterface {
         this.addEvent(event, successHandler, failureHandler);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void getEventById(String eventId, Handler<Event> eventHandler) {
         Event event = findEventWithId(eventId);
@@ -128,7 +127,6 @@ public class FirebaseMocker implements DatabaseInterface {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void addOrganizerToEvent(String eventId, String organizerEmail, EmptyHandler handler) {
         //getEventById(eventId, organizerEmail);
@@ -201,38 +199,28 @@ public class FirebaseMocker implements DatabaseInterface {
         groupIdGroupPairs.putIfAbsent(inviteGroupId, new Group());
         Group group = groupIdGroupPairs.getOrDefault(inviteGroupId,null);
         User user = findUserByEmail(userEmail) ;
-        if(group == null || user == null){
-            emptyHandler.handle();
+        if(group != null || user != null){
+            group.addMember(user);
         }
-        group.addMember(user);
         emptyHandler.handle();
     }
 
     @Override
     public void removeGroupIfEmpty(String gid, Handler<Group> handler) {
-        for(String groupId: groupIdGroupPairs.keySet()){
-            if(groupId.equals(gid)){
-                if(groupIdGroupPairs.get(groupId).getMembers().size() == 0){
-                    groupIdGroupPairs.remove(groupId) ;
-                    handler.handle(null);
-                    return ;
-                } else{
-                    handler.handle(groupIdGroupPairs.get(groupId));
-                }
-;
+        Group g = groupIdGroupPairs.getOrDefault(gid,null);
+        if(g != null){
+            if(g.getMembers().size() == 0) {
+                groupIdGroupPairs.remove(gid);
+                g = null;
             }
+            handler.handle(g);
         }
     }
 
     @Override
     public void updateGroup(Group group, EmptyHandler handler) {
-        for(String groupId: groupIdGroupPairs.keySet()){
-            if(groupId.equals(group.getGid())){
-                groupIdGroupPairs.put(group.getGid(), group) ;
-                handler.handle();
-                return;
-            }
-        }
+        groupIdGroupPairs.put(group.getGid(), group);
+        handler.handle();
     }
 
     @Override
@@ -248,7 +236,6 @@ public class FirebaseMocker implements DatabaseInterface {
         handler.handle(newGroupId);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void uploadEventImage(Event event, byte[] image, Handler<Event> handler) {
         Log.d(TAG, "uploading the image");
@@ -272,7 +259,6 @@ public class FirebaseMocker implements DatabaseInterface {
             handler.handle(event);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void downloadEventImage(Event event, Handler<byte[]> handler) {
         Log.d(TAG, "downloading the image");
@@ -284,7 +270,6 @@ public class FirebaseMocker implements DatabaseInterface {
         handler.handle(image);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void updateEvent(Event event, Handler<Event> eventHandler) {
         Log.d(TAG, "updating the event");
@@ -298,13 +283,11 @@ public class FirebaseMocker implements DatabaseInterface {
         eventHandler.handle(event);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void updateUser(User user, Handler<User> eventHandler) {
         eventHandler.handle(user);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private Event findEventWithId(String eventId) {
         Optional<Event> event = events.stream().filter(e->(e.getId().equals(eventId))).findFirst();
         return event.orElse(null);
@@ -316,21 +299,8 @@ public class FirebaseMocker implements DatabaseInterface {
     }
 
     private User findUserByUsername(String username) {
-<<<<<<< HEAD
-        Optional<User> event = usersAndPasswords.keySet().stream().filter(u->(u.getName().equals(username))).findFirst();
+        Optional<User> event = usersAndPasswords.keySet().stream().filter(u->(u.getUsername().equals(username))).findFirst();
         return event.orElse(null);
-=======
-        User user = null;
-        boolean userFound = false;
-        Iterator<User> userIterator = usersAndPasswords.keySet().iterator();
-        while (!userFound && userIterator.hasNext()) {
-            user = userIterator.next();
-            if (user.getUsername().equals(username)) {
-                userFound = true;
-            }
-        }
-        return userFound ? user : null;
->>>>>>> master
     }
 
     public void reauthenticateAndChangePassword(String email, String curPassword, String newPassword, Context appContext) {
@@ -376,9 +346,9 @@ public class FirebaseMocker implements DatabaseInterface {
 
     public void getUserGroupIds(String userEmail, Handler<Map<String, String>> groupIdEventIdPairsHandler) {
         Map<String, String> groupIdEventPairs = new HashMap<>() ;
-        groupIdGroupPairs.forEach((gid, g) -> {
-            g.getMembers().stream().filter(u->u.getEmail().equals(userEmail)).forEach(u -> groupIdEventPairs.put(gid, g.getEventId()));
-        });
+        groupIdGroupPairs.forEach((gid, g) ->
+                g.getMembers().stream().filter(u->u.getEmail().equals(userEmail)).forEach(u ->
+                        groupIdEventPairs.put(gid, g.getEventId())));
         groupIdEventIdPairsHandler.handle(groupIdEventPairs);
     }
 
