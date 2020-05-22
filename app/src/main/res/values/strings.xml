@@ -67,10 +67,17 @@
     <string name="invite_security">Invite Security</string>
     <string name="security">Security</string>
     <string name="my_groups">MyGroups</string>
+    <string name="create_new_group_button">create_group</string>
+    <string name="group_name_hint">group name</string>
+    <string name="event_id_hint">event id</string>
     <string-array name="sos_type_list">
         <item value="LOSTMINOR">Lost Minor</item>
         <item value="ACCIDENT">Accident</item>
         <item value="DRUNK">Drunk</item>
         <item value="OTHER">Other</item>
     </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="group_submit">OK</string>
 </resources>

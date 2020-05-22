@@ -36,6 +36,7 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -180,7 +181,7 @@ public class CrowdMap implements OnMapReadyCallback {
             for(User groupMember : PolyContext.getCurrentGroup().getMembers()){
                 groupMarkers.put(groupMember , googleMap.addMarker(
                         new MarkerOptions().position(groupMember.getLocation())
-                                           .title(groupMember.getName())
+                                           .title(groupMember.getUsername())
                                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.pointred))));
             }
         }

@@ -22,15 +22,13 @@ public class FragmentAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         if(position == 0 )
-            return GroupMapFragment.getINSTANCE();
-        else if(position == 1)
             return GroupMemberListFragment.getINSTANCE() ;
         return null;
     }
 
     @Override
     public int getCount() {
-        return 2;
+        return 1;
     }
 
     @Nullable
@@ -38,7 +36,7 @@ public class FragmentAdapter extends FragmentPagerAdapter {
     public CharSequence getPageTitle(int position) {
         switch (position){
             case 0 : return "FirstSegment" ;
-            case 1 : return  "SecondSegment" ;
+            //case 1 : return  "SecondSegment" ;
         }
         return "" ;
     }
