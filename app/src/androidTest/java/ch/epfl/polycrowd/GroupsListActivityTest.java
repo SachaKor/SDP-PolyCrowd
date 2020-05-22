@@ -101,8 +101,26 @@ public class GroupsListActivityTest {
         AndroidTestHelper.sleep();
         String newGroupName = "testGid2"  ;
         onView(withId(R.id.groupNameEditText)).perform(typeText(newGroupName)) ;
-        AndroidTestHelper.sleep();
+        onView(withText("OK")).perform(click()) ;
+        onView(withText(newGroupName +" created successfully!")) ;
+
         onView(withText(newGroupName)).check(matches((isDisplayed()))) ;
+    }
+
+    @Test
+    public void noViewUpdateWhenGroupNameIsEmptyOnCreateGroup(){
+        onView(withId(R.id.createGroupButton)).perform(click());
+        AndroidTestHelper.sleep();
+        String newGroupName = "testGid2"  ;
+        onView(withId(R.id.groupNameEditText)).perform(typeText("")) ;
+        onView(withText("OK")).perform(click()) ;
+        AndroidTestHelper.sleep();
+        onView(allOf(withId(R.id.groupsListRecyclerView), hasChildCount(2))).check(matches(isDisplayed())) ;
+        onView(withId(R.id.groupsListRecyclerView)).check(matches(atPosition(0, hasDescendant(withText(group0.getEventName())))));
+        onView(withId(R.id.groupsListRecyclerView)).check(matches(atPosition(1, hasDescendant(withText(group1.getEventName())))));
+        onView(withText(group0.getGroupName())).check(matches((isDisplayed()))) ;
+        onView(withText(group1.getGroupName())).check(matches((isDisplayed()))) ;
+
     }
      /*@Test
      public void showsCreateGroupWhenEventIsNotNull(){
