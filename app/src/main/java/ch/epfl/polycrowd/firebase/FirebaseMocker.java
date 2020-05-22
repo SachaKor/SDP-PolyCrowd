@@ -16,10 +16,11 @@ import com.google.android.gms.maps.model.LatLng;
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
@@ -287,42 +288,18 @@ public class FirebaseMocker implements DatabaseInterface {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private Event findEventWithId(String eventId) {
-        boolean eventFound = false;
-        Event event = null;
-        Iterator<Event> eventIterator = events.iterator();
-        while (!eventFound && eventIterator.hasNext()) {
-            event = eventIterator.next();
-            if (event.getId().equals(eventId)) {
-                eventFound = true;
-            }
-        }
-        return eventFound ? event : null;
+        Optional<Event> event = events.stream().filter(e->(e.getId().equals(eventId))).findFirst();
+        return event.orElse(null);
     }
 
     private User findUserByEmail(String email) {
-        User user = null;
-        boolean userFound = false;
-        Iterator<User> userIterator = usersAndPasswords.keySet().iterator();
-        while (!userFound && userIterator.hasNext()) {
-            user = userIterator.next();
-            if (user.getEmail().equals(email)) {
-                userFound = true;
-            }
-        }
-        return userFound ? user : null;
+        Optional<User> event = usersAndPasswords.keySet().stream().filter(u->(u.getEmail().equals(email))).findFirst();
+        return event.orElse(null);
     }
 
     private User findUserByUsername(String username) {
-        User user = null;
-        boolean userFound = false;
-        Iterator<User> userIterator = usersAndPasswords.keySet().iterator();
-        while (!userFound && userIterator.hasNext()) {
-            user = userIterator.next();
-            if (user.getName().equals(username)) {
-                userFound = true;
-            }
-        }
-        return userFound ? user : null;
+        Optional<User> event = usersAndPasswords.keySet().stream().filter(u->(u.getName().equals(username))).findFirst();
+        return event.orElse(null);
     }
 
     public void reauthenticateAndChangePassword(String email, String curPassword, String newPassword, Context appContext) {
@@ -369,33 +346,20 @@ public class FirebaseMocker implements DatabaseInterface {
     public void getUserGroupIds(String userEmail, Handler<Map<String, String>> groupIdEventIdPairsHandler) {
         Map<String, String> groupIdEventPairs = new HashMap<>() ;
         groupIdGroupPairs.forEach((gid, g) -> {
-            g.getMembers().forEach(u -> {
-                if( u.getEmail().equals(userEmail)){
-                    groupIdEventPairs.put(gid, g.getEventId()) ;
-                }
-            });
+            g.getMembers().stream().filter(u->u.getEmail().equals(userEmail)).forEach(u -> groupIdEventPairs.put(gid, g.getEventId()));
         });
         groupIdEventIdPairsHandler.handle(groupIdEventPairs);
     }
 
     @Override
     public void getGroupByGroupId(String groupId, Handler<Group> groupHandler) {
-        for(Group g: groupIdGroupPairs.values()){
-            if(g.getGid().equals(groupId)){
-                groupHandler.handle(g);
-                return;
-            }
-        }
+        Optional<Group> g = groupIdGroupPairs.values().stream().filter(cg->cg.getGid().equals(groupId)).findFirst();
+        g.ifPresent(cg->groupHandler.handle(cg));
     }
 
     @Override
     public void getUserCollectionByEmails(List<String> userEmails, Handler<List<User>> usersHandler) {
-        List<User> users = new ArrayList<>() ;
-        for(User u: usersAndPasswords.keySet()){
-            if(userEmails.contains(u.getEmail())){
-                users.add(u) ;
-            }
-        }
+        List<User> users = usersAndPasswords.keySet().stream().filter(u->userEmails.contains((u.getEmail()))).collect(Collectors.toList());
         usersHandler.handle(users);
     }
 
