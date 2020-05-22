@@ -110,8 +110,9 @@ public class userProfileActivityTest {
         onView(withId(R.id.profileEditEmailButton)).perform(click());
         sleep();
         onView(withId(R.id.editTextChangeEmailEmail)).perform(typeText(AndroidTestHelper.getUser().getEmail()), closeSoftKeyboard());
-        onView(withId(R.id.editTextChangeEmailCurPassword)).perform(typeText(AndroidTestHelper.getUserPass()), closeSoftKeyboard());
+        onView(withId(R.id.editTextChangeEmailCurPassword)).perform(typeText(AndroidTestHelper.getUserPass(AndroidTestHelper.getUser().getEmail())), closeSoftKeyboard());
         onView(withId(R.id.editTextChangeEmailNewEmail)).perform(typeText("NEWMAIL@h.net"), closeSoftKeyboard());
+        sleep();
         onView(withText("Save"))
                 .inRoot(isDialog()) // <---
                 .check(matches(isDisplayed()))

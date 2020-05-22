@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -66,10 +65,10 @@ public class FirebaseMocker implements DatabaseInterface {
         if(user != null){
             if(password.equals(usersAndPasswords.getOrDefault(user,""))) {
                 successHandler.handle(user);
-            } else {
-                failureHandler.handle();
+                return;
             }
         }
+        failureHandler.handle();
     }
 
     @Override
@@ -303,6 +302,7 @@ public class FirebaseMocker implements DatabaseInterface {
             if(u.getEmail().equals(email)){
                 if(p.equals(curPassword)) {
                     u.setEmail(newEmail);
+                    PolyContext.setCurrentUser(u);
                     Toast.makeText(appContext, "Successfully changed email", Toast.LENGTH_SHORT).show();
                 }else {
                     Toast.makeText(appContext, "Incorrect password", Toast.LENGTH_SHORT).show();
