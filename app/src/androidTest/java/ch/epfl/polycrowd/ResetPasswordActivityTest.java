@@ -1,9 +1,11 @@
 package ch.epfl.polycrowd;
 
 import android.content.Intent;
+import android.widget.Toast;
 
 import androidx.test.rule.ActivityTestRule;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -59,6 +61,12 @@ public class ResetPasswordActivityTest {
         onView(withText("Email not found, please sign up"))
                 .inRoot(withDecorView(not(resetPasswordActivityActivityTestRule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));
+
+    }
+
+    @After
+    public void cancelToasts(){
+        AndroidTestHelper.sleep();
 
     }
 
