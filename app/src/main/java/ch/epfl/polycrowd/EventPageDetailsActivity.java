@@ -101,6 +101,9 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         if(curEvent != null) { // edit the event
             if(curUser != null && curEvent.getOrganizers().indexOf(curUser.getEmail()) != -1) {
                 editEventButton.setVisibility(View.VISIBLE);
+                isOwner = curEvent.getOwner().equals(PolyContext.getCurrentUser().getUid());
+            } else {
+                isOwner = false;
             }
             downloadEventImage();
             fillFields();
@@ -112,8 +115,6 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         }
 
         scheduleButton = findViewById(R.id.schedule);
-        if(PolyContext.getCurrentUser() != null) isOwner = curEvent.getOwner().equals(PolyContext.getCurrentUser().getUid());
-        else isOwner = false;
         if (!isOwner) findViewById(R.id.event_details_fab).setVisibility(View.GONE);
 
         scheduleButton.setOnClickListener(v -> ActivityHelper.eventIntentHandler(this,ScheduleActivity.class));
