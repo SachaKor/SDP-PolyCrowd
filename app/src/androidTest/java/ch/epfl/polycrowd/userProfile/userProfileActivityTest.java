@@ -123,8 +123,6 @@ public class userProfileActivityTest {
         onView(withId(R.id.profileEmail)).check(matches(withText(containsString("NEWMAIL@h.net"))));
         sleep();
         sleep();
-        sleep();
-
     }
 
     @Test

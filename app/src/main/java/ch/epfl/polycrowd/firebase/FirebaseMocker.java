@@ -62,23 +62,18 @@ public class FirebaseMocker implements DatabaseInterface {
 
     @Override
     public void signInWithEmailAndPassword(@NonNull String email, @NonNull String password, Handler<User> successHandler, EmptyHandler failureHandler) {
-        for(User user : usersAndPasswords.keySet()){
-            if (user.getEmail().equals(email)) {
-                Log.d("MOCKER", "USER PASSWORD IS " + usersAndPasswords.get(user));
-                if (Objects.equals(usersAndPasswords.get(user), password)) {
-                    successHandler.handle(user);
-                    return;
-                } else {
-                    failureHandler.handle();
-                    return;
-                }
+        User user = findUserByEmail(email);
+        if(user != null){
+            if(password.equals(usersAndPasswords.getOrDefault(user,""))) {
+                successHandler.handle(user);
+            } else {
+                failureHandler.handle();
             }
         }
-        failureHandler.handle();
     }
 
     @Override
-    public void getUserByEmail(String email, Handler<User> successHandler, EmptyHandler failureHandler) {
+    public void getUserByEmail(@NonNull String email, Handler<User> successHandler, EmptyHandler failureHandler) {
         User user = findUserByEmail(email);
         if (user != null) {
             successHandler.handle(user);
@@ -260,12 +255,9 @@ public class FirebaseMocker implements DatabaseInterface {
 
     @Override
     public void downloadEventImage(Event event, Handler<byte[]> handler) {
-        Log.d(TAG, "downloading the image");
-        // check if the imageUri isn't null
         if (event.getImageUri() == null) {
             Log.d(TAG, "image is not set for the event: " + event.getId());
         }
-        // handle the image stored in the mocker
         handler.handle(image);
     }
 
@@ -277,6 +269,7 @@ public class FirebaseMocker implements DatabaseInterface {
 
     @Override
     public void updateUser(@NonNull User user, Handler<User> eventHandler) {
+
         eventHandler.handle(user);
     }
 
@@ -307,9 +300,13 @@ public class FirebaseMocker implements DatabaseInterface {
     public void reauthenticateAndChangeEmail(@NonNull String email, @NonNull String curPassword, @NonNull String newEmail,
                                       EmptyHandler emptyHandler, Context appContext) {
         usersAndPasswords.forEach((u,p)-> {
-            if(u.getEmail().equals(email) && p.equals(curPassword)){
-                u.setEmail(newEmail);
-                Toast.makeText(appContext, "Successfully changed email", Toast.LENGTH_SHORT).show();
+            if(u.getEmail().equals(email)){
+                if(p.equals(curPassword)) {
+                    u.setEmail(newEmail);
+                    Toast.makeText(appContext, "Successfully changed email", Toast.LENGTH_SHORT).show();
+                }else {
+                    Toast.makeText(appContext, "Incorrect password", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         emptyHandler.handle();
