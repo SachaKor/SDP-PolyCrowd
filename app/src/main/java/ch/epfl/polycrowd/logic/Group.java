@@ -40,7 +40,9 @@ public class Group extends Storable {
 
     // Testing constructor
     public Group()  {
-        //this.eventId = "DEBUGEVENTIDWHAT";
+        this.groupName = "DEBUFGROUP" ;
+        this.eventId = "DEBUGEVENTIDWHAT";
+        this.eventName = "DEBUGGROUPEVENT" ;
         this.members = new HashSet<>();
         members.add(new User("fake@fake.com", "FAKEFAKEFAKEFAKE", "Fake John", 1));
     }
