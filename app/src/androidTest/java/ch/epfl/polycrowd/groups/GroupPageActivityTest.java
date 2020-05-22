@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 import ch.epfl.polycrowd.AndroidTestHelper;
+import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.groupPage.GroupPageActivity;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
@@ -33,6 +34,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import ch.epfl.polycrowd.R.* ;
 
 public class GroupPageActivityTest {
     @Rule

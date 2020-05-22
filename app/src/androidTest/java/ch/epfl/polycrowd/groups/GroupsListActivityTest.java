@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import ch.epfl.polycrowd.AndroidTestHelper;
+import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.groupPage.GroupsListActivity;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
@@ -44,6 +45,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;
+
+import ch.epfl.polycrowd.R.* ;
 
 public class GroupsListActivityTest {
 
