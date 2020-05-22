@@ -111,11 +111,11 @@ public class EventPageDetailsActivity extends AppCompatActivity {
             initRecyclerViewSecurity(curEvent.getSecurity());
         } else { // create an event
             setEditing(true);
-            inviteOrganizerButton.setVisibility(View.INVISIBLE);
+            inviteOrganizerButton.setVisibility(View.GONE);
         }
 
         scheduleButton = findViewById(R.id.schedule);
-        if (!isOwner) findViewById(R.id.event_details_fab).setVisibility(View.GONE);
+//        if (!isOwner) findViewById(R.id.event_details_fab).setVisibility(View.GONE);
 
         scheduleButton.setOnClickListener(v -> ActivityHelper.eventIntentHandler(this,ScheduleActivity.class));
 

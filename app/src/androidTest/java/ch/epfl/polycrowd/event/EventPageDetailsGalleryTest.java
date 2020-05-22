@@ -24,11 +24,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.espresso.matcher.BoundedMatcher;
-import androidx.test.espresso.matcher.RootMatchers;
-import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.GrantPermissionRule;
 
@@ -107,6 +104,7 @@ public class EventPageDetailsGalleryTest {
     }
     @Test
     public void clickCancel(){
+        sleep();
         onView(withId(R.id.event_details_fab)).perform(click());
         onView(withId(R.id.event_details_cancel)).perform(scrollTo(), click());
     }
