@@ -32,6 +32,7 @@ import ch.epfl.polycrowd.logic.User;
 import static androidx.core.util.Preconditions.checkNotNull;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem;
 import static androidx.test.espresso.matcher.ViewMatchers.hasChildCount;
@@ -94,6 +95,15 @@ public class GroupsListActivityTest {
      }
 
 
+    @Test
+    public void viewUpatedWithCreatedGroupOnCreateGroup(){
+        onView(withId(R.id.createGroupButton)).perform(click());
+        AndroidTestHelper.sleep();
+        String newGroupName = "testGid2"  ;
+        onView(withId(R.id.groupNameEditText)).perform(typeText(newGroupName)) ;
+        AndroidTestHelper.sleep();
+        onView(withText(newGroupName)).check(matches((isDisplayed()))) ;
+    }
      /*@Test
      public void showsCreateGroupWhenEventIsNotNull(){
        //PolyContext.setCurrentEvent(event) ;
