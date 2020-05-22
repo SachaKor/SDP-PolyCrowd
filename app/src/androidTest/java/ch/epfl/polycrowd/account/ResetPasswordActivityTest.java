@@ -63,7 +63,7 @@ public class ResetPasswordActivityTest {
                 .check(matches(isDisplayed()));
 
     }
-    
+
     @After
     public void cancelToasts(){
         AndroidTestHelper.sleep();

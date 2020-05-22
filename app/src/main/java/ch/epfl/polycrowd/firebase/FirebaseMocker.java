@@ -209,7 +209,6 @@ public class FirebaseMocker implements DatabaseInterface {
 
     @Override
     public void removeGroupIfEmpty(String gid, Handler<Group> handler) {
-<<<<<<< HEAD
         for(String groupId: groupIdGroupPairs.keySet()){
             if(groupId.equals(gid)){
                 if(groupIdGroupPairs.get(groupId).getMembers().size() == 0){
