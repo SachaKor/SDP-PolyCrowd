@@ -68,5 +68,24 @@ public class GroupTest {
         assert (userRawData.get(User.imageUriTag) == null) ;
     }
 
+    @Test
+    public void doesNotAddMemberAlreadyInGroup(){
+        User duplicateUser = new User( userEmail, "1", username,  20, null) ;
+        group.addMember(duplicateUser);
+        for(User user: group.getMembers()){
+            if(user == (duplicateUser)){
+               assert(false) ;
+            }
+        }
+
+        assert(true) ;
+
+    }
+
+    @Test
+    public void getsCorrectMemberNames(){
+        group.getMembersNames().contains(user.getUsername()) ;
+    }
+
     
 }
