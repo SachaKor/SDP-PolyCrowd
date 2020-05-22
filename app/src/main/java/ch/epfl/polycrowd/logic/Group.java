@@ -68,8 +68,12 @@ public class Group extends Storable {
         return groupName;
     }
 
-    public void addMember(User u){
-        members.add(u);
+    public void addMember(User toAdd){
+        for(User user: members){
+            if(user.getEmail().equals(toAdd.getEmail()))
+               return;
+        }
+        members.add(toAdd) ;
     }
 
     public static Group getFromDocument(Map<String, Object> data) {
@@ -108,7 +112,10 @@ public class Group extends Storable {
     }
 
 
-    public void removeMember(User user) {
-        members.remove(user) ;
+    public void removeMember(User toRemove) {
+        for(User user: members){
+            if(user.getEmail().equals(toRemove.getEmail()))
+                members.remove(user) ;
+        }
     }
 }
