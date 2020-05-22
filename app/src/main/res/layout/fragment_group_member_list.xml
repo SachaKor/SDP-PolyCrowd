@@ -42,7 +42,7 @@
         android:layout_below="@+id/invite_group_button"
         android:layout_marginTop="10dp"
         android:text="@string/leave_group"
-        android:onClick="onLeaveLinkClick"/>
+        android:onClick="onLeaveClick"/>
 
     <Button
         android:id="@+id/go_to_map_button"
