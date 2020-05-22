@@ -74,8 +74,6 @@ public class LoginActivity extends AppCompatActivity {
             ActivityHelper.toastPopup(this,"Sign in success");
 
             PolyContext.setCurrentUser(user);
-            PolyContext.getUserLocator().setRegisteredUser(user);
-
             /* if the user logs in to accept the organizer invitation, add him/her to the
                 organizers list, then open the event details page for the preview */
             switch (PolyContext.getInviteRole()) {

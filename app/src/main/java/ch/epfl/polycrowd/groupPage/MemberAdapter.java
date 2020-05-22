@@ -33,15 +33,11 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberListHolder>{
 
     @Override
     public void onBindViewHolder(@NonNull MemberListHolder holder, int position) {
-        holder.mTitle.setText(members.get(position).getName());
+        holder.mTitle.setText(members.get(position).getUsername());
         holder.mImaeView.setImageResource(R.drawable.default_user_pic);
         holder.mDes.setText(members.get(position).getEmail());
         holder.itemClickListener = (v,p) -> {
-            //ViewPager vp = (ViewPager)  v.findViewById(R.id.viewPager) ;
-            //vp.setCurrentItem(0); //0 for MapFragment index
-            //the "v" is which view? the holder view?
-            ((GroupPageActivity)c).showUserOnMap(members.get(position));
-            //((GroupPageActivity)c).selectViewPagerIndex(0);
+
         } ;
     }
 
