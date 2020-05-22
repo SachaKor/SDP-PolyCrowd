@@ -74,7 +74,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
 
     private ImageView eventImg;
     private ImageView editImg;
-    private Button inviteOrganizerButton, inviteSecurityButton, scheduleButton, cancel;
+    private Button inviteOrganizerButton, inviteSecurityButton, scheduleButton, cancel, revokeOrganizerButton;
     private Button submitChanges;
     private FloatingActionButton editEventButton;
     private EditText eventTitle, start,end, eventDescription, scheduleUrl;
@@ -176,6 +176,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         cancel = findViewById(R.id.event_details_cancel);
         mapText = findViewById(R.id.event_details_map_text);
         mapUpload = findViewById(R.id.event_details_map_upload);
+        revokeOrganizerButton = findViewById(R.id.revoke_organizer_button);
         textFields = new HashSet<>(Arrays.asList(new EditText[]{eventTitle, eventDescription, start,end}));
     }
 
@@ -224,6 +225,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         cancel.setVisibility(visibilityEdit);
         mapUpload.setVisibility(visibilityEdit);
         mapText.setVisibility(visibilityEdit);
+        revokeOrganizerButton.setVisibility(visibilityEdit);
 
         for(EditText t : textFields) {
             setEditTextEditable(t, enable);
