@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.view.View;
 import android.widget.TextView;
 
-import com.google.firebase.database.ThrowOnExtraProperties;
-
 import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -60,9 +58,8 @@ public class EventPageDetailsAddEventTest {
 
     @Test
     public void emptyFieldsCheck() {
-        AndroidTestHelper.sleep();
-        AndroidTestHelper.sleep();
         // event without title
+        AndroidTestHelper.sleep();
         onView(withId(R.id.event_details_title)).perform(setTextInTextView(""), closeSoftKeyboard());
         onView(withId(R.id.event_details_submit)).perform(scrollTo(), click());
         onView(withText("Enter the name of the event"))
@@ -80,6 +77,19 @@ public class EventPageDetailsAddEventTest {
     public void checkEmptyEndingDate() {
         typeTextAndCheckToast(R.id.event_details_start, "25-05-2020", "Enter the ending date");
     }
+
+//    @Test
+//    public void addNewEventSuccessfully() {
+//        AndroidTestHelper.sleep();
+//        onView(withId(R.id.event_details_title)).perform(setTextInTextView("New event"), closeSoftKeyboard());
+//        onView(withId(R.id.event_details_description)).perform(setTextInTextView("New description"), closeSoftKeyboard());
+//        onView(withId(R.id.event_details_start)).perform(typeText("27-05-2020"), closeSoftKeyboard());
+//        onView(withId(R.id.event_details_end)).perform(typeText("29-05-2020"), closeSoftKeyboard());
+//        onView(withId(R.id.event_details_submit)).perform(scrollTo(), click());
+//        AndroidTestHelper.sleep();
+//        AndroidTestHelper.sleep();
+//        onView(withId(R.id.event_details_fab)).check(matches(isDisplayed()));
+//    }
 
     private void typeTextAndCheckToast(int editTextId, String textToType, String toastText) {
         onView(withId(editTextId)).perform(typeText(textToType), closeSoftKeyboard());

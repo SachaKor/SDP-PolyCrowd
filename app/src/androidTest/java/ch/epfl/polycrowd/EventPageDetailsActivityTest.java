@@ -67,5 +67,6 @@ public class EventPageDetailsActivityTest {
         onView(withId(R.id.event_details_submit)).check(matches(not(isDisplayed())));
     }
 
+
 }
 
