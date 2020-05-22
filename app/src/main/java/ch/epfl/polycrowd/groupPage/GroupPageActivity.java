@@ -152,7 +152,7 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
                 .show();
     }
 
-    public void onLeaveLinkClick(View view) {
+    public void onLeaveClick(View view) {
 
         group.removeMember(PolyContext.getCurrentUser()) ;
         PolyContext.getDBI().updateGroup(group, () ->
