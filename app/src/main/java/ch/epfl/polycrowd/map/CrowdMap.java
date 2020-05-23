@@ -3,10 +3,12 @@ package ch.epfl.polycrowd.map;
 import ch.epfl.polycrowd.logic.Activity;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.util.Log;
 import android.view.Gravity;
@@ -85,6 +87,9 @@ public class CrowdMap implements OnMapReadyCallback {
 
      //demo fake movement offset
     double offset =0.0001;
+
+    //dialog for activity details
+    Dialog myDialog;
 
 
     // ------ Constructor ---------------------------------------------
@@ -165,19 +170,18 @@ public class CrowdMap implements OnMapReadyCallback {
 
         // Set a listener for geometry clicked events.
         layer.setOnFeatureClickListener( feature -> {
+            Utils.giveHttpRequestPermissions();
+            Event ev = PolyContext.getCurrentEvent();
+            List<Activity> acts = null;
+            if (ev!= null ){
+                if (ev.getSchedule() == null) ev.loadCalendar(act.getApplicationContext().getFilesDir());
+                 acts = ev.getSchedule().getActivities().stream().filter( a ->
+                    a.getLocation().trim().toLowerCase().equals(feature.getProperty("name")))
+                        .collect(Collectors.toList());
 
-                Utils.giveHttpRequestPermissions();
-                Event ev = PolyContext.getCurrentEvent();
-                List<Activity> acts = null;
-                if (ev!= null ){
-                    if (ev.getSchedule() == null) ev.loadCalendar(act.getApplicationContext().getFilesDir());
-                     acts = ev.getSchedule().getActivities().stream().filter( a ->
-                        a.getLocation().trim().toLowerCase().equals(feature.getProperty("name")))
-                            .collect(Collectors.toList());
+            }
 
-                }
-
-                String info = feature.getProperty("name")+"\n"+ getAggregatedSchedules(acts);
+            /*String info = feature.getProperty("name")+"\n"+ getAggregatedSchedules(acts);
             AlertDialog.Builder alert = new AlertDialog.Builder(act);
             alert.setTitle(feature.getProperty("name"));
             alert.setMessage(getAggregatedSchedules(acts));
@@ -185,9 +189,29 @@ public class CrowdMap implements OnMapReadyCallback {
                 public void onClick(DialogInterface dialog, int whichButton) {
                     // Return.
                 }});
-            alert.show();
+            alert.show();*/
+            //}
+            Activity activity = null;
+            if(!acts.isEmpty())
+                activity = acts.get(0); //shouldnt be more then 1 activity with for each name
+
+            if (activity != null) {
+                myDialog = new Dialog(act);
+                myDialog.setContentView(R.layout.activity_details_popup);
+                TextView tv = (TextView) myDialog.findViewById(R.id.Activity_details_title);
+                tv.setText(activity.getSummary());
+                tv = (TextView) myDialog.findViewById(R.id.activity_popup_description_content);
+                tv.setText(activity.getDescription());
+                tv = (TextView) myDialog.findViewById(R.id.open_time);
+                tv.setText("open : " + getSchedules(activity));
+                tv = (TextView) myDialog.findViewById(R.id.activity_popup_organizedBy);
+                if (activity.getOrganizer() != null) {
+                    tv.setText("Organized by : " + activity.getOrganizer());
+                }
+                myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                myDialog.show();
             }
-        );
+        });
 
         layer.addLayerToMap();
 
@@ -370,13 +394,22 @@ public class CrowdMap implements OnMapReadyCallback {
         });
     }
 
-    private String getAggregatedSchedules(List<Activity> acts){
+    /*private String getAggregatedSchedules(List<Activity> acts){
         if (acts == null) return "";
         else {
             StringBuilder sb = new StringBuilder();
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
             acts.stream().forEach(a -> sb.append("- " + a.getSummary() + ": "
-                    + Event.dateToString(a.getStart(), sdf) + " -> " + Event.dateToString(a.getEnd(),sdf) + "\n"));
+                    + Event.dateToString(a.getStart(), sdf) + " - " + Event.dateToString(a.getEnd(),sdf) + "\n"));
+            return sb.toString();
+        }
+    }*/
+    private String getSchedules(Activity act){
+        if (act == null) return "";
+        else {
+            StringBuilder sb = new StringBuilder();
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+            sb.append(Event.dateToString(act.getStart(), sdf) + " - " + Event.dateToString(act.getEnd(),sdf) + "\n");
             return sb.toString();
         }
     }

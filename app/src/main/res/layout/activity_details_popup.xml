@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="5dp"
+    android:background="@drawable/layout_bg"
+    android:layout_gravity="top">
+
+    <RelativeLayout
+        android:id="@+id/rellay_title"
+        android:layout_gravity="top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/Activity_details_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/imgUserRellay"
+            android:text ="Error(Title)"
+            android:height="50dp"
+            android:textSize="32sp"
+            android:fontFamily="sans-serif-light"
+            />
+
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_below="@id/rellay_title"
+        android:layout_marginTop="15dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/description_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Description :"
+            android:textSize="20sp"/>
+        <TextView
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/description_title"
+            android:id="@+id/activity_popup_description_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Blablablablablablablabla"
+            android:textSize="20sp" />
+        <TextView
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/activity_popup_description_content"
+            android:id="@+id/open_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Open :"
+            android:textSize="20sp" />
+        <TextView
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/open_time"
+            android:id="@+id/activity_popup_organizedBy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Organized by: "
+            android:textSize="20sp" />
+
+    </RelativeLayout>
+</RelativeLayout>
