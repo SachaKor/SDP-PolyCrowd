@@ -1,21 +1,36 @@
 package ch.epfl.polycrowd;
 
+import androidx.annotation.NonNull;
+
 import org.junit.Before;
 import org.junit.Test;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import ch.epfl.polycrowd.logic.Activity;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+
+import java.util.Date;
 
 
 public class ActivityTest {
     public static final String CalURL = "https://calendar.google.com/calendar/ical/816h2e8601aniprqniv7a8tn90%40group.calendar.google.com/public/basic.ics";
 
     private Map<String, String> mockActivity;
+
+    private String location = "Location 1" ;
+    private String id = "id1" ;
+    private String summary =  "activity summary";
+    private String description = "activity description" ;
+    private String startDateString = "20200725T163058";
+    private String endDateString = "20221026T180228" ;
+    private String organiserEmail = "MAILTO:email@email.com";
 
     @Before
     public void setupMap(){
@@ -65,6 +80,8 @@ public class ActivityTest {
         assertEquals("MAILTO:email@email.com", a.getOrganizer());
     }
 
+
+
     @Test
     public void activityIntegrety(){
         Activity a= null;
@@ -82,4 +99,37 @@ public class ActivityTest {
         //a.getEnd();
         assertEquals(a.getOrganizer(), "MAILTO:email@email.com");
     }
+
+    @Test
+    public void differentConstructorsEquivalent(){
+
+
+        Activity activityFromConstructor2 = null  ;
+        Date startDate = null ;
+        Date endDate  = null ;
+
+        try {
+
+            SimpleDateFormat formatter  = new SimpleDateFormat("yyyyMMdd'T'HHmmss", Locale.ENGLISH);
+            startDate = formatter.parse(startDateString);
+            endDate = formatter.parse(endDateString);
+
+            activityFromConstructor2 = new Activity(mockActivity) ;
+        } catch (ParseException e) {
+            assert(false);
+        }
+
+        Activity activityFromConstructor1 = new Activity(location, id, summary ,description ,
+                organiserEmail , startDate, endDate) ;
+
+        //Test dates separately since not included in string conversion of Activity,
+        //which is tested below
+        assert(activityFromConstructor1.getStart().equals(activityFromConstructor2.getStart())) ;
+
+        assert(activityFromConstructor1.getEnd().equals(activityFromConstructor2.getEnd())) ;
+
+        assert(activityFromConstructor1.toString().equals(activityFromConstructor2.toString())) ;
+
+    }
+
 }
