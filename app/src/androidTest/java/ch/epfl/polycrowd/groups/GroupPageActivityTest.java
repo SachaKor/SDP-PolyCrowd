@@ -34,6 +34,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static ch.epfl.polycrowd.AndroidTestHelper.sleep;
 
 import ch.epfl.polycrowd.R.* ;
 
@@ -96,10 +97,23 @@ public class GroupPageActivityTest {
          Intents.init() ;
          onView(withId(R.id.leave_group_button)).
                  perform(click());
-         AndroidTestHelper.sleep();
+         sleep();
          intended(hasComponent(UserProfilePageActivity.class.getName())) ;
          Intents.release();
      }
+
+    @Test
+    public void displaysInviteToGroup(){
+        onView(withId(id.invite_group_button)).check(matches((isDisplayed()))) ;
+    }
+
+    @Test
+    public void clickInviteToGroupDisplaysPopup(){
+        onView(withId(id.invite_group_button)).perform(click()) ;
+        sleep() ;
+        onView(withText(R.string.invite_link_dialog_title)).check(matches(isDisplayed())) ;
+        onView(withText("OK")).perform(click()) ;
+    }
 
 
 }
