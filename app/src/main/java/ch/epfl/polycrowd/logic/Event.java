@@ -79,6 +79,7 @@ public class Event extends Storable{
         organizers = new ArrayList<>();
         organizers.add(owner);
         security = new ArrayList<>();
+        staff = new ArrayList<>();
         setDescription(description);
         this.isEmergencyEnabled = hasEmergencyFeature;
     }
@@ -264,18 +265,16 @@ public class Event extends Storable{
         return organizers;
     }
 
-    public void addStaff(String id){
-        if(id != null)
-            staff.add(id);
+    public void addStaff(@NonNull String id){
+        staff.add(id);
     }
 
     public List<String> getStaff() {
         return staff;
     }
 
-    public void addSecurity(String id){
-        if(id != null)
-            security.add(id);
+    public void addSecurity(@NonNull String id){
+        security.add(id);
     }
     public List<String> getSecurity() {
         return security;
