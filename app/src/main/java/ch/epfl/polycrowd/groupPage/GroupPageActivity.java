@@ -23,6 +23,8 @@ import com.google.firebase.dynamiclinks.DynamicLink;
 import com.google.firebase.dynamiclinks.DynamicLink.SocialMetaTagParameters;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import ch.epfl.polycrowd.ActivityHelper;
@@ -32,6 +34,8 @@ import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
+import ch.epfl.polycrowd.map.MapActivity;
+import ch.epfl.polycrowd.userProfile.UserProfilePageActivity;
 
 public class GroupPageActivity extends AppCompatActivity implements TabLayout.OnTabSelectedListener {
 
@@ -70,7 +74,7 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
 
 
         Set<User> members = group.getMembers();
-        requestMemberLocations(members);
+        //requestMemberLocations(members);
     }
 
     @Override
@@ -111,8 +115,8 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
             Log.e(TAG, "initGroup : current user is null ?!");
             return;
         }
-        groupId = PolyContext.getCurrentGroupId();
         group = PolyContext.getCurrentGroup() ;
+        groupId = group.getGid() ;
     }
     /**
      * OnClick "INVITE TO GROUP"
@@ -148,26 +152,22 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
                 .show();
     }
 
-    public void leaveLinkClicked(View view) {
-        PolyContext.getDBI().removeUserFromGroup(groupId, PolyContext.getCurrentUser().getEmail(), () ->
+    public void onLeaveClick(View view) {
+
+        group.removeMember(PolyContext.getCurrentUser()) ;
+        PolyContext.getDBI().updateGroup(group, () ->
             PolyContext.getDBI().removeGroupIfEmpty(groupId, group -> {
-                Intent map = new Intent(this, GroupPageActivity.class);
-                startActivity(map);
+                Intent intent = new Intent(this, UserProfilePageActivity.class);
+                startActivity(intent);
             }
         ));
     }
 
-    //TODO
-   public void createLinkClicked(View view){
-        Context c = this;
-        User user = PolyContext.getCurrentUser();
-        PolyContext.getDBI().createGroup(group, gr -> {
-            groupId = group.getGid();
-            PolyContext.getDBI().addUserToGroup(groupId, PolyContext.getCurrentUser().getEmail(), () -> {
-                Log.w("createLinkClicked", "group " + groupId + " user " + PolyContext.getCurrentUser().getEmail() + " event " + PolyContext.getCurrentEvent().getId());
-                ActivityHelper.eventIntentHandler(this,GroupPageActivity.class);
-            });
-        });
+    public void onGoToMapClick(View view) {
+
+        Intent intent = new Intent(this, MapActivity.class );
+        startActivity(intent);
+
     }
 
     @Override
@@ -175,9 +175,6 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
         int index = tab.getPosition() ;
         if(index == 0){
             Log.d(TAG, "TAB SELECTED FOR MAPS") ;
-            //TODO Move the showUserOnMap call here?
-            //Or drawMap has condition on which user to highlight?
-            //((GroupMapFragment)fragmentAdapter.getItem(index)).drawMap() ;
         }
     }
 
@@ -185,8 +182,7 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
     public void onTabUnselected(TabLayout.Tab tab) {
         int index = tab.getPosition() ;
         if(index == 0){
-            Log.d(TAG, "TAB UN-SELECTED FOR MAPS") ;
-            ((GroupMapFragment)fragmentAdapter.getItem(index)).resetMap() ;
+
         }
     }
 
@@ -194,33 +190,7 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
     public void onTabReselected(TabLayout.Tab tab) {
         int index = tab.getPosition() ;
         if(index == 0){
-            Log.d(TAG, "TAB RE-SELECTED FOR MAPS") ;
-            ((GroupMapFragment)fragmentAdapter.getItem(index)).resetMap() ;
         }
     }
 
-    public void showUserOnMap(User user){
-        ((GroupMapFragment)fragmentAdapter.getItem(0)).highlightUserMarker(user);
-        viewPager.setCurrentItem(0);;
-    }
-
-    private void requestMemberLocations(Set<User> members) {
-        LocationManager mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        for (User u : members) {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                return;
-            }
-            //TODO use PASSIVE_PROVIDER instead?
-            //TODO what time and distance are suitable ?
-            //https://stackoverflow.com/questions/17591147/how-to-get-current-location-in-android
-            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
-                    LOCATION_REFRESH_DISTANCE, u);
-        }
-    }
 }

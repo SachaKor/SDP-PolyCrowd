@@ -16,10 +16,10 @@ import com.google.android.gms.maps.model.LatLng;
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
@@ -33,7 +33,7 @@ public class FirebaseMocker implements DatabaseInterface {
     private static final String TAG = "FirebaseMocker";
 
     private Map<User, String> usersAndPasswords = new HashMap<>();
-    private List<Event> events = new ArrayList<>();
+    private Map<String,Event> events = new HashMap<>();
     private byte[] image;
     private Map<String, Group> groupIdGroupPairs = new HashMap<>();
     private byte[] userImg;
@@ -48,7 +48,7 @@ public class FirebaseMocker implements DatabaseInterface {
         for (Map.Entry<String, Pair<User, String>> entry : defaultMailAndUserPassPair.entrySet()) {
             usersAndPasswords.put(entry.getValue().first, entry.getValue().second);
         }
-        events.addAll(defaultEvents);
+        defaultEvents.forEach(e->events.put(e.getId(),e));
         image = new byte[100];
         connectionId = "MOCK_CONNECTION_ID";
     }
@@ -61,23 +61,18 @@ public class FirebaseMocker implements DatabaseInterface {
 
     @Override
     public void signInWithEmailAndPassword(@NonNull String email, @NonNull String password, Handler<User> successHandler, EmptyHandler failureHandler) {
-        for(User user : usersAndPasswords.keySet()){
-            if (user.getEmail().equals(email)) {
-                Log.d("MOCKER", "USER PASSWORD IS " + usersAndPasswords.get(user));
-                if (Objects.equals(usersAndPasswords.get(user), password)) {
-                    successHandler.handle(user);
-                    return;
-                } else {
-                    failureHandler.handle();
-                    return;
-                }
+        User user = findUserByEmail(email);
+        if(user != null){
+            if(password.equals(usersAndPasswords.getOrDefault(user,""))) {
+                successHandler.handle(user);
+                return;
             }
         }
         failureHandler.handle();
     }
 
     @Override
-    public void getUserByEmail(String email, Handler<User> successHandler, EmptyHandler failureHandler) {
+    public void getUserByEmail(@NonNull String email, Handler<User> successHandler, EmptyHandler failureHandler) {
         User user = findUserByEmail(email);
         if (user != null) {
             successHandler.handle(user);
@@ -103,13 +98,13 @@ public class FirebaseMocker implements DatabaseInterface {
 
     @Override
     public void getAllEvents(Handler<List<Event>> handler) {
-        handler.handle(events);
+        handler.handle(new ArrayList<>(events.values()));
     }
 
     @Override
     public void addEvent(Event event, Handler<Event> successHandler, Handler<Event> failureHandler) {
         if (event.getId() == null) event.setId(String.valueOf(events.size()));
-        events.add(event) ;
+        events.put(event.getId(),event) ;
         successHandler.handle(event);
     }
 
@@ -118,20 +113,17 @@ public class FirebaseMocker implements DatabaseInterface {
         this.addEvent(event, successHandler, failureHandler);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void getEventById(String eventId, Handler<Event> eventHandler) {
-        Event event = findEventWithId(eventId);
+        Event event = events.getOrDefault(eventId,null);
         if (event != null) {
             eventHandler.handle(event);
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void addOrganizerToEvent(String eventId, String organizerEmail, EmptyHandler handler) {
-        //getEventById(eventId, organizerEmail);
-        Event event = findEventWithId(eventId);
+        Event event = events.getOrDefault(eventId,null);
         if (event != null) {
             event.addOrganizer(organizerEmail);
             handler.handle();
@@ -140,7 +132,7 @@ public class FirebaseMocker implements DatabaseInterface {
 
     @Override
     public void removeOrganizerFromEvent(String eventId, String organizerEmail, EmptyHandler handler) {
-        Event event = findEventWithId(eventId);
+        Event event = events.getOrDefault(eventId,null);
         if (event != null){
             event.getOrganizers().remove(organizerEmail);
             handler.handle();
@@ -148,7 +140,7 @@ public class FirebaseMocker implements DatabaseInterface {
     }
 
     public void addSecurityToEvent(String eventId, String securityEmail, EmptyHandler handler) {
-        Event event = findEventWithId(eventId);
+        Event event = events.getOrDefault(eventId,null);
         if(event != null){
             event.addSecurity(securityEmail);
             handler.handle();
@@ -200,20 +192,28 @@ public class FirebaseMocker implements DatabaseInterface {
         groupIdGroupPairs.putIfAbsent(inviteGroupId, new Group());
         Group group = groupIdGroupPairs.getOrDefault(inviteGroupId,null);
         User user = findUserByEmail(userEmail) ;
-        if(group == null || user == null){
-            emptyHandler.handle();
+        if(group != null && user != null){
+            group.addMember(user);
         }
-        group.addMember(user);
         emptyHandler.handle();
     }
 
     @Override
     public void removeGroupIfEmpty(String gid, Handler<Group> handler) {
-        Group g = groupIdGroupPairs.getOrDefault(gid, null);
-        if(g == null || g.getMembers().size() == 0)
-            groupIdGroupPairs.remove(gid);
+        Group g = groupIdGroupPairs.getOrDefault(gid,null);
+        if(g != null){
+            if(g.getMembers().size() == 0) {
+                groupIdGroupPairs.remove(gid);
+                g = null;
+            }
+            handler.handle(g);
+        }
+    }
 
-        handler.handle(groupIdGroupPairs.getOrDefault(gid, null));
+    @Override
+    public void updateGroup(Group group, EmptyHandler handler) {
+        groupIdGroupPairs.put(group.getGid(), group);
+        handler.handle();
     }
 
     @Override
@@ -222,14 +222,13 @@ public class FirebaseMocker implements DatabaseInterface {
     }
 
     @Override
-    public void createGroup(Group group, Handler<Group> handler) {
-        Group newGroup = new Group(group.getGid(), group.getEventId(), group.getMembers()) ;
-        newGroup.addMember(PolyContext.getCurrentUser());
-        groupIdGroupPairs.put(newGroup.getGid(), newGroup) ;
-        handler.handle(newGroup);
+    public void createGroup(Map<String, Object> groupRawData, Handler<String> handler) {
+        Group newGroup =  Group.getFromDocument(groupRawData);
+        String newGroupId  = Integer.toString(groupIdGroupPairs.keySet().size()) ;
+        groupIdGroupPairs.put(newGroupId, newGroup) ;
+        handler.handle(newGroupId);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void uploadEventImage(Event event, byte[] image, Handler<Event> handler) {
         Log.d(TAG, "uploading the image");
@@ -253,172 +252,127 @@ public class FirebaseMocker implements DatabaseInterface {
             handler.handle(event);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void downloadEventImage(Event event, Handler<byte[]> handler) {
-        Log.d(TAG, "downloading the image");
-        // check if the imageUri isn't null
         if (event.getImageUri() == null) {
             Log.d(TAG, "image is not set for the event: " + event.getId());
         }
-        // handle the image stored in the mocker
         handler.handle(image);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
-    public void updateEvent(Event event, Handler<Event> eventHandler) {
-        Log.d(TAG, "updating the event");
-        int i = 0;
-        for (Event e : events) {
-            if (e.getId().equals(event.getId())) {
-                events.set(i, event);
-            }
-            ++i;
-        }
+    public void updateEvent(@NonNull Event event, Handler<Event> eventHandler) {
+        events.put(event.getId(),event);
         eventHandler.handle(event);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
-    public void updateUser(User user, Handler<User> eventHandler) {
+    public void updateUser(@NonNull User user, Handler<User> eventHandler) {
+
         eventHandler.handle(user);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private Event findEventWithId(String eventId) {
-        boolean eventFound = false;
-        Event event = null;
-        Iterator<Event> eventIterator = events.iterator();
-        while (!eventFound && eventIterator.hasNext()) {
-            event = eventIterator.next();
-            if (event.getId().equals(eventId)) {
-                eventFound = true;
+    private User findUserByEmail(@NonNull String email) {
+        Optional<User> event = usersAndPasswords.keySet().stream().filter(u->(u.getEmail().equals(email))).findFirst();
+        return event.orElse(null);
+    }
+
+    private User findUserByUsername(@NonNull String username) {
+        Optional<User> event = usersAndPasswords.keySet().stream().filter(u->(u.getUsername().equals(username))).findFirst();
+        return event.orElse(null);
+    }
+
+    public void reauthenticateAndChangePassword(@NonNull String email, @NonNull String curPassword, @NonNull String newPassword, Context appContext) {
+        usersAndPasswords.forEach((u,p)-> {
+            if(u.getEmail().equals(email) && p.equals(curPassword)){
+                usersAndPasswords.put(u,newPassword);
+                Toast.makeText(appContext, "Successfully changed password", Toast.LENGTH_SHORT).show();
             }
-        }
-        return eventFound ? event : null;
+        });
     }
 
-    private User findUserByEmail(String email) {
-        User user = null;
-        boolean userFound = false;
-        Iterator<User> userIterator = usersAndPasswords.keySet().iterator();
-        while (!userFound && userIterator.hasNext()) {
-            user = userIterator.next();
-            if (user.getEmail().equals(email)) {
-                userFound = true;
-            }
-        }
-        return userFound ? user : null;
-    }
-
-    private User findUserByUsername(String username) {
-        User user = null;
-        boolean userFound = false;
-        Iterator<User> userIterator = usersAndPasswords.keySet().iterator();
-        while (!userFound && userIterator.hasNext()) {
-            user = userIterator.next();
-            if (user.getName().equals(username)) {
-                userFound = true;
-            }
-        }
-        return userFound ? user : null;
-    }
-
-    public void reauthenticateAndChangePassword(String email, String curPassword, String newPassword, Context appContext) {
-        //no need to do anything more because cannot get user's password to check credentials
-        Toast.makeText(appContext, "Successfully changed password", Toast.LENGTH_SHORT).show();
-    }
-
-    public void updateCurrentUserUsername(String newUserName, EmptyHandler updateFields) {
+    public void updateCurrentUserUsername(@NonNull String newUserName, EmptyHandler updateFields) {
            PolyContext.getCurrentUser().setUsername(newUserName);
            updateFields.handle();
     }
 
-    public void reauthenticateAndChangeEmail(String email, String curPassword, String newEmail,
+    public void reauthenticateAndChangeEmail(@NonNull String email, @NonNull String curPassword, @NonNull String newEmail,
                                       EmptyHandler emptyHandler, Context appContext) {
-        PolyContext.getCurrentUser().setEmail(newEmail);
-        Toast.makeText(appContext, "Successfully changed email",
-                Toast.LENGTH_SHORT).show();
+        usersAndPasswords.forEach((u,p)-> {
+            if(u.getEmail().equals(email)){
+                if(p.equals(curPassword)) {
+                    u.setEmail(newEmail);
+                    PolyContext.setCurrentUser(u);
+                    Toast.makeText(appContext, "Successfully changed email", Toast.LENGTH_SHORT).show();
+                }else {
+                    Toast.makeText(appContext, "Incorrect password", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
         emptyHandler.handle();
     }
 
     @Override
-    public void downloadUserProfileImage(User user, Handler<byte[]> handler) {
-        Log.d(TAG, "downloading the image");
-        // check if the imageUri isn't null
+    public void downloadUserProfileImage(@NonNull User user, Handler<byte[]> handler) {
         if (user.getImageUri() == null) {
-            Log.d(TAG, "image is not set for the event: " + user.getUid());
+            Log.d(TAG, "image is not set for the user: " + user.getUid());
         }
-        // handle the image stored in the mocker
         handler.handle(userImg);
     }
 
 
     @Override
-    public void uploadUserProfileImage(User user, byte[] image, Handler<User> handler) {
-        Log.d(TAG, "uploading the image");
-        // save the image
+    public void uploadUserProfileImage(@NonNull User user, @NonNull byte[] image, Handler<User> handler) {
         this.userImg = image;
-        // set the imageUri field of the event
         user.setImageUri("testImageUri");
-        // handle the updated event
         handler.handle(user);
     }
 
-    public void getUserGroupIds(String userEmail, Handler<Map<String, String>> groupIdEventIdPairsHandler) {
+    public void getUserGroupIds(@NonNull String userEmail, Handler<Map<String, String>> groupIdEventIdPairsHandler) {
         Map<String, String> groupIdEventPairs = new HashMap<>() ;
-        groupIdGroupPairs.forEach((gid, g) -> {
-            g.getMembers().forEach(u -> {
-                if( u.getEmail().equals(userEmail)){
-                    groupIdEventPairs.put(gid, g.getEventId()) ;
-                }
-            });
-        });
+        groupIdGroupPairs.forEach((gid, g) ->
+                g.getMembers().stream().filter(u->u.getEmail().equals(userEmail)).forEach(u ->
+                        groupIdEventPairs.put(gid, g.getEventId())));
         groupIdEventIdPairsHandler.handle(groupIdEventPairs);
     }
 
     @Override
-    public void getGroupByGroupId(String groupId, Handler<Group> groupHandler) {
-        for(Group g: groupIdGroupPairs.values()){
-            if(g.getGid().equals(groupId)){
-                groupHandler.handle(g);
-                return;
-            }
-        }
+    public void getUserGroups(@NonNull User user, Handler<List<Group>> userGroups) {
+        userGroups.handle(groupIdGroupPairs.values().stream().filter(g->g.getMembers().contains(user)).collect(Collectors.toList()));
     }
 
     @Override
-    public void getUserCollectionByEmails(List<String> userEmails, Handler<List<User>> usersHandler) {
-        List<User> users = new ArrayList<>() ;
-        for(User u: usersAndPasswords.keySet()){
-            if(userEmails.contains(u.getEmail())){
-                users.add(u) ;
-            }
-        }
+    public void getGroupByGroupId(@NonNull String groupId, Handler<Group> groupHandler) {
+        Group g = groupIdGroupPairs.getOrDefault(groupId,null);
+        if(g != null)
+            groupHandler.handle(g);
+    }
+
+    @Override
+    public void getUserCollectionByEmails(@NonNull List<String> userEmails, Handler<List<User>> usersHandler) {
+        List<User> users = usersAndPasswords.keySet().stream().filter(u->userEmails.contains((u.getEmail()))).collect(Collectors.toList());
         usersHandler.handle(users);
     }
 
     @Override
-    public void updateUserLocation(String id, LatLng location) {
-        if(id==null) return;
+    public void updateUserLocation(@NonNull String id, LatLng location) {
         userPositions.put(id,location);
     }
 
     @Override
-    public void fetchUserLocation(String id, Handler<LatLng> handlerSuccess) {
+    public void fetchUserLocation(@NonNull String id, Handler<LatLng> handlerSuccess) {
         if(userPositions.containsKey(id))
             handlerSuccess.handle(userPositions.get(id));
     }
 
-    public void sendMessageFeed(String eventId, Message m, EmptyHandler handler) {
+    public void sendMessageFeed(@NonNull String eventId, Message m, EmptyHandler handler) {
         eventMessages.putIfAbsent(eventId,new ArrayList<>());
         eventMessages.get(eventId).add(m);
         handler.handle();
     }
 
     @Override
-    public void getAllFeedForEvent(String eventId, Handler<List<Message>> handler) {
+    public void getAllFeedForEvent(@NonNull String eventId, Handler<List<Message>> handler) {
         handler.handle(eventMessages.getOrDefault(eventId, new ArrayList<>()));
     }
 

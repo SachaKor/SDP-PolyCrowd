@@ -18,7 +18,6 @@ import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.userProfile.UserProfilePageActivity;
 import ch.epfl.polycrowd.logic.PolyContext;
 
-import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.typeText;
@@ -65,7 +64,7 @@ public class userProfileActivityTest {
     @Test
     public void testCorrectlyLoadsDataFromUser(){
         onView(withId(R.id.profileUserName)).check(matches(withText
-                (containsString(PolyContext.getCurrentUser().getName()))));
+                (containsString(PolyContext.getCurrentUser().getUsername()))));
         onView(withId(R.id.profileEmail)).check(matches
                 (withText(containsString(PolyContext.getCurrentUser().getEmail()))));
     }
@@ -111,8 +110,9 @@ public class userProfileActivityTest {
         onView(withId(R.id.profileEditEmailButton)).perform(click());
         sleep();
         onView(withId(R.id.editTextChangeEmailEmail)).perform(typeText(AndroidTestHelper.getUser().getEmail()), closeSoftKeyboard());
-        onView(withId(R.id.editTextChangeEmailCurPassword)).perform(typeText(AndroidTestHelper.getUserPass()), closeSoftKeyboard());
+        onView(withId(R.id.editTextChangeEmailCurPassword)).perform(typeText(AndroidTestHelper.getUserPass(AndroidTestHelper.getUser().getEmail())), closeSoftKeyboard());
         onView(withId(R.id.editTextChangeEmailNewEmail)).perform(typeText("NEWMAIL@h.net"), closeSoftKeyboard());
+        sleep();
         onView(withText("Save"))
                 .inRoot(isDialog()) // <---
                 .check(matches(isDisplayed()))
@@ -124,8 +124,6 @@ public class userProfileActivityTest {
         onView(withId(R.id.profileEmail)).check(matches(withText(containsString("NEWMAIL@h.net"))));
         sleep();
         sleep();
-        sleep();
-
     }
 
     @Test

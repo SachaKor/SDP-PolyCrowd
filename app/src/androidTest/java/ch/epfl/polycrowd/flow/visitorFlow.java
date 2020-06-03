@@ -185,7 +185,7 @@ public class visitorFlow {
         onView(withId(R.id.profileImgEditButton)).check(matches(isDisplayed()));
 
         onView(withId(R.id.profileUserName)).check(matches(isDisplayed()));
-        onView(withId(R.id.profileUserName)).check(matches(withText(containsString(AndroidTestHelper.getUser().getName()))));
+        onView(withId(R.id.profileUserName)).check(matches(withText(containsString(AndroidTestHelper.getUser().getUsername()))));
         onView(withId(R.id.usernameEditButton)).check(matches(isDisplayed()));
 
         onView(withId(R.id.profileEmail)).check(matches(isDisplayed()));

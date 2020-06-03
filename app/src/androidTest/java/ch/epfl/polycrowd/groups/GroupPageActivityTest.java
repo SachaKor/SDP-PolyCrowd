@@ -3,24 +3,39 @@ package ch.epfl.polycrowd.groups;
 import android.content.Intent;
 
 import androidx.test.espresso.action.ViewActions;
+import androidx.test.espresso.intent.Intents;
 import androidx.test.rule.ActivityTestRule;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.HashSet;
 
 import ch.epfl.polycrowd.AndroidTestHelper;
+import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.groupPage.GroupPageActivity;
+import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
+import ch.epfl.polycrowd.map.MapActivity;
+import ch.epfl.polycrowd.userProfile.UserProfilePageActivity;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem;
+import static androidx.test.espresso.intent.Intents.intended;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import ch.epfl.polycrowd.R.* ;
 
 public class GroupPageActivityTest {
     @Rule
@@ -28,71 +43,63 @@ public class GroupPageActivityTest {
             new ActivityTestRule<GroupPageActivity>(GroupPageActivity.class, true, false);
 
 
-    Group group0, group1 ;
-    User testUser0, testUser1;
+    Group group0 ;
+    User testUser0;
+    Event event ;
 
     private final String SECOND_FRAG_TITLE = "SECONDSEGMENT" ;
     private final String FIRST_FRAG_TITLE =   "FIRSTSEGMENT" ;
 
     @Before
     public void setUp(){
+        PolyContext.reset();
         AndroidTestHelper.SetupMockDBI();
-        testUser0 = AndroidTestHelper.getNewUser() ;
-        //TODO maybe add a more general aux. method to TestHelper?
-        testUser1 = new User("anotherUser@mail.com", "2", "new_fakeUser2", 20);
+        testUser0 = new User("anotherUser@mail.com", "2", "new_fakeUser2", 20);
         PolyContext.setCurrentUser(testUser0) ;
-        group0 = new Group("testGid0", "testEvent0", new HashSet<>()) ;
+        Group group0 = new Group("testGid0", "testEvent" ,"testEventId0", new HashSet<>()) ;
         group0.addMember(testUser0);
-        group1 = new Group("testGid1", "testEvent1", new HashSet<>()) ;
-        group1.addMember(testUser0);
-        group1.addMember(testUser1);
-        PolyContext.getDBI().createGroup(group0, gr -> {});
-        PolyContext.getDBI().createGroup(group1, gr -> {});
-        PolyContext.setCurrentGroup(group1);
-        Intent intent = new Intent() ;
-        groupPageActivityRule.launchActivity(intent) ;
+        PolyContext.getDBI().createGroup(group0.getRawData(), groupId -> {
+            event = AndroidTestHelper.getDebugEvent() ;
+            PolyContext.setCurrentEvent(event);
+            group0.setGid(groupId);
+            PolyContext.setCurrentGroup(group0);
+            Intent intent = new Intent() ;
+            groupPageActivityRule.launchActivity(intent) ;
+        });
+
     }
 
     @Test
     public void userListShowsCorrectlyMembersOfGroup(){
-        //First navigate to user-list fragment
-        navigateToFragment(false);
         onView(withText(testUser0.getEmail())).check(matches((isDisplayed()))) ;
-        onView(withText(testUser1.getEmail())).check(matches((isDisplayed()))) ;
-        onView(withText(testUser0.getName())).check(matches((isDisplayed()))) ;
-        onView(withText(testUser1.getName())).check(matches((isDisplayed()))) ;
+        onView(withText(testUser0.getUsername())).check(matches((isDisplayed()))) ;
     }
 
-    /*@Test
-    public void switchesToMapFragmentOnUserClick(){
-        navigateToFragment(false);
-        AndroidTestHelper.sleep();
-        try {
-            sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        onView(withText(testUser0.getEmail())).perform(ViewActions.click()) ;
-        AndroidTestHelper.sleep();
-        try {
-            sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        onView(withText(testUser0.getEmail())).check(matches(not(isDisplayed()))) ;
-        onView(withText(testUser1.getEmail())).check(matches(not(isDisplayed()))) ;
-        onView(withText(testUser0.getName())).check(matches(not(isDisplayed()))) ;
-        onView(withText(testUser1.getName())).check(matches(not(isDisplayed()))) ;
-    }*/
+     @Test
+     public void onUserClickNothingHappens(){
+         onView(withId(R.id.members_recycler_view)).
+                 perform(actionOnItem(hasDescendant(withText(testUser0.getUsername())), click()));
+     }
 
-    private void navigateToFragment(boolean isMapFrag){
-        assert(PolyContext.getCurrentGroup() == group1) ;
-        assert(PolyContext.getCurrentUser() == testUser0) ;
-        AndroidTestHelper.sleep();
-        if(isMapFrag){
-            onView(withText(FIRST_FRAG_TITLE)).perform(ViewActions.click()) ;
-        } else{
-            onView(withText(SECOND_FRAG_TITLE)).perform(ViewActions.click()) ;
-        }
-    }
+
+     @Test
+     public void goesToMapOnGoToMapClick(){
+         Intents.init() ;
+         onView(withId(R.id.go_to_map_button)).
+                 perform(click());
+         intended(hasComponent(MapActivity.class.getName())) ;
+         Intents.release();
+     }
+
+     @Test
+     public void goesToUserProfilePageOnLeaveClick(){
+         Intents.init() ;
+         onView(withId(R.id.leave_group_button)).
+                 perform(click());
+         AndroidTestHelper.sleep();
+         intended(hasComponent(UserProfilePageActivity.class.getName())) ;
+         Intents.release();
+     }
+
+
 }
