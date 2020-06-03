@@ -7,20 +7,27 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import ch.epfl.polycrowd.logic.Activity;
 import ch.epfl.polycrowd.logic.Event;
 
 import static ch.epfl.polycrowd.logic.Event.dateToString;
 import static ch.epfl.polycrowd.logic.Event.stringToDate;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 
 public class EventTest {
@@ -162,7 +169,25 @@ public class EventTest {
         e.addOrganizer(null);
     }
 
+    @Test
+    public void getSetSecurity() {
+        final String new_sec = "1";
+        e.addSecurity(new_sec);
+        assert(e.getSecurity().contains(new_sec));
+    }
 
+    @Test
+    public void getSetStaff() {
+        final String new_staff = "1";
+        e.addStaff(new_staff);
+        assert(e.getStaff().contains(new_staff));
+    }
+
+    @Test
+    public void getActivities(){
+        List<Activity> al = e.getActivities();
+        assertNull(al);
+    }
 
     @Test
     public void getSetType() {
@@ -171,6 +196,18 @@ public class EventTest {
         e.setType(new_type);
         assertEquals(new_type, e.getType());
         Assert.assertThrows(IllegalArgumentException.class, () -> e.setType(null));
+    }
+
+    @Test
+    public void getSetMap() {
+        e.setMapUri("MAP_URI");
+        assertEquals(e.getMapUri(),"MAP_URI");
+        e.setMapStream(new ByteArrayInputStream(new byte[] { 5}));
+        try {
+            assertEquals(e.getMapStream().read(), 5);
+        }catch(IOException e){
+            assert(false);
+        }
     }
 
     @Test
@@ -201,6 +238,19 @@ public class EventTest {
         Assert.assertThrows(IllegalArgumentException.class, () -> e.setCalendar(null));
     }
 
+    @Test
+    public void getSetEmergency() {
+        assertFalse(e.isEmergencyEnabled());
+        e.setEmergencyEnabled(true);
+        assertTrue(e.isEmergencyEnabled());
+    }
+
+    @Test
+    public void getSetImageURI() {
+        e.setImageUri("IMAGE_URI");
+        assertEquals(e.getImageUri(),"IMAGE_URI");
+    }
+
    @Test
     public void getSetHashMap(){
         Map<String,Object> hm = e.getRawData();
@@ -217,7 +267,8 @@ public class EventTest {
 
         Event ne = Event.getFromDocument(hm);
 
-        assert(default_owner.equals(ne.getOwner()));
+       assert ne != null;
+       assert(default_owner.equals(ne.getOwner()));
         assertEquals(default_name, ne.getName());
         assertEquals(false, ne.getPublic());
         assertEquals(default_type, ne.getType());
