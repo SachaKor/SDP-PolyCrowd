@@ -3,11 +3,7 @@ package ch.epfl.polycrowd.logic;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
-
 import androidx.annotation.RequiresApi;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import ch.epfl.polycrowd.firebase.DatabaseInterface;
