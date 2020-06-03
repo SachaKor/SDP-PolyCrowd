@@ -163,19 +163,15 @@ public class FirebaseInterface implements DatabaseInterface {
                 .whereEqualTo(fieldName, fieldValue).get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     if(queryDocumentSnapshots.size() == 1) {
-                        // there MUST be one single snapshot
                         queryDocumentSnapshots.forEach(queryDocumentSnapshot -> {
                             Map<String, Object> data = queryDocumentSnapshot.getData();
                             data.put("uid", queryDocumentSnapshot.getId());
                             successHandler.handle(User.getFromDocument(data));
                         });
                     } else if(queryDocumentSnapshots.size() == 0){
-                        //User doesn't exist yet
                         failureHandler.handle();
-                    } else if(queryDocumentSnapshots.size()  > 1){
-                        Log.e(TAG, " multiple users with fieldName " +fieldName);
                     }
-                }).addOnFailureListener(e -> Log.e(TAG, "Error retrieving user with "+ fieldName + " "+fieldValue));
+                });
     }
 
     @Override
@@ -201,12 +197,10 @@ public class FirebaseInterface implements DatabaseInterface {
             getFirestoreInstance(false).collection(EVENTS)
                     .add(event.getRawData())
                     .addOnSuccessListener(documentReference -> {
-                        Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
                         event.setId(documentReference.getId());
                         successHandler.handle(event);
                     })
                     .addOnFailureListener(e -> {
-                        Log.e(TAG, "Error adding document", e);
                         failureHandler.handle(event);
                     });
     }
@@ -216,30 +210,22 @@ public class FirebaseInterface implements DatabaseInterface {
         getFirestoreInstance(false).collection(EVENTS).document(eventId)
                 .update(event.getRawData())
                 .addOnSuccessListener(documentReference -> {
-                    Log.d(TAG, "DocumentSnapshot added with ID: " + eventId);
                     successHandler.handle(event);
                 })
                 .addOnFailureListener(e -> {
-                    Log.e(TAG, "Error adding document", e);
                     failureHandler.handle(event);
                 });
     }
 
     @Override
     public void getEventById(String eventId, Handler<Event> eventHandler) {
-        final String TAG1 = "getEventById";
-            Log.d(TAG, TAG1 + " is not mocked");
-            Log.d(TAG, TAG1 + " event id: " + eventId);
-
             getFirestoreInstance(false).collection(EVENTS)
                     .document(eventId).get()
                     .addOnSuccessListener(documentSnapshot -> {
-                        Log.d(TAG, TAG1 + " success");
-                        Log.d(TAG, "Document data: " + documentSnapshot.getData().toString()) ;
                         Event event = Event.getFromDocument(Objects.requireNonNull(documentSnapshot.getData()));
                         event.setId(eventId);
                         eventHandler.handle(event);
-                    }).addOnFailureListener(e -> Log.e(TAG, "Error retrieving document with id " + eventId));
+                    });
     }
 
     @Override
@@ -325,7 +311,6 @@ public class FirebaseInterface implements DatabaseInterface {
                         } else{
                             groupHandler.handle(null);
                         }
-
                     } ).addOnFailureListener(e -> groupHandler.handle(null)) ;
     }
 
@@ -335,90 +320,58 @@ public class FirebaseInterface implements DatabaseInterface {
             List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments() ;
             List<User> users = new ArrayList<>() ;
             for(DocumentSnapshot doc: docs){
-                Map<String, Object> userData = doc.getData() ;
+                Map<String, Object> userData = doc.getData();
                 userData.put("uid", doc.getId()) ;
-                users.add(User.getFromDocument(userData))  ;
+                users.add(User.getFromDocument(userData));
             }
             usersHandler.handle(users);
         }) ;
     }
 
 
-    public void addUserToGroup(String gid, String userEmail, EmptyHandler handler){
-        final String TAG1 = "addUserToGroup";
-        if(gid == null || userEmail == null) {
-            Log.w(TAG, TAG1 + " group id or user email is null");
-            return;
-        }
+    public void addUserToGroup(@NonNull String gid, @NonNull String userEmail, EmptyHandler handler){
             getFirestoreInstance(false).collection(GROUPS)
                     .document(gid).get().addOnSuccessListener(documentSnapshot -> {
                 List<String> members = new ArrayList<>();
-
                 members.addAll((List<String>)documentSnapshot.get(MEMBERS));
-                // if user is not in the list, add
                 if(!members.contains(userEmail)) {
-                    Log.d(TAG, TAG1 + " adding member " + userEmail + " to the list");
                     members.add(userEmail);
                     Map<String, Object> data = new HashMap<>();
                     data.put(MEMBERS, members);
                     getFirestoreInstance(false).collection(GROUPS).document(gid)
                             .set(data, SetOptions.merge())
-                            .addOnSuccessListener(aVoid -> handler.handle())
-                            .addOnFailureListener(e -> Log.w(TAG, "Error updating " + MEMBERS + " list"));
+                            .addOnSuccessListener(aVoid -> handler.handle());
                 } else {
-                    Log.e(TAG, TAG1 + " member " + userEmail + " already in the list");
                     handler.handle();
                 }
-            }).addOnFailureListener(e -> Log.w(TAG, "Error retrieving group with id" + gid));
+            });
     }
 
-    public void removeUserFromGroup(String gid, String userEmail, EmptyHandler handler){
-        final String TAG1 = "removeUserFromGroup";
-        if(gid == null || userEmail == null) {
-            Log.w(TAG, TAG1 + " group id or user email is null");
-            return;
-        }
+    public void removeUserFromGroup(@NonNull String gid, @NonNull String userEmail, EmptyHandler handler){
             getFirestoreInstance(false).collection(GROUPS)
                     .document(gid).get().addOnSuccessListener(documentSnapshot -> {
                 List<String> members = new ArrayList<>();
                 members.addAll((List<String>)documentSnapshot.get(MEMBERS));
                 // if user is not in the list, add
                 if(members.contains(userEmail)) {
-                    Log.d(TAG, TAG1 + " removing member " + userEmail + " from the list");
                     members.remove(userEmail);
                     Map<String, Object> data = new HashMap<>();
                     data.put(MEMBERS, members);
                     getFirestoreInstance(false).collection(GROUPS).document(gid)
                             .set(data, SetOptions.merge())
-                            .addOnSuccessListener(aVoid -> handler.handle())
-                            .addOnFailureListener(e -> Log.w(TAG, "Error updating " + MEMBERS + " list"));
+                            .addOnSuccessListener(aVoid -> handler.handle());
                 } else {
-                    Log.d(TAG, TAG1 + " member " + userEmail + " not in the list");
                     handler.handle();
                 }
-            }).addOnFailureListener(e -> Log.w(TAG, "Error retrieving group with id" + gid));
+            });
     }
 
-    public void updateGroup(Group group, EmptyHandler handler){
-        if( group == null | group.getGid() == null | handler == null) {
-                Log.w(TAG,  "Null group or handler");
-                return;
-        }
-
+    public void updateGroup(@NonNull Group group, EmptyHandler handler){
         getFirestoreInstance(false).collection(GROUPS).document(group.getGid()).set(group.getRawData()).addOnSuccessListener(
-                documentSnapshot -> {
-                    handler.handle();
-                }
-        ) ;
-
+                documentSnapshot ->  handler.handle());
     }
 
-    public void removeGroupIfEmpty(String gid, Handler<Group> handler){
-        final String TAG1 = "removeGroupIfEmpty";
-        if(gid == null) {
-            Log.w(TAG, TAG1 + " group id is null");
-            return;
-        }
+    public void removeGroupIfEmpty(@NonNull String gid, Handler<Group> handler){
             getFirestoreInstance(false).collection(GROUPS)
                     .document(gid).get().addOnSuccessListener(documentSnapshot -> {
                 List<String> members = (List<String>)documentSnapshot.get(MEMBERS);
@@ -447,51 +400,41 @@ public class FirebaseInterface implements DatabaseInterface {
 
     private void addPersonToEvent(@NonNull String eventId, String email,
                                   EmptyHandler handler, String role){
-        final String TAG1 = "addPersonToEvent";
         getFirestoreInstance(false).collection(EVENTS)
                 .document(eventId).get().addOnSuccessListener(documentSnapshot -> {
             List<String> users = (List<String>) (documentSnapshot.get(role));
             // if security is not in the list, add
             if(!users.contains(email)) {
-                Log.d(TAG, TAG1 + " adding "+ role +"@"+ email + " to the list");
                 users.add(email);
                 Map<String, Object> data = new HashMap<>();
                 data.put(role, users);
                 getFirestoreInstance(false).collection(EVENTS).document(eventId)
                         .set(data, SetOptions.merge())
-                        .addOnSuccessListener(e -> handler.handle())
-                        .addOnFailureListener(e -> Log.w(TAG, "Error updating " + role + " list"));
+                        .addOnSuccessListener(e -> handler.handle());
             } else {
-                Log.d(TAG, TAG1 + role +"@"+ email + " already in the list");
                 handler.handle();
             }
-        }).addOnFailureListener(e -> Log.w(TAG, "Error retrieving event with id" + eventId));
+        });
     }
 
     @Override
     public void removeOrganizerFromEvent(@NonNull String eventId, String organizerEmail,
                                          EmptyHandler handler){
-        final String TAG1 = "removeOrganizerToEvent";
-        Log.d(TAG, TAG1 + " is not mocked");
-        // check if the organizer is already in the list
         getFirestoreInstance(false).collection(EVENTS)
                 .document(eventId).get().addOnSuccessListener(documentSnapshot -> {
             List<String> organizers = new ArrayList<>((List<String>) documentSnapshot.get(ORGANIZERS));
             // if organizer is not in the list, add
             if(organizers.contains(organizerEmail)) {
-                Log.d(TAG, TAG1 + " removing organizer " + organizerEmail + " from the list");
                 organizers.remove(organizerEmail);
                 Map<String, Object> data = new HashMap<>();
                 data.put(ORGANIZERS, organizers);
                 getFirestoreInstance(false).collection(EVENTS).document(eventId)
                         .set(data, SetOptions.merge())
-                        .addOnSuccessListener(e -> handler.handle())
-                        .addOnFailureListener(e -> Log.w(TAG, "Error updating " + ORGANIZERS + " list"));
+                        .addOnSuccessListener(e -> handler.handle());
             } else {
-                Log.d(TAG, TAG1 + " user " + organizerEmail + " is not an organizer");
                 handler.handle();
             }
-        }).addOnFailureListener(e -> Log.w(TAG, "Error retrieving event with id" + eventId));
+        });
     }
 
     @Override
@@ -519,10 +462,8 @@ public class FirebaseInterface implements DatabaseInterface {
         user.put("imgUri", null) ; //TODO could ask user for img for now no profile image by default
         getFirestoreInstance(false).collection("users")
                 .add(user)
-                .addOnSuccessListener(documentReference -> {Log.d("SIGN_UP", "DocumentSnapshot added with ID: " + documentReference.getId());
-                successHandler.handle(new User(email, username, username, age));})
-                .addOnFailureListener(e -> {Log.w("SIGN_UP", "Error adding document", e) ;
-                failureHandler.handle(new User(email, username, username, age));});
+                .addOnSuccessListener(documentReference -> successHandler.handle(new User(email, username, username, age)))
+                .addOnFailureListener(e -> failureHandler.handle(new User(email, username, username, age)));
     }
 
     @Override
@@ -544,8 +485,6 @@ public class FirebaseInterface implements DatabaseInterface {
             FirebaseDynamicLinks.getInstance()
                     .getDynamicLink(intent)
                     .addOnSuccessListener(pendingDynamicLinkData -> {
-                        Log.d(TAG, "Dynamic link received");
-                        // Get deep link from result (may be null if no link is found)
                         Uri deepLink = null;
                         if (pendingDynamicLinkData != null) {
                             deepLink = pendingDynamicLinkData.getLink();
@@ -554,8 +493,7 @@ public class FirebaseInterface implements DatabaseInterface {
                         if (deepLink != null) {
                             handler.handle(deepLink);
                         }
-                    })
-                    .addOnFailureListener(e -> Log.w(TAG, "getDynamicLink:onFailure", e));
+                    });
     }
 
     /**
@@ -572,12 +510,7 @@ public class FirebaseInterface implements DatabaseInterface {
         StorageReference imgRef = getStorageInstance(true).getReference().child(imageUri);
         UploadTask uploadTask = imgRef.putBytes(image);
         uploadTask
-                .addOnSuccessListener(taskSnapshot -> {
-                        Log.d(TAG, "Image for the event " + event.getId() + " is successfully uploaded");
-                        handler.handle(event);
-                })
-                .addOnFailureListener(e ->
-                        Log.w(TAG, "Error occurred during the upload of the image for the event " + event.getId()));
+                .addOnSuccessListener(taskSnapshot -> handler.handle(event));
     }
 
     @Override
@@ -588,12 +521,7 @@ public class FirebaseInterface implements DatabaseInterface {
 
         UploadTask uploadTask = imgRef.putBytes(map);
         uploadTask
-                .addOnSuccessListener(taskSnapshot -> {
-                    Log.d(TAG, "Image for the event " + event.getId() + " is successfully uploaded");
-                    handler.handle(event);
-                })
-                .addOnFailureListener(e ->
-                        Log.w(TAG, "Error occurred during the upload of the image for the event " + event.getId()));
+                .addOnSuccessListener(taskSnapshot -> handler.handle(event));
     }
 
     @Override
@@ -613,8 +541,7 @@ public class FirebaseInterface implements DatabaseInterface {
                 .addOnSuccessListener( bytes -> {
                     event.setMapStream( new ByteArrayInputStream(bytes));
                     handler.handle(event);
-                } )
-                .addOnFailureListener(e -> Log.w(TAG, "Error downloading map " + event.getMapUri() + " from firebase storage"));
+                });
 
     }
 
@@ -630,9 +557,7 @@ public class FirebaseInterface implements DatabaseInterface {
         // TODO: compress images before upload to limit their size
         final long ONE_MEGABYTE = 1024 * 1024;
         StorageReference eventImageRef = getStorageInstance(false).getReference().child(imageUri);
-        eventImageRef.getBytes(ONE_MEGABYTE)
-                .addOnSuccessListener(handler::handle)
-                .addOnFailureListener(e -> Log.w(TAG, "Error downloading image " + imageUri + " from firebase storage"));
+        eventImageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(handler::handle);
     }
 
     /**
@@ -643,8 +568,7 @@ public class FirebaseInterface implements DatabaseInterface {
     public void updateEvent(Event event, Handler<Event> eventHandler) {
         getFirestoreInstance(false).collection(EVENTS).document(event.getId())
                 .set(event.getRawData())
-                .addOnSuccessListener(aVoid -> eventHandler.handle(event))
-                .addOnFailureListener(e -> Log.w(TAG, "Error updating the event with id: " + event.getId()));
+                .addOnSuccessListener(aVoid -> eventHandler.handle(event));
     }
 
     /**
@@ -655,8 +579,7 @@ public class FirebaseInterface implements DatabaseInterface {
     public void updateUser(User user, Handler<User> userHandler) {
         getFirestoreInstance(false).collection(USERS).document(user.getUid())
                 .set(user.toHashMap())
-                .addOnSuccessListener(aVoid -> userHandler.handle(user))
-                .addOnFailureListener(e -> Log.w(TAG, "Error updating the event with id: " + user.getUid()));
+                .addOnSuccessListener(aVoid -> userHandler.handle(user));
     }
 
     @Override
@@ -700,16 +623,12 @@ public class FirebaseInterface implements DatabaseInterface {
                                 if (task.isSuccessful()) {
                                     Toast.makeText(appContext, "Successfully changed password",
                                             Toast.LENGTH_SHORT).show();
-                                    Log.d("resetpassTag", "Password updated");
-                                } else {
-                                    Log.d("resetpassTag", "Error password not updated");
                                 }
                             }
                         });
                     } else {
                         Toast.makeText(appContext, "Email or password incorrect",
                                 Toast.LENGTH_SHORT).show();
-                        Log.d("resetpassTag", "Error auth failed");
                     }
                 }
             });
@@ -722,8 +641,6 @@ public class FirebaseInterface implements DatabaseInterface {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Log.d("changeUsername", "DocumentSnapshot successfully updated!");
-                        //update username
                         PolyContext.getCurrentUser().setUsername(newUserName);
                         updateUserFields.handle();
                     }
@@ -756,7 +673,6 @@ public class FirebaseInterface implements DatabaseInterface {
                                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override
                                             public void onSuccess(Void aVoid) {
-                                                Log.d("changeEmail", "DocumentSnapshot successfully updated!");
                                                 PolyContext.getCurrentUser().setEmail(newEmail);
                                                 updateUserFields.handle();
                                             }
@@ -767,16 +683,12 @@ public class FirebaseInterface implements DatabaseInterface {
                                                 Log.w("changeEmail", "Error updating document", e);
                                             }
                                         });
-                                Log.d("resetpassTag", "Email updated");
-                            } else {
-                                Log.d("resetpassTag", "Error email not updated");
                             }
                         }
                     });
                 } else {
                     Toast.makeText(appContext, "Email or password incorrect",
                             Toast.LENGTH_SHORT).show();
-                    Log.d("resetpassTag", "Error auth failed");
                 }
             }
         });
@@ -788,28 +700,20 @@ public class FirebaseInterface implements DatabaseInterface {
         user.setImageUri(imageUri);
         StorageReference imgRef = getStorageInstance(true).getReference().child(imageUri);
         UploadTask uploadTask = imgRef.putBytes(image);
-        uploadTask
-                .addOnSuccessListener(taskSnapshot -> {
-                    Log.d(TAG, "Image for the event " + user.getUid() + " is successfully uploaded");
-                    handler.handle(user);
-                })
-                .addOnFailureListener(e ->
-                        Log.w(TAG, "Error occurred during the upload of the image for the event " + user.getUid()));
+        uploadTask.addOnSuccessListener(taskSnapshot -> handler.handle(user));
     }
 
     public void downloadUserProfileImage(User user, Handler<byte[]> handler) {
         String eventId = user.getUid();
         String imageUri = user.getImageUri();
         if(user.getImageUri() == null) {
-            Log.d(TAG, "image is not set for the user: " + eventId);
             return;
         }
         // TODO: compress images before upload to limit their size
         final long ONE_MEGABYTE = 1024 * 1024;
         StorageReference eventImageRef = getStorageInstance(false).getReference().child(imageUri);
         eventImageRef.getBytes(ONE_MEGABYTE)
-                .addOnSuccessListener(r ->handler.handle(r))
-                .addOnFailureListener(e -> Log.w(TAG, "Error downloading image " + imageUri + " from firebase storage"));
+                .addOnSuccessListener(r ->handler.handle(r));
     }
 
 
@@ -824,7 +728,6 @@ public class FirebaseInterface implements DatabaseInterface {
         FirebaseDatabase.getInstance().getReference().addListenerForSingleValueEvent(new ValueEventListener() {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 DataSnapshot snapshot = dataSnapshot.child("locations/" + id);
-                Log.d("LOCATION", "get user snapshot: " + snapshot);
                 Object lat = snapshot.child("latitude/").getValue();
                 Object lng = snapshot.child("longitude/").getValue();
                 //if lat/lng is null the user is not on the firebase
