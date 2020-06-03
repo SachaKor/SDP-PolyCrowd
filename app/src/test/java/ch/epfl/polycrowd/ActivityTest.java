@@ -1,5 +1,9 @@
 package ch.epfl.polycrowd;
 
+import androidx.annotation.NonNull;
+
+import net.fortuna.ical4j.model.Date;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -81,5 +85,13 @@ public class ActivityTest {
         //a.getStart();
         //a.getEnd();
         assertEquals(a.getOrganizer(), "MAILTO:email@email.com");
+    }
+
+    @Test
+    public void constructorTest(){
+        Activity a = new Activity(CalURL , "UID","Summary","Description", "email@email.com" , new Date(0) , new Date(1));
+        assertEquals(a.getLocation(), CalURL);
+        assertEquals(a.getStart(), new Date(0));
+        assertEquals(a.getEnd(), new Date(1));
     }
 }
