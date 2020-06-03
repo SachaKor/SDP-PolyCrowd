@@ -69,7 +69,7 @@ public class FrontPageActivityTest {
     @Test
     public void testScrollingReachCreateButton(){
         sleep();
-        onView(withId(R.id.viewPager))
+        onView(withId(R.id.frontViewPager))
                 .perform(swipeRight() , swipeLeft() , swipeRight() , click());
         sleep();
         onView(withId(R.id.event_details_title)).check(matches(isDisplayed()));
@@ -78,19 +78,19 @@ public class FrontPageActivityTest {
     @Test
     public void testScrollingChangeTextAndDescription(){
         sleep();
-        onView(withId(R.id.viewPager))
+        onView(withId(R.id.frontViewPager))
                 .perform(swipeRight(), swipeLeft());
         sleep();
         onView(withId(R.id.eventTitle)).check(matches(withText(containsString("DEBUG EVENT"))));
         onView(withId(R.id.description)).check(matches(withText(containsString("this is only a debug event ... "))));
 
-        onView(withId(R.id.viewPager))
+        onView(withId(R.id.frontViewPager))
                 .perform(swipeLeft());
         sleep();
         onView(withId(R.id.eventTitle)).check(matches(withText(containsString("DEBUG EVENT"))));
         onView(withId(R.id.description)).check(matches(withText(containsString("this is only a debug event ... "))));
 
-        onView(withId(R.id.viewPager))
+        onView(withId(R.id.frontViewPager))
                 .perform(swipeRight());
         sleep();
         onView(withId(R.id.eventTitle)).check(matches(withText(containsString("Create an EVENT"))));
@@ -99,8 +99,8 @@ public class FrontPageActivityTest {
 
     @Test
     public void testClickOnEventGoesToMapActivity(){
-         sleep();
-        onView(withId(R.id.viewPager)).perform(click());
+        sleep();
+        onView(withId(R.id.frontViewPager)).perform(click());
         sleep();
         onView(withId(R.id.map)).check(matches(isDisplayed()));
     }
@@ -116,7 +116,7 @@ public class FrontPageActivityTest {
         if(PolyContext.getCurrentUser() != null) {
             onView(withId(R.id.button)).perform(click());
             sleep();
-            onView(withId(R.id.viewPager)).check(matches(isDisplayed()));
+            onView(withId(R.id.frontViewPager)).check(matches(isDisplayed()));
 
         }
         else {
