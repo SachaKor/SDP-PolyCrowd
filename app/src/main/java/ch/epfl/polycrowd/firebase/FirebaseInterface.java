@@ -223,18 +223,6 @@ public class FirebaseInterface implements DatabaseInterface {
     }
 
     @Override
-    public void patchEventByID(String eventId, Event event, Handler<Event> successHandler, Handler<Event> failureHandler){
-        getFirestoreInstance(false).collection(EVENTS).document(eventId)
-                .update(event.getRawData())
-                .addOnSuccessListener(documentReference -> {
-                    successHandler.handle(event);
-                })
-                .addOnFailureListener(e -> {
-                    failureHandler.handle(event);
-                });
-    }
-
-    @Override
     public void getEventById(String eventId, Handler<Event> eventHandler) {
             getFirestoreInstance(false).collection(EVENTS)
                     .document(eventId).get()

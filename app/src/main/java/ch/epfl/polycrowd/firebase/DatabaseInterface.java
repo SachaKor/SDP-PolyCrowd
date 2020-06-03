@@ -46,9 +46,6 @@ public interface DatabaseInterface {
 
     void addEvent(Event event, Handler<Event> successHandler, Handler<Event> failureHandler);
 
-    void patchEventByID(String eventId, Event event, Handler<Event> successHandler, Handler<Event> failureHandler);
-
-
     void getEventById(String eventId, Handler<Event> eventHandler);
 
     void addOrganizerToEvent(String eventId, String organizerEmail,

@@ -109,11 +109,6 @@ public class FirebaseMocker implements DatabaseInterface {
     }
 
     @Override
-    public void patchEventByID(String eventId, Event event, Handler<Event> successHandler, Handler<Event> failureHandler) {
-        this.addEvent(event, successHandler, failureHandler);
-    }
-
-    @Override
     public void getEventById(String eventId, Handler<Event> eventHandler) {
         Event event = events.getOrDefault(eventId,null);
         if (event != null) {
