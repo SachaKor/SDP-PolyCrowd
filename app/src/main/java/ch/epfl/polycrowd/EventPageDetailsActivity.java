@@ -226,7 +226,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
         mapUpload.setVisibility(visibilityEdit);
         mapText.setVisibility(visibilityEdit);
         revokeOrganizerButton.setVisibility(visibilityEdit);
-
+        scheduleUrl.setVisibility(visibilityEdit);
         for(EditText t : textFields) {
             setEditTextEditable(t, enable);
         }

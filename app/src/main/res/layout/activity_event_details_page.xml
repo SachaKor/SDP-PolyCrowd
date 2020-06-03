@@ -219,7 +219,7 @@
             android:text="@string/invite_organizer"
 
             android:onClick="organizerInviteLinkClicked"
-            android:visibility="invisible"/>
+            android:visibility="gone"/>
         <Button
             android:id="@+id/revoke_organizer_button"
             android:layout_width="match_parent"
@@ -228,7 +228,7 @@
             android:onClick="revokeClicked"
             android:padding="10dp"
             android:text="@string/revoke_organizer"
-            android:visibility="invisible"
+            android:visibility="gone"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -260,7 +260,7 @@
             android:layout_marginTop="10dp"
             android:text="@string/invite_security"
             android:onClick="securityInviteLinkClicked"
-            android:visibility="invisible"/>
+            android:visibility="gone"/>
         <Button
             android:id="@+id/event_details_submit"
             android:layout_width="match_parent"
@@ -269,7 +269,7 @@
             android:onClick="onSubmitChangesClicked"
             android:padding="10dp"
             android:text="Submit Changes"
-            android:visibility="invisible"
+            android:visibility="gone"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@id/invite_organizer_button"/>
 
@@ -281,7 +281,7 @@
             android:onClick="onCancelClicked"
             android:padding="10dp"
             android:text="Cancel"
-            android:visibility="invisible"
+            android:visibility="gone"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@id/event_details_submit"/>
     </RelativeLayout>

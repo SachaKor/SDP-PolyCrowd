@@ -137,7 +137,7 @@ public class FrontPageActivity extends AppCompatActivity {
     }
     // called by setAdapter()
     void setViewPager(List<Event> events){
-        viewPager = findViewById(R.id.viewPager);
+        viewPager = findViewById(R.id.frontViewPager);
         viewPager.setAdapter(adapter);
         //viewPager.setPadding(130, 0, 130, 0);
         viewPager.setPadding(20,0,20,0);
