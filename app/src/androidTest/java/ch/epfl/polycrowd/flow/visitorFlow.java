@@ -56,22 +56,22 @@ public class visitorFlow {
         onView(withId(R.id.goToUserProfileButton)).check(matches(withText(containsString("Profile"))));
         onView(withId(R.id.button)).check(matches(withText(containsString("LOGOUT"))));
 
-        onView(withId(R.id.viewPager)).perform(ViewActions.swipeRight());
+        onView(withId(R.id.frontViewPager)).perform(ViewActions.swipeRight());
         onView(withId(R.id.eventTitle)).check(matches(withText(containsString("Create an EVENT"))));
         onView(withId(R.id.description)).check(matches(withText(containsString("your journey starts now !"))));
 
-        onView(withId(R.id.viewPager)).perform(ViewActions.swipeLeft());
+        onView(withId(R.id.frontViewPager)).perform(ViewActions.swipeLeft());
         onView(withId(R.id.eventTitle)).check(matches(withText(containsString("DEBUG EVENT"))));
         onView(withId(R.id.description)).check(matches(withText(containsString("this is only a debug event ..."))));
 
-        onView(withId(R.id.viewPager)).perform(ViewActions.swipeLeft());
+        onView(withId(R.id.frontViewPager)).perform(ViewActions.swipeLeft());
         onView(withId(R.id.eventTitle)).check(matches(withText(containsString("DEBUG EVENT"))));
         onView(withId(R.id.description)).check(matches(withText(containsString("this is only a debug event ..."))));
     }
 
     @Test
     public void testMapViewEventPage() {
-        onView(withId(R.id.viewPager)).perform(ViewActions.click());
+        onView(withId(R.id.frontViewPager)).perform(ViewActions.click());
         sleep();
         onView(withId(R.id.map)).check(matches(isDisplayed()));
         onView(withId(R.id.butRight)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
@@ -85,7 +85,7 @@ public class visitorFlow {
 
     @Test
     public void testEventPage() {
-        onView(withId(R.id.viewPager)).perform(ViewActions.click());
+        onView(withId(R.id.frontViewPager)).perform(ViewActions.click());
         onView(withId(R.id.butRight)).perform(ViewActions.click());
         sleep();
 
@@ -143,7 +143,7 @@ public class visitorFlow {
 
     @Test
     public void testEventSchedulePage() {
-        onView(withId(R.id.viewPager)).perform(ViewActions.click());
+        onView(withId(R.id.frontViewPager)).perform(ViewActions.click());
         onView(withId(R.id.butRight)).perform(ViewActions.click());
         onView(withId(R.id.schedule)).perform(ViewActions.click());
 
@@ -205,7 +205,7 @@ public class visitorFlow {
 
     @Test
     public void testEmergencyPage() {
-        onView(withId(R.id.viewPager)).perform(ViewActions.click());
+        onView(withId(R.id.frontViewPager)).perform(ViewActions.click());
 
         onView(withId(R.id.butSOS)).perform(ViewActions.click());
         onView(withId(R.id.butSOS)).perform(ViewActions.longClick());
