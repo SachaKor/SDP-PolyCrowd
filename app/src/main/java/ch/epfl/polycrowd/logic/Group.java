@@ -114,10 +114,7 @@ public class Group extends Storable {
     }
 
 
-    public void removeMember(User toRemove) {
-        for(User user: members){
-            if(user.getEmail().equals(toRemove.getEmail()))
-                members.remove(user) ;
-        }
+    public void removeMember(User toRemove){
+        members.remove(toRemove);
     }
 }
