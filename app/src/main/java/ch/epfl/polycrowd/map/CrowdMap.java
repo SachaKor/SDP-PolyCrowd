@@ -169,8 +169,15 @@ public class CrowdMap implements OnMapReadyCallback {
         if(PolyContext.getStandId() != null) {
             accessContainers(layer.getContainers() , this::accessPlacemarks );
         } else {
-            accessContainers(layer.getContainers() , this::findAllVertexInPlacemarks );
-            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(getPolygonLatLngBounds(eventVertexList), 150));
+            try {
+                accessContainers(layer.getContainers(), this::findAllVertexInPlacemarks);
+                mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(getPolygonLatLngBounds(eventVertexList), 150));
+            } catch (Exception e ){
+                Log.e(TAG,"standId is not null ," +
+                        " it probably should :/ " +
+                        ", check tests Polycontext setup" +
+                        " and dependency between tests");
+            }
         }
 
 

@@ -102,7 +102,8 @@ public class User extends Storable {
 
     public Map<String, Object> toHashMap(){
         Map<String, Object> user = new HashMap<>();
-        user.put(ageTag, this.age);
+        user.put(uidTag,this.uid);
+        user.put(ageTag, Long.valueOf(this.age));
         user.put(emailTag, this.email);
         user.put(userNameTag, this.userName);
         user.put(imageUriTag, imageUri);
