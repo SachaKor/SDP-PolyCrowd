@@ -1,10 +1,5 @@
 package ch.epfl.polycrowd;
 
-import androidx.annotation.NonNull;
-
-
-import net.fortuna.ical4j.model.Date;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,7 +12,7 @@ import java.util.Map;
 import ch.epfl.polycrowd.logic.Activity;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.Date;
 
@@ -27,24 +22,24 @@ public class ActivityTest {
 
     private Map<String, String> mockActivity;
 
-    private String location = "Location 1" ;
-    private String id = "id1" ;
-    private String summary =  "activity summary";
-    private String description = "activity description" ;
-    private String startDateString = "20200725T163058";
-    private String endDateString = "20221026T180228" ;
-    private String organiserEmail = "MAILTO:email@email.com";
+    private final static String location = "Location 1" ;
+    private final static String id = "id1" ;
+    private final static String summary =  "activity summary";
+    private final static String description = "activity description" ;
+    private final static String startDateString = "20200725T163058";
+    private final static String endDateString = "20221026T180228" ;
+    private final static String organiserEmail = "MAILTO:email@email.com";
 
     @Before
     public void setupMap(){
         this.mockActivity = new HashMap<>();
-        this.mockActivity.put("LOCATION", "Location 1");
-        this.mockActivity.put("UID", "id1");
-        this.mockActivity.put("SUMMARY", "activity summary");
-        this.mockActivity.put("DESCRIPTION","activity description");
-        this.mockActivity.put("DTSTART", "20200725T163058");
-        this.mockActivity.put("DTEND","20221026T180228");
-        this.mockActivity.put("ORGANIZER","MAILTO:email@email.com");
+        this.mockActivity.put("LOCATION", location);
+        this.mockActivity.put("UID", id);
+        this.mockActivity.put("SUMMARY",summary);
+        this.mockActivity.put("DESCRIPTION",description);
+        this.mockActivity.put("DTSTART", startDateString);
+        this.mockActivity.put("DTEND",endDateString);
+        this.mockActivity.put("ORGANIZER",organiserEmail);
     }
 
     @Test
@@ -70,7 +65,7 @@ public class ActivityTest {
         }catch (Exception e){
             assert(false);
         }
-        assertEquals("id1", a.getUid());
+        assertEquals(id, a.getUid());
     }
     @Test
     public void testOrganizer(){
@@ -80,7 +75,7 @@ public class ActivityTest {
         }catch (ParseException e){
             assert(false);
         }
-        assertEquals("MAILTO:email@email.com", a.getOrganizer());
+        assertEquals(organiserEmail, a.getOrganizer());
     }
 
 
@@ -93,14 +88,14 @@ public class ActivityTest {
         }catch (ParseException e){
             assert(false);
         }
-        assertEquals(a.getLocation(), "Location 1");
-        assertEquals(a.getDescription(), "activity description");
-        assertEquals(a.getUid(),"id1");
-        assertEquals(a.getSummary(),"activity summary");
+        assertEquals(a.getLocation(), location);
+        assertEquals(a.getDescription(), description);
+        assertEquals(a.getUid(),id);
+        assertEquals(a.getSummary(),summary);
         //TODO: Test these two fields in a localy independant manner
         //a.getStart();
         //a.getEnd();
-        assertEquals(a.getOrganizer(), "MAILTO:email@email.com");
+        assertEquals(a.getOrganizer(), organiserEmail);
     }
 
     @Test
@@ -122,6 +117,8 @@ public class ActivityTest {
             assert(false);
         }
 
+        assertNotNull(startDate);
+        assertNotNull(endDate);
         Activity activityFromConstructor1 = new Activity(location, id, summary ,description ,
                 organiserEmail , startDate, endDate) ;
 
