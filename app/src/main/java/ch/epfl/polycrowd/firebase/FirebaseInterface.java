@@ -243,33 +243,6 @@ public class FirebaseInterface implements DatabaseInterface {
     }
 
     @Override
-    public void getUserGroupIds(String userEmail, Handler<Map<String, String>> groupIdEventIdPairsHandler){
-        final String TAG1 = "getGroupByUserAndEvent";
-        Log.d(TAG, TAG1 + " is not mocked");
-        getFirestoreInstance(false).collection(GROUPS)
-                .whereArrayContains("members", userEmail)
-                .get()
-                .addOnSuccessListener(documentSnapshots -> {
-                    Log.d(TAG, TAG1 + " success");
-                    if (documentSnapshots.size() < 1) {
-                        // That user is in no group !
-                        Log.e(TAG, TAG1 + ", less than one group containing a user given one event.");
-                        groupIdEventIdPairsHandler.handle(null);
-                        return;
-                    }
-
-                    Map<String, String> groupIdEventIdPairs = new HashMap<>();
-                    for(DocumentSnapshot d: documentSnapshots){
-                        String groupId = (String) d.get("groupId") ;
-                        String eventId = (String) d.get("eventId") ;
-                        groupIdEventIdPairs.put(groupId, eventId) ;
-                    }
-                    Log.d(TAG, "GOES HERE") ;
-                    groupIdEventIdPairsHandler.handle(groupIdEventIdPairs);
-                }) ;
-    }
-
-    @Override
     public void getUserGroups(User user, Handler<List<Group>> groupsHandler) {
         final String TAG1 = "getUserGroups";
         Log.d(TAG, TAG1 + " is not mocked");
@@ -306,44 +279,6 @@ public class FirebaseInterface implements DatabaseInterface {
                 }).addOnFailureListener(e -> Log.e(TAG, "Error adding new group : " + e));
     }
 
-    @Override
-    public void getGroupByGroupId(String groupId, Handler<Group> groupHandler) {
-            getFirestoreInstance(false).collection(GROUPS).whereEqualTo("groupId", groupId).get().addOnSuccessListener(
-                    queryDocumentSnapshots ->{
-                        if (queryDocumentSnapshots.size() == 1){
-                            DocumentSnapshot groupDoc = queryDocumentSnapshots.getDocuments().get(0) ;
-                            Map<String, Object> data = groupDoc.getData() ;
-                            List<String> userEmails = (List<String>) data.get(MEMBERS);
-
-                            PolyContext.getDBI().getUserCollectionByEmails(userEmails, gu -> {
-                                Map<String, Object> groupData = new HashMap<>() ;
-                                groupData.put("groupId", data.get("groupId")) ;
-                                groupData.put("eventId", data.get("eventId")) ;
-                                groupData.put("members", gu) ;
-                                groupHandler.handle(Group.getFromDocument(groupData));
-                            }) ;
-                        } else{
-                            groupHandler.handle(null);
-                        }
-
-                    } ).addOnFailureListener(e -> groupHandler.handle(null)) ;
-    }
-
-
-    public void getUserCollectionByEmails(List<String> userEmails, Handler<List<User>> usersHandler) {
-        getFirestoreInstance(false).collection(USERS).whereIn("email", userEmails).get().addOnSuccessListener(queryDocumentSnapshots -> {
-            List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments() ;
-            List<User> users = new ArrayList<>() ;
-            for(DocumentSnapshot doc: docs){
-                Map<String, Object> userData = doc.getData() ;
-                userData.put("uid", doc.getId()) ;
-                users.add(User.getFromDocument(userData))  ;
-            }
-            usersHandler.handle(users);
-        }) ;
-    }
-
-
     public void addUserToGroup(String gid, String userEmail, EmptyHandler handler){
         final String TAG1 = "addUserToGroup";
         if(gid == null || userEmail == null) {
@@ -367,33 +302,6 @@ public class FirebaseInterface implements DatabaseInterface {
                             .addOnFailureListener(e -> Log.w(TAG, "Error updating " + MEMBERS + " list"));
                 } else {
                     Log.e(TAG, TAG1 + " member " + userEmail + " already in the list");
-                    handler.handle();
-                }
-            }).addOnFailureListener(e -> Log.w(TAG, "Error retrieving group with id" + gid));
-    }
-
-    public void removeUserFromGroup(String gid, String userEmail, EmptyHandler handler){
-        final String TAG1 = "removeUserFromGroup";
-        if(gid == null || userEmail == null) {
-            Log.w(TAG, TAG1 + " group id or user email is null");
-            return;
-        }
-            getFirestoreInstance(false).collection(GROUPS)
-                    .document(gid).get().addOnSuccessListener(documentSnapshot -> {
-                List<String> members = new ArrayList<>();
-                members.addAll((List<String>)documentSnapshot.get(MEMBERS));
-                // if user is not in the list, add
-                if(members.contains(userEmail)) {
-                    Log.d(TAG, TAG1 + " removing member " + userEmail + " from the list");
-                    members.remove(userEmail);
-                    Map<String, Object> data = new HashMap<>();
-                    data.put(MEMBERS, members);
-                    getFirestoreInstance(false).collection(GROUPS).document(gid)
-                            .set(data, SetOptions.merge())
-                            .addOnSuccessListener(aVoid -> handler.handle())
-                            .addOnFailureListener(e -> Log.w(TAG, "Error updating " + MEMBERS + " list"));
-                } else {
-                    Log.d(TAG, TAG1 + " member " + userEmail + " not in the list");
                     handler.handle();
                 }
             }).addOnFailureListener(e -> Log.w(TAG, "Error retrieving group with id" + gid));
@@ -665,22 +573,6 @@ public class FirebaseInterface implements DatabaseInterface {
                 .setValue(reason).addOnCompleteListener(v->handler.handle());
     }
 
-    @Override
-    public void getSOS(String userId, Handler<String> handler) {
-        getFirebaseDatabaseReference().child(SOS).child(userId).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String reason = dataSnapshot.getValue(String.class);
-                handler.handle(reason);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                System.out.println("The read failed: " + databaseError.getCode());
-            }
-        });
-    }
-
     public void deleteSOS(String userId, EmptyHandler handler){
         getFirebaseDatabaseReference().child(SOS).child(userId).removeValue((a,b)-> handler.handle());
 
@@ -819,26 +711,6 @@ public class FirebaseInterface implements DatabaseInterface {
                 .setValue(new GeoPoint(location.latitude, location.longitude));
     }
 
-    @Override
-    public void fetchUserLocation(String id, Handler<LatLng> handlerSuccess) {
-        FirebaseDatabase.getInstance().getReference().addListenerForSingleValueEvent(new ValueEventListener() {
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                DataSnapshot snapshot = dataSnapshot.child("locations/" + id);
-                Log.d("LOCATION", "get user snapshot: " + snapshot);
-                Object lat = snapshot.child("latitude/").getValue();
-                Object lng = snapshot.child("longitude/").getValue();
-                //if lat/lng is null the user is not on the firebase
-                if (lat != null && lng != null) {
-                    LatLng l = new LatLng(Double.parseDouble(lat.toString()), Double.parseDouble(lng.toString()));
-                    handlerSuccess.handle(l); //do something with the found location
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
-    }
     @Override
     public void sendMessageFeed(String eventId, Message m, EmptyHandler handler){
         DatabaseReference dbref= getDbRef(true);

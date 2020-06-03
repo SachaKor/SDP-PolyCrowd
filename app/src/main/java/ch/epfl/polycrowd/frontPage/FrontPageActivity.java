@@ -110,6 +110,7 @@ public class FrontPageActivity extends AppCompatActivity {
             button.setText("LOGOUT");
             button.setOnClickListener(v -> {
                 PolyContext.setCurrentUser(null);
+                PolyContext.getDBI().signOut();
                 ActivityHelper.eventIntentHandler(this,FrontPageActivity.class);
             });
             profileButton.setOnClickListener(v->ActivityHelper.eventIntentHandler(this,UserProfilePageActivity.class));

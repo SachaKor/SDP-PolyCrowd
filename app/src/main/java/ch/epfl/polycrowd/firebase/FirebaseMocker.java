@@ -176,12 +176,6 @@ public class FirebaseMocker implements DatabaseInterface {
     }
 
     @Override
-    public void getSOS(String userId, Handler<String> handler){
-        if(userEmergencies.containsKey(userId))
-            handler.handle(userEmergencies.get(userId));
-    }
-
-    @Override
     public void deleteSOS(String userId, EmptyHandler handler){
         userEmergencies.remove(userId);
         handler.handle();
@@ -213,11 +207,6 @@ public class FirebaseMocker implements DatabaseInterface {
     @Override
     public void updateGroup(Group group, EmptyHandler handler) {
         groupIdGroupPairs.put(group.getGid(), group);
-        handler.handle();
-    }
-
-    @Override
-    public void removeUserFromGroup(String gid, String uid, EmptyHandler handler) {
         handler.handle();
     }
 
@@ -328,41 +317,14 @@ public class FirebaseMocker implements DatabaseInterface {
         handler.handle(user);
     }
 
-    public void getUserGroupIds(@NonNull String userEmail, Handler<Map<String, String>> groupIdEventIdPairsHandler) {
-        Map<String, String> groupIdEventPairs = new HashMap<>() ;
-        groupIdGroupPairs.forEach((gid, g) ->
-                g.getMembers().stream().filter(u->u.getEmail().equals(userEmail)).forEach(u ->
-                        groupIdEventPairs.put(gid, g.getEventId())));
-        groupIdEventIdPairsHandler.handle(groupIdEventPairs);
-    }
-
     @Override
     public void getUserGroups(@NonNull User user, Handler<List<Group>> userGroups) {
         userGroups.handle(groupIdGroupPairs.values().stream().filter(g->g.getMembers().contains(user)).collect(Collectors.toList()));
     }
 
     @Override
-    public void getGroupByGroupId(@NonNull String groupId, Handler<Group> groupHandler) {
-        Group g = groupIdGroupPairs.getOrDefault(groupId,null);
-        if(g != null)
-            groupHandler.handle(g);
-    }
-
-    @Override
-    public void getUserCollectionByEmails(@NonNull List<String> userEmails, Handler<List<User>> usersHandler) {
-        List<User> users = usersAndPasswords.keySet().stream().filter(u->userEmails.contains((u.getEmail()))).collect(Collectors.toList());
-        usersHandler.handle(users);
-    }
-
-    @Override
     public void updateUserLocation(@NonNull String id, LatLng location) {
         userPositions.put(id,location);
-    }
-
-    @Override
-    public void fetchUserLocation(@NonNull String id, Handler<LatLng> handlerSuccess) {
-        if(userPositions.containsKey(id))
-            handlerSuccess.handle(userPositions.get(id));
     }
 
     public void sendMessageFeed(@NonNull String eventId, Message m, EmptyHandler handler) {
