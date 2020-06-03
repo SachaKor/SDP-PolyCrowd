@@ -136,12 +136,7 @@ public class FrontPageActivityTest {
             onView(withId(R.id.sign_in_scroll)).check(matches(isDisplayed()));
         }
 
-    }
 
-    @Test
-    public void testUserLocatorInitialized(){
-        assert(PolyContext.getUserLocator() != null) ;
-        assert(PolyContext.getUserLocator().getConnectionId().equals( "MOCK_CONNECTION_ID")) ;
     }
 
 }
