@@ -34,6 +34,7 @@ public class LoginActivityOrganizerInviteTest {
     @Before
     public void setUp() {
         PolyContext.reset();
+        AndroidTestHelper.reset();
         AndroidTestHelper.SetupMockDBI();
         email = AndroidTestHelper.getUser().getEmail();
         pwd = AndroidTestHelper.getUserPass();
