@@ -27,6 +27,8 @@ import ch.epfl.polycrowd.logic.Message;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 
+import static java.lang.Thread.sleep;
+
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class FirebaseMocker implements DatabaseInterface {
 
@@ -160,6 +162,7 @@ public class FirebaseMocker implements DatabaseInterface {
     public void receiveDynamicLink(Handler<Uri> handler, Intent intent) {
         if(uriString != null) {
             Uri uri = Uri.parse(uriString);
+            Log.d(TAG, "dynamic link parsed");
             handler.handle(uri);
         }
     }

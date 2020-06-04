@@ -36,6 +36,7 @@ public class EventMemberInviteActivity extends AppCompatActivity {
                 return;
         }
         if(PolyContext.getCurrentEvent() == null) {
+            Log.d(TAG, "current event is null");
             ActivityHelper.eventIntentHandler(this, FrontPageActivity.class);
             return;
         }
