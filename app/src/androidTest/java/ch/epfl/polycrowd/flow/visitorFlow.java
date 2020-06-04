@@ -79,6 +79,7 @@ public class visitorFlow {
             sleep();
         onView(withId(R.id.map)).check(matches(isDisplayed()));
         onView(withId(R.id.butRight)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+        sleep();
         onView(withId(R.id.butRight)).check(matches(withText(containsString("EVENT DETAILS"))));
         onView(withId(R.id.butLeft)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
         onView(withId(R.id.butLeft)).check(matches(withText(containsString("GROUPS"))));
@@ -134,6 +135,7 @@ public class visitorFlow {
         onView(withId(R.id.organizers_recycler_view)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
         onView(withId(R.id.invite_organizer_button)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
 
+        sleep();
         onView(withId(R.id.EditEventSecurity)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
         onView(withId(R.id.security_scroll)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
         onView(withId(R.id.security_recycler_view)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
@@ -141,6 +143,7 @@ public class visitorFlow {
 
         onView(withId(R.id.event_details_submit)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
         onView(withId(R.id.event_details_cancel)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
+        sleep();
         onView(withId(R.id.event_details_fab)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
 
         onView(withId(R.id.schedule)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
@@ -211,8 +214,10 @@ public class visitorFlow {
     @Test
     public void testEmergencyPage() {
         onView(withId(R.id.viewPager)).perform(ViewActions.click());
+
         sleep();
-        sleep();
+        onView(withId(R.id.butSOS)).perform(ViewActions.scrollTo());
+
         onView(withId(R.id.butSOS)).perform(ViewActions.click());
         onView(withId(R.id.butSOS)).perform(ViewActions.longClick());
         sleep();
