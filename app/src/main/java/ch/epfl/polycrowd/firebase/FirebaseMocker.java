@@ -27,6 +27,8 @@ import ch.epfl.polycrowd.logic.Message;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 
+import static java.lang.Thread.sleep;
+
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class FirebaseMocker implements DatabaseInterface {
 

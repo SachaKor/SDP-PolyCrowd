@@ -41,6 +41,8 @@ public class guestFlow {
 
     @Before
     public void setUp() {
+        AndroidTestHelper.reset();
+        PolyContext.reset();
         AndroidTestHelper.SetupMockDBI();
         PolyContext.setCurrentUser(null);
 
@@ -57,10 +59,12 @@ public class guestFlow {
         onView(withId(R.id.button)).check(matches(withText(containsString("LOGIN"))));
 
         onView(withId(R.id.viewPager)).perform(ViewActions.swipeRight());
+        sleep();
         onView(withId(R.id.eventTitle)).check(matches(withText(containsString("Create an EVENT"))));
         onView(withId(R.id.description)).check(matches(withText(containsString("your journey starts now !"))));
 
         onView(withId(R.id.viewPager)).perform(ViewActions.swipeLeft());
+        sleep();
         onView(withId(R.id.eventTitle)).check(matches(withText(containsString("DEBUG EVENT"))));
         onView(withId(R.id.description)).check(matches(withText(containsString("this is only a debug event ..."))));
 

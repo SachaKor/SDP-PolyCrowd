@@ -40,6 +40,8 @@ public class LoginActivityTest {
 
     @Before
     public void setUp() {
+        PolyContext.reset();
+        AndroidTestHelper.reset();
         AndroidTestHelper.SetupMockDBI();
 
         PolyContext.setCurrentUser(null);
@@ -85,6 +87,7 @@ public class LoginActivityTest {
     @Test
     public void testEmailFieldEmpty() {
         onView(withId(R.id.sign_in_button)).perform(click());
+        sleep();
         onView(withText("Enter your email"))
                 .inRoot(withDecorView(not(loginActivityRule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));

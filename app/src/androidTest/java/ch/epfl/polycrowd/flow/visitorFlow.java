@@ -40,8 +40,10 @@ public class visitorFlow {
 
     @Before
     public void setUp() {
+        PolyContext.reset();
+        AndroidTestHelper.reset();
         AndroidTestHelper.SetupMockDBI();
-        PolyContext.setCurrentUser(AndroidTestHelper.getUser());
+        PolyContext.setCurrentUser(AndroidTestHelper.getUser("USER@h.net"));
 
         Intent intent = new Intent();
         frontPageActivityRule.launchActivity(intent);
@@ -71,10 +73,13 @@ public class visitorFlow {
 
     @Test
     public void testMapViewEventPage() {
-        onView(withId(R.id.viewPager)).perform(ViewActions.click());
         sleep();
+        onView(withId(R.id.viewPager)).perform(ViewActions.click());
+
+            sleep();
         onView(withId(R.id.map)).check(matches(isDisplayed()));
         onView(withId(R.id.butRight)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+        sleep();
         onView(withId(R.id.butRight)).check(matches(withText(containsString("EVENT DETAILS"))));
         onView(withId(R.id.butLeft)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
         onView(withId(R.id.butLeft)).check(matches(withText(containsString("GROUPS"))));
@@ -85,6 +90,7 @@ public class visitorFlow {
 
     @Test
     public void testEventPage() {
+        sleep();
         onView(withId(R.id.viewPager)).perform(ViewActions.click());
         onView(withId(R.id.butRight)).perform(ViewActions.click());
         sleep();
@@ -129,6 +135,7 @@ public class visitorFlow {
         onView(withId(R.id.organizers_recycler_view)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
         onView(withId(R.id.invite_organizer_button)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
 
+        sleep();
         onView(withId(R.id.EditEventSecurity)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
         onView(withId(R.id.security_scroll)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
         onView(withId(R.id.security_recycler_view)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
@@ -136,6 +143,7 @@ public class visitorFlow {
 
         onView(withId(R.id.event_details_submit)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
         onView(withId(R.id.event_details_cancel)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
+        sleep();
         onView(withId(R.id.event_details_fab)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
 
         onView(withId(R.id.schedule)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
@@ -206,6 +214,9 @@ public class visitorFlow {
     @Test
     public void testEmergencyPage() {
         onView(withId(R.id.viewPager)).perform(ViewActions.click());
+
+        sleep();
+        //onView(withId(R.id.butSOS)).perform(ViewActions.scrollTo());
 
         onView(withId(R.id.butSOS)).perform(ViewActions.click());
         onView(withId(R.id.butSOS)).perform(ViewActions.longClick());
