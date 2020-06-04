@@ -66,10 +66,11 @@ public class Schedule {
             fos.close();
             is.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            return null;
         }
         return f.getAbsolutePath();
     }
+
 
     private List<Activity> loadIcs(File path) {
         System.setProperty("net.fortuna.ical4j.timezone.cache.impl", "net.fortuna.ical4j.util.MapTimeZoneCache");
