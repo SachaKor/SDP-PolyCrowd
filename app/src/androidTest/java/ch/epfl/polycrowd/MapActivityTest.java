@@ -131,7 +131,7 @@ public class MapActivityTest {
     @Test
     public void setOrgainizerButtonsCorrectlyCreatesOrganizerButtons() {
         PolyContext.setCurrentEvent(AndroidTestHelper.getDebugEvent());
-        PolyContext.setCurrentUser(AndroidTestHelper.getOwner());
+        PolyContext.setCurrentUser(AndroidTestHelper.getOrganiser());
 
         Intent intent = new Intent();
         mActivityRule.launchActivity(intent);
