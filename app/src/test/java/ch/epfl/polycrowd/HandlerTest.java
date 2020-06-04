@@ -20,7 +20,7 @@ public class HandlerTest {
 
         @Override
         public void handle() {
-            handled = false;
+            handled = true;
         }
     }
 
