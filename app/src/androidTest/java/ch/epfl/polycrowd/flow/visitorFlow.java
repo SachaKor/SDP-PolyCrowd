@@ -216,7 +216,7 @@ public class visitorFlow {
         onView(withId(R.id.viewPager)).perform(ViewActions.click());
 
         sleep();
-        onView(withId(R.id.butSOS)).perform(ViewActions.scrollTo());
+        //onView(withId(R.id.butSOS)).perform(ViewActions.scrollTo());
 
         onView(withId(R.id.butSOS)).perform(ViewActions.click());
         onView(withId(R.id.butSOS)).perform(ViewActions.longClick());
