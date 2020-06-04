@@ -33,8 +33,12 @@ import static ch.epfl.polycrowd.logic.Event.EventType.*;
 public abstract class AndroidTestHelper {
 
     public static void sleep(){
+        sleep(750);
+    }
+
+    public static void sleep(Integer l){
         try{
-            Thread.sleep(800);
+            Thread.sleep(l);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
