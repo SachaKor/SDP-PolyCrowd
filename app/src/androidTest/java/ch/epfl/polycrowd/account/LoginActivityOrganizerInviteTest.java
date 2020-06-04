@@ -33,6 +33,7 @@ public class LoginActivityOrganizerInviteTest {
 
     @Before
     public void setUp() {
+        PolyContext.reset();
         AndroidTestHelper.SetupMockDBI();
         email = AndroidTestHelper.getUser().getEmail();
         pwd = AndroidTestHelper.getUserPass();
@@ -46,8 +47,10 @@ public class LoginActivityOrganizerInviteTest {
     @Test
     public void eventDetailsPageOpensAfterLoggedIn() {
         sleep();
+        sleep();
+        sleep();
         onView(withId(R.id.sign_in_email)).perform(typeText(email), closeSoftKeyboard());
-        onView(withId(R.id.sign_in_pswd)).perform(typeText(pwd));
+        onView(withId(R.id.sign_in_pswd)).perform(typeText(pwd), closeSoftKeyboard());
         onView(withId(R.id.sign_in_button)).perform(click());
         sleep();
         onView(withId(R.id.event_details_title)).check(matches(isDisplayed()));

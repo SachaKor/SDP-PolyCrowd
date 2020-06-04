@@ -40,6 +40,7 @@ public class visitorFlow {
 
     @Before
     public void setUp() {
+        PolyContext.reset();
         AndroidTestHelper.SetupMockDBI();
         PolyContext.setCurrentUser(AndroidTestHelper.getUser());
 
