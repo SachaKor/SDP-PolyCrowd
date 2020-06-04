@@ -41,6 +41,8 @@ public class guestFlow {
 
     @Before
     public void setUp() {
+        AndroidTestHelper.reset();
+        PolyContext.reset();
         AndroidTestHelper.SetupMockDBI();
         PolyContext.setCurrentUser(null);
 
