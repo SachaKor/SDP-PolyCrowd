@@ -41,4 +41,12 @@ public class ScheduleTest {
         new Schedule("", new File(""));
     }
 
+    @Test
+    public void testNoDownload(){
+        Schedule v = new Schedule(CalURL ,new File("calendars/test.ics"));
+        assertNotNull(v.getDownloadPath());
+        Schedule s = new Schedule(CalURL ,new File("calendars/test.ics"));
+        assertNull(s.getDownloadPath());
+    }
+
 }
