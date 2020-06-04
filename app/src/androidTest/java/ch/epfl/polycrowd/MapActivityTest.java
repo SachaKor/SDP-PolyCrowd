@@ -130,12 +130,7 @@ public class MapActivityTest {
 
     @Test
     public void setOrgainizerButtonsCorrectlyCreatesOrganizerButtons() {
-
-        Event e = new Event("Test Owner","Test Name", true, Event.EventType.CONVENTION,new Date(), new Date(),"url","Test Description", false);
-        e.setId("test id");
-        PolyContext.getDBI().addEvent(e, ev->{}, ev->{});
-        PolyContext.setCurrentEvent(e);
-
+        PolyContext.setCurrentEvent(AndroidTestHelper.getDebugEvent());
         PolyContext.setCurrentUser(AndroidTestHelper.getOwner());
 
         Intent intent = new Intent();
@@ -196,7 +191,7 @@ public class MapActivityTest {
     @Test
     public void waitForMap() {
         setUp();
-        sleep(10000);
+        sleep(15000);
     }
 
 
