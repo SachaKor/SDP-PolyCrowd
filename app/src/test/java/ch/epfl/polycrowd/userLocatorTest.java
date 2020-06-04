@@ -1,6 +1,7 @@
 package ch.epfl.polycrowd;
 
 import android.location.Location;
+import android.os.Bundle;
 import android.util.Pair;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -45,6 +46,13 @@ public class userLocatorTest {
         LatLng loc = ((FirebaseMocker)(PolyContext.getDBI())).getUserLocation("12345");
         assertEquals("latitude is equal.", loc.latitude,targetLocation.getLatitude(), 0);
         assertEquals("longitude is equal.", loc.longitude,targetLocation.getLongitude(), 0);
+    }
+
+    @Test
+    public void theseMethodsDoNothing(){
+        testUserLocator.onProviderDisabled("");
+        testUserLocator.onProviderEnabled("");
+        testUserLocator.onStatusChanged("", 0, Bundle.EMPTY);
     }
 
 }
