@@ -188,7 +188,7 @@ public class FrontPageActivity extends AppCompatActivity {
     // --------- Link --------------------------------------------------------------------
     private void receiveDynamicLink() {
         PolyContext.getDBI().receiveDynamicLink(deepLink -> {
-            Log.d(TAG, "Deep link URL:\n" + deepLink.toString());
+            Log.d(TAG, "handling the dynamic link");
             String lastPathSegment = deepLink.getLastPathSegment();
             if(lastPathSegment == null)
                 return;
@@ -212,6 +212,7 @@ public class FrontPageActivity extends AppCompatActivity {
     private static void inviteEventMemberDynamicLink(Context c, Uri deepLink, PolyContext.Role role){
         String eventId = deepLink.getQueryParameter("eventId"),
                 eventName = deepLink.getQueryParameter("eventName");
+        Log.d(TAG, "event id: " + eventId);
         if (eventId != null && eventName != null) {
             PolyContext.getDBI().getEventById(eventId, event -> {
                 PolyContext.setCurrentEvent(event);
