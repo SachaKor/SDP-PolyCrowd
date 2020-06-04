@@ -162,7 +162,6 @@ public class FirebaseMocker implements DatabaseInterface {
     public void receiveDynamicLink(Handler<Uri> handler, Intent intent) {
         if(uriString != null) {
             Uri uri = Uri.parse(uriString);
-            Log.d(TAG, "dynamic link parsed");
             handler.handle(uri);
         }
     }

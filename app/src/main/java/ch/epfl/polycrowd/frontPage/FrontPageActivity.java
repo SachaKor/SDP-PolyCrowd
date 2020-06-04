@@ -216,13 +216,6 @@ public class FrontPageActivity extends AppCompatActivity {
         if (eventId != null && eventName != null) {
             PolyContext.getDBI().getEventById(eventId, event -> {
                 PolyContext.setCurrentEvent(event);
-                /*
-                Log.d(TAG, "handling geteventbyid, role: " + role.toString());
-                if(PolyContext.getCurrentEvent() == null) {
-                    Log.d(TAG, "cur event is null");
-                } else {
-                    Log.d(TAG, "current event is not null");
-                } */
                 PolyContext.setInviteRole(role);
                 ActivityHelper.eventIntentHandler(c, EventMemberInviteActivity.class);
             });
