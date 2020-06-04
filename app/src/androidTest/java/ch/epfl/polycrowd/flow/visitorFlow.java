@@ -41,8 +41,9 @@ public class visitorFlow {
     @Before
     public void setUp() {
         PolyContext.reset();
+        AndroidTestHelper.reset();
         AndroidTestHelper.SetupMockDBI();
-        PolyContext.setCurrentUser(AndroidTestHelper.getUser());
+        PolyContext.setCurrentUser(AndroidTestHelper.getUser("USER@h.net"));
 
         Intent intent = new Intent();
         frontPageActivityRule.launchActivity(intent);
@@ -74,7 +75,8 @@ public class visitorFlow {
     public void testMapViewEventPage() {
         sleep();
         onView(withId(R.id.viewPager)).perform(ViewActions.click());
-        sleep();
+
+            sleep();
         onView(withId(R.id.map)).check(matches(isDisplayed()));
         onView(withId(R.id.butRight)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
         onView(withId(R.id.butRight)).check(matches(withText(containsString("EVENT DETAILS"))));
@@ -209,7 +211,8 @@ public class visitorFlow {
     @Test
     public void testEmergencyPage() {
         onView(withId(R.id.viewPager)).perform(ViewActions.click());
-
+        sleep();
+        sleep();
         onView(withId(R.id.butSOS)).perform(ViewActions.click());
         onView(withId(R.id.butSOS)).perform(ViewActions.longClick());
         sleep();

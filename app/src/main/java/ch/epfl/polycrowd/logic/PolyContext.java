@@ -34,8 +34,14 @@ public abstract class PolyContext extends Context {
     public static void reset(){
         currentEvent = null;
         currentUser = null;
+        currentGroup = null;
         inviteRole = Role.UNKNOWN;
+        groupId = null;
         previousPage = null;
+        standId = null;
+        dbInterface  = new FirebaseInterface() ;
+        userLocator = null ;
+        userGroupList = null ;
     }
   
     public static String getStandId() {
