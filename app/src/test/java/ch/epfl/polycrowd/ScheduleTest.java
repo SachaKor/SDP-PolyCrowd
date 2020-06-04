@@ -10,6 +10,7 @@ import ch.epfl.polycrowd.logic.Schedule;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 
 
@@ -38,6 +39,14 @@ public class ScheduleTest {
     @Test
     public void testScheduleWithEmptyUrl(){
         new Schedule("", new File(""));
+    }
+
+    @Test
+    public void testNoDownload(){
+        Schedule v = new Schedule(CalURL ,new File("calendars/test.ics"));
+        assertNotNull(v.getDownloadPath());
+        Schedule s = new Schedule(CalURL ,new File("/"));
+        assertNull(s.getDownloadPath());
     }
 
 }
