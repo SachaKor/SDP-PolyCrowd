@@ -51,19 +51,19 @@ public class guestFlow {
     @Test
     public void testFrontPage() {
         onView(withId(R.id.frontPageTitle)).check(matches(withText("POLY CROWD")));
-
+            AndroidTestHelper.sleep();
         onView(withId(R.id.button)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
         onView(withId(R.id.goToUserProfileButton)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
         onView(withId(R.id.button)).check(matches(withText(containsString("LOGIN"))));
-
+            AndroidTestHelper.sleep();
         onView(withId(R.id.viewPager)).perform(ViewActions.swipeRight());
         onView(withId(R.id.eventTitle)).check(matches(withText(containsString("Create an EVENT"))));
         onView(withId(R.id.description)).check(matches(withText(containsString("your journey starts now !"))));
-
+            AndroidTestHelper.sleep();
         onView(withId(R.id.viewPager)).perform(ViewActions.swipeLeft());
         onView(withId(R.id.eventTitle)).check(matches(withText(containsString("DEBUG EVENT"))));
         onView(withId(R.id.description)).check(matches(withText(containsString("this is only a debug event ..."))));
-
+            AndroidTestHelper.sleep();
         onView(withId(R.id.viewPager)).perform(ViewActions.swipeLeft());
         onView(withId(R.id.eventTitle)).check(matches(withText(containsString("DEBUG EVENT"))));
         onView(withId(R.id.description)).check(matches(withText(containsString("this is only a debug event ..."))));
