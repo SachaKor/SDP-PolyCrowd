@@ -45,7 +45,7 @@ public class ScheduleTest {
     public void testNoDownload(){
         Schedule v = new Schedule(CalURL ,new File("calendars/test.ics"));
         assertNotNull(v.getDownloadPath());
-        Schedule s = new Schedule(CalURL ,new File("calendars/test.ics"));
+        Schedule s = new Schedule(CalURL ,new File("/"));
         assertNull(s.getDownloadPath());
     }
 
