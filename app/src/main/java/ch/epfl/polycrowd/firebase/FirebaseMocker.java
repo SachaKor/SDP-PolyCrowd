@@ -322,6 +322,11 @@ public class FirebaseMocker implements DatabaseInterface {
         userPositions.put(id,location);
     }
 
+    //this method is added for testing purposes
+    public LatLng getUserLocation(@NonNull String id) {
+        return userPositions.get(id);
+    }
+
     public void sendMessageFeed(@NonNull String eventId, Message m, EmptyHandler handler) {
         eventMessages.putIfAbsent(eventId,new ArrayList<>());
         eventMessages.get(eventId).add(m);
