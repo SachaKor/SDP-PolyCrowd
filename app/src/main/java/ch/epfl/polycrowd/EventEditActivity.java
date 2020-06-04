@@ -223,9 +223,7 @@ public class EventEditActivity extends AppCompatActivity {
         if( PolyContext.getCurrentEvent() == null) {
             PolyContext.getDBI().addEvent(ev, successHandler, failureHandler);
         }else {
-            PolyContext.getDBI().patchEventByID(
-                    PolyContext.getCurrentEvent().getId(),
-                    ev, successHandler, failureHandler);
+            PolyContext.getDBI().updateEvent(ev, successHandler);
         }
 
     }

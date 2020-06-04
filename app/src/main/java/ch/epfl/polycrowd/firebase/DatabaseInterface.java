@@ -46,9 +46,6 @@ public interface DatabaseInterface {
 
     void addEvent(Event event, Handler<Event> successHandler, Handler<Event> failureHandler);
 
-    void patchEventByID(String eventId, Event event, Handler<Event> successHandler, Handler<Event> failureHandler);
-
-
     void getEventById(String eventId, Handler<Event> eventHandler);
 
     void addOrganizerToEvent(String eventId, String organizerEmail,
@@ -76,7 +73,6 @@ public interface DatabaseInterface {
 
     void updateEvent(Event event, Handler<Event> eventHandler);
     void addSOS(String userId, String reason, EmptyHandler handler);
-    void getSOS(String userId, Handler<String> handler);
     void deleteSOS(String userId, EmptyHandler handler);
 
     void addUserToGroup(String inviteGroupId, String userEmail, EmptyHandler emptyHandler);
@@ -85,11 +81,9 @@ public interface DatabaseInterface {
 
     void updateGroup(Group group,EmptyHandler handler) ;
 
-    void removeUserFromGroup(String gid, String uid, EmptyHandler handler) ;
-
     //TODO, should the argument be a group or the raw arguments of a group in the database?
     //the String handler is to handle the DocumentReferenceId which is used as the GroupId
-    public void createGroup(Map<String, Object> groupRawData, Handler<String> handler) ;
+    void createGroup(Map<String, Object> groupRawData, Handler<String> handler) ;
 
     void reauthenticateAndChangePassword(String email, String curPassword, String newPassword, Context appContext);
 
@@ -104,20 +98,9 @@ public interface DatabaseInterface {
 
     void updateUser(User user, Handler<User> userHandler);
 
-    void getUserGroupIds(String userEmail, Handler<Map<String, String>> groupIdEventIdPairsHandler);
-
     void getUserGroups(User user, Handler<List<Group>> userGroups) ;
 
-    void getGroupByGroupId(String groupId, Handler<Group> groupHandler);
-
-    void getUserCollectionByEmails(List<String> userEmails, Handler<List<User>> usersHandler) ;
-
     void updateUserLocation(String id, LatLng location);
-
-    //if one wants to implement fetching locations based on group, would have to slighlty change
-    //all realtime database structure to group users and their locations by groupId's
-    //public void FetchUserLocationsByGroup(String groupId);
-    void fetchUserLocation(String id, Handler<LatLng> handlerSuccess);
 
     void sendMessageFeed(String eventId, Message m, EmptyHandler handler);
 
