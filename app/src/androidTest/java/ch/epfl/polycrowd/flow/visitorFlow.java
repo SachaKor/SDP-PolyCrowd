@@ -71,6 +71,7 @@ public class visitorFlow {
 
     @Test
     public void testMapViewEventPage() {
+        sleep();
         onView(withId(R.id.viewPager)).perform(ViewActions.click());
         sleep();
         onView(withId(R.id.map)).check(matches(isDisplayed()));
@@ -85,6 +86,7 @@ public class visitorFlow {
 
     @Test
     public void testEventPage() {
+        sleep();
         onView(withId(R.id.viewPager)).perform(ViewActions.click());
         onView(withId(R.id.butRight)).perform(ViewActions.click());
         sleep();

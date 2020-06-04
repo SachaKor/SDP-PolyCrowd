@@ -19,6 +19,7 @@ import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static ch.epfl.polycrowd.AndroidTestHelper.sleep;
 
 /**
  * Tests the case when the user logs in after the organizer invite link clicked
@@ -44,9 +45,11 @@ public class LoginActivityOrganizerInviteTest {
 
     @Test
     public void eventDetailsPageOpensAfterLoggedIn() {
+        sleep();
         onView(withId(R.id.sign_in_email)).perform(typeText(email), closeSoftKeyboard());
         onView(withId(R.id.sign_in_pswd)).perform(typeText(pwd));
         onView(withId(R.id.sign_in_button)).perform(click());
+        sleep();
         onView(withId(R.id.event_details_title)).check(matches(isDisplayed()));
     }
 }
