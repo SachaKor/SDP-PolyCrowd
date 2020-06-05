@@ -246,15 +246,15 @@ public class Event extends Storable{
         Timestamp sStamp = (Timestamp) data.get("start"),
                 eStamp = (Timestamp) data.get("end");
 
-
+        if(owner == null || name == null || sStamp == null || eStamp == null || data.get("type") == null)
+            return null;
         EventType type = EventType.valueOf(((String) data.get("type")));
         String desc = (String) data.get("description");
         Boolean emergency = Boolean.parseBoolean((String) data.get("isEmergencyEnabled"));
         List<String> organizers = (List<String>) (data.get("organizers"));
         List<String> security = (List<String>) (data.get("security"));
         String imageUri = (String) data.get("imageUri"); // can be null but this is ok
-        if(owner == null || name == null || sStamp == null || eStamp == null)
-            return null;
+
         Date start = sStamp.toDate();
         Date end = eStamp.toDate();
         Event result = new Event(owner, name, isPublic,
