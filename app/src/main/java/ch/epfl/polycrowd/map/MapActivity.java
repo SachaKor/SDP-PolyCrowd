@@ -184,25 +184,25 @@ public class MapActivity extends AppCompatActivity {
     }
 
 
-
+/*
     public void clickEventDetails(View view) {
         Intent intent = new Intent(this, EventPageDetailsActivity.class);
         startActivity(intent);
     }
-
+*/
 
     /*public void clickGroup(View view) {
         Intent intent = new Intent(this, GroupPageActivity.class);
         intent.putExtra("eventId", eventId);
         startActivity(intent);
     }*/
-
+/*
     public boolean clickSOS(View view) {
         Intent intent = new Intent(this, EmergencyActivity.class);
         startActivity(intent);
         return true;
     }
-
+*/
     public void onFeedClicked(View view){
         Intent intent = new Intent(this, FeedActivity.class);
         startActivity(intent);

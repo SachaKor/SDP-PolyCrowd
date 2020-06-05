@@ -176,6 +176,7 @@ public class MapActivityTest {
         sleep();
 
         onView(withId(R.id.butSOS)).perform(longClick());
+
     }
     @Test
     public void testEventDetailsButtonPress() {
