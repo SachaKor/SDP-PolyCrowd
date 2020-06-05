@@ -130,7 +130,7 @@ public class MapActivity extends AppCompatActivity {
         startActivity(intent);
         return true;
     }
-*/
+
     public void onFeedClicked(View view){
         Intent intent = new Intent(this, FeedActivity.class);
         startActivity(intent);
