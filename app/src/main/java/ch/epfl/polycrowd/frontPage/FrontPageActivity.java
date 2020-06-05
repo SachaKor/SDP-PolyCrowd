@@ -201,8 +201,6 @@ public class FrontPageActivity extends AppCompatActivity {
                 case "inviteSECURITY":
                     inviteEventMemberDynamicLink(this,deepLink, PolyContext.Role.SECURITY);
                     break;
-                case "inviteSTAFF":
-                    break;
                 case "inviteGroup":
                     inviteGroupDynamicLink(this, deepLink);
                     break;
