@@ -23,6 +23,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 import ch.epfl.polycrowd.ActivityHelper;
 import ch.epfl.polycrowd.EmergencyActivity;
@@ -226,12 +227,15 @@ public class MapActivity extends AppCompatActivity {
         buttonLeft.setOnClickListener(v -> {
             if(PolyContext.getCurrentUser() != null){
                 PolyContext.getDBI().getUserGroups(PolyContext.getCurrentUser(), groups->{
-                    PolyContext.setUserGroups(new ArrayList<>(groups));
+
+                    PolyContext.setUserGroups(new ArrayList<>(groups).stream().filter(g ->g.getEventId().equals(PolyContext.getCurrentEvent().getId()) ).collect(Collectors.toList()));
+
+                    /*
                     for(Group g: groups){
                         if(!g.getEventId().equals(PolyContext.getCurrentEvent().getId())){
                             PolyContext.getUserGroups().remove(g) ;
                         }
-                    }
+                    }*/
                     eventIntentHandler(this , GroupsListActivity.class) ;
                 });
             }
