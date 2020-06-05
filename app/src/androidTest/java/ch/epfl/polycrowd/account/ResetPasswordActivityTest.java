@@ -50,6 +50,7 @@ public class ResetPasswordActivityTest {
         onView(withText("Please enter an email"))
                 .inRoot(withDecorView(not(resetPasswordActivityActivityTestRule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));
+        onView(withId(R.id.forgot_password_button)).perform(click());
     }
 
 
