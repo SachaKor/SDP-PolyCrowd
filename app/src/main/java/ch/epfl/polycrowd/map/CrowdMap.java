@@ -55,24 +55,6 @@ public class CrowdMap implements OnMapReadyCallback {
     private GoogleMap mMap;
     // to access Context for broadcasting and receiving intents
     private final MapActivity act;
-    // User position marker
-    private Marker currentLocationMarker;
-    // Group Markers
-    private Map<User , Marker> groupMarkers;
-    //event goer positions
-    private Map<String, LatLng> positions;
-    private Map<String, String> emergencies;
-    private Map<String, String> emergencyMarkers;
-    //heatmap
-    HeatmapTileProvider HmTP;
-    //TileOverlay
-     TileOverlay overlay;
-
-     //demo fake movement offset
-    double offset =0.0001;
-
-
-
 
     // ------ Constructor ---------------------------------------------
     public CrowdMap(MapActivity act_){
@@ -98,9 +80,6 @@ public class CrowdMap implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
 
         mMap = googleMap;
-        positions = new HashMap<>(); //init positions
-        uploadFakeUserLocationsForDemo();
-        getEventGoersPositions();// init positions
         // --- Style map ----------------------------------------------------------
         // to remove buildings 3D effect put false
         mMap.setBuildingsEnabled(true);
@@ -110,35 +89,6 @@ public class CrowdMap implements OnMapReadyCallback {
         } catch (Resources.NotFoundException e) {
             Log.e(TAG, "Can't find style. Error: ", e);
         }
-
-        // --- HeatMap -------------------------------------------------------------
-        HmTP = null;
-        if (positions != null && !positions.isEmpty()) {
-            switch (PolyContext.getRole()) {
-                case GUEST:
-                case VISITOR:
-                case UNKNOWN:
-                    HmTP = new HeatmapTileProvider.Builder()
-                            .data(positions.values())
-                            .gradient(gradientGrey)
-                            .build();
-                    break;
-                case ORGANIZER:
-                case SECURITY:
-                case STAFF:
-                    getEventGoersEmergencies();
-                    HmTP = new HeatmapTileProvider.Builder()
-                            .data(positions.values())
-                            .gradient(gradientGreenRed)
-                            .build();
-                    break;
-            }
-        }
-        // tile overlay
-        if(HmTP != null) {
-            overlay= mMap.addTileOverlay(new TileOverlayOptions().tileProvider(HmTP));
-        }
-
 
         // --- KML layer ---------------------------------------------------------------
         KmlLayer layer = null;
@@ -161,11 +111,6 @@ public class CrowdMap implements OnMapReadyCallback {
 
         // ------- Move to event /or stand position ---------------------------------------------------------------------
 
-        currentLocationMarker = mMap.addMarker(
-                new MarkerOptions().position(new LatLng(0, 0)) // TODO : maybe PolyContex.getCurrentUser().getLocation() ..
-                                   .icon(BitmapDescriptorFactory.fromResource(R.drawable.pointred))
-        );
-
         if(PolyContext.getStandId() != null) {
             accessContainers(layer.getContainers() , this::accessPlacemarks );
         } else {
@@ -180,27 +125,6 @@ public class CrowdMap implements OnMapReadyCallback {
             }
         }
 
-
-        // ----- ADD Group on map ----------------------------------------------------------------------------
-
-        groupMarkers = new HashMap<>();
-        if(PolyContext.getCurrentGroup() != null){
-            for(User groupMember : PolyContext.getCurrentGroup().getMembers()){
-                groupMarkers.put(groupMember , googleMap.addMarker(
-                        new MarkerOptions().position(groupMember.getLocation())
-                                           .title(groupMember.getUsername())
-                                           .icon(BitmapDescriptorFactory.fromResource(R.drawable.pointred))));
-            }
-        }
-
-    }
-    // ------- Update user position ------------------------------------------------------
-
-    public void update(LatLng myPosition){
-        //update marker to point to current Location
-        currentLocationMarker.setPosition(myPosition);
-        // TODO : update group markers
-        groupMarkers.forEach( (user , maker) -> {} );
     }
 
     // ------ KML Parsing functions --------------------------------------------------------------------------
@@ -252,97 +176,6 @@ public class CrowdMap implements OnMapReadyCallback {
             centerBuilder.include(point);
         }
         return centerBuilder.build();
-    }
-
-    private void uploadFakeUserLocationsForDemo(){
-        DatabaseInterface db = PolyContext.getDBI();
-        db.updateUserLocation("fakeUser1", new LatLng(46.518033-offset, 6.566919));
-        db.updateUserLocation("fakeUser2", new LatLng(46.518933- offset, 6.566819));
-        db.updateUserLocation("fakeUser3", new LatLng(46.518533- offset, 6.566719));
-        db.updateUserLocation("fakeUser4", new LatLng(46.518033- offset, 6.566919));
-        db.updateUserLocation("fakeUser5", new LatLng(46.518033- offset, 6.566319));
-        db.updateUserLocation("fakeUser6", new LatLng(46.518333- offset, 6.566119));
-        db.updateUserLocation("fakeUser7", new LatLng(46.518933- offset, 6.566419));
-        db.updateUserLocation("fakeUser8", new LatLng(46.518733- offset, 6.566519));
-        db.updateUserLocation("fakeUser9", new LatLng(46.518033- offset, 6.566619));
-        db.updateUserLocation("fakeUser10", new LatLng(46.518633- offset, 6.566719));
-        db.updateUserLocation("fakeUser11", new LatLng(46.518433- offset, 6.566419));
-        db.updateUserLocation("fakeUser12", new LatLng(46.518533- offset, 6.566519));
-        db.updateUserLocation("fakeUser13", new LatLng(46.518633- offset, 6.566919));
-        offset += 0.0001;
-    }
-    // --- GET USER DATA(REALTIME DATABASE)--------------------------------
-
-    void getEventGoersPositions() {
-        //TODO REMOVE THIS UPLOADT OF FAKE USERLOCATIONS
-        uploadFakeUserLocationsForDemo();
-        //====================================
-        FirebaseDatabase.getInstance().getReference().addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                DataSnapshot locationsSnapshot = dataSnapshot.child("locations");
-                Iterable<DataSnapshot> locationsChildren = locationsSnapshot.getChildren();
-                for (DataSnapshot snapshot : locationsChildren) {
-                    Log.d("LOCATION", "snapshot: " + snapshot);
-                    String lat = snapshot.child("latitude/").getValue().toString();
-                    String lng = snapshot.child("longitude/").getValue().toString();
-                    LatLng c = new LatLng(Double.parseDouble(lat), Double.parseDouble(lng));
-                    positions.put(snapshot.getKey(),c);
-                }
-                if(overlay != null) {
-                    overlay.setVisible(false);
-                    overlay.remove();
-                }
-                //if there are positions then playce tileoverlay with new locations
-                if(positions != null)
-                HmTP = new HeatmapTileProvider.Builder()
-                        .data(positions.values())
-                        .gradient(gradientGreenRed)
-                        .build();
-                if(HmTP != null) {
-                    overlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(HmTP));
-                }
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
-    }
-
-
-    void getEventGoersEmergencies() {
-        FirebaseDatabase.getInstance().getReference().addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                DataSnapshot locationsSnapshot = dataSnapshot.child("sos");
-                Iterable<DataSnapshot> locationsChildren = locationsSnapshot.getChildren();
-                for (DataSnapshot snapshot : locationsChildren) {
-                    Log.d("EMERGENCIES", "snapshot: " + snapshot);
-                    String r = snapshot.child("reason").getValue().toString();
-                    emergencies.put(snapshot.getKey(),r);
-                }
-                if(emergencies != null){
-                    for(String user : emergencies.keySet()){
-                        LatLng pos = positions.get(user);
-                        if(pos != null) {
-                            MarkerOptions mrko = new MarkerOptions().position(pos).title("!").snippet(emergencies.get(user));
-                            Marker m = mMap.addMarker(mrko);
-                            emergencyMarkers.put(m.getId(), user);
-                        }
-                    }
-                }
-                mMap.setOnMarkerClickListener(marker -> {
-                    PolyContext.getDBI().deleteSOS(emergencyMarkers.get(marker.getId()),()->{});
-                    return true;
-                });
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
     }
 
 }
