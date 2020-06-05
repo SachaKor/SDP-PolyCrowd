@@ -92,14 +92,21 @@ public class Event extends Storable{
     }
 
     public Event(Event e, @NonNull File dir){
-        this(e.owner, e.name, e.isPublic, e.type, e.start, e.end, e.calendar, e.description, e.isEmergencyEnabled);
+        this(e.owner, e.name,
+                e.isPublic, e.type,
+                e.start, e.end, e.calendar,
+                e.description, e.isEmergencyEnabled);
         this.loadCalendar(dir);
     }
 
-    public Event(@NonNull String owner, @NonNull String name, Boolean isPublic, @NonNull EventType type,
+    public Event(@NonNull String owner, @NonNull String name,
+                 Boolean isPublic, @NonNull EventType type,
                  @NonNull Date start, @NonNull Date end,
-                 String calendar, String description, Boolean hasEmergencyFeature,@NonNull List<String> organizers,@NonNull List<String> security){
-        this(owner, name, isPublic, type, start, end, calendar, description, hasEmergencyFeature);
+                 String calendar, String description,
+                 Boolean hasEmergencyFeature,@NonNull List<String> organizers,@NonNull List<String> security){
+        this(owner, name, isPublic, type,
+                start, end, calendar,
+                description, hasEmergencyFeature);
         this.organizers = organizers;
         this.security = security;
     }
@@ -250,7 +257,9 @@ public class Event extends Storable{
             return null;
         Date start = sStamp.toDate();
         Date end = eStamp.toDate();
-        Event result = new Event(owner, name, isPublic, type, start, end, calendar, desc, emergency, organizers, security);
+        Event result = new Event(owner, name, isPublic,
+                type, start, end, calendar,
+                desc, emergency, organizers, security);
         result.setImageUri(imageUri);
         result.setMapUri( (String) data.get("mapUri"));
         return result;
@@ -306,4 +315,17 @@ public class Event extends Storable{
         return null;
     }
 
+    @Override
+    public boolean equals(Object other){
+        if(other == null) return false;
+        if (other instanceof Event){
+            return ((Event) other).getId().equals(this.getId());
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getId().hashCode();
+    }
 }

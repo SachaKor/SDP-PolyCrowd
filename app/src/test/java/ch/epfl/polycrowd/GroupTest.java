@@ -77,8 +77,9 @@ public class GroupTest {
     @Test
     public void doesNotAddMemberAlreadyInGroup(){
         User duplicateUser = new User( userEmail, "1", username,  20, null) ;
+        int initialSize = group.members.size();
         group.addMember(duplicateUser);
-        assertFalse(group.getMembers().contains(duplicateUser));
+        assertFalse(initialSize< group.members.size());
     }
 
     @Test

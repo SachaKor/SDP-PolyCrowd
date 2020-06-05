@@ -3,6 +3,7 @@ package ch.epfl.polycrowd;
 import android.content.Context;
 import android.util.Pair;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -31,6 +32,12 @@ public class PolyContextTest {
     static final  Event e = new Event("eventOwner", "DEBUG EVENT", true, Event.EventType.CONCERT,
             new Date(1649430344), new Date(1649440344), "url", "this is only a debug event ... ", false);
 
+    @Before
+    public void setup(){
+        Map<String, Pair<User,String>> mailAndUsersPassPair = new HashMap<>();
+        ArrayList<Event> e = new ArrayList<>();
+        PolyContext.setDBI(new FirebaseMocker(mailAndUsersPassPair,e));
+    }
 
     @Test
     public void testUserSetAndGet(){
@@ -52,6 +59,7 @@ public class PolyContextTest {
 
     @Test
     public void testEventSetAndGet(){
+        e.setId("1");
         PolyContext.setCurrentEvent(e);
         assertEquals(PolyContext.getCurrentEvent(),e);
     }
