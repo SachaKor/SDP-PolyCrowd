@@ -22,6 +22,7 @@ import androidx.core.app.ActivityCompat;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.io.BufferedInputStream;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
@@ -63,6 +64,11 @@ public class MapActivity extends AppCompatActivity {
 
         // only show the map if download is successful
         PolyContext.getDBI().downloadEventMap(PolyContext.getCurrentEvent() , ev -> {
+            /*
+            if(ev.getMapStream() == null){
+                ev.setMapStream(
+                        new BufferedInputStream(getResources().openRawResource(R.raw.example)));
+            }*/
             createMap();
         });
 
