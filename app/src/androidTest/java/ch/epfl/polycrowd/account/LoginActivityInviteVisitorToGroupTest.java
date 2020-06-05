@@ -17,10 +17,12 @@ import ch.epfl.polycrowd.logic.PolyContext;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static androidx.test.espresso.action.ViewActions.swipeLeft;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static ch.epfl.polycrowd.AndroidTestHelper.sleep;
 
 public class LoginActivityInviteVisitorToGroupTest {
     @Rule
@@ -50,6 +52,7 @@ public class LoginActivityInviteVisitorToGroupTest {
 
     @Test
     public void mapPageOpensWhenUserLogsInToAcceptGroupInvite() {
+        sleep();
         onView(withId(R.id.sign_in_email)).perform(typeText(email), closeSoftKeyboard());
         onView(withId(R.id.sign_in_pswd)).perform(typeText(pwd), closeSoftKeyboard());
         onView(withId(R.id.sign_in_button)).perform(click());

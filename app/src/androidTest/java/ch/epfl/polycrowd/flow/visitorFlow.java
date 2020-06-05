@@ -63,6 +63,7 @@ public class visitorFlow {
         onView(withId(R.id.description)).check(matches(withText(containsString("your journey starts now !"))));
 
         onView(withId(R.id.viewPager)).perform(ViewActions.swipeLeft());
+        sleep();
         onView(withId(R.id.eventTitle)).check(matches(withText(containsString("DEBUG EVENT"))));
         onView(withId(R.id.description)).check(matches(withText(containsString("this is only a debug event ..."))));
 

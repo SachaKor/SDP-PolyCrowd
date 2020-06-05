@@ -44,6 +44,7 @@ public class LoginActivitySecurityInviteTest {
 
     @Test
     public void eventDetailsPageOpensAfterLoggedIn() {
+        sleep();
         onView(withId(R.id.sign_in_email)).perform(typeText(email), closeSoftKeyboard());
         onView(withId(R.id.sign_in_pswd)).perform(typeText(pwd), closeSoftKeyboard());
         onView(withId(R.id.sign_in_button)).perform(click());
