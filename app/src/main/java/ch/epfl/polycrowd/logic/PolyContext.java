@@ -25,11 +25,10 @@ public abstract class PolyContext extends Context {
     private static String groupId = null;
     private static Class<? extends android.app.Activity> previousPage = null;
     private static String standId = null;
-    private static DatabaseInterface dbInterface  = new FirebaseInterface();
+    private static DatabaseInterface dbInterface = null;
 
-    private static UserLocator userLocator ;
-    private static List<Group> userGroupList ;
-
+    private static UserLocator userLocator;
+    private static List<Group> userGroupList;
 
     public static void reset(){
         currentEvent = null;
@@ -39,7 +38,7 @@ public abstract class PolyContext extends Context {
         groupId = null;
         previousPage = null;
         standId = null;
-        dbInterface  = new FirebaseInterface() ;
+        //dbInterface  = new FirebaseInterface(); //issues with testing
         userLocator = null ;
         userGroupList = null ;
     }
@@ -133,10 +132,12 @@ public abstract class PolyContext extends Context {
     }
 
     public static void setDBI(DatabaseInterface dbInterfaceInject){
-        dbInterface = dbInterfaceInject ;
+        dbInterface = dbInterfaceInject;
     }
 
     public static DatabaseInterface getDBI(){
+        if(dbInterface == null)
+            dbInterface = new FirebaseInterface();
         return dbInterface ;
     }
 
