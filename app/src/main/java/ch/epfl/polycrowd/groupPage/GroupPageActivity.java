@@ -173,7 +173,7 @@ public class GroupPageActivity extends AppCompatActivity {
         Message m = new Message(message, PolyContext.getCurrentUser().getUsername(),"");
         PolyContext.getDBI().sendMessage(
                 "group_chat",
-                PolyContext.getCurrentGroupId(),
+                PolyContext.getCurrentGroup().getGid(),
                 m,
                 () -> {
                     ((GroupChatFragment)fragmentAdapter.getItem(1)).refresh();

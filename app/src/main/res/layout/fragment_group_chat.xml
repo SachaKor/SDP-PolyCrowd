@@ -1,35 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:orientation="vertical"
-    android:layout_height="match_parent">
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/messages_recycler_view"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="26dp" />
+        android:orientation="vertical">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Type your message:"
-        android:layout_marginTop="30dp"/>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/messages_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="26dp" />
 
-    <EditText
-        android:id="@+id/chat_message_input"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:inputType="textImeMultiLine"/>
+        <LinearLayout
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:orientation="vertical">
 
-    <Button
-        android:id="@+id/invite_group_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:text="Send"
-        android:onClick="onSendClick"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Type your message:"/>
 
+            <EditText
+                android:id="@+id/chat_message_input"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:inputType="textImeMultiLine"/>
 
-</LinearLayout>
+            <Button
+                android:id="@+id/invite_group_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Send"
+                android:onClick="onSendClick"/>
+
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

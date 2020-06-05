@@ -30,7 +30,7 @@
             android:textSize="18sp"
             android:textColor="#000"
             android:textStyle="bold"
-            android:layout_toEndOf="@id/imageIv"
+            android:layout_toEndOf="@id/avatarIv"
             android:layout_marginStart="10dp"
             />
 
@@ -41,7 +41,7 @@
             android:id="@+id/messageTv"
             android:textSize="18sp"
             android:textColor="#494949"
-            android:layout_toEndOf="@id/imageIv"
+            android:layout_toEndOf="@id/avatarIv"
             android:layout_marginStart="10dp"
             android:layout_marginTop="5dp"
             android:layout_below="@id/authorTv"

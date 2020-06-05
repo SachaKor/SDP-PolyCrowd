@@ -55,7 +55,7 @@ public class GroupChatFragment extends Fragment {
         RecyclerView mRecyclerView = view.findViewById(R.id.messages_recycler_view) ;
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         if (PolyContext.getCurrentGroup() != null) {
-            String gid = PolyContext.getCurrentGroupId();
+            String gid = PolyContext.getCurrentGroup().getGid();
             PolyContext.getDBI().getMessages("group_chat", gid, messageList -> {
                 mRecyclerView.setAdapter(new ChatMessageAdapter(this.getContext(), new ArrayList<>(messageList)));
             });
