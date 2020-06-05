@@ -28,7 +28,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static ch.epfl.polycrowd.AndroidTestHelper.sleep;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
-
+import static androidx.test.espresso.action.ViewActions.longClick;
 
 public class MapActivityTest {
 
@@ -153,6 +153,43 @@ public class MapActivityTest {
         }
     }
 
+    @Test
+    public void testFeedButtonPress() {
+        PolyContext.setCurrentEvent(AndroidTestHelper.getDebugEvent());
+        PolyContext.setCurrentUser(AndroidTestHelper.getOrganiser());
+
+        Intent intent = new Intent();
+        mActivityRule.launchActivity(intent);
+
+        sleep();
+
+        onView(withId(R.id.butFeed)).perform(click());
+    }
+    @Test
+    public void testSOSButtonPress() {
+        PolyContext.setCurrentEvent(AndroidTestHelper.getDebugEvent());
+        PolyContext.setCurrentUser(AndroidTestHelper.getUser());
+
+        Intent intent = new Intent();
+        mActivityRule.launchActivity(intent);
+
+        sleep();
+
+        onView(withId(R.id.butSOS)).perform(longClick());
+
+    }
+    @Test
+    public void testEventDetailsButtonPress() {
+        PolyContext.setCurrentEvent(AndroidTestHelper.getDebugEvent());
+        PolyContext.setCurrentUser(AndroidTestHelper.getUser());
+
+        Intent intent = new Intent();
+        mActivityRule.launchActivity(intent);
+
+        sleep();
+
+        onView(withId(R.id.butRight)).perform(click());
+    }
 
     @Test
     public void setVisitorButtonsCorrectlyCreatesVisitorButtons() {

@@ -9,6 +9,7 @@ import com.google.android.gms.common.util.IOUtils;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.junit.Test;
+import org.slf4j.helpers.Util;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -53,5 +54,6 @@ public class UtilsTest {
     public void testGetFileFromNullUri(){
         Utils.getFileNameFromUri(null);
     }
+
 
 }

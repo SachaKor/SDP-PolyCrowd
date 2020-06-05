@@ -33,6 +33,7 @@ import com.google.firebase.storage.StorageReference;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -97,19 +98,21 @@ public class FirebaseInterface implements DatabaseInterface {
                     .addOnFailureListener(v->failureHandler.handle());
     }
 
+    private void addItems(List<String> c, String email, String identifier,String table,String objId,  EmptyHandler handler){
+        if(!c.contains(email)){
+            c.add(email);
+            Map<String,Object> data = new HashMap<>();
+            data.put(identifier, c);
+            cachedFirestore.collection(table).document(objId).set(data, SetOptions.merge()).addOnSuccessListener(a -> handler.handle());
+        }
+        else{ handler.handle();}
+    }
+
     @Override
     public void addUserToGroup(@NonNull String gid, @NonNull String userEmail, EmptyHandler handler){
         cachedFirestore.collection(GROUPS).document(gid).get().addOnSuccessListener(documentSnapshot -> {
             List<String> members = new ArrayList<>((List<String>)documentSnapshot.get(MEMBERS));
-            if(!members.contains(userEmail)) {
-                members.add(userEmail);
-                Map<String, Object> data = new HashMap<>();
-                data.put(MEMBERS, members);
-                cachedFirestore.collection(GROUPS).document(gid).set(data, SetOptions.merge())
-                        .addOnSuccessListener(aVoid -> handler.handle());
-            } else {
-                handler.handle();
-            }
+            addItems(members,userEmail,MEMBERS,GROUPS,gid,handler);
         });
     }
 
@@ -229,14 +232,7 @@ public class FirebaseInterface implements DatabaseInterface {
                                   EmptyHandler handler, String role){
         cachedFirestore.collection(EVENTS).document(eventId).get().addOnSuccessListener(documentSnapshot -> {
             List<String> users = (List<String>) (documentSnapshot.get(role));
-            if(!users.contains(email)) {
-                users.add(email);
-                Map<String, Object> data = new HashMap<>();
-                data.put(role, users);
-                cachedFirestore.collection(EVENTS).document(eventId).set(data, SetOptions.merge()).addOnSuccessListener(e -> handler.handle());
-            } else {
-                handler.handle();
-            }
+            addItems(users, email,role,EVENTS,eventId,handler);
         });
     }
 
@@ -245,14 +241,7 @@ public class FirebaseInterface implements DatabaseInterface {
                                          EmptyHandler handler){
         cachedFirestore.collection(EVENTS).document(eventId).get().addOnSuccessListener(documentSnapshot -> {
             List<String> organizers = new ArrayList<>((List<String>) documentSnapshot.get(ORGANIZERS));
-            if(organizers.contains(organizerEmail)) {
-                organizers.remove(organizerEmail);
-                Map<String, Object> data = new HashMap<>();
-                data.put(ORGANIZERS, organizers);
-                cachedFirestore.collection(EVENTS).document(eventId).set(data, SetOptions.merge()).addOnSuccessListener(e -> handler.handle());
-            } else {
-                handler.handle();
-            }
+            addItems(organizers, organizerEmail,ORGANIZERS,EVENTS,eventId,handler);
         });
     }
 
@@ -290,6 +279,8 @@ public class FirebaseInterface implements DatabaseInterface {
                     });
     }
 
+
+
     /**
      * Uploads the image for the event to the firebase storage
      * Conventions:
@@ -299,6 +290,8 @@ public class FirebaseInterface implements DatabaseInterface {
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void uploadEventImage(Event event, byte[] image, Handler<Event> handler) {
+
+
         event.setImageUri(EVENT_IMAGES + "/" + event.getId() + ".jpg");
         StorageReference imgRef = storage.getReference().child(event.getImageUri());
         imgRef.putBytes(image).addOnSuccessListener(taskSnapshot -> handler.handle(event));
@@ -317,8 +310,7 @@ public class FirebaseInterface implements DatabaseInterface {
         }
         final long ONE_MEGABYTE = 1024 * 1024; // Arbitrary , maybe we should change this
 
-        storage.getReference().child(EVENT_MAPS + "/" + event.getMapUri()).getBytes(ONE_MEGABYTE)
-                .addOnSuccessListener( bytes -> {
+        storage.getReference().child(EVENT_MAPS + "/" + event.getMapUri()).getBytes(ONE_MEGABYTE).addOnSuccessListener( bytes -> {
                     event.setMapStream( new ByteArrayInputStream(bytes));
                     handler.handle(event);
                 });
@@ -372,10 +364,14 @@ public class FirebaseInterface implements DatabaseInterface {
     }
 
     public void updateCurrentUserUsername(String newUserName, EmptyHandler updateUserFields) {
-        FirebaseFirestore.getInstance().collection("users")
-                .document(PolyContext.getCurrentUser().getUid()).update("username", newUserName)
+        updateField(newUserName, "users","username", updateUserFields);
+
+    }
+
+    private void updateField(String newEntry,String collectionPath,String field, EmptyHandler updateUserFields) {
+        FirebaseFirestore.getInstance().collection(collectionPath)
+                .document(PolyContext.getCurrentUser().getUid()).update(field, newEntry)
                 .addOnSuccessListener(aVoid -> {
-                    PolyContext.getCurrentUser().setUsername(newUserName);
                     updateUserFields.handle();
                 });
     }
@@ -389,17 +385,14 @@ public class FirebaseInterface implements DatabaseInterface {
             authUser.updateEmail(newEmail).addOnSuccessListener(nv->{
                 Toast.makeText(appContext, "Successfully changed email",
                         Toast.LENGTH_SHORT).show();
-                FirebaseFirestore.getInstance().collection("users")
-                        .document(PolyContext.getCurrentUser().getUid()).update("email", newEmail)
-                        .addOnSuccessListener(aVoid -> {
-                            PolyContext.getCurrentUser().setEmail(newEmail);
-                            updateUserFields.handle();
-                        });
+                updateField(newEmail,"users","email",updateUserFields);
             })).addOnFailureListener(fv-> Toast.makeText(appContext, "Email or password incorrect", Toast.LENGTH_SHORT).show());
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void uploadUserProfileImage(User user, byte[] image, Handler<User> handler) {
+
+
         user.setImageUri( USER_IMAGES + "/" + user.getUid() + ".jpg");
         StorageReference imgRef = storage.getReference().child(user.getImageUri());
         imgRef.putBytes(image).addOnSuccessListener(taskSnapshot -> handler.handle(user));

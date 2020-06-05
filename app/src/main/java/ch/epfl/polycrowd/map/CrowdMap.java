@@ -55,8 +55,6 @@ public class CrowdMap implements OnMapReadyCallback {
     private GoogleMap mMap;
     // to access Context for broadcasting and receiving intents
     private final MapActivity act;
-    // User position marker
-    private Marker currentLocationMarker;
     // Group Markers
     private Map<User , Marker> groupMarkers;
     //event goer positions
@@ -66,7 +64,7 @@ public class CrowdMap implements OnMapReadyCallback {
     //heatmap
     HeatmapTileProvider HmTP;
     //TileOverlay
-     TileOverlay overlay;
+    TileOverlay overlay;
 
      //demo fake movement offset
     double offset =0.0001;
@@ -99,17 +97,11 @@ public class CrowdMap implements OnMapReadyCallback {
 
         mMap = googleMap;
         positions = new HashMap<>(); //init positions
-        uploadFakeUserLocationsForDemo();
         getEventGoersPositions();// init positions
         // --- Style map ----------------------------------------------------------
         // to remove buildings 3D effect put false
         mMap.setBuildingsEnabled(true);
-
-        try {  // Customise the styling of the base map using a JSON object defined
-            googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(act, R.raw.style_map));
-        } catch (Resources.NotFoundException e) {
-            Log.e(TAG, "Can't find style. Error: ", e);
-        }
+        googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(act, R.raw.style_map));
 
         // --- HeatMap -------------------------------------------------------------
         HmTP = null;
@@ -139,7 +131,9 @@ public class CrowdMap implements OnMapReadyCallback {
         try {
             layer = new KmlLayer(mMap, PolyContext.getCurrentEvent().getMapStream(), act.getApplicationContext());
         } catch (XmlPullParserException | IOException e) {
-            e.printStackTrace();
+            HmTP =  null;
+            overlay = null;
+            return;
         }
 
         // Set a listener for geometry clicked events.
@@ -152,12 +146,6 @@ public class CrowdMap implements OnMapReadyCallback {
         layer.addLayerToMap();
 
         // ------- Move to event /or stand position ---------------------------------------------------------------------
-
-        currentLocationMarker = mMap.addMarker(
-                // TODO : maybe PolyContex.getCurrentUser().getLocation() ..
-                new MarkerOptions().position(new LatLng(0, 0)).icon(BitmapDescriptorFactory.fromResource(R.drawable.pointred))
-        );
-
         if(PolyContext.getStandId() != null) {
             accessContainers(layer.getContainers() , this::accessPlacemarks );
         } else {
@@ -174,7 +162,6 @@ public class CrowdMap implements OnMapReadyCallback {
 
 
         // ----- ADD Group on map ----------------------------------------------------------------------------
-
         groupMarkers = new HashMap<>();
         if(PolyContext.getCurrentGroup() != null){
             for(User groupMember : PolyContext.getCurrentGroup().getMembers()){
@@ -185,14 +172,6 @@ public class CrowdMap implements OnMapReadyCallback {
             }
         }
 
-    }
-    // ------- Update user position ------------------------------------------------------
-
-    public void update(LatLng myPosition){
-        //update marker to point to current Location
-        currentLocationMarker.setPosition(myPosition);
-        // TODO : update group markers
-        groupMarkers.forEach( (user , maker) -> {} );
     }
 
     // ------ KML Parsing functions --------------------------------------------------------------------------
@@ -210,90 +189,53 @@ public class CrowdMap implements OnMapReadyCallback {
         }
     }
 
+    final int POLYGON_PADDING_PREFERENCE = 230;
+
     private void accessPlacemarks(Iterable<KmlPlacemark> placemarks) {
-        for (KmlPlacemark placemark : placemarks) {
-            if (placemark != null) {
-                if( placemark.getProperty("name").equals(PolyContext.getStandId())){
-                    if (placemark.getGeometry() instanceof KmlPolygon) {
-                        KmlPolygon polygon = (KmlPolygon) placemark.getGeometry();
-                        final int POLYGON_PADDING_PREFERENCE = 230;
-                        final LatLngBounds latLngBounds = getPolygonLatLngBounds(polygon.getOuterBoundaryCoordinates());
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, POLYGON_PADDING_PREFERENCE));
-                    }
-                }
+        placemarks.forEach(placemark ->{
+            if (placemark != null &&
+                    placemark.getProperty("name").equals(PolyContext.getStandId()) &&
+                    placemark.getGeometry() instanceof KmlPolygon) {
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(
+                                getPolygonLatLngBounds(((KmlPolygon) placemark.getGeometry())
+                                        .getOuterBoundaryCoordinates()), POLYGON_PADDING_PREFERENCE));
             }
-        }
+        });
     }
 
     private List<LatLng> eventVertexList = new ArrayList<>();
     private void findAllVertexInPlacemarks(Iterable<KmlPlacemark> placemarks) {
-        for (KmlPlacemark placemark : placemarks) {
-            if (placemark != null) {
-                    if (placemark.getGeometry() instanceof KmlPolygon) {
-                        KmlPolygon polygon = (KmlPolygon) placemark.getGeometry();
-                        eventVertexList.addAll(polygon.getOuterBoundaryCoordinates());
-                    }
+        placemarks.forEach(placemark ->{
+            if (placemark != null && placemark.getGeometry() instanceof KmlPolygon) {
+                eventVertexList.addAll(((KmlPolygon) placemark.getGeometry()).getOuterBoundaryCoordinates());
             }
-        }
+        });
     }
 
 
     private static LatLngBounds getPolygonLatLngBounds(final List<LatLng> polygon) {
         final LatLngBounds.Builder centerBuilder = LatLngBounds.builder();
-        for (LatLng point : polygon) {
-            centerBuilder.include(point);
-        }
+        polygon.forEach(centerBuilder::include);
         return centerBuilder.build();
-    }
-
-    private void uploadFakeUserLocationsForDemo(){
-        DatabaseInterface db = PolyContext.getDBI();
-        double[] vs=new double[]{46.518033,46.518933,46.518533,46.518033,46.518033,46.518333,46.518933,46.518733,46.518033,46.518633,46.518433,46.518533,46.518633};
-        double[] v1s=new double[]{6.566919,6.566819,6.566719,6.566919,6.566319,6.566119,6.566419,6.566519,6.566619,6.566719,6.566419,6.566519,6.566919};
-        for( int i =0; i< 14; ++i){
-            db.updateUserLocation("fakeUser"+i, new LatLng(vs[i]-offset, v1s[i]));
-        }
-        /*
-        db.updateUserLocation("fakeUser1", new LatLng(46.518033-offset, 6.566919));
-        db.updateUserLocation("fakeUser2", new LatLng(46.518933- offset, 6.566819));
-        db.updateUserLocation("fakeUser3", new LatLng(46.518533- offset, 6.566719));
-        db.updateUserLocation("fakeUser4", new LatLng(46.518033- offset, 6.566919));
-        db.updateUserLocation("fakeUser5", new LatLng(46.518033- offset, 6.566319));
-        db.updateUserLocation("fakeUser6", new LatLng(46.518333- offset, 6.566119));
-        db.updateUserLocation("fakeUser7", new LatLng(46.518933- offset, 6.566419));
-        db.updateUserLocation("fakeUser8", new LatLng(46.518733- offset, 6.566519));
-        db.updateUserLocation("fakeUser9", new LatLng(46.518033- offset, 6.566619));
-        db.updateUserLocation("fakeUser10", new LatLng(46.518633- offset, 6.566719));
-        db.updateUserLocation("fakeUser11", new LatLng(46.518433- offset, 6.566419));
-        db.updateUserLocation("fakeUser12", new LatLng(46.518533- offset, 6.566519));
-        db.updateUserLocation("fakeUser13", new LatLng(46.518633- offset, 6.566919));*/
-        offset += 0.0001;
     }
     // --- GET USER DATA(REALTIME DATABASE)--------------------------------
 
     void getEventGoersPositions() {
-        //TODO REMOVE THIS UPLOADT OF FAKE USERLOCATIONS
-        uploadFakeUserLocationsForDemo();
-        //====================================
         FirebaseDatabase.getInstance().getReference().addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                DataSnapshot locationsSnapshot = dataSnapshot.child("locations");
-                Iterable<DataSnapshot> locationsChildren = locationsSnapshot.getChildren();
-                for (DataSnapshot snapshot : locationsChildren) {
-                    Log.d("LOCATION", "snapshot: " + snapshot);
-                    String lat = snapshot.child("latitude/").getValue().toString();
-                    String lng = snapshot.child("longitude/").getValue().toString();
-                    LatLng c = new LatLng(Double.parseDouble(lat), Double.parseDouble(lng));
-                    positions.put(snapshot.getKey(),c);
-                }
+                dataSnapshot.child("locations").getChildren().forEach(snapshot->{
+                    positions.put(snapshot.getKey(),new LatLng(
+                            Double.parseDouble(snapshot.child("latitude/").getValue().toString()),
+                            Double.parseDouble(snapshot.child("longitude/").getValue().toString())));
+                });
                 if(overlay != null) {
                     overlay.setVisible(false);
                     overlay.remove();
                 }
                 //if there are positions then playce tileoverlay with new locations
                 if(positions != null)
-                HmTP = new HeatmapTileProvider.Builder().data(positions.values()).gradient(gradientGreenRed).build();
+                    HmTP = new HeatmapTileProvider.Builder().data(positions.values()).gradient(gradientGreenRed).build();
                 if(HmTP != null) {
                     overlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(HmTP));
                 }
@@ -311,20 +253,14 @@ public class CrowdMap implements OnMapReadyCallback {
         FirebaseDatabase.getInstance().getReference().addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                DataSnapshot locationsSnapshot = dataSnapshot.child("sos");
-                Iterable<DataSnapshot> locationsChildren = locationsSnapshot.getChildren();
-                for (DataSnapshot snapshot : locationsChildren) {
-                    Log.d("EMERGENCIES", "snapshot: " + snapshot);
-                    String r = snapshot.child("reason").getValue().toString();
-                    emergencies.put(snapshot.getKey(),r);
+                for (DataSnapshot snapshot : dataSnapshot.child("sos").getChildren()) {
+                    emergencies.put(snapshot.getKey(),snapshot.child("reason").getValue().toString());
                 }
                 if(emergencies != null){
                     for(String user : emergencies.keySet()){
                         LatLng pos = positions.get(user);
                         if(pos != null) {
-                            MarkerOptions mrko = new MarkerOptions().position(pos).title("!").snippet(emergencies.get(user));
-                            Marker m = mMap.addMarker(mrko);
-                            emergencyMarkers.put(m.getId(), user);
+                            emergencyMarkers.put(mMap.addMarker(new MarkerOptions().position(pos).title("!").snippet(emergencies.get(user))).getId(), user);
                         }
                     }
                 }
