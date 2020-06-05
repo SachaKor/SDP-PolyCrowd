@@ -120,4 +120,16 @@ public class User extends Storable {
         return getUsername() +  ", " + getEmail() ;
     }
 
+    @Override
+    public boolean equals(Object other){
+        if (other instanceof User){
+            return ((User)other).getUid().equals(this.getUid());
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getUid().hashCode();
+    }
 }

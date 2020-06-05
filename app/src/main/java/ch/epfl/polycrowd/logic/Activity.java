@@ -84,4 +84,15 @@ public class Activity {
         ;
     }
 
+    @Override
+    public boolean equals(Object other){
+        if (other instanceof Activity){
+            return ((Activity) other).getUid().equals(this.getUid());
+        }
+        return false;
+    }
+    @Override
+    public int hashCode(){
+        return this.getUid().hashCode();
+    }
 }

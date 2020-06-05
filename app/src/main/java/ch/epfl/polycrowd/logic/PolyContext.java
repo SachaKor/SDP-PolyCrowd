@@ -112,7 +112,9 @@ public abstract class PolyContext extends Context {
         PolyContext.previousPage = previousPage;
     }
     public static void setPreviousPage(Context previousPage) {
-        PolyContext.previousPage = previousPage.getClass().asSubclass(android.app.Activity.class);
+        Class previousPageClass = previousPage.getClass();
+        Class subClass = android.app.Activity.class;
+        PolyContext.previousPage = previousPageClass.asSubclass(subClass);
     }
 
 
