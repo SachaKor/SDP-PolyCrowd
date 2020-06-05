@@ -212,7 +212,9 @@
 
                     <Button
                         android:text="Chose File"
-                        android:id="@+id/chose_file" />
+                        android:id="@+id/chose_file"
+                        android:layout_gravity="center"
+                        android:onClick="onFilePickClicked"/>
 
 
 
