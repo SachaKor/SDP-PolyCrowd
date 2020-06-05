@@ -319,15 +319,6 @@ public class FirebaseMocker implements DatabaseInterface {
         userGroups.handle(groupIdGroupPairs.values().stream().filter(g->g.getMembers().contains(user)).collect(Collectors.toList()));
     }
 
-    @Override
-    public void updateUserLocation(@NonNull String id, LatLng location) {
-        userPositions.put(id,location);
-    }
-
-    //this method is added for testing purposes
-    public LatLng getUserLocation(@NonNull String id) {
-        return userPositions.get(id);
-    }
 
     public void sendMessageFeed(@NonNull String eventId, Message m, EmptyHandler handler) {
         eventMessages.putIfAbsent(eventId,new ArrayList<>());

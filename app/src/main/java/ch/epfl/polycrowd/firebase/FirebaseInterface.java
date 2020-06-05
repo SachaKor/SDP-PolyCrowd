@@ -69,7 +69,6 @@ public class FirebaseInterface implements DatabaseInterface {
     private static final String USERS = "users";
     private static final String EVENT_IMAGES = "event-images";
 
-    private static final String LOCATIONS = "locations";
     private static final String SOS = "sos";
 
     private static final String USER_IMAGES = "user-images";
@@ -584,12 +583,6 @@ public class FirebaseInterface implements DatabaseInterface {
                 .addOnSuccessListener(r ->handler.handle(r));
     }
 
-
-    //https://firebase.google.com/docs/database/android/read-and-write <-- a good guide on hose to use the realtime database
-    public void updateUserLocation(String id, LatLng location) {
-        getFirebaseDatabaseReference().child(LOCATIONS).child(id)
-                .setValue(new GeoPoint(location.latitude, location.longitude));
-    }
 
     @Override
     public void sendMessageFeed(String eventId, Message m, EmptyHandler handler){

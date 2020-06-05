@@ -100,8 +100,6 @@ public interface DatabaseInterface {
 
     void getUserGroups(User user, Handler<List<Group>> userGroups) ;
 
-    void updateUserLocation(String id, LatLng location);
-
     void sendMessageFeed(String eventId, Message m, EmptyHandler handler);
 
     void getAllFeedForEvent(String eventId, Handler<List<Message>> handler);
