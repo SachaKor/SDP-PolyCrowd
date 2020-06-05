@@ -104,8 +104,11 @@ public interface DatabaseInterface {
 
     void sendMessageFeed(String eventId, Message m, EmptyHandler handler);
 
+    void sendMessage(String where, String id, Message m, EmptyHandler h);
+
     void getAllFeedForEvent(String eventId, Handler<List<Message>> handler);
 
+    void getMessages(String where, String id, Handler<List<Message>> h);
 
     String getConnectionId() ;
 

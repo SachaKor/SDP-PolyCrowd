@@ -105,6 +105,7 @@ public class FeedActivity extends AppCompatActivity {
             rv.setAdapter(mAdapter);
         });
     }
+
     public void onSend(View view){
         String message = messageInput.getText().toString();
         messageInput.setText("");
