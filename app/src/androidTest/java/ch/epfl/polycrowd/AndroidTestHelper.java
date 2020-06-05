@@ -2,7 +2,6 @@ package ch.epfl.polycrowd;
 
 import android.util.Pair;
 import android.view.View;
-import android.widget.ScrollView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -12,17 +11,20 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.firebase.FirebaseMocker;
+import ch.epfl.polycrowd.firebase.Handler;
 import ch.epfl.polycrowd.logic.Event;
+import ch.epfl.polycrowd.logic.Group;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 import ch.epfl.polycrowd.logic.UserLocator;
@@ -57,6 +59,17 @@ public abstract class AndroidTestHelper {
 
     private static  List<Event> ev = SetupEvents();
     private static  Map<String, Pair<User, String>> mailAndUsersPassPair = SetupUsers();
+    private static List<Group> groups = SetUpGroups();
+
+    private static List<Group> SetUpGroups() {
+        Set<User> groupUsers = new HashSet<>();
+        groupUsers.add(newUser);
+        Group g1 = new Group("testGroup" ,ev.get(0).getName(), ev.get(0).getId(), groupUsers);
+        g1.setGid("1");
+        List<Group> groups = new ArrayList<>();
+        groups.add(g1);
+        return groups;
+    }
 
 
     public static void reset(){
@@ -116,6 +129,7 @@ public abstract class AndroidTestHelper {
         ev.get(1).addOrganizer(OrganiserEmail);
 
         DatabaseInterface dbi = new FirebaseMocker(mailAndUsersPassPair, ev, uriString);
+        dbi.createGroup(getTestGroup().getRawData(), arg -> { });
         PolyContext.setDBI(dbi);
 
         PolyContext.setCurrentEvent(ev.get(1));
@@ -145,6 +159,7 @@ public abstract class AndroidTestHelper {
         assert up != null;
         return up.second;
     }
+
 
     public static User getUser(){
         return getUser(UserEmail);
@@ -186,5 +201,9 @@ public abstract class AndroidTestHelper {
                 return itemMatcher.matches(viewHolder.itemView);
             }
         };
+    }
+
+    public static Group getTestGroup() {
+        return groups.get(0);
     }
 }
