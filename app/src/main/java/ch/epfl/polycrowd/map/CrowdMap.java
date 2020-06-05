@@ -209,37 +209,30 @@ public class CrowdMap implements OnMapReadyCallback {
     final int POLYGON_PADDING_PREFERENCE = 230;
 
     private void accessPlacemarks(Iterable<KmlPlacemark> placemarks) {
-        for (KmlPlacemark placemark : placemarks) {
-            if (placemark != null) {
-                if( placemark.getProperty("name").equals(PolyContext.getStandId())){
-                    if (placemark.getGeometry() instanceof KmlPolygon) {
+        placemarks.forEach(placemark ->{
+            if (placemark != null &&
+                    placemark.getProperty("name").equals(PolyContext.getStandId()) &&
+                    placemark.getGeometry() instanceof KmlPolygon) {
                         mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(
                                 getPolygonLatLngBounds(((KmlPolygon) placemark.getGeometry())
                                         .getOuterBoundaryCoordinates()), POLYGON_PADDING_PREFERENCE));
-                    }
-                }
             }
-        }
+        });
     }
 
     private List<LatLng> eventVertexList = new ArrayList<>();
     private void findAllVertexInPlacemarks(Iterable<KmlPlacemark> placemarks) {
-        for (KmlPlacemark placemark : placemarks) {
-            if (placemark != null) {
-                    if (placemark.getGeometry() instanceof KmlPolygon) {
-                        KmlPolygon polygon = (KmlPolygon) placemark.getGeometry();
-                        eventVertexList.addAll(polygon.getOuterBoundaryCoordinates());
-                    }
+        placemarks.forEach(placemark ->{
+            if (placemark != null && placemark.getGeometry() instanceof KmlPolygon) {
+                eventVertexList.addAll(((KmlPolygon) placemark.getGeometry()).getOuterBoundaryCoordinates());
             }
-        }
+        });
     }
 
 
     private static LatLngBounds getPolygonLatLngBounds(final List<LatLng> polygon) {
         final LatLngBounds.Builder centerBuilder = LatLngBounds.builder();
-        for (LatLng point : polygon) {
-            centerBuilder.include(point);
-        }
+        polygon.forEach(centerBuilder::include);
         return centerBuilder.build();
     }
     // --- GET USER DATA(REALTIME DATABASE)--------------------------------
@@ -248,11 +241,11 @@ public class CrowdMap implements OnMapReadyCallback {
         FirebaseDatabase.getInstance().getReference().addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.child("locations").getChildren()) {
+                dataSnapshot.child("locations").getChildren().forEach(snapshot->{
                     positions.put(snapshot.getKey(),new LatLng(
                             Double.parseDouble(snapshot.child("latitude/").getValue().toString()),
                             Double.parseDouble(snapshot.child("longitude/").getValue().toString())));
-                }
+                });
                 if(overlay != null) {
                     overlay.setVisible(false);
                     overlay.remove();
@@ -284,9 +277,7 @@ public class CrowdMap implements OnMapReadyCallback {
                     for(String user : emergencies.keySet()){
                         LatLng pos = positions.get(user);
                         if(pos != null) {
-                            MarkerOptions mrko = new MarkerOptions().position(pos).title("!").snippet(emergencies.get(user));
-                            Marker m = mMap.addMarker(mrko);
-                            emergencyMarkers.put(m.getId(), user);
+                            emergencyMarkers.put(mMap.addMarker(new MarkerOptions().position(pos).title("!").snippet(emergencies.get(user))).getId(), user);
                         }
                     }
                 }
