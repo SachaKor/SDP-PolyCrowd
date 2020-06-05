@@ -3,13 +3,14 @@ package ch.epfl.polycrowd.frontPage;
 import android.Manifest;
 import android.content.Intent;
 
+import androidx.test.rule.ActivityTestRule;
+import androidx.test.rule.GrantPermissionRule;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
-import androidx.test.rule.ActivityTestRule;
-import androidx.test.rule.GrantPermissionRule;
 import ch.epfl.polycrowd.AndroidTestHelper;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.logic.PolyContext;
@@ -19,7 +20,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
-public class FontPageOrganizerInviteTest {
+public class FontPageGroupInviteTest {
 
     @BeforeClass
     public static void setUpBeforeActivityLaunch(){
@@ -37,7 +38,7 @@ public class FontPageOrganizerInviteTest {
 
     @Before
     public void setUp() {
-        AndroidTestHelper.SetupMockDBI("https://www.example.com/inviteORGANIZER/?eventId="+"2"+"&eventName="+"DEBUG_EVENT");
+        AndroidTestHelper.SetupMockDBI("https://www.example.com/inviteGroup/?eventId="+"2"+"&eventName="+"DEBUG_EVENT");
         PolyContext.setCurrentUser(null);
 
         // launch the intent
@@ -45,10 +46,10 @@ public class FontPageOrganizerInviteTest {
         frontPageActivityRule.launchActivity(intent);
     }
 
+
     @Test
-    public void invitePageOpensWhenOrganizerInvReceived() {
+    public void invitePageOpensWhenGroupInvReceived() {
 
-        onView(withId(R.id.member_invite_text)).check(matches(isDisplayed()));
+        onView(withId(R.id.group_invite_text)).check(matches(isDisplayed()));
     }
-
 }
