@@ -28,8 +28,15 @@ import ch.epfl.polycrowd.EventPageDetailsActivity;
 import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.logic.PolyContext;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.scrollTo;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intending;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static ch.epfl.polycrowd.AndroidTestHelper.sleep;
 
 public class EditEventMapTest {
 
@@ -53,9 +60,16 @@ public class EditEventMapTest {
 
     @Test
     public void uploadMapTest() {
+        sleep();
         saveDummyKmlFile(mActivityTestRule.getActivity());
+        sleep();
         Instrumentation.ActivityResult kmlFilePickResult = createKmlSetResultStub(mActivityTestRule.getActivity());
-        intending(hasAction(Intent.ACTION_CHOOSER)).respondWith(kmlFilePickResult);
+        sleep();
+        intending(hasAction(Intent.ACTION_GET_CONTENT)).respondWith(kmlFilePickResult);
+        sleep();
+        onView(withId(R.id.chose_file)).check(matches(isDisplayed()));
+        sleep();
+        onView(withId(R.id.chose_file)).perform(click());
     }
 
     private void saveDummyKmlFile(Context context) {
@@ -66,6 +80,7 @@ public class EditEventMapTest {
         try {
             fos = new FileOutputStream(file);
             fos.write(kml);
+            fos.flush();
             fos.close();
         } catch (IOException e) {
             e.printStackTrace();

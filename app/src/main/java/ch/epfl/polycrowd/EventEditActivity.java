@@ -16,6 +16,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -83,6 +85,14 @@ public class EventEditActivity extends AppCompatActivity {
         }
     }
 
+    public void onFilePickClicked(View view) {
+
+        myFileIntent = new Intent(Intent.ACTION_GET_CONTENT);
+        myFileIntent.setType("*/*");
+        startActivityForResult(myFileIntent,10);
+
+    }
+
     Intent myFileIntent;
     // ----- Setup input fields (if modifying an existing event) ------------------
     private void setUpViews() {
@@ -101,11 +111,11 @@ public class EventEditActivity extends AppCompatActivity {
         isEmergencyEnabled = findViewById(R.id.EditEventEmergency);
 
         filePicker = findViewById(R.id.chose_file);
-        filePicker.setOnClickListener( v -> {
-            myFileIntent = new Intent(Intent.ACTION_GET_CONTENT);
-            myFileIntent.setType("*/*");
-            startActivityForResult(myFileIntent,10);
-        });
+//        filePicker.setOnClickListener( v -> {
+//            myFileIntent = new Intent(Intent.ACTION_GET_CONTENT);
+//            myFileIntent.setType("*/*");
+//            startActivityForResult(myFileIntent,10);
+//        });
 
 
         if (PolyContext.getCurrentEvent() != null){
