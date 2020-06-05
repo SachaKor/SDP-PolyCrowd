@@ -15,13 +15,16 @@ import androidx.test.rule.GrantPermissionRule;
 
 import ch.epfl.polycrowd.AndroidTestHelper;
 import ch.epfl.polycrowd.EventPageDetailsActivity;
+import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.logic.PolyContext;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static ch.epfl.polycrowd.AndroidTestHelper.sleep;
 import static org.hamcrest.Matchers.not;
 
@@ -48,8 +51,10 @@ public class EventPageDetailsActivityTest {
 
     @Before
     public void startIntent() {
+        PolyContext.reset();
+        AndroidTestHelper.reset();
         AndroidTestHelper.SetupMockDBI();
-        PolyContext.setCurrentUser(AndroidTestHelper.getOrganiser());
+        PolyContext.setCurrentUser(AndroidTestHelper.getOwner());
         Intent intent = new Intent();
         mActivityRule.launchActivity(intent);
     }
@@ -57,8 +62,9 @@ public class EventPageDetailsActivityTest {
     @Test
     public void dialogWithInviteLinkOpensWhenInviteClicked() {
         sleep();
-        //onView(withId(R.id.invite_organizer_button)).perform(click()); //TODO: FIX NOT MOCKED BEHAVIOUR
-        //onView(withText(R.string.invite_link_dialog_title)).check(matches(isDisplayed()));
+        onView(withId(R.id.event_details_fab)).perform(click());
+        onView(withId(R.id.invite_organizer_button)).perform(scrollTo(), click());
+        onView(withText(R.string.invite_link_dialog_title)).check(matches(isDisplayed()));
     }
 
     @Test
