@@ -317,6 +317,7 @@ public class Event extends Storable{
 
     @Override
     public boolean equals(Object other){
+        if(other == null) return false;
         if (other instanceof Event){
             return ((Event) other).getId().equals(this.getId());
         }
