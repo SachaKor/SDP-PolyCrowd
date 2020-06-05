@@ -97,7 +97,7 @@ public class FrontPageActivity extends AppCompatActivity {
     }
 
     private void setUp() {
-        PolyContext.setCurrentEvent(null);
+        //PolyContext.setCurrentEvent(null);
         toggleLoginLogout();
 
         setEventModels();
