@@ -250,7 +250,7 @@ public class CrowdMap implements OnMapReadyCallback {
         DatabaseInterface db = PolyContext.getDBI();
         double[] vs=new double[]{46.518033,46.518933,46.518533,46.518033,46.518033,46.518333,46.518933,46.518733,46.518033,46.518633,46.518433,46.518533,46.518633};
         double[] v1s=new double[]{6.566919,6.566819,6.566719,6.566919,6.566319,6.566119,6.566419,6.566519,6.566619,6.566719,6.566419,6.566519,6.566919};
-        for( int i =0; i< 14; ++i){
+        for( int i =0; i< 13; ++i){
             db.updateUserLocation("fakeUser"+i, new LatLng(vs[i]-offset, v1s[i]));
         }
         /*
