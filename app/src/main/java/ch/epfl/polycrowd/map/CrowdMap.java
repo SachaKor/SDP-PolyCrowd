@@ -55,8 +55,6 @@ public class CrowdMap implements OnMapReadyCallback {
     private GoogleMap mMap;
     // to access Context for broadcasting and receiving intents
     private final MapActivity act;
-    // User position marker
-    private Marker currentLocationMarker;
     // Group Markers
     private Map<User , Marker> groupMarkers;
     //event goer positions
@@ -66,7 +64,7 @@ public class CrowdMap implements OnMapReadyCallback {
     //heatmap
     HeatmapTileProvider HmTP;
     //TileOverlay
-     TileOverlay overlay;
+    TileOverlay overlay;
 
      //demo fake movement offset
     double offset =0.0001;
@@ -152,12 +150,6 @@ public class CrowdMap implements OnMapReadyCallback {
         layer.addLayerToMap();
 
         // ------- Move to event /or stand position ---------------------------------------------------------------------
-
-        currentLocationMarker = mMap.addMarker(
-                // TODO : maybe PolyContex.getCurrentUser().getLocation() ..
-                new MarkerOptions().position(new LatLng(0, 0)).icon(BitmapDescriptorFactory.fromResource(R.drawable.pointred))
-        );
-
         if(PolyContext.getStandId() != null) {
             accessContainers(layer.getContainers() , this::accessPlacemarks );
         } else {
@@ -174,7 +166,6 @@ public class CrowdMap implements OnMapReadyCallback {
 
 
         // ----- ADD Group on map ----------------------------------------------------------------------------
-
         groupMarkers = new HashMap<>();
         if(PolyContext.getCurrentGroup() != null){
             for(User groupMember : PolyContext.getCurrentGroup().getMembers()){
@@ -185,14 +176,6 @@ public class CrowdMap implements OnMapReadyCallback {
             }
         }
 
-    }
-    // ------- Update user position ------------------------------------------------------
-
-    public void update(LatLng myPosition){
-        //update marker to point to current Location
-        currentLocationMarker.setPosition(myPosition);
-        // TODO : update group markers
-        groupMarkers.forEach( (user , maker) -> {} );
     }
 
     // ------ KML Parsing functions --------------------------------------------------------------------------
@@ -250,7 +233,7 @@ public class CrowdMap implements OnMapReadyCallback {
         DatabaseInterface db = PolyContext.getDBI();
         double[] vs=new double[]{46.518033,46.518933,46.518533,46.518033,46.518033,46.518333,46.518933,46.518733,46.518033,46.518633,46.518433,46.518533,46.518633};
         double[] v1s=new double[]{6.566919,6.566819,6.566719,6.566919,6.566319,6.566119,6.566419,6.566519,6.566619,6.566719,6.566419,6.566519,6.566919};
-        for( int i =0; i< 14; ++i){
+        for( int i =0; i< 13; ++i){
             db.updateUserLocation("fakeUser"+i, new LatLng(vs[i]-offset, v1s[i]));
         }
         /*
