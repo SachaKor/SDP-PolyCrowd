@@ -69,7 +69,7 @@ public class EditEventMapTest {
         sleep();
         onView(withId(R.id.chose_file)).check(matches(isDisplayed()));
         sleep();
-        onView(withId(R.id.chose_file)).perform(click());
+        onView(withId(R.id.chose_file)).perform(scrollTo(), click());
     }
 
     private void saveDummyKmlFile(Context context) {
