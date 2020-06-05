@@ -43,6 +43,12 @@ public class UserTest {
     }
 
     @Test
+    public void testUserEquality(){
+        assertEquals(testUser, testUser);
+        assertEquals(testUser.hashCode(), testUser.hashCode());
+    }
+
+    @Test
     public void testImageURI(){
         testUser.setImageUri("IRUI");
         assertEquals(testUser.getImageUri(),"IRUI");

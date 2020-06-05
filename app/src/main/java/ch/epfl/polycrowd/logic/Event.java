@@ -315,4 +315,16 @@ public class Event extends Storable{
         return null;
     }
 
+    @Override
+    public boolean equals(Object other){
+        if (other instanceof Event){
+            return ((Event) other).getId().equals(this.getId());
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getId().hashCode();
+    }
 }

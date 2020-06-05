@@ -99,6 +99,18 @@ public class ActivityTest {
     }
 
     @Test
+    public void testEquality(){
+        try {
+            Activity a = new Activity(mockActivity);
+            assertEquals(a, a);
+            assertEquals(a.hashCode(), a.hashCode());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Test
     public void differentConstructorsEquivalent(){
 
 
