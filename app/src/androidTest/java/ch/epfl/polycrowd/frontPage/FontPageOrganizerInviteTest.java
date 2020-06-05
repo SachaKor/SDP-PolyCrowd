@@ -39,7 +39,6 @@ public class FontPageOrganizerInviteTest {
     public void setUp() {
         AndroidTestHelper.SetupMockDBI("https://www.example.com/inviteORGANIZER/?eventId="+"2"+"&eventName="+"DEBUG_EVENT");
         PolyContext.setCurrentUser(null);
-
         // launch the intent
         Intent intent = new Intent();
         frontPageActivityRule.launchActivity(intent);

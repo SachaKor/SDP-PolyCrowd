@@ -2,7 +2,6 @@ package ch.epfl.polycrowd.groups;
 
 import android.content.Intent;
 
-import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.rule.ActivityTestRule;
 
@@ -10,8 +9,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.lang.reflect.Array;
-import java.util.Arrays;
 import java.util.HashSet;
 
 import ch.epfl.polycrowd.AndroidTestHelper;

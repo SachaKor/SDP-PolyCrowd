@@ -19,6 +19,7 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static ch.epfl.polycrowd.AndroidTestHelper.sleep;
 
 public class FontPageGroupInviteTest {
 
@@ -38,7 +39,7 @@ public class FontPageGroupInviteTest {
 
     @Before
     public void setUp() {
-        AndroidTestHelper.SetupMockDBI("https://www.example.com/inviteGroup/?eventId="+"2"+"&eventName="+"DEBUG_EVENT");
+        AndroidTestHelper.SetupMockDBI("https://www.example.com/inviteGroup/?groupId="+"1"+"&eventName="+"DEBUG_EVENT");
         PolyContext.setCurrentUser(null);
 
         // launch the intent
@@ -49,7 +50,7 @@ public class FontPageGroupInviteTest {
 
     @Test
     public void invitePageOpensWhenGroupInvReceived() {
-
+        sleep();
         onView(withId(R.id.group_invite_text)).check(matches(isDisplayed()));
     }
 }
