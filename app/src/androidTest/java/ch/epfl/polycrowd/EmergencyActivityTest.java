@@ -18,6 +18,7 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static ch.epfl.polycrowd.AndroidTestHelper.sleep;
 import static org.hamcrest.core.StringContains.containsString;
 
 public class EmergencyActivityTest {
@@ -43,8 +44,11 @@ public class EmergencyActivityTest {
 
     @Test
     public void testEmergency1() {
+        sleep();
         onView(withId(R.id.b0)).check(matches(withText(containsString("Accident"))));
+        sleep();
         onView(withId(R.id.b0)).perform(ViewActions.longClick());
+        sleep();
     }
 
     @Test
