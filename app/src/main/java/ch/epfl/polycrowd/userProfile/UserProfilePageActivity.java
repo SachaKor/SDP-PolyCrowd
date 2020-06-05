@@ -128,7 +128,7 @@ public class UserProfilePageActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         PolyContext.getDBI().
                                 updateCurrentUserUsername(newUsernameText.getText().toString(),
-                                ()->{
+                                ()->{PolyContext.getCurrentUser().setUsername(newUsernameText.getText().toString());
                                     setUpViews();}  );
                     }
                 });
@@ -292,7 +292,7 @@ public class UserProfilePageActivity extends AppCompatActivity {
                         PolyContext.getDBI().reauthenticateAndChangeEmail(emailText.getText().toString(),
                                 passwordText.getText().toString(),
                                 newEmailText.getText().toString(),
-                                ()->{
+                                ()->{PolyContext.getCurrentUser().setEmail(emailText.getText().toString());
                                     setUpViews();},
                                 getApplicationContext());
                     }
