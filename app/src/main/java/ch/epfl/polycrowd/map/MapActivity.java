@@ -171,7 +171,6 @@ public class MapActivity extends AppCompatActivity {
     }
 
     public void onUpdateLocationsCliked(View view) {
-        mMap.getEventGoersPositions();
     }
 
 }
