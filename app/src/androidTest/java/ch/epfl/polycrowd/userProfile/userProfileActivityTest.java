@@ -11,10 +11,14 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
+
+import androidx.test.espresso.intent.Intents;
 import androidx.test.rule.ActivityTestRule;
 
 import ch.epfl.polycrowd.AndroidTestHelper;
+import ch.epfl.polycrowd.EventPageDetailsActivity;
 import ch.epfl.polycrowd.R;
+import ch.epfl.polycrowd.groupPage.GroupsListActivity;
 import ch.epfl.polycrowd.userProfile.UserProfilePageActivity;
 import ch.epfl.polycrowd.logic.PolyContext;
 
@@ -24,6 +28,8 @@ import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.intent.Intents.intended;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -152,10 +158,27 @@ public class userProfileActivityTest {
         onView(withId(R.id.EventsOrganiseButton)).perform(click());
         sleep();
         onView(withText("DEBUG EVENT")).check(matches(isDisplayed()));
+        //Check that the Event details page is opened when clicking on the event
+        Intents.init() ;
+        onView(withText("DEBUG EVENT")).perform(click()) ;
+        sleep();
+        intended(hasComponent(EventPageDetailsActivity.class.getName())) ;
+        Intents.release();
         //onData(withId(R.id.titleTv)).inAdapterView(withId(R.id.userEventListRecyclerView))
         //        .atPosition(1)
         //        .check(matches(withText(containsString("DEBUG EVENT"))));
         //onView(withId(R.id.titleTv)).check(matches(withText(containsString("DEBUG EVENT"))));
-}
+    }
+
+    @Test
+    public void testGroupsListActivityLaunchedOnGroupListButtonClick(){
+        Intents.init() ;
+        onView(withId(R.id.myGroupsButton)).
+                perform(click());
+        sleep();
+        intended(hasComponent(GroupsListActivity.class.getName())) ;
+        Intents.release();
+    }
+
 }
 

@@ -27,6 +27,8 @@ import ch.epfl.polycrowd.logic.Message;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 
+import static java.lang.Thread.sleep;
+
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class FirebaseMocker implements DatabaseInterface {
 
@@ -320,6 +322,11 @@ public class FirebaseMocker implements DatabaseInterface {
     @Override
     public void updateUserLocation(@NonNull String id, LatLng location) {
         userPositions.put(id,location);
+    }
+
+    //this method is added for testing purposes
+    public LatLng getUserLocation(@NonNull String id) {
+        return userPositions.get(id);
     }
 
     public void sendMessageFeed(@NonNull String eventId, Message m, EmptyHandler handler) {

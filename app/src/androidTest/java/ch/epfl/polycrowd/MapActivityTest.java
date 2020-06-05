@@ -32,6 +32,14 @@ import static org.hamcrest.Matchers.not;
 
 public class MapActivityTest {
 
+    @Rule
+    public final ActivityTestRule<MapActivity> mActivityRule =
+            new ActivityTestRule<>(MapActivity.class);
+
+    @Rule
+    public GrantPermissionRule grantFineLocation =
+            GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION);
+
     @BeforeClass
     public static void setUpBeforeActivityLaunch(){
         PolyContext.reset();
@@ -44,14 +52,6 @@ public class MapActivityTest {
 
         PolyContext.setCurrentEvent(e);
     }
-
-    @Rule
-    public final ActivityTestRule<MapActivity> mActivityRule =
-            new ActivityTestRule<>(MapActivity.class);
-
-    @Rule
-    public GrantPermissionRule grantFineLocation =
-            GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION);
 
     @Before
     public void setUp() {
@@ -130,13 +130,8 @@ public class MapActivityTest {
 
     @Test
     public void setOrgainizerButtonsCorrectlyCreatesOrganizerButtons() {
-
-        Event e = new Event("Test Owner","Test Name", true, Event.EventType.CONVENTION,new Date(), new Date(),"url","Test Description", false);
-        e.setId("test id");
-        PolyContext.getDBI().addEvent(e, ev->{}, ev->{});
-        PolyContext.setCurrentEvent(e);
-
-        PolyContext.setCurrentUser(AndroidTestHelper.getOwner());
+        PolyContext.setCurrentEvent(AndroidTestHelper.getDebugEvent());
+        PolyContext.setCurrentUser(AndroidTestHelper.getOrganiser());
 
         Intent intent = new Intent();
         mActivityRule.launchActivity(intent);
@@ -191,6 +186,12 @@ public class MapActivityTest {
             onView(withId(R.id.butLeft)).perform(click());
             onView(withId(R.id.sign_in_logo)).check(matches(isDisplayed()));
         }
+    }
+
+    @Test
+    public void waitForMap() {
+        setUp();
+        sleep(15000);
     }
 
 

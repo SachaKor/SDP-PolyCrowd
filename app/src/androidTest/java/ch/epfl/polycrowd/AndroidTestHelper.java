@@ -33,8 +33,12 @@ import static ch.epfl.polycrowd.logic.Event.EventType.*;
 public abstract class AndroidTestHelper {
 
     public static void sleep(){
+        sleep(750);
+    }
+
+    public static void sleep(Integer l){
         try{
-            Thread.sleep(800);
+            Thread.sleep(l);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -51,9 +55,14 @@ public abstract class AndroidTestHelper {
     private static final User newUser = new User(NewUserEmail, "1", "new_fakeUser", 20);
 
 
-    private static final List<Event> ev = SetupEvents();
-    private static final Map<String, Pair<User, String>> mailAndUsersPassPair = SetupUsers();
+    private static  List<Event> ev = SetupEvents();
+    private static  Map<String, Pair<User, String>> mailAndUsersPassPair = SetupUsers();
 
+
+    public static void reset(){
+        ev = SetupEvents();
+        mailAndUsersPassPair = SetupUsers();
+    }
 
 
     private static List<Event> SetupEvents(){
