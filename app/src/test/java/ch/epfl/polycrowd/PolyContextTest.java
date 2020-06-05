@@ -18,7 +18,6 @@ import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
-import ch.epfl.polycrowd.logic.UserLocator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -123,12 +122,6 @@ public class PolyContextTest {
         assertEquals(PolyContext.getCurrentGroup(),g);
     }
 
-    @Test
-    public void testUserLocation(){
-        final UserLocator ul = new UserLocator("CID");
-        PolyContext.setUserLocator(ul);
-        assertEquals(PolyContext.getUserLocator(),ul);
-    }
 
     @Test
     public void testUserGroups(){
