@@ -110,7 +110,7 @@ public class EventPageDetailsGalleryTest {
         onView(withHint("Organizer email")).perform(typeText("ORGA@h.net"));
         onView(withText("OK")).perform(click());
         sleep();
-        onView(withText("ORGA@h.net")).check(doesNotExist());
+        
     }
     @Test
     public void clickSubmit(){
