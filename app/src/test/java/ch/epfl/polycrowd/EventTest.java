@@ -2,6 +2,7 @@ package ch.epfl.polycrowd;
 
 
 import com.google.firebase.Timestamp;
+import com.google.protobuf.Empty;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -13,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -154,6 +156,10 @@ public class EventTest {
     }
 
     @Test
+    public void equalsWithRandomObject() {
+        assertEquals(e.equals("string object"), false);
+    }
+    @Test
     public void getSetDescription() {
         final String new_desc = "NewEventDescription";
         assertEquals(default_desc, e.getDescription());
@@ -261,6 +267,12 @@ public class EventTest {
         assertEquals(e.getImageUri(),"IMAGE_URI");
     }
 
+    @Test
+    public void nullElemInGetFromDocument() {
+        Map<String,Object> data = new HashMap<>();
+        assertNull(Event.getFromDocument(data));
+    }
+
    @Test
     public void getSetHashMap(){
         Map<String,Object> hm = e.getRawData();
@@ -285,6 +297,5 @@ public class EventTest {
         assertEquals(dateToString(default_s, dtFormat), dateToString(ne.getStart(), dtFormat));
         assertEquals(dateToString(default_e, dtFormat), dateToString(ne.getEnd(), dtFormat));
         assertEquals("None", ne.getCalendar());
-
     }
 }
