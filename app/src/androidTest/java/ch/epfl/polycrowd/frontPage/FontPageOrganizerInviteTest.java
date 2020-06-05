@@ -37,7 +37,6 @@ public class FontPageOrganizerInviteTest {
 
     @Before
     public void setUp() {
-        AndroidTestHelper.SetupMockDBI("https://www.example.com/inviteORGANIZER/?eventId="+"2"+"&eventName="+"DEBUG_EVENT");
 
         PolyContext.setCurrentUser(null);
 
@@ -48,6 +47,22 @@ public class FontPageOrganizerInviteTest {
 
     @Test
     public void invitePageOpensWhenOrganizerInvReceived() {
+        AndroidTestHelper.SetupMockDBI("https://www.example.com/inviteORGANIZER/?eventId="+"2"+"&eventName="+"DEBUG_EVENT");
+        onView(withId(R.id.member_invite_text)).check(matches(isDisplayed()));
+    }
+    @Test
+    public void invitePageOpensWhenSecurityInvReceived() {
+        AndroidTestHelper.SetupMockDBI("https://www.example.com/inviteSECURITY/?eventId="+"2"+"&eventName="+"DEBUG_EVENT");
+        onView(withId(R.id.member_invite_text)).check(matches(isDisplayed()));
+    }
+    @Test
+    public void invitePageOpensWhenStaffInvReceived() {
+        AndroidTestHelper.SetupMockDBI("https://www.example.com/inviteSTAFF/?eventId="+"2"+"&eventName="+"DEBUG_EVENT");
+        onView(withId(R.id.member_invite_text)).check(matches(isDisplayed()));
+    }
+    @Test
+    public void invitePageOpensWhenGroupInvReceived() {
+        AndroidTestHelper.SetupMockDBI("https://www.example.com/inviteGroup/?eventId="+"2"+"&eventName="+"DEBUG_EVENT");
         onView(withId(R.id.member_invite_text)).check(matches(isDisplayed()));
     }
 }

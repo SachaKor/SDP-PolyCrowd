@@ -93,13 +93,14 @@ public class FrontPageActivity extends AppCompatActivity {
     @Override
     protected void onRestart() {
         super.onRestart();
+        PolyContext.setCurrentEvent(null);
         setUp();
     }
 
     private void setUp() {
-        //PolyContext.setCurrentEvent(null);
+        //PolyContext.setCurrentEvent(null); //this call crashes test
+        // invitePageOpensWhenOrganizerInvReceived from FontPageOrganizerInviteTest for unknown reasons probably linked to connected tests
         toggleLoginLogout();
-
         setEventModels();
     }
 
