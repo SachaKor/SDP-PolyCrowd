@@ -93,7 +93,7 @@ public class MapActivityTest {
 
             sleep();
             onView(withId(R.id.butLeft)).check(matches(withText(containsString("LOGIN"))));
-            onView(withId(R.id.butLeft)).perform(click());
+            //onView(withId(R.id.butLeft)).perform(click());
         }
     }
 
