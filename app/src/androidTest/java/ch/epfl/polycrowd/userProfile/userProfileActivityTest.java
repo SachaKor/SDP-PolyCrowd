@@ -18,6 +18,7 @@ import androidx.test.rule.ActivityTestRule;
 import ch.epfl.polycrowd.AndroidTestHelper;
 import ch.epfl.polycrowd.EventPageDetailsActivity;
 import ch.epfl.polycrowd.R;
+import ch.epfl.polycrowd.groupPage.GroupsListActivity;
 import ch.epfl.polycrowd.userProfile.UserProfilePageActivity;
 import ch.epfl.polycrowd.logic.PolyContext;
 
@@ -167,6 +168,17 @@ public class userProfileActivityTest {
         //        .atPosition(1)
         //        .check(matches(withText(containsString("DEBUG EVENT"))));
         //onView(withId(R.id.titleTv)).check(matches(withText(containsString("DEBUG EVENT"))));
-}
+    }
+
+    @Test
+    public void testGroupsListActivityLaunchedOnGroupListButtonClick(){
+        Intents.init() ;
+        onView(withId(R.id.myGroupsButton)).
+                perform(click());
+        sleep();
+        intended(hasComponent(GroupsListActivity.class.getName())) ;
+        Intents.release();
+    }
+
 }
 

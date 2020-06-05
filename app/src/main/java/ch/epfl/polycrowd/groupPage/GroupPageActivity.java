@@ -37,13 +37,10 @@ import ch.epfl.polycrowd.logic.User;
 import ch.epfl.polycrowd.map.MapActivity;
 import ch.epfl.polycrowd.userProfile.UserProfilePageActivity;
 
-public class GroupPageActivity extends AppCompatActivity implements TabLayout.OnTabSelectedListener {
+public class GroupPageActivity extends AppCompatActivity {
 
     private static final String TAG = "GroupPageActivity";
-    private static final long LOCATION_REFRESH_TIME = 5000; //5s
-    private static final float LOCATION_REFRESH_DISTANCE = 10; //10 meters
 
-    private String eventId;
     private String groupId;
     private Group group;
     private AlertDialog linkDialog;
@@ -67,7 +64,6 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
         viewPager.setAdapter(fragmentAdapter);
 
         tabLayout.setupWithViewPager(viewPager);
-        tabLayout.addOnTabSelectedListener(this);
 
         initEvent();
         initGroup();
@@ -104,7 +100,6 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
             Log.e(TAG, "current event is null");
             return;
         }
-        eventId = curEvent.getId();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -125,7 +120,6 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
      */
     public void inviteLinkClicked(View view) {
         // build the invite dynamic link
-        //TODO How to mock?
         DynamicLink inviteLink = FirebaseDynamicLinks.getInstance().createDynamicLink()
                 .setLink(Uri.parse("https://www.example.com/inviteGroup/?groupId=" + groupId))
                 .setDomainUriPrefix("https://polycrowd.page.link")
@@ -168,29 +162,6 @@ public class GroupPageActivity extends AppCompatActivity implements TabLayout.On
         Intent intent = new Intent(this, MapActivity.class );
         startActivity(intent);
 
-    }
-
-    @Override
-    public void onTabSelected(TabLayout.Tab tab) {
-        int index = tab.getPosition() ;
-        if(index == 0){
-            Log.d(TAG, "TAB SELECTED FOR MAPS") ;
-        }
-    }
-
-    @Override
-    public void onTabUnselected(TabLayout.Tab tab) {
-        int index = tab.getPosition() ;
-        if(index == 0){
-
-        }
-    }
-
-    @Override
-    public void onTabReselected(TabLayout.Tab tab) {
-        int index = tab.getPosition() ;
-        if(index == 0){
-        }
     }
 
 }
