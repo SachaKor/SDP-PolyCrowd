@@ -138,10 +138,4 @@ public class FrontPageActivityTest {
 
     }
 
-    @Test
-    public void testUserLocatorInitialized(){
-        assert(PolyContext.getUserLocator() != null) ;
-        assert(PolyContext.getUserLocator().getConnectionId().equals( "MOCK_CONNECTION_ID")) ;
-    }
-
 }
