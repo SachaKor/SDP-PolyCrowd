@@ -424,6 +424,7 @@ public class EventPageDetailsActivity extends AppCompatActivity {
 
 // Set an EditText view to get user input
         final EditText input = new EditText(this);
+        input.setHint("Organizer email");
         alert.setView(input);
 
         alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {

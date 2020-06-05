@@ -41,12 +41,17 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.action.ViewActions.swipeLeft;
+import static androidx.test.espresso.action.ViewActions.typeText;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intending;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withHint;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static ch.epfl.polycrowd.AndroidTestHelper.sleep;
+import static org.hamcrest.Matchers.not;
 
 /**
  * Mocking the gallery intent & image pick:
@@ -100,7 +105,12 @@ public class EventPageDetailsGalleryTest {
     public void clickRevokeUser(){
         onView(withId(R.id.event_details_fab)).perform(click());
         onView(withId(R.id.revoke_organizer_button)).perform(scrollTo(), click());
-
+        sleep();
+        onView(withText("Revoke an organizer")).check(matches(isDisplayed()));
+        onView(withHint("Organizer email")).perform(typeText("ORGA@h.net"));
+        onView(withText("OK")).perform(click());
+        sleep();
+        onView(withText("ORGA@h.net")).check(doesNotExist());
     }
     @Test
     public void clickSubmit(){
