@@ -45,18 +45,23 @@ public class ResetPasswordActivityTest {
 
     @Test
     public void testToastWhenEmailIsEmpty(){
+        sleep();
         onView(withId(R.id.forgot_password_button)).perform(click());
         sleep();
         onView(withText("Please enter an email"))
                 .inRoot(withDecorView(not(resetPasswordActivityActivityTestRule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));
+        onView(withId(R.id.forgot_password_button)).perform(click());
+        sleep();
     }
 
 
     @Test
     public void testToastWhenNonExistingEmail(){
+        sleep();
         onView(withId(R.id.reset_email)).perform(typeText("UNKNOWN@h.net"), closeSoftKeyboard());
         onView(withId(R.id.forgot_password_button)).perform(click());
+        sleep();
         sleep();
         onView(withText("Email not found, please sign up"))
                 .inRoot(withDecorView(not(resetPasswordActivityActivityTestRule.getActivity().getWindow().getDecorView())))
