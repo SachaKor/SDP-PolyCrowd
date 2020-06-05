@@ -79,7 +79,6 @@ public class LoginActivity extends AppCompatActivity {
             switch (PolyContext.getInviteRole()) {
                 case ORGANIZER:
                         if (PolyContext.getCurrentEvent() == null) {
-                            Log.e(TAG, "current event is null");
                             return;
                         }
                         PolyContext.getDBI().addOrganizerToEvent(PolyContext.getCurrentEvent().getId(), PolyContext.getCurrentUser().getEmail(),
@@ -87,7 +86,6 @@ public class LoginActivity extends AppCompatActivity {
                         break;
                 case SECURITY:
                         if (PolyContext.getCurrentEvent() == null) {
-                            Log.e(TAG, "current event is null");
                             return;
                         }
                         PolyContext.getDBI().addSecurityToEvent(PolyContext.getCurrentEvent().getId(), PolyContext.getCurrentUser().getEmail(),
