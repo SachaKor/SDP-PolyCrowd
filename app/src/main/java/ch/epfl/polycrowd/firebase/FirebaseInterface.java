@@ -11,8 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
@@ -32,7 +30,6 @@ import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
@@ -54,12 +51,12 @@ import ch.epfl.polycrowd.logic.User;
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class FirebaseInterface implements DatabaseInterface {
 
-    private static final FirebaseAuth cachedAuth = FirebaseAuth.getInstance();;
-    private static final DatabaseReference cachedDbRef = FirebaseDatabase.getInstance("https://polycrowd-e8d9e.firebaseio.com/").getReference();
-    private static final FirebaseFirestore cachedFirestore = FirebaseFirestore.getInstance();
-    private static final DatabaseReference cachedFirebaseDatabaseRef = FirebaseDatabase.getInstance().getReference(); //used for realtime database
-    private static final FirebaseStorage storage = FirebaseStorage.getInstance();
-    private static final FirebaseInstanceId cachedFirebaseInstanceId = FirebaseInstanceId.getInstance();
+    private final FirebaseAuth cachedAuth;
+    private final DatabaseReference cachedDbRef;
+    private final FirebaseFirestore cachedFirestore;
+    private final DatabaseReference cachedFirebaseDatabaseRef; //used for realtime database
+    private final FirebaseStorage storage;
+    private final FirebaseInstanceId cachedFirebaseInstanceId;
 
     private static final String EVENTS = "polyevents";
     private static final String ORGANIZERS = "organizers";
@@ -78,7 +75,14 @@ public class FirebaseInterface implements DatabaseInterface {
 
     private static final String TAG = "FirebaseInterface";
 
-    public FirebaseInterface(){}
+    public FirebaseInterface(){
+        cachedAuth = FirebaseAuth.getInstance();
+        cachedDbRef = FirebaseDatabase.getInstance("https://polycrowd-e8d9e.firebaseio.com/").getReference();
+        cachedFirestore = FirebaseFirestore.getInstance();
+        cachedFirebaseDatabaseRef = FirebaseDatabase.getInstance().getReference(); //used for realtime database
+        storage = FirebaseStorage.getInstance();
+        cachedFirebaseInstanceId = FirebaseInstanceId.getInstance();
+    }
 
     @Override
     public String getConnectionId(){
