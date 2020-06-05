@@ -33,6 +33,7 @@ import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.authentification.LoginActivity;
 import ch.epfl.polycrowd.frontPage.FrontPageActivity;
 import ch.epfl.polycrowd.groupPage.GroupsListActivity;
+import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
 import ch.epfl.polycrowd.logic.PolyContext;
 
@@ -55,14 +56,15 @@ public class MapActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if(PolyContext.getCurrentEvent() == null){
+        Event e = PolyContext.getCurrentEvent();
+        if(e == null){
             eventIntentHandler(this, FrontPageActivity.class);
         }
 
         createButtons();
 
         // only show the map if download is successful
-        PolyContext.getDBI().downloadEventMap(PolyContext.getCurrentEvent() , ev -> {
+        PolyContext.getDBI().downloadEventMap(e , ev -> {
             createMap();
         });
 

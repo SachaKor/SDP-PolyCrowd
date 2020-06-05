@@ -21,22 +21,24 @@ public class FragmentAdapter extends FragmentPagerAdapter {
     @NonNull
     @Override
     public Fragment getItem(int position) {
-        if(position == 0 )
+        if(position == 0)
             return GroupMemberListFragment.getINSTANCE() ;
+        if(position == 1)
+            return GroupChatFragment.getINSTANCE() ;
         return null;
     }
 
     @Override
     public int getCount() {
-        return 1;
+        return 2;
     }
 
     @Nullable
     @Override
     public CharSequence getPageTitle(int position) {
         switch (position){
-            case 0 : return "FirstSegment" ;
-            //case 1 : return  "SecondSegment" ;
+            case 0 : return "Members List" ;
+            case 1 : return "Group Chat" ;
         }
         return "" ;
     }

@@ -416,29 +416,46 @@ public class FirebaseInterface implements DatabaseInterface {
 
     @Override
     public void sendMessageFeed(String eventId, Message m, EmptyHandler handler){
-        cachedDbRef.child("events").child(eventId).child("security_feed").push().setValue(m.toData()).addOnSuccessListener(r -> handler.handle());
+        sendMessage("security_feed", eventId, m, handler);
+    }
+
+    @Override
+    public void sendMessage(String where, String id, Message m, EmptyHandler h){
+        if (where.equals("security_feed")) {
+            cachedDbRef.child("events").child(id).child("security_feed").push().setValue(m.toData()).addOnSuccessListener(r -> h.handle());
+        } else if (where.equals("group_chat")) {
+            cachedDbRef.child("groups").child(id).child("group_chat").push().setValue(m.toData()).addOnSuccessListener(r -> h.handle());
+        }
     }
 
     @Override
     public void getAllFeedForEvent(String eventId, Handler<List<Message>> successHandler){
-        cachedDbRef.child("events").child(eventId).child("security_feed").addListenerForSingleValueEvent(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        List<Message> ms = new ArrayList<>();
-                        for (DataSnapshot ds : dataSnapshot.getChildren()){
-                            ms.add(Message.fromData((Map<String,String>) ds.getValue()));
-                        }
-                        successHandler.handle(ms);
-                    }
+        getMessages("security_feed", eventId, successHandler);
+    }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Log.e("Reading feed failed for event ", eventId);
-                    }
+    @Override
+    public void getMessages(String where, String id, Handler<List<Message>> h){
+
+        ValueEventListener vel = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                List<Message> ms = new ArrayList<>();
+                for (DataSnapshot ds : dataSnapshot.getChildren()){
+                    ms.add(Message.fromData((Map<String,String>) ds.getValue()));
                 }
-        );
+                h.handle(ms);
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, "Reading messages for" + where + "failed for id " + id);
+            }
+        };
+
+        if (where.equals("security_feed")) {
+            cachedDbRef.child("events").child(id).child("security_feed").addListenerForSingleValueEvent(vel);
+        } else if (where.equals("group_chat")) {
+            cachedDbRef.child("groups").child(id).child("group_chat").addListenerForSingleValueEvent(vel);
+        }
     }
 }
-

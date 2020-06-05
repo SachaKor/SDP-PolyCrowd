@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
@@ -32,6 +33,7 @@ import ch.epfl.polycrowd.R;
 import ch.epfl.polycrowd.firebase.DatabaseInterface;
 import ch.epfl.polycrowd.logic.Event;
 import ch.epfl.polycrowd.logic.Group;
+import ch.epfl.polycrowd.logic.Message;
 import ch.epfl.polycrowd.logic.PolyContext;
 import ch.epfl.polycrowd.logic.User;
 import ch.epfl.polycrowd.map.MapActivity;
@@ -103,7 +105,7 @@ public class GroupPageActivity extends AppCompatActivity {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    /**/private void initGroup() {
+    private void initGroup() {
         DatabaseInterface dbi = PolyContext.getDBI();
         User user = PolyContext.getCurrentUser();
         if(user == null){
@@ -162,6 +164,20 @@ public class GroupPageActivity extends AppCompatActivity {
         Intent intent = new Intent(this, MapActivity.class );
         startActivity(intent);
 
+    }
+
+    public void onSendClick(View view) {
+        EditText messageInput = ((EditText)findViewById(R.id.chat_message_input));
+        String message = messageInput.getText().toString();
+        messageInput.setText("");
+        Message m = new Message(message, PolyContext.getCurrentUser().getUsername(),"");
+        PolyContext.getDBI().sendMessage(
+                "group_chat",
+                PolyContext.getCurrentGroup().getGid(),
+                m,
+                () -> {
+                    ((GroupChatFragment)fragmentAdapter.getItem(1)).refresh();
+                });
     }
 
 }

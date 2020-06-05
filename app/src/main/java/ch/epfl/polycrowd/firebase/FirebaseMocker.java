@@ -44,6 +44,7 @@ public class FirebaseMocker implements DatabaseInterface {
     private Map<String,String> userEmergencies = new HashMap<>();
     private Map<String,LatLng> userPositions = new HashMap<>();
     private Map<String,List<Message>> eventMessages = new HashMap<>();
+    private Map<String,List<Message>> chatMessages = new HashMap<>();
 
     public FirebaseMocker(Map<String, Pair<User, String>> defaultMailAndUserPassPair, List<Event> defaultEvents) {
         Log.d(TAG, "Database mocker init");
@@ -329,15 +330,36 @@ public class FirebaseMocker implements DatabaseInterface {
         return userPositions.get(id);
     }
 
+    @Override
     public void sendMessageFeed(@NonNull String eventId, Message m, EmptyHandler handler) {
-        eventMessages.putIfAbsent(eventId,new ArrayList<>());
-        eventMessages.get(eventId).add(m);
-        handler.handle();
+        sendMessage("security_feed", eventId, m, handler);
+    }
+
+    @Override
+    public void sendMessage(String where, String id, Message m, EmptyHandler h) {
+        if (where.equals("security_feed")) {
+            eventMessages.putIfAbsent(id, new ArrayList<>());
+            eventMessages.get(id).add(m);
+        } else if (where.equals("group_chat")) {
+            chatMessages.putIfAbsent(id, new ArrayList<>());
+            chatMessages.get(id).add(m);
+        }
+
+        h.handle();
     }
 
     @Override
     public void getAllFeedForEvent(@NonNull String eventId, Handler<List<Message>> handler) {
-        handler.handle(eventMessages.getOrDefault(eventId, new ArrayList<>()));
+        getMessages("security_feed", eventId, handler);
+    }
+
+    @Override
+    public void getMessages(String where, String id, Handler<List<Message>> h) {
+        if (where.equals("security_feed")) {
+            h.handle(eventMessages.getOrDefault(id, new ArrayList<>()));
+        } else if (where.equals("group_chat")) {
+            h.handle(chatMessages.getOrDefault(id, new ArrayList<>()));
+        }
     }
 
     @Override

@@ -3,6 +3,8 @@ package ch.epfl.polycrowd.logic;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
+import android.util.Log;
+
 import androidx.annotation.RequiresApi;
 import java.util.List;
 
