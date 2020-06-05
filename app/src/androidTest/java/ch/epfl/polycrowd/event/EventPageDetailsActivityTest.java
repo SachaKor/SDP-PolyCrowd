@@ -69,9 +69,9 @@ public class EventPageDetailsActivityTest {
 
     @Test
     public void editModeTurnsOffAfterChangesSubmitted() {
-//        onView(withId(R.id.event_details_fab)).perform(click());
-//        onView(withId(R.id.event_details_submit)).perform(click());
-//        onView(withId(R.id.event_details_submit)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.event_details_fab)).perform(click());
+        onView(withId(R.id.event_details_submit)).perform(scrollTo(), click());
+        onView(withId(R.id.event_details_submit)).check(matches(not(isDisplayed())));
     }
 
 }
