@@ -52,6 +52,7 @@ public class PolyContextTest {
 
     @Test
     public void testEventSetAndGet(){
+        e.setId("1");
         PolyContext.setCurrentEvent(e);
         assertEquals(PolyContext.getCurrentEvent(),e);
     }

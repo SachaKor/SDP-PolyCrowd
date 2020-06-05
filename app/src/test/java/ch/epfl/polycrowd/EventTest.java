@@ -50,6 +50,16 @@ public class EventTest {
 
     }
 
+    @Test
+    public void testEquality(){
+        initTest();
+        Event f = new Event(default_owner,default_name, false,
+                default_type, default_s, default_e, "None", default_desc, false);
+        f.setId("1");
+        e.setId("1");
+        assertEquals(e, f);
+        assertEquals(e.hashCode(), f.hashCode());
+    }
 
     @Test
     public void testGetSchedule(){
