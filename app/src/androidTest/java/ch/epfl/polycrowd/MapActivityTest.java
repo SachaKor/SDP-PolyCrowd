@@ -13,6 +13,8 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
 import java.util.Date;
 
 import ch.epfl.polycrowd.logic.Event;
@@ -49,6 +51,7 @@ public class MapActivityTest {
 
         Event e = AndroidTestHelper.getDebugEvent();
         e.setMapUri("noMap");
+        e.setMapStream(null);
 
         PolyContext.setCurrentEvent(e);
     }
@@ -60,7 +63,9 @@ public class MapActivityTest {
         PolyContext.setCurrentUser(null);
 
         Event e = AndroidTestHelper.getDebugEvent();
-        e.setMapUri("noMap");
+        //e.setMapUri("noMap");
+
+
 
         PolyContext.setCurrentEvent(e);
 
@@ -88,7 +93,7 @@ public class MapActivityTest {
 
             sleep();
             onView(withId(R.id.butLeft)).check(matches(withText(containsString("LOGIN"))));
-            onView(withId(R.id.butLeft)).perform(click());
+            //onView(withId(R.id.butLeft)).perform(click());
         }
     }
 
@@ -117,6 +122,7 @@ public class MapActivityTest {
         PolyContext.setCurrentEvent(new Event("","",true,
                 Event.EventType.FESTIVAL,new Date(), new Date(),"","",false));
 
+        PolyContext.getCurrentEvent().setMapUri("noMap");
         PolyContext.setCurrentUser(null);
 
         Intent intent = new Intent();

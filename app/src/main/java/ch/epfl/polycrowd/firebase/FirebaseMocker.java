@@ -233,8 +233,8 @@ public class FirebaseMocker implements DatabaseInterface {
     }
 
     @Override
-    public void downloadEventMap(Event event, Handler<Event> handler) {
-        if(event.getMapStream() != null)
+    public void downloadEventMap(Event event, Handler<Event> handler ) {
+        //if(event.getMapStream() != null)
             handler.handle(event);
     }
 

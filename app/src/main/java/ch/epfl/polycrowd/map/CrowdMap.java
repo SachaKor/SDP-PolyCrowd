@@ -96,8 +96,14 @@ public class CrowdMap implements OnMapReadyCallback {
             layer = new KmlLayer(mMap,
                                  PolyContext.getCurrentEvent().getMapStream(),
                                  act.getApplicationContext());
-        } catch (XmlPullParserException | IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            try {
+                layer = new KmlLayer(mMap,
+                        R.raw.example,
+                        act.getApplicationContext());
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
 
         // Set a listener for geometry clicked events.
