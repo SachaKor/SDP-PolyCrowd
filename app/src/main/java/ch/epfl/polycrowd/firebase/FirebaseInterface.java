@@ -113,16 +113,6 @@ public class FirebaseInterface implements DatabaseInterface {
         cachedFirestore.collection(GROUPS).document(gid).get().addOnSuccessListener(documentSnapshot -> {
             List<String> members = new ArrayList<>((List<String>)documentSnapshot.get(MEMBERS));
             addItems(members,userEmail,MEMBERS,GROUPS,gid,handler);
-            /*
-            if(!members.contains(userEmail)) {
-                members.add(userEmail);
-                Map<String, Object> data = new HashMap<>();
-                data.put(MEMBERS, members);
-                cachedFirestore.collection(GROUPS).document(gid).set(data, SetOptions.merge())
-                        .addOnSuccessListener(aVoid -> handler.handle());
-            } else {
-                handler.handle();
-            }*/
         });
     }
 
@@ -242,14 +232,7 @@ public class FirebaseInterface implements DatabaseInterface {
                                   EmptyHandler handler, String role){
         cachedFirestore.collection(EVENTS).document(eventId).get().addOnSuccessListener(documentSnapshot -> {
             List<String> users = (List<String>) (documentSnapshot.get(role));
-            if(!users.contains(email)) {
-                users.add(email);
-                Map<String, Object> data = new HashMap<>();
-                data.put(role, users);
-                cachedFirestore.collection(EVENTS).document(eventId).set(data, SetOptions.merge()).addOnSuccessListener(e -> handler.handle());
-            } else {
-                handler.handle();
-            }
+            addItems(users, email,role,EVENTS,eventId,handler);
         });
     }
 
@@ -259,15 +242,6 @@ public class FirebaseInterface implements DatabaseInterface {
         cachedFirestore.collection(EVENTS).document(eventId).get().addOnSuccessListener(documentSnapshot -> {
             List<String> organizers = new ArrayList<>((List<String>) documentSnapshot.get(ORGANIZERS));
             addItems(organizers, organizerEmail,ORGANIZERS,EVENTS,eventId,handler);
-            /*
-            if(organizers.contains(organizerEmail)) {
-                organizers.remove(organizerEmail);
-                Map<String, Object> data = new HashMap<>();
-                data.put(ORGANIZERS, organizers);
-                cachedFirestore.collection(EVENTS).document(eventId).set(data, SetOptions.merge()).addOnSuccessListener(e -> handler.handle());
-            } else {
-                handler.handle();
-            }*/
         });
     }
 
@@ -336,8 +310,7 @@ public class FirebaseInterface implements DatabaseInterface {
         }
         final long ONE_MEGABYTE = 1024 * 1024; // Arbitrary , maybe we should change this
 
-        storage.getReference().child(EVENT_MAPS + "/" + event.getMapUri()).getBytes(ONE_MEGABYTE)
-                .addOnSuccessListener( bytes -> {
+        storage.getReference().child(EVENT_MAPS + "/" + event.getMapUri()).getBytes(ONE_MEGABYTE).addOnSuccessListener( bytes -> {
                     event.setMapStream( new ByteArrayInputStream(bytes));
                     handler.handle(event);
                 });
@@ -392,13 +365,7 @@ public class FirebaseInterface implements DatabaseInterface {
 
     public void updateCurrentUserUsername(String newUserName, EmptyHandler updateUserFields) {
         updateField(newUserName, "users","username", updateUserFields);
-        /*
-        FirebaseFirestore.getInstance().collection("users")
-                .document(PolyContext.getCurrentUser().getUid()).update("username", newUserName)
-                .addOnSuccessListener(aVoid -> {
-                    PolyContext.getCurrentUser().setUsername(newUserName);
-                    updateUserFields.handle();
-                });*/
+
     }
 
     private void updateField(String newEntry,String collectionPath,String field, EmptyHandler updateUserFields) {
@@ -419,13 +386,6 @@ public class FirebaseInterface implements DatabaseInterface {
                 Toast.makeText(appContext, "Successfully changed email",
                         Toast.LENGTH_SHORT).show();
                 updateField(newEmail,"users","email",updateUserFields);
-                /*
-                FirebaseFirestore.getInstance().collection("users")
-                        .document(PolyContext.getCurrentUser().getUid()).update("email", newEmail)
-                        .addOnSuccessListener(aVoid -> {
-                            PolyContext.getCurrentUser().setEmail(newEmail);
-                            updateUserFields.handle();
-                        });*/
             })).addOnFailureListener(fv-> Toast.makeText(appContext, "Email or password incorrect", Toast.LENGTH_SHORT).show());
     }
 
