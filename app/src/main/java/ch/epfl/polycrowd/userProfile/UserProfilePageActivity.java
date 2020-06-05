@@ -292,7 +292,7 @@ public class UserProfilePageActivity extends AppCompatActivity {
                         PolyContext.getDBI().reauthenticateAndChangeEmail(emailText.getText().toString(),
                                 passwordText.getText().toString(),
                                 newEmailText.getText().toString(),
-                                ()->{PolyContext.getCurrentUser().setEmail(emailText.getText().toString());
+                                ()->{PolyContext.getCurrentUser().setEmail(newEmailText.getText().toString());
                                     setUpViews();},
                                 getApplicationContext());
                     }
