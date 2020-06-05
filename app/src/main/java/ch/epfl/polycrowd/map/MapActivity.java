@@ -112,10 +112,9 @@ public class MapActivity extends AppCompatActivity {
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
-        if(mapFragment == null) return;
-        mapFragment.getMapAsync(mMap);
+        if(mapFragment != null)
+            mapFragment.getMapAsync(mMap);
     }
-
 
 
     public void clickEventDetails(View view) {
